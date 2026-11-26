@@ -6790,6 +6790,24 @@
         }
       ]
     },
+    "AxisSpec": {
+      "kind": "type",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
+      "props": [
+        {
+          "name": "domain",
+          "type": "Domain",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "ticks",
+          "type": "readonly number[]",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
     "BOARD_LIMIT_PERCENT": {
       "kind": "value",
       "source": "src/cn/badge-model.ts",
@@ -6834,6 +6852,30 @@
           "type": "Severity",
           "required": false,
           "description": "语气：风险标记（如 ST）给 warn 或 danger；不给是 neutral。"
+        }
+      ]
+    },
+    "BasisPoint": {
+      "kind": "type",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
+      "props": [
+        {
+          "name": "time",
+          "type": "number",
+          "required": true,
+          "description": "Bucket time in milliseconds."
+        },
+        {
+          "name": "contract",
+          "type": "Maybe",
+          "required": true,
+          "description": "Contract price."
+        },
+        {
+          "name": "index",
+          "type": "Maybe",
+          "required": true,
+          "description": "Index price."
         }
       ]
     },
@@ -12894,6 +12936,11 @@
       "source": "src/patterns/font-catalog.ts",
       "props": []
     },
+    "DEFAULT_PERIODS": {
+      "kind": "value",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
+      "props": []
+    },
     "DEFAULT_RENDERING": {
       "kind": "value",
       "source": "src/patterns/rendering-settings.tsx",
@@ -12902,6 +12949,11 @@
     "DEFAULT_SNAP_POINTS": {
       "kind": "value",
       "source": "src/primitives/splitter-model.ts",
+      "props": []
+    },
+    "DERIVATIVES_KINDS": {
+      "kind": "value",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
       "props": []
     },
     "DITHER_CHART_VARIANTS": {
@@ -15549,6 +15601,439 @@
           "type": "string",
           "required": false,
           "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "DerivativesBoard": {
+      "kind": "component",
+      "source": "src/blocks/derivatives/derivatives-board.tsx",
+      "props": [
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the card."
+        },
+        {
+          "name": "labels",
+          "type": "DerivativesLabels",
+          "required": true,
+          "description": "Texts; required, the package carries no language."
+        },
+        {
+          "name": "onPeriodChange",
+          "type": "(kind: DerivativesKind, period: string) => void",
+          "required": false,
+          "description": "Called with the card's kind and the period just picked."
+        },
+        {
+          "name": "formatAmount",
+          "type": "DerivativesFormats['formatAmount']",
+          "required": false,
+          "description": "Volumes and open interest; defaults to an English compact number."
+        },
+        {
+          "name": "formatPrice",
+          "type": "DerivativesFormats['formatPrice']",
+          "required": false,
+          "description": "Prices and basis; defaults to thousands separators and at most two decimals."
+        },
+        {
+          "name": "formatTime",
+          "type": "DerivativesFormats['formatTime']",
+          "required": false,
+          "description": "A bucket time in milliseconds; defaults to UTC `MM-DD HH:mm`."
+        },
+        {
+          "name": "chartHeight",
+          "type": "number",
+          "required": false,
+          "description": "Height of the plot area in px; 168 by default."
+        },
+        {
+          "name": "data",
+          "type": "{ [K in DerivativesKind]?: DerivativesData[K] | null }",
+          "required": false,
+          "default": "{}",
+          "description": "The series of each card; a card with no entry (or an empty one) shows its own empty state."
+        },
+        {
+          "name": "kinds",
+          "type": "readonly DerivativesKind[]",
+          "required": false,
+          "default": "DERIVATIVES_KINDS",
+          "description": "Which cards to draw and in what order; all six by default."
+        },
+        {
+          "name": "periods",
+          "type": "Partial<Record<DerivativesKind, readonly string[]>>",
+          "required": false,
+          "description": "Period ids each card offers, by kind; the defaults of the card where a kind is missing."
+        },
+        {
+          "name": "period",
+          "type": "Partial<Record<DerivativesKind, string>>",
+          "required": false,
+          "description": "Selected period of each card (controlled), by kind; a kind left out is uncontrolled."
+        },
+        {
+          "name": "defaultPeriod",
+          "type": "Partial<Record<DerivativesKind, string>>",
+          "required": false,
+          "description": "Initial period of each card when uncontrolled, by kind."
+        },
+        {
+          "name": "minCardWidth",
+          "type": "number",
+          "required": false,
+          "default": "360",
+          "description": "Narrowest a card gets before the grid drops a column, in px; 360 by default."
+        }
+      ]
+    },
+    "DerivativesBoardProps": {
+      "kind": "type",
+      "source": "src/blocks/derivatives/derivatives-board.tsx",
+      "props": [
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the card."
+        },
+        {
+          "name": "labels",
+          "type": "DerivativesLabels",
+          "required": true,
+          "description": "Texts; required, the package carries no language."
+        },
+        {
+          "name": "onPeriodChange",
+          "type": "(kind: DerivativesKind, period: string) => void",
+          "required": false,
+          "description": "Called with the card's kind and the period just picked."
+        },
+        {
+          "name": "formatAmount",
+          "type": "DerivativesFormats['formatAmount']",
+          "required": false,
+          "description": "Volumes and open interest; defaults to an English compact number."
+        },
+        {
+          "name": "formatPrice",
+          "type": "DerivativesFormats['formatPrice']",
+          "required": false,
+          "description": "Prices and basis; defaults to thousands separators and at most two decimals."
+        },
+        {
+          "name": "formatTime",
+          "type": "DerivativesFormats['formatTime']",
+          "required": false,
+          "description": "A bucket time in milliseconds; defaults to UTC `MM-DD HH:mm`."
+        },
+        {
+          "name": "chartHeight",
+          "type": "number",
+          "required": false,
+          "description": "Height of the plot area in px; 168 by default."
+        },
+        {
+          "name": "data",
+          "type": "{ [K in DerivativesKind]?: DerivativesData[K] | null }",
+          "required": false,
+          "description": "The series of each card; a card with no entry (or an empty one) shows its own empty state."
+        },
+        {
+          "name": "kinds",
+          "type": "readonly DerivativesKind[]",
+          "required": false,
+          "description": "Which cards to draw and in what order; all six by default."
+        },
+        {
+          "name": "periods",
+          "type": "Partial<Record<DerivativesKind, readonly string[]>>",
+          "required": false,
+          "description": "Period ids each card offers, by kind; the defaults of the card where a kind is missing."
+        },
+        {
+          "name": "period",
+          "type": "Partial<Record<DerivativesKind, string>>",
+          "required": false,
+          "description": "Selected period of each card (controlled), by kind; a kind left out is uncontrolled."
+        },
+        {
+          "name": "defaultPeriod",
+          "type": "Partial<Record<DerivativesKind, string>>",
+          "required": false,
+          "description": "Initial period of each card when uncontrolled, by kind."
+        },
+        {
+          "name": "minCardWidth",
+          "type": "number",
+          "required": false,
+          "description": "Narrowest a card gets before the grid drops a column, in px; 360 by default."
+        }
+      ]
+    },
+    "DerivativesCard": {
+      "kind": "component",
+      "source": "src/blocks/derivatives/derivatives-card.tsx",
+      "props": [
+        {
+          "name": "periods",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Period ids the buttons offer; defaults to 5m / 1h / 1d (7d / 14d for the funding rate)."
+        },
+        {
+          "name": "period",
+          "type": "string",
+          "required": false,
+          "description": "Selected period (controlled)."
+        },
+        {
+          "name": "defaultPeriod",
+          "type": "string",
+          "required": false,
+          "description": "Initial period when uncontrolled; the first of `periods` by default."
+        },
+        {
+          "name": "onPeriodChange",
+          "type": "(kind: DerivativesKind, period: string) => void",
+          "required": false,
+          "description": "Called with the card's kind and the period just picked."
+        },
+        {
+          "name": "labels",
+          "type": "DerivativesLabels",
+          "required": true,
+          "description": "Texts; required, the package carries no language."
+        },
+        {
+          "name": "formatAmount",
+          "type": "DerivativesFormats['formatAmount']",
+          "required": false,
+          "description": "Volumes and open interest; defaults to an English compact number."
+        },
+        {
+          "name": "formatPrice",
+          "type": "DerivativesFormats['formatPrice']",
+          "required": false,
+          "description": "Prices and basis; defaults to thousands separators and at most two decimals."
+        },
+        {
+          "name": "formatTime",
+          "type": "DerivativesFormats['formatTime']",
+          "required": false,
+          "description": "A bucket time in milliseconds; defaults to UTC `MM-DD HH:mm`."
+        },
+        {
+          "name": "chartHeight",
+          "type": "number",
+          "required": false,
+          "description": "Height of the plot area in px; 168 by default."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the card."
+        },
+        {
+          "name": "kind",
+          "type": "K",
+          "required": true,
+          "description": "Which card to draw; it decides the shape of `data`."
+        },
+        {
+          "name": "data",
+          "type": "DerivativesData[K] | null",
+          "required": false,
+          "description": "The series of this card, old to new; missing, empty or all-missing shows the empty state."
+        }
+      ]
+    },
+    "DerivativesCardCommon": {
+      "kind": "type",
+      "source": "src/blocks/derivatives/derivatives-card.tsx",
+      "props": [
+        {
+          "name": "periods",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Period ids the buttons offer; defaults to 5m / 1h / 1d (7d / 14d for the funding rate)."
+        },
+        {
+          "name": "period",
+          "type": "string",
+          "required": false,
+          "description": "Selected period (controlled)."
+        },
+        {
+          "name": "defaultPeriod",
+          "type": "string",
+          "required": false,
+          "description": "Initial period when uncontrolled; the first of `periods` by default."
+        },
+        {
+          "name": "onPeriodChange",
+          "type": "(kind: DerivativesKind, period: string) => void",
+          "required": false,
+          "description": "Called with the card's kind and the period just picked."
+        },
+        {
+          "name": "labels",
+          "type": "DerivativesLabels",
+          "required": true,
+          "description": "Texts; required, the package carries no language."
+        },
+        {
+          "name": "formatAmount",
+          "type": "DerivativesFormats['formatAmount']",
+          "required": false,
+          "description": "Volumes and open interest; defaults to an English compact number."
+        },
+        {
+          "name": "formatPrice",
+          "type": "DerivativesFormats['formatPrice']",
+          "required": false,
+          "description": "Prices and basis; defaults to thousands separators and at most two decimals."
+        },
+        {
+          "name": "formatTime",
+          "type": "DerivativesFormats['formatTime']",
+          "required": false,
+          "description": "A bucket time in milliseconds; defaults to UTC `MM-DD HH:mm`."
+        },
+        {
+          "name": "chartHeight",
+          "type": "number",
+          "required": false,
+          "description": "Height of the plot area in px; 168 by default."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the card."
+        }
+      ]
+    },
+    "DerivativesCardProps": {
+      "kind": "type",
+      "source": "src/blocks/derivatives/derivatives-card.tsx",
+      "props": []
+    },
+    "DerivativesData": {
+      "kind": "type",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
+      "props": [
+        {
+          "name": "openInterestVolume",
+          "type": "readonly OpenInterestVolumePoint[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "fundingRate",
+          "type": "readonly FundingRatePoint[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "takerVolume",
+          "type": "readonly TakerVolumePoint[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "longShortRatio",
+          "type": "readonly LongShortPoint[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "topTraderRatio",
+          "type": "readonly LongShortPoint[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "basis",
+          "type": "readonly BasisPoint[]",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "DerivativesKind": {
+      "kind": "type",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
+      "props": []
+    },
+    "DerivativesLabels": {
+      "kind": "type",
+      "source": "src/blocks/derivatives/derivatives-labels.ts",
+      "props": [
+        {
+          "name": "region",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the board."
+        },
+        {
+          "name": "cards",
+          "type": "Record<DerivativesKind, { title: string; info: string }>",
+          "required": true,
+          "description": "Title and the hint behind the info button of each card."
+        },
+        {
+          "name": "periods",
+          "type": "Record<string, string>",
+          "required": true,
+          "description": "Words of the period buttons, by period id (`1m`, `5m`, `15m`, `1h`, `4h`, `1d`, `7d`, `14d`); an id without a word is shown as is."
+        },
+        {
+          "name": "periodGroup",
+          "type": "(title: string) => string",
+          "required": true,
+          "description": "Accessible name of the period group of one card."
+        },
+        {
+          "name": "infoButton",
+          "type": "(title: string) => string",
+          "required": true,
+          "description": "Accessible name of the info button of one card."
+        },
+        {
+          "name": "series",
+          "type": "{ openInterest: string volume: string rate: string buy: string sell: string long: string short: string ratio: string contract: string index: string basis: string }",
+          "required": true,
+          "description": "Names of the drawn series (legend, tooltip, summary)."
+        },
+        {
+          "name": "separator",
+          "type": "string",
+          "required": true,
+          "description": "Joins the readings in one sentence read aloud (latest values, hover readings), e.g."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Text of a card with no data."
+        },
+        {
+          "name": "plotAria",
+          "type": "(title: string, latest: string) => string",
+          "required": true,
+          "description": "Accessible name of a plot: card title plus the latest values, e.g."
+        },
+        {
+          "name": "noLatest",
+          "type": "string",
+          "required": true,
+          "description": "Said when a card has data but no value of the latest bucket can be read."
         }
       ]
     },
@@ -22952,6 +23437,24 @@
         }
       ]
     },
+    "FundingRatePoint": {
+      "kind": "type",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
+      "props": [
+        {
+          "name": "time",
+          "type": "number",
+          "required": true,
+          "description": "Settlement time in milliseconds."
+        },
+        {
+          "name": "rate",
+          "type": "Maybe",
+          "required": true,
+          "description": "Rate in percent (0.01 means 0.01%)."
+        }
+      ]
+    },
     "FundingRateProps": {
       "kind": "type",
       "source": "src/blocks/funding-rate/funding-rate.tsx",
@@ -29278,6 +29781,30 @@
         }
       ]
     },
+    "LongShortPoint": {
+      "kind": "type",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
+      "props": [
+        {
+          "name": "time",
+          "type": "number",
+          "required": true,
+          "description": "Bucket time in milliseconds."
+        },
+        {
+          "name": "long",
+          "type": "Maybe",
+          "required": true,
+          "description": "Long side (accounts or positions)."
+        },
+        {
+          "name": "short",
+          "type": "Maybe",
+          "required": true,
+          "description": "Short side, in the same unit as the long side."
+        }
+      ]
+    },
     "MORPH_ICON_VARIANTS": {
       "kind": "value",
       "source": "src/motion/icon/morph-icon.tsx",
@@ -32669,6 +33196,31 @@
           "description": "Called with the new selected types."
         },
         {
+          "name": "currentSymbol",
+          "type": "string | null",
+          "required": false,
+          "description": "The symbol on screen (`BTC-USDT-SWAP`)."
+        },
+        {
+          "name": "onlyCurrent",
+          "type": "boolean",
+          "required": false,
+          "description": "Show only rows of `currentSymbol` (controlled)."
+        },
+        {
+          "name": "defaultOnlyCurrent",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Initial state of the switch when uncontrolled; off by default."
+        },
+        {
+          "name": "onOnlyCurrentChange",
+          "type": "(onlyCurrent: boolean) => void",
+          "required": false,
+          "description": "Called with the new state of the switch."
+        },
+        {
           "name": "onSelect",
           "type": "(item: MoveItem) => void",
           "required": false,
@@ -32731,6 +33283,12 @@
           "type": "string",
           "required": true,
           "description": ""
+        },
+        {
+          "name": "onlyCurrent",
+          "type": "string",
+          "required": false,
+          "description": "「只看当前品种」开关上的字，例「当前币对」；缺省就不画这个开关（也不按品种筛），传了还要有 currentSymbol 才画。"
         },
         {
           "name": "types",
@@ -32805,6 +33363,30 @@
           "description": "Called with the new selected types."
         },
         {
+          "name": "currentSymbol",
+          "type": "string | null",
+          "required": false,
+          "description": "The symbol on screen (`BTC-USDT-SWAP`)."
+        },
+        {
+          "name": "onlyCurrent",
+          "type": "boolean",
+          "required": false,
+          "description": "Show only rows of `currentSymbol` (controlled)."
+        },
+        {
+          "name": "defaultOnlyCurrent",
+          "type": "boolean",
+          "required": false,
+          "description": "Initial state of the switch when uncontrolled; off by default."
+        },
+        {
+          "name": "onOnlyCurrentChange",
+          "type": "(onlyCurrent: boolean) => void",
+          "required": false,
+          "description": "Called with the new state of the switch."
+        },
+        {
           "name": "onSelect",
           "type": "(item: MoveItem) => void",
           "required": false,
@@ -32869,6 +33451,12 @@
           "type": "string",
           "required": false,
           "description": "Stock code."
+        },
+        {
+          "name": "symbol",
+          "type": "string",
+          "required": false,
+          "description": "Symbol the row belongs to (`BTC-USDT-SWAP`), compared with `currentSymbol` when only the current symbol is shown."
         },
         {
           "name": "type",
@@ -34390,6 +34978,30 @@
           "type": "string",
           "required": false,
           "description": "Text label inside the box on the left (dragging it changes the value like dragging the box); the accessible name still comes from label."
+        }
+      ]
+    },
+    "OpenInterestVolumePoint": {
+      "kind": "type",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
+      "props": [
+        {
+          "name": "time",
+          "type": "number",
+          "required": true,
+          "description": "Bucket time in milliseconds."
+        },
+        {
+          "name": "openInterest",
+          "type": "Maybe",
+          "required": true,
+          "description": "Open interest at the end of the bucket."
+        },
+        {
+          "name": "volume",
+          "type": "Maybe",
+          "required": true,
+          "description": "Volume traded in the bucket."
         }
       ]
     },
@@ -57454,6 +58066,30 @@
       "source": "src/katana/tag.tsx",
       "props": []
     },
+    "TakerVolumePoint": {
+      "kind": "type",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
+      "props": [
+        {
+          "name": "time",
+          "type": "number",
+          "required": true,
+          "description": "Bucket time in milliseconds."
+        },
+        {
+          "name": "buy",
+          "type": "Maybe",
+          "required": true,
+          "description": "Taker buy volume."
+        },
+        {
+          "name": "sell",
+          "type": "Maybe",
+          "required": true,
+          "description": "Taker sell volume."
+        }
+      ]
+    },
     "Task": {
       "kind": "type",
       "source": "src/patterns/task-list-model.ts",
@@ -65225,6 +65861,11 @@
       "source": "src/primitives/alert.tsx",
       "props": []
     },
+    "alignedAxes": {
+      "kind": "function",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
+      "props": []
+    },
     "amendDecision": {
       "kind": "function",
       "source": "src/blocks/orders-table/orders-model.ts",
@@ -65377,6 +66018,24 @@
       "kind": "function",
       "source": "src/quant/experiment-model.ts",
       "props": []
+    },
+    "basisOf": {
+      "kind": "function",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
+      "props": [
+        {
+          "name": "contract",
+          "type": "Maybe",
+          "required": true,
+          "description": "Contract price."
+        },
+        {
+          "name": "index",
+          "type": "Maybe",
+          "required": true,
+          "description": "Index price."
+        }
+      ]
     },
     "bestAttempt": {
       "kind": "function",
@@ -66487,6 +67146,11 @@
         }
       ]
     },
+    "filterBySymbol": {
+      "kind": "function",
+      "source": "src/cn/move-feed-model.ts",
+      "props": []
+    },
     "filterByTheme": {
       "kind": "function",
       "source": "src/cn/timeline-model.ts",
@@ -66882,6 +67546,11 @@
     "handoffLinks": {
       "kind": "function",
       "source": "src/ai/lanes-model.ts",
+      "props": []
+    },
+    "hasData": {
+      "kind": "function",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
       "props": []
     },
     "histogram": {
@@ -67457,6 +68126,42 @@
       "kind": "function",
       "source": "src/blocks/rate-limit-planner/rate-limit-model.ts",
       "props": []
+    },
+    "longShare": {
+      "kind": "function",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
+      "props": [
+        {
+          "name": "long",
+          "type": "Maybe",
+          "required": true,
+          "description": "Long side (accounts or positions)."
+        },
+        {
+          "name": "short",
+          "type": "Maybe",
+          "required": true,
+          "description": "Short side, in the same unit as the long side."
+        }
+      ]
+    },
+    "longShortRatioOf": {
+      "kind": "function",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
+      "props": [
+        {
+          "name": "long",
+          "type": "Maybe",
+          "required": true,
+          "description": "Long side (accounts or positions)."
+        },
+        {
+          "name": "short",
+          "type": "Maybe",
+          "required": true,
+          "description": "Short side, in the same unit as the long side."
+        }
+      ]
     },
     "marginLevel": {
       "kind": "function",
@@ -68360,6 +69065,11 @@
         }
       ]
     },
+    "signedBars": {
+      "kind": "function",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
+      "props": []
+    },
     "silvermanBandwidth": {
       "kind": "function",
       "source": "src/quant/ridgeline-model.ts",
@@ -68952,6 +69662,11 @@
           "description": "调用方自己的项，排在标准四项后面。"
         }
       ]
+    },
+    "symmetricAxis": {
+      "kind": "function",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
+      "props": []
     },
     "tableCsv": {
       "kind": "function",

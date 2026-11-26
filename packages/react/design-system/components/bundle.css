@@ -23899,6 +23899,208 @@ button.k-sm-head:focus-visible {
   top: calc(50% - .5px);
 }
 
+.k-deriv {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--k-deriv-min, 360px)), 1fr));
+  gap: var(--space-2);
+  min-width: 0;
+  color: var(--k-content-body-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
+  display: grid;
+}
+
+.k-deriv-card {
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--k-separable-tertiary-borderColor);
+  background: var(--k-container-secondary-background);
+  border-radius: 4px;
+  flex-direction: column;
+  display: flex;
+}
+
+.k-deriv-head {
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  display: flex;
+}
+
+.k-deriv-title {
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin: 0;
+  font-weight: 600;
+  overflow: hidden;
+}
+
+.k-deriv-info {
+  width: 20px;
+  height: 20px;
+  color: var(--k-content-secondary-foreground);
+  cursor: help;
+  background: none;
+  border: 0;
+  border-radius: 4px;
+  place-items: center;
+  padding: 0;
+  display: inline-grid;
+}
+
+.k-deriv-info:hover {
+  color: var(--k-content-primary-foreground);
+}
+
+.k-deriv-info:focus-visible {
+  outline: 2px solid var(--k-focused-outlineColor);
+  outline-offset: 1px;
+}
+
+.k-deriv-info-tip {
+  max-width: 260px;
+}
+
+.k-deriv-periods {
+  flex: none;
+  margin-left: auto;
+}
+
+.k-deriv-legend {
+  gap: var(--space-1) var(--space-3);
+  color: var(--k-content-secondary-foreground);
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+}
+
+.k-deriv-legend-item {
+  align-items: center;
+  gap: 6px;
+  display: inline-flex;
+}
+
+.k-deriv-key {
+  background: var(--k-deriv-key);
+  display: inline-block;
+}
+
+.k-deriv-key[data-shape="line"] {
+  width: 12px;
+  height: 2px;
+}
+
+.k-deriv-key[data-shape="bar"] {
+  border-radius: 1px;
+  width: 8px;
+  height: 8px;
+}
+
+.k-deriv-chart {
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  display: flex;
+}
+
+.k-deriv-plot {
+  touch-action: pan-y;
+  flex-direction: column;
+  gap: 10px;
+  margin-left: 48px;
+  display: flex;
+  position: relative;
+}
+
+.k-deriv-plot[data-right] {
+  margin-right: 48px;
+}
+
+.k-deriv-plot:focus-visible {
+  outline: 1px solid var(--k-focused-outlineColor);
+  outline-offset: 2px;
+}
+
+.k-deriv-panel {
+  position: relative;
+}
+
+.k-deriv-panel > svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+.k-deriv-rtick {
+  color: var(--k-chart-axis-foreground);
+  font: var(--text-num-sm) var(--font-num-small);
+  pointer-events: none;
+  white-space: nowrap;
+  padding-left: 8px;
+  position: absolute;
+  left: 100%;
+  translate: 0 round(-50%, 1px);
+}
+
+.k-deriv-bar[data-tone="up"] {
+  fill: var(--pnl-up);
+}
+
+.k-deriv-bar[data-tone="down"] {
+  fill: var(--pnl-down);
+}
+
+.k-deriv-bar[data-tone="flat"] {
+  fill: var(--k-content-secondary-foreground);
+}
+
+.k-deriv-bar[data-tone="volume"] {
+  fill: var(--k-heat-3);
+}
+
+.k-deriv-zero {
+  stroke: var(--k-separable-secondary-borderColor);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+}
+
+.k-deriv-line {
+  fill: none;
+  stroke: var(--series-1);
+  stroke-width: 1.5px;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.k-deriv-line[data-series="2"] {
+  stroke: var(--series-2);
+}
+
+.k-deriv-xaxis {
+  color: var(--k-chart-axis-foreground);
+  font: var(--text-num-sm) var(--font-num-small);
+  white-space: nowrap;
+  justify-content: space-between;
+  margin-left: 48px;
+  display: flex;
+}
+
+.k-deriv-plot[data-right] + .k-deriv-xaxis {
+  margin-right: 48px;
+}
+
+.k-deriv-empty {
+  color: var(--k-content-secondary-foreground);
+  place-items: center;
+  margin: 0;
+  display: grid;
+}
+
 .k-opt {
   gap: var(--space-2);
   min-width: 0;
@@ -29653,6 +29855,19 @@ button.k-mink-card:focus-visible {
   outline-offset: 1px;
 }
 
+.k-move-only {
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  line-height: 20px;
+  display: inline-flex;
+}
+
+.k-move-only label {
+  cursor: pointer;
+}
+
 .k-move-summary {
   color: var(--ink-300);
   flex: none;
@@ -32984,6 +33199,8 @@ button.k-pill-main {
   --k-content-min: initial;
   --k-cw-depth: initial;
   --k-deg: initial;
+  --k-deriv-key: initial;
+  --k-deriv-min: initial;
   --k-fleet-rows: initial;
   --k-fund-n: initial;
   --k-gap: initial;
