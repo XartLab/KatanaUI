@@ -6610,6 +6610,86 @@ export const PAGES: readonly DocPage[] = [
     keys: [],
   },
   {
+    id: 'rating-panel',
+    group: 'quotes',
+    cardHeight: 230,
+    title: 'RatingPanel 技术评级三联',
+    summary:
+      '摆动指标、汇总、均线三个评级仪表并排（每个就是一个 RatingGauge，分界与指针照 rating-gauge-model），汇总居中放大；上方是调用方给的周期切换（如 1m、5m、15m、1h、4h、1D、1W、1M），每个仪表下写卖出 / 中性 / 买入的个数；悬停或 Tab 到一个仪表，名字那一行换成读数（带正负号两位小数的分数与档位词）。版式照 TradingView 品种页 Technicals 顶部的三个仪表，只取布局与交互；颜色走 Graphite 涨跌色与中性灰，不用 TradingView 蓝。只画不算：分数、个数、档位名都由调用方传。要明细表与枢轴点用 TechnicalRating。',
+    exports: ['RatingPanel'],
+    propParts: [
+      {
+        part: 'RatingPanel',
+        note: 'gauges 从左到右，通常三个；primary 指定放大哪一个（默认中间）；timeframes / value / onValueChange 是受控的周期切换，不给 timeframes 就没有这一条；footer 放调用方写的一句（如免责）。',
+      },
+      {
+        part: 'RatingPanelGauge',
+        note: '一个仪表：{ key, label, score（−1 到 +1）, counts: { sell, neutral, buy } }。',
+      },
+      {
+        part: 'RatingPanelLabels',
+        note: '五档名（从卖到买）、卖出 / 中性 / 买入三个字、整件与周期切换的读屏名；包里不带语言。',
+      },
+    ],
+    states: [
+      '默认：三个仪表底边对齐，汇总那个宽 1.35 倍、档位词用标题字号，两侧用数据字号。',
+      '悬停或键盘聚焦一个仪表：底色提亮一档（--k-container-tertiary-background），名字那一行换成读数胶囊，按 snappy 弹簧（333ms）淡入；聚焦时另画 2px 焦点环。',
+      '档位偏卖（前两档）档位词与读数走跌色，偏买（后两档）走涨色，中性不上色；卖出个数走跌色、买入个数走涨色。',
+      '分数越界夹到 ±1；不是有限数按中性画，读数写「—」。',
+      '容器窄于 320px：汇总独占一行，另两个并排在下。',
+    ],
+    donts: [
+      '不要在包里算评级：分数与个数由调用方算好传来。',
+      '不要只靠读数传达结论：档位词与个数一直在，读数只补分数。',
+      '要指标明细表、枢轴点用 technical-rating，不要在这件旁边自己拼。',
+    ],
+    composition:
+      'RatingPanel role=group\n  ToggleGroup（周期，可选）\n  div role=meter tabindex=0 × 3\n    span（名字）\n    RatingGauge（五段弧 · 指针 · 档位词 · 卖出 / 中性 / 买入个数）\n    span（读数，aria-hidden）\n  div（footer，可选）',
+    keys: [
+      ['Tab', '走过周期切换与三个仪表；聚焦的仪表出读数'],
+      ['← / →', '在周期之间移动焦点，Enter / 空格选中'],
+    ],
+  },
+  {
+    id: 'symbol-note',
+    group: 'quotes',
+    cardHeight: 60,
+    title: 'SymbolNote 品种备注',
+    summary:
+      '挂在品种行或报价头上的便签：有备注时显示一个 18px 的便签图标，悬停 200ms 或 Tab 到图标先看全文，点一下钉住，钉住后点「编辑」改；没有备注而能编辑时是加号图标，点开直接进编辑。编辑是受控的：件只管草稿，点「保存」或 Ctrl / ⌘ + Enter 时把去掉首尾空白的文字交给 onValueChange，存哪由调用方定，存空字符串就是删掉。浮层是平台原生 popover（顶层，不被表格的滚动与 overflow 裁掉），外观是 k-mat-overlay 材质，位置用 CSS 锚点定位。功能参照 TradingView 自选与品种页的备注，只取交互。',
+    exports: ['SymbolNote'],
+    propParts: [
+      {
+        part: 'SymbolNote',
+        note: 'value 是备注全文（受控，空白算没有）；给了 onValueChange 才能编辑，不给是只读，只读又没有备注时什么都不画；title 是浮层顶上的一行（常写品种代码）。',
+      },
+      {
+        part: 'SymbolNoteLabels',
+        note: '图标与浮层的读屏名（note）、没有备注时加号的读屏名（add）、编辑 / 保存 / 取消三个按钮的字、编辑框的占位字；包里不带语言。',
+      },
+    ],
+    states: [
+      '有备注：便签图标用次要灰，悬停或浮层开着时变主文字色、垫一层浅灰底。',
+      '没有备注、能编辑：加号图标用最淡的灰；放在带 k-row-host 的行里时，行没悬停、没焦点就藏起来。',
+      '悬停预览：指针停 200ms 出全文，移开 150ms 收起，指针可以移进浮层看长文；钉住之后移开不收。',
+      '钉住：点图标或在图标上按 Enter；点件外、Tab 走出件或按 Esc 收起，没保存的草稿丢掉。',
+      '编辑：多行编辑框（4 行，竖向可拖），右下「取消」「保存」；保存后回到全文，存空就关上浮层。',
+    ],
+    donts: [
+      '不要把备注存进包里：值由调用方存，件只交出保存的文字。',
+      '不要拿它放提醒或告警：图标不上信号色，不会主动弹出。',
+      '浮层里的点击与按键不会冒泡到宿主行，不要靠它们触发行上的动作。',
+    ],
+    composition:
+      'SymbolNote span\n  button（便签图标 · aria-haspopup=dialog · aria-expanded）\n  div popover=manual role=dialog（k-mat-overlay）\n    div（title，可选）\n    p（全文）· Button（编辑）\n    或 Textarea · Button（取消）· Button（保存）',
+    keys: [
+      ['Tab', '聚焦图标时出预览；再 Tab 进浮层（焦点进来即钉住）'],
+      ['Enter / 空格', '钉住或收起浮层'],
+      ['Ctrl / ⌘ + Enter', '编辑框里保存'],
+      ['Esc', '编辑时放弃草稿；不在编辑时收起浮层，焦点回到图标'],
+    ],
+  },
+  {
     id: 'row-actions',
     group: 'quotes',
     cardHeight: 330,

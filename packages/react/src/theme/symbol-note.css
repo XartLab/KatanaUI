@@ -1,0 +1,105 @@
+/* SPDX-License-Identifier: MIT */
+/* 品种备注 SymbolNote（#150）：行内 18px 的便签图标，浮层是原生 popover（顶层，不被表格的滚动与 overflow 裁掉），外观用 k-mat-overlay 材质。
+   位置用 CSS 锚点定位：贴在图标右侧、顶边对齐（图标排成一列时不盖住下面几行的图标），放不下就翻到左侧或往上；
+   不支持锚点定位时件按图标位置写一次 top / left。
+   进出场只淡入淡出（--dur-snappy），不做位移；减少动态时也只是淡入淡出。只读 characteristics。 */
+.k-snote {
+  display: inline-flex;
+  vertical-align: middle;
+}
+.k-snote-trigger {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--k-content-secondary-foreground);
+  cursor: pointer;
+  anchor-name: var(--k-snote-anchor);
+  outline: 0;
+  transition:
+    color var(--dur-snappy) var(--ease-snappy),
+    background-color var(--dur-snappy) var(--ease-snappy),
+    opacity var(--dur-snappy) var(--ease-snappy);
+}
+.k-snote-trigger svg {
+  width: 13px;
+  height: 13px;
+}
+.k-snote-trigger:hover,
+.k-snote-trigger[aria-expanded='true'] {
+  background: var(--k-actionable-subtle-background-hover);
+  color: var(--k-content-primary-foreground);
+}
+.k-snote-trigger:focus-visible {
+  outline: var(--k-focused-outlineWidth) solid var(--k-focused-outlineColor);
+  outline-offset: 1px;
+}
+/* 没有备注（可编辑）：加号图标用最淡的灰；放在带 k-row-host 的行里时，行没悬停、没焦点就藏起来，免得每行一颗。 */
+.k-snote[data-empty] .k-snote-trigger {
+  color: var(--k-content-tertiary-foreground);
+}
+.k-row-host:not(:hover, :focus-within) .k-snote[data-empty] .k-snote-trigger[aria-expanded='false'] {
+  opacity: 0;
+}
+
+.k-snote-pop {
+  position-anchor: var(--k-snote-anchor);
+  box-sizing: border-box;
+  width: 280px;
+  max-width: calc(100vw - 16px);
+  max-height: min(320px, calc(100vh - 16px));
+  overflow: auto;
+  padding: var(--space-3);
+  color: var(--k-content-body-foreground);
+  font: var(--text-body) var(--font-sans);
+  opacity: 0;
+  transition-property: opacity, display, overlay;
+  transition-duration: var(--dur-snappy);
+  transition-timing-function: var(--ease-snappy);
+  transition-behavior: allow-discrete;
+}
+.k-snote-pop:popover-open {
+  opacity: 1;
+}
+@starting-style {
+  .k-snote-pop:popover-open {
+    opacity: 0;
+  }
+}
+@supports (position-area: block-end) {
+  .k-snote-pop {
+    inset: auto;
+    margin: 0 6px;
+    position-area: inline-end span-block-end;
+    position-try-fallbacks:
+      flip-inline,
+      flip-block,
+      flip-block flip-inline;
+  }
+}
+.k-snote-title {
+  margin-bottom: var(--space-1);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-data) var(--font-sans);
+  font-weight: 600;
+}
+.k-snote-text {
+  margin: 0;
+  color: var(--k-content-primary-foreground);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.k-snote-field {
+  width: 100%;
+  min-height: 72px;
+}
+.k-snote-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}

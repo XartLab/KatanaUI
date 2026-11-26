@@ -541,6 +541,15 @@ export {
 } from './quotes/range-bar.tsx'
 export { RatingGauge, type RatingGaugeProps } from './quotes/rating-gauge.tsx'
 export { ratingAngle, ratingZone } from './quotes/rating-gauge-model.ts'
+export {
+  RatingPanel,
+  type RatingPanelGauge,
+  type RatingPanelLabels,
+  type RatingPanelProps,
+  type RatingPanelTimeframe,
+  type RatingPanelVerdict,
+} from './quotes/rating-panel.tsx'
+export { SymbolNote, type SymbolNoteLabels, type SymbolNoteProps } from './quotes/symbol-note.tsx'
 export { quoteTone, type QuoteTone } from './quotes/quote-tone.ts'
 
 // 前向测试与回放的件（#121）。
