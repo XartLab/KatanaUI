@@ -18,14 +18,17 @@ export type { AiDiffLine, AiDiffLineKind } from './ai-diff-model.ts'
 const LINE_STAGGER = 0.02
 /** 擦进来的一段用 snappy 弹簧（原件是 0.28 秒的缓出），只保留逐行错开；下面是各行底色。 */
 const ROW_TONE: Readonly<Record<AiDiffLineKind, string>> = {
-  added: 'bg-[color-mix(in_srgb,var(--signal-green)_13%,transparent)]',
-  removed: 'bg-[color-mix(in_srgb,var(--signal-red)_11%,transparent)]',
+  added: 'bg-[color-mix(in_srgb,var(--k-status-ok-foreground)_13%,transparent)]',
+  removed: 'bg-[color-mix(in_srgb,var(--k-status-danger-foreground)_11%,transparent)]',
   context: '',
 }
 const PREFIX_TONE: Readonly<Record<AiDiffLineKind, string>> = {
   added: 'text-(color:--signal-green)',
   removed: 'text-(color:--signal-red)',
   context: 'text-ink-3',
+  added: 'text-(color:--k-status-ok-foreground)',
+  removed: 'text-(color:--k-status-danger-foreground)',
+  context: 'text-ink-4',
 }
 
 export type AiDiffLabels = {
@@ -84,8 +87,8 @@ export function AiDiff({ lines, labels, title, onAccept, onReject, className }: 
           className="k-text-caption ml-auto flex shrink-0 items-center gap-1.5 tabular-nums"
           data-slot="ai-diff-count"
         >
-          <span className="text-(color:--signal-green)">+{added}</span>
-          <span className="text-(color:--signal-red)">-{removed}</span>
+          <span className="text-(color:--k-status-ok-foreground)">+{added}</span>
+          <span className="text-(color:--k-status-danger-foreground)">-{removed}</span>
         </span>
       </div>
       <AnimatePresence initial={false}>

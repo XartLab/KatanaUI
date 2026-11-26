@@ -235,6 +235,17 @@ function DensityPage() {
   )
 }
 
+/** 中性 Tag 字色的对比度（bg-000 / 100 / 200 / 300 / 400；#205，算法：字色对「面」与「面 + 5% 底」取低）。 */
+const NEUTRAL_CONTRAST: readonly (readonly [string, string, string, string, string])[] = [
+  ['Console', '#8f887a', '5.09 / 4.69 / 4.59 / 4.27 / 3.84', '#9f9889', '6.25 / 5.76 / 5.63 / 5.24 / 4.72'],
+  ['Graphite', '#a0a0a0', '7.44 / 7.08 / 6.72 / 6.25 / 5.40', '#a0a0a0（不变）', '同左'],
+  ['Paper', '#6a655a', '3.66 / 4.13 / 4.41 / 4.64 / 4.97', '#59544a', '4.75 / 5.36 / 5.72 / 6.02 / 6.45'],
+  ['Midnight', '#94a0b3', '7.06 / 6.77 / 6.38 / 5.91 / 5.20', '#94a0b3（不变）', '同左'],
+  ['Dim', '#98a3b0', '5.69 / 5.27 / 4.85 / 4.46 / 3.79', '#aab5c1', '7.00 / 6.48 / 5.97 / 5.48 / 4.66'],
+  ['High contrast', '#cfcfcf', '12.50 / 12.50 / 11.59 / 10.83 / 9.54', '#cfcfcf（不变）', '同左'],
+  ['Crimson', '#b4b4b4', '9.39 / 8.05 / 7.71 / 7.26 / 6.37', '#b4b4b4（不变）', '同左'],
+]
+
 function CharacteristicsPage() {
   const colorish = (name: string) => /background|foreground|Color/.test(name)
   return (
@@ -261,6 +272,45 @@ function CharacteristicsPage() {
         <li>格上的字：heat-0…2 用 --k-heat-fg-low（主文字色），heat-3…5 用 --k-heat-fg-high（bg-000）。</li>
         <li>各档在两个主题里的约值与对比度见下表的用途列与「数据可视化」页。</li>
       </ul>
+      <h2>中性状态字（2026-11-24，#205）</h2>
+      <ul className="gal-list">
+        <li>
+          --k-status-neutral-foreground 读调色层的 status-neutral。ink-300 落在中性 Tag 的 5% 底上，Console、Paper、Dim
+          三套到不了 4.5:1，各自单独取值，其余四套同 ink-300。
+        </li>
+        <li>
+          下表是中性 Tag 的字色在 bg-000 / 100 / 200 / 300 / 400（含 bg-400 浮层；取带 5%
+          底与无底描边两种里较低的）上的对比度。新值都在该主题的 ink-300 与 ink-200
+          之间，层次不变，七套主题所有面都不低于 4.5:1。
+        </li>
+        <li>同一变量的别的件（Alert 图标、Meter、状态图标、系统状态条）在这三套主题下一起变；别的主题没有改。</li>
+      </ul>
+      <table className="gal-fd-table">
+        <thead>
+          <tr>
+            <th>主题</th>
+            <th>改前（ink-300）</th>
+            <th>改前对比度</th>
+            <th>现在（status-neutral）</th>
+            <th>现在对比度</th>
+          </tr>
+        </thead>
+        <tbody>
+          {NEUTRAL_CONTRAST.map(([theme, before, beforeRatios, after, afterRatios]) => (
+            <tr key={theme}>
+              <td>{theme}</td>
+              <td>
+                <code>{before}</code>
+              </td>
+              <td>{beforeRatios}</td>
+              <td>
+                <code>{after}</code>
+              </td>
+              <td>{afterRatios}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
       <TokenTable
         rows={T.characteristics.tokens}
         preview={(token) => (colorish(token.name) ? swatch(token.name) : <code>{token.name.split('-').at(-1)}</code>)}

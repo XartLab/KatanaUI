@@ -9,10 +9,20 @@ import known from './ui-gallery-a11y-known.json' with { type: 'json' }
 // 当场修不了的违规列在 ui-gallery-a11y-known.json（只许减：条目在它的页与主题里一个节点都没匹配上就失败，要求删掉）。
 
 const THEMES = ['console', 'graphite'] as const
+// 中性状态字（status-neutral，#205）在 Paper 与 Dim 也要过 4.5:1：这两个主题只扫 tag 页里的中性 Tag（tag-neutral*），不扩到全站（快速模式的预算）。
+// Paper 下 ok / warn / danger 的 Tag 另有对比度问题（3.2–4.4:1），不在这条里，单独跟踪。
+const EXTRA_THEME_PAGES = { paper: ['tag'], dim: ['tag'] } as const
+const EXTRA_SCOPE = '[data-testid^="tag-neutral"]'
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']
 
 // timing：违规只在动画没走完时出现（量的时机决定有没有），这类条目不做「过期」检查，免得测试随机红。
-type Known = { page: string; theme?: (typeof THEMES)[number]; rule: string; reason: string; timing?: boolean }
+type Known = {
+  page: string
+  theme?: (typeof THEMES)[number] | keyof typeof EXTRA_THEME_PAGES
+  rule: string
+  reason: string
+  timing?: boolean
+}
 const knownList = known as readonly Known[]
 
 // 清单只许减：条目数不许超过现在的数；修好一条就删一条并把这个数调小。
@@ -47,8 +57,16 @@ const settle = (page: Page) =>
     ),
   )
 
-for (const theme of THEMES) {
-  for (const doc of PAGES) {
+const isExtra = (theme: string): theme is keyof typeof EXTRA_THEME_PAGES => theme in EXTRA_THEME_PAGES
+const PAGE_THEMES = [
+  ...THEMES.map((theme) => [theme, PAGES] as const),
+  ...Object.entries(EXTRA_THEME_PAGES).map(
+    ([theme, ids]) =>
+      [theme as keyof typeof EXTRA_THEME_PAGES, PAGES.filter((doc) => ids.some((id) => id === doc.id))] as const,
+  ),
+]
+for (const [theme, docs] of PAGE_THEMES) {
+  for (const doc of docs) {
     test(`文档站 ${doc.id}（${theme}）：axe 无违规、控制台无错误`, async ({ shared }, testInfo) => {
       // 大页（data-grid 一页摆了全部列类型，沙箱单跑 8–9 秒，自建机四个并行时 33 秒）的 axe 扫描会撞默认 30 秒；超时给 3 倍（90 秒）。run 45416880323：这条才是 54 行，不是外壳用例。
       test.slow()
@@ -70,7 +88,8 @@ for (const theme of THEMES) {
         await settle(page)
 
         // 只扫这页的预览区：侧栏、页头、属性表、说明文字每页都一样，由下面「外壳」那几条整页扫一次就够（省掉每页约七成的扫描量）。
-        const result = await new AxeBuilder({ page }).withTags(TAGS).include(`[data-gallery="${doc.id}"]`).analyze()
+        const scope = isExtra(theme) ? `[data-gallery="${doc.id}"] ${EXTRA_SCOPE}` : `[data-gallery="${doc.id}"]`
+        const result = await new AxeBuilder({ page }).withTags(TAGS).include(scope).analyze()
         const entries = knownList.filter((entry) => entry.page === doc.id && (entry.theme ?? theme) === theme)
         const problems: string[] = []
         for (const violation of result.violations) {
