@@ -75,6 +75,7 @@
 }
 .k-symov-tab-pct {
   font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
 }
 .k-symov-panel {
   min-width: 0;

@@ -989,42 +989,51 @@ for (const theme of THEMES) {
       expect(await font(page.locator('[data-slot="dialog-title"]'))).toEqual(['15px', '600'])
     })
 
-    test('子菜单悬停延迟：悬停不到 100ms 不开，超过 100ms 开（Radix 默认）', async ({ page }) => {
-      // 悬停延迟是 Radix 的 setTimeout：用假时钟一格一格走，停多久由测试定，不被机器忙不忙拖成真实的几百毫秒（4 个 worker 并跑时真等 40 ms 会漂过 100 ms）。
+    // 级联菜单（#250，kubai 002）：打开 220ms、普通行 220ms 才收深一层、安全三角（顶点是最近两次 pointermove 里较早的点，随移动更新；保护带 min(90, max(56, 43%)) 宽）、
+    // 在三角里停在兄弟行最多护 1200ms（80ms 复查）、滑出所有层 360ms 才收、进了子菜单保护解除。数值在 primitives/cascade-model.ts 的 CASCADE_TIMING。
+    // 计时都是 setTimeout / setInterval / performance.now：用假时钟一格一格走，停多久由测试定，不被机器忙不忙拖成真实的几百毫秒。
+    const openSubMenu = async (page: Page) => {
       await page.clock.install()
       await open(page, theme, 'dropdown-menu')
       await section(page, 'dropdown-menu').getByRole('button', { name: '菜单', exact: true }).click()
-      const parent = page.locator('[data-slot="dropdown-menu-sub-trigger"]')
-      const box = (await parent.boundingBox())!
-      const sub = page.getByRole('menuitem', { name: '导出为图片' })
+      const trigger = page.locator('[data-slot="dropdown-menu-sub-trigger"]')
       // 菜单已开：时钟停住，之后只按测试给的毫秒数往前走。
       await page.clock.pauseAt(new Date(Date.now() + 10_000))
+      return {
+        trigger,
+        below: page.getByRole('menuitem', { name: '删除看板' }),
+        csv: page.getByRole('menuitem', { name: '导出为 CSV' }),
+        image: page.getByRole('menuitem', { name: '导出为图片' }),
+      }
+    }
+
+    test('子菜单悬停延迟：悬停不到 220ms 不开，满 220ms 开（#250，取代 Radix 默认的 100ms）', async ({ page }) => {
+      const { trigger, image } = await openSubMenu(page)
+      const box = (await trigger.boundingBox())!
       // 进到「更多」后马上离开（路过）：不开。
       await page.mouse.move(box.x + 10, box.y + 5)
       await page.clock.runFor(40)
       await page.mouse.move(box.x + 10, box.y - 60)
-      await page.clock.runFor(250)
-      await expect(sub).toHaveCount(0)
-      // 停住：不到 100 ms 还没开，过了 100 ms 开。
+      await page.clock.runFor(300)
+      await expect(image).toHaveCount(0)
+      // 停住：180 ms 还没开（Radix 的 100ms 已经过了），满 220 ms 开。
       await page.mouse.move(box.x + 10, box.y + 5)
-      await page.clock.runFor(40)
-      await expect(sub).toHaveCount(0)
-      await page.clock.runFor(100)
-      await expect(sub).toBeVisible()
+      await page.clock.runFor(180)
+      await expect(image).toHaveCount(0)
+      await page.clock.runFor(50)
+      await expect(image).toBeVisible()
     })
 
-    // 安全三角（#1832「0 关，靠自带的安全三角防误收」）：指针从「更多」斜着朝二级走，路上压过下面一行「删除看板」，
-    // 二级不收、那一行不亮；对照：从「更多」直着往下到同一行（背离二级），二级收起、那一行亮。真人移动是一串 pointermove，不瞬移，所以逐步移。
-    test('子菜单安全三角：斜着朝二级走、路过下一行不误收；直着往下走就收', async ({ page }) => {
-      await open(page, theme, 'dropdown-menu')
-      await section(page, 'dropdown-menu').getByRole('button', { name: '菜单', exact: true }).click()
-      const parent = page.locator('[data-slot="dropdown-menu-sub-trigger"]')
-      const below = page.getByRole('menuitem', { name: '删除看板' })
-      const csv = page.getByRole('menuitem', { name: '导出为 CSV' })
-      const from = (await parent.boundingBox())!
-      const start = { x: from.x + 12, y: from.y + from.height / 2 }
+    // 安全三角：指针从「更多」斜着朝二级走，路上压过下面一行「删除看板」，二级不收、那一行不亮（被标成 skipped）；
+    // 对照：从「更多」直着往下到同一行（背离二级），二级收起、那一行亮。真人移动是一串 pointermove，不瞬移，所以逐步移。
+    // 起点在触发器靠右侧、离父菜单右缘不到 77px（保护带只在父菜单靠子菜单的 43% 宽内，左半边不护）。
+    test('子菜单安全三角：斜着朝二级走、路过下一行不换不闪；直着往下走就收', async ({ page }) => {
+      const { trigger, below, csv, image } = await openSubMenu(page)
+      const from = (await trigger.boundingBox())!
+      const start = { x: from.x + from.width - 60, y: from.y + from.height / 2 }
       await page.mouse.move(start.x, start.y, { steps: 4 })
-      await expect(csv).toBeVisible({ timeout: 1000 })
+      await page.clock.runFor(300)
+      await expect(csv).toBeVisible()
       const target = (await csv.boundingBox())!
       const row = (await below.boundingBox())!
       // 终点在二级末项的下半截：斜率够缓，直线才会先压过下面一行再进二级
@@ -1042,23 +1051,193 @@ for (const theme of THEMES) {
         const x = start.x + ((end.x - start.x) * i) / steps
         const y = start.y + ((end.y - start.y) * i) / steps
         await page.mouse.move(x, y)
-        if (x < row.x + row.width && y > row.y && y < row.y + row.height) crossed = true
-        await expect(csv, `第 ${i} 步：二级还开着`).toBeVisible({ timeout: 50 })
-        await expect(below, `第 ${i} 步：路过的「删除看板」不亮`).not.toHaveAttribute('data-highlighted', /.*/, {
-          timeout: 50,
-        })
+        const onRow = x < row.x + row.width && y > row.y && y < row.y + row.height
+        if (onRow) {
+          crossed = true
+          await expect(below, `第 ${i} 步：路过的行被跳过`).toHaveAttribute('data-k-cascade', 'skipped')
+        }
+        await expect(csv, `第 ${i} 步：二级还开着`).toBeVisible()
+        await expect(below, `第 ${i} 步：路过的「删除看板」不亮`).not.toHaveAttribute('data-highlighted', /.*/)
+        // 父项一直是展开态（行高亮由状态驱动：展开 = data-state=open）。
+        await expect(trigger, `第 ${i} 步：父项仍展开`).toHaveAttribute('data-state', 'open')
       }
       expect(crossed, '至少有一步落在「删除看板」那一行上').toBe(true)
       await expect(csv).toHaveAttribute('data-highlighted', /.*/)
+      // 进了二级：保护解除，路过的标记也撤了。
+      await expect(below).not.toHaveAttribute('data-k-cascade', /.*/)
 
-      // 对照：回到「更多」，直着往下到「删除看板」（背离二级）：二级收起，那一行亮。
+      // 对照：回到「更多」，直着往下到「删除看板」（背离二级）：那一行马上亮，二级要满 220ms 才收（普通行与父项一样）。
       await page.mouse.move(start.x, start.y, { steps: 6 })
-      await expect(page.getByRole('menuitem', { name: '导出为 CSV' })).toBeVisible({ timeout: 1000 })
+      await page.clock.runFor(300)
+      await expect(image).toBeVisible()
       await page.mouse.move(start.x, yMid, { steps: 6 })
-      await expect(page.getByRole('menuitem', { name: '导出为 CSV' }), '背离二级：收起').toHaveCount(0, {
-        timeout: 400,
-      })
       await expect(below).toHaveAttribute('data-highlighted', /.*/)
+      await page.clock.runFor(200)
+      await expect(image, '219ms 前：二级还开着').toBeVisible()
+      await page.clock.runFor(30)
+      await expect(image, '背离二级：满 220ms 收起').toHaveCount(0)
+    })
+
+    test('子菜单普通行：行马上亮，深一层满 220ms 才收，这期间回到父项就不收', async ({ page }) => {
+      const { trigger, below, csv, image } = await openSubMenu(page)
+      const from = (await trigger.boundingBox())!
+      const x = from.x + from.width - 60
+      await page.mouse.move(x, from.y + from.height / 2, { steps: 4 })
+      await page.clock.runFor(300)
+      await expect(csv).toBeVisible()
+      const row = (await below.boundingBox())!
+      // 指针从父项直着落到「删除看板」（背离二级）：不在三角里，行马上亮；Radix 自带的 focus-outside 不能把二级当场收掉。
+      await page.mouse.move(x, row.y + row.height / 2, { steps: 4 })
+      await expect(below).toHaveAttribute('data-highlighted', /.*/)
+      await page.clock.runFor(150)
+      await expect(csv, '150ms：二级还开着').toBeVisible()
+      // 回到父项：待收的计时取消，一直开着。
+      await page.mouse.move(x, from.y + from.height / 2, { steps: 4 })
+      await page.clock.runFor(1000)
+      await expect(image, '回到父项：取消').toBeVisible()
+      await page.mouse.move(x, row.y + row.height / 2, { steps: 4 })
+      await page.clock.runFor(219)
+      await expect(image, '219ms：还开着').toBeVisible()
+      await page.clock.runFor(1)
+      await expect(image, '满 220ms：收起').toHaveCount(0)
+    })
+
+    // 顶点随移动更新：在三角里停在一行上被护着；指针再往下走一小步（背离二级），新三角（顶点是上一个点）里已经没有这个点，立刻放行。
+    // 冻结在离开触发器那一刻的旧三角会继续护着这一行，那就是 002 说的「经过的行该切不切」。
+    test('子菜单安全三角：顶点随移动更新，在三角里往下走一小步立刻放行', async ({ page }) => {
+      const { trigger, below, csv } = await openSubMenu(page)
+      const from = (await trigger.boundingBox())!
+      const start = { x: from.x + from.width - 24, y: from.y + from.height / 2 }
+      await page.mouse.move(start.x, start.y, { steps: 3 })
+      await page.clock.runFor(300)
+      await expect(csv).toBeVisible()
+      const row = (await below.boundingBox())!
+      const held = { x: row.x + row.width - 6, y: row.y + 6 }
+      await page.mouse.move(held.x, held.y, { steps: 3 })
+      await page.clock.runFor(80)
+      await expect(below, '斜着停到这一行：护着').toHaveAttribute('data-k-cascade', 'skipped')
+      await expect(below).not.toHaveAttribute('data-highlighted', /.*/)
+      // 往下走 4px，仍在这一行里，x 不变（步子小，冻结的旧三角里这个点还在）。
+      await page.mouse.move(held.x, held.y + 4)
+      await expect(below, '往下走一小步：放行').not.toHaveAttribute('data-k-cascade', /.*/)
+      await expect(below).toHaveAttribute('data-highlighted', /.*/)
+    })
+
+    test('子菜单安全窗口：在三角里停在兄弟行，护满 1.2s 才切换', async ({ page }) => {
+      const { trigger, below, csv, image } = await openSubMenu(page)
+      const from = (await trigger.boundingBox())!
+      const start = { x: from.x + from.width - 24, y: from.y + from.height / 2 }
+      await page.mouse.move(start.x, start.y, { steps: 3 })
+      await page.clock.runFor(300)
+      await expect(csv).toBeVisible()
+      // 停到「删除看板」上，位置在三角里、保护带内（靠右、比触发器低半行）。
+      const row = (await below.boundingBox())!
+      await page.mouse.move(row.x + row.width - 6, row.y + row.height / 2, { steps: 3 })
+      await page.clock.runFor(80)
+      await expect(below).toHaveAttribute('data-k-cascade', 'skipped')
+      await page.clock.runFor(1000)
+      await expect(csv, '1.1s：还护着').toBeVisible()
+      await expect(below).not.toHaveAttribute('data-highlighted', /.*/)
+      await page.clock.runFor(160)
+      await expect(below, '满 1.2s：放行，这一行亮').toHaveAttribute('data-highlighted', /.*/)
+      await expect(below).not.toHaveAttribute('data-k-cascade', /.*/)
+      await expect(csv, '放行后二级再等 220ms 才收').toBeVisible()
+      await page.clock.runFor(230)
+      await expect(image).toHaveCount(0)
+    })
+
+    test('子菜单关闭延时：滑出所有层 360ms 才收，回来就取消', async ({ page }) => {
+      const { trigger, csv, image } = await openSubMenu(page)
+      const from = (await trigger.boundingBox())!
+      await page.mouse.move(from.x + 20, from.y + from.height / 2, { steps: 3 })
+      await page.clock.runFor(300)
+      await expect(csv).toBeVisible()
+      // 滑出父菜单（父菜单、二级、安全区之外）：300ms 内回来，不收。
+      // 沿触发器这一行往左滑出父菜单：不经过别的行，也不经过二级。
+      const away = { x: Math.max(2, from.x - 60), y: from.y + from.height / 2 }
+      await page.mouse.move(away.x, away.y, { steps: 4 })
+      await page.clock.runFor(300)
+      await expect(csv, '300ms：还开着').toBeVisible()
+      await page.mouse.move(from.x + 20, from.y + from.height / 2, { steps: 4 })
+      await page.clock.runFor(1000)
+      await expect(csv, '回来了：计时取消，一直开着').toBeVisible()
+      // 再滑出去：359ms 还开，满 360ms 收。
+      await page.mouse.move(away.x, away.y, { steps: 4 })
+      await page.clock.runFor(340)
+      await expect(csv).toBeVisible()
+      await page.clock.runFor(40)
+      await expect(image, '满 360ms：收起').toHaveCount(0)
+    })
+
+    test('拖着东西经过父项：420ms 才开（普通悬停是 220ms）', async ({ page }) => {
+      const { trigger, image } = await openSubMenu(page)
+      await trigger.dispatchEvent('dragover')
+      await page.clock.runFor(400)
+      await expect(image).toHaveCount(0)
+      await page.clock.runFor(30)
+      await expect(image).toBeVisible()
+    })
+
+    test('子菜单调试覆盖层：默认不画，根节点写 data-cascade-debug 才画三角与保护带', async ({ page }) => {
+      const { trigger, below, csv } = await openSubMenu(page)
+      const overlay = page.locator('[data-k-cascade-debug]')
+      const from = (await trigger.boundingBox())!
+      const start = { x: from.x + from.width - 24, y: from.y + from.height / 2 }
+      const row = (await below.boundingBox())!
+      const inside = { x: row.x + row.width - 6, y: row.y + row.height / 2 }
+      await page.mouse.move(start.x, start.y, { steps: 3 })
+      await page.clock.runFor(300)
+      await expect(csv).toBeVisible()
+      await page.mouse.move(inside.x, inside.y, { steps: 3 })
+      await expect(below).toHaveAttribute('data-k-cascade', 'skipped')
+      await expect(overlay, '默认关').toHaveCount(0)
+      await page.evaluate(() => document.documentElement.setAttribute('data-cascade-debug', ''))
+      await page.mouse.move(inside.x + 1, inside.y)
+      await expect(overlay, '开了：画出来').toHaveCount(1)
+      await expect(overlay.locator('polygon')).toHaveAttribute('points', /\d/)
+      const target = (await csv.boundingBox())!
+      await page.mouse.move(target.x + 10, target.y + target.height / 2, { steps: 3 })
+      await expect(overlay, '进了二级：保护解除，覆盖层撤掉').toHaveCount(0)
+    })
+
+    test('右键菜单的子菜单同一套：220ms 开，滑出 360ms 收', async ({ page }) => {
+      await page.clock.install()
+      await open(page, theme, 'context-menu')
+      await section(page, 'context-menu').locator('[data-gallery-ctx]').click({ button: 'right' })
+      const trigger = page.locator('[data-slot="context-menu-sub-trigger"]')
+      const image = page.getByRole('menuitem', { name: '导出为图片' })
+      await page.clock.pauseAt(new Date(Date.now() + 10_000))
+      const box = (await trigger.boundingBox())!
+      await page.mouse.move(box.x + 10, box.y + box.height / 2)
+      await page.clock.runFor(180)
+      await expect(image).toHaveCount(0)
+      await page.clock.runFor(50)
+      await expect(image).toBeVisible()
+      // 沿触发器这一行往左滑出父菜单：不经过别的行，也不经过二级。
+      const away = { x: Math.max(2, box.x - 60), y: box.y + box.height / 2 }
+      await page.mouse.move(away.x, away.y, { steps: 4 })
+      await page.clock.runFor(340)
+      await expect(image).toBeVisible()
+      await page.clock.runFor(40)
+      await expect(image).toHaveCount(0)
+    })
+
+    test('子菜单：滑出后 100ms 内进了二级，关闭计时取消，之后停多久都不收', async ({ page }) => {
+      const { trigger, csv, image } = await openSubMenu(page)
+      const from = (await trigger.boundingBox())!
+      await page.mouse.move(from.x + 20, from.y + from.height / 2, { steps: 3 })
+      await page.clock.runFor(300)
+      await expect(csv).toBeVisible()
+      // 滑出（计时开始），100ms 后进二级：计时取消，之后停多久都不收。
+      // 沿触发器这一行往左滑出父菜单：不经过别的行，也不经过二级。
+      const away = { x: Math.max(2, from.x - 60), y: from.y + from.height / 2 }
+      await page.mouse.move(away.x, away.y, { steps: 3 })
+      await page.clock.runFor(100)
+      const target = (await csv.boundingBox())!
+      await page.mouse.move(target.x + 10, target.y + target.height / 2, { steps: 4 })
+      await page.clock.runFor(2000)
+      await expect(image).toBeVisible()
+      await expect(csv).toHaveAttribute('data-highlighted', /.*/)
     })
 
     test('页签与折叠：点页签换内容，底块滑到它底下；折叠标题点了收起展开', async ({ page }) => {

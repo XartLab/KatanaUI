@@ -200,6 +200,7 @@
   margin-left: auto;
   color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
 }
 .k-away-list {
   display: flex;

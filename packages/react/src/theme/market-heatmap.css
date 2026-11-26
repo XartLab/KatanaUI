@@ -175,6 +175,7 @@
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .k-mheat-head-avg {
   flex: none;
@@ -293,6 +294,7 @@
   opacity: 0.85;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 .k-mheat-card {
   position: absolute;

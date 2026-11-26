@@ -52,6 +52,7 @@
 .k-tape-count {
   color: var(--k-content-secondary-foreground);
   font-size: 11px;
+  font-variant-numeric: tabular-nums;
 }
 .k-tape-row.is-large {
   --k-large-tone: var(--k-tone-up-foreground);

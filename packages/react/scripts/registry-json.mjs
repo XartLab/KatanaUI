@@ -33,6 +33,12 @@ const INTERNAL = {
   'sparkline-ascii': 'Sparkline 的 ascii 画风：方块或盲文字形画走势，一个 pre，新列乱码落定。',
   'sparkline-instrument': 'Sparkline 的 instrument 画风：点阵、对位角标、投影谱、极值十字与批注、档案编号与 SOURCES。',
   'sparkline-shared': 'Sparkline 各画风共用的钩子：量容器、设备像素比、文字测量重置。',
+  'cascade-model':
+    '级联菜单的时间与几何（#250）：打开 220ms、安全窗口 1200ms、关闭 360ms 等具名常量，安全三角（三条边叉积同号）与保护带的纯函数。',
+  'cascade-controller':
+    '级联菜单的悬停控制器（#250）：在父菜单 Content 的捕获阶段接管子菜单的悬停开合、安全三角、1.2s 安全窗口与 360ms 关闭延时；下拉菜单与右键菜单共用。',
+  'truncation-title':
+    '真被截断时悬停出全文：installTruncationTitles() 装一个委托监听，只给真放不下的省略号文字补 title（#250）。',
   'flash-price': '最新价只闪变了的尾数（照 TradingView 自选栏）：Watchlist 与 QuoteTable 的价格格共用。',
   'cell-type':
     '表格的格内排版（#92）：代码芯片 CodeChip、全称 CodeName、单位小字 UnitValue、按 locale 缩写的 CompactValue；DataGrid、QuoteTable、Watchlist、LimitLadder、EventCalendar 共用，样式在 theme/cell-type.css。',

@@ -2,7 +2,22 @@
 // 起步代码取自 shadcn/ui（https://ui.shadcn.com ，MIT，Copyright (c) 2023 shadcn），2026-11-13 随 context-menu 一起用 `shadcn add` 生成（#1797），行为底座是 Radix；
 // 拷进来以后归我们改：下拉菜单与右键菜单共用的皮肤和零件在这里，两个文件各管自己的 Radix 底座（决策记录 0049）。
 import { ChevronRightIcon } from 'lucide-react'
-import { createContext, useState, type ComponentProps, type ReactNode } from 'react'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ComponentProps,
+  type DragEventHandler,
+  type KeyboardEventHandler,
+  type PointerEventHandler,
+  type ReactNode,
+  type Ref,
+} from 'react'
+import { CascadeController } from './cascade-controller.ts'
 import { cn } from '../lib/cn.ts'
 import { focusRingInset } from '../lib/focus.ts'
 
@@ -13,8 +28,13 @@ import { focusRingInset } from '../lib/focus.ts'
 // 二级菜单的规矩是 #1832 定的，内建在这里，调用方不用再传：
 //   - 位置：开在父项右边（Radix 的 SubContent 固定 side=right、align=start），sideOffset 2 与顶层菜单一致；
 //     alignOffset -7 = 容器 6px 内边 + 1px 边，把二级菜单往上抬这么多，两个第一项才对齐。
-//   - 悬停：指针停在父项上 100ms 开，斜着移向子菜单靠 Radix 自带的安全三角（pointer grace，300ms）不误收。
-//     数字是 Radix 的实现值，不是我们的配置：@radix-ui/react-menu 2.2.1 dist/index.mjs 的 SubTrigger onPointerMove 里 setTimeout(..., 100)，2026-11-13 读。
+//   - 悬停（#250 改，照 kubai《999 个小技巧》002 级联菜单，https://vibedesign.tips/002-cascade-menu/ ，数值照 issue 抄录的原文，2026-11-26）：
+//     停在父项上 220ms 开（离开取消，触摸点一下立即开，拖着东西经过 420ms）；离开父项斜着移向子菜单走安全三角
+//     （顶点是最近两次 pointermove 里较早的点、随移动更新，连到子菜单近边的上下两角，且指针在父菜单靠子菜单一侧 min(90px, max(56px, 父宽 43%)) 内才护），
+//     三角里经过的行不亮、不开自己的子菜单；停在三角里某一行最多护 1200ms（每 80ms 复查），离开三角或满 1.2s 才切换；
+//     指针落到不在三角里的普通行：行马上亮，开着的子菜单 220ms 才收（Radix 的 focus-outside 由控制器挡住）；指针进了子菜单保护全解除；滑出父项、所有层与安全区 360ms 后才收子菜单，回来取消。时间集中在 cascade-model.ts 的 CASCADE_TIMING。
+//     以前（#1832）用 Radix 默认：停 100ms 开、pointer grace 300ms，是 @radix-ui/react-menu 2.2.1 dist/index.mjs 的 MenuSubTrigger 写死的值（2026-11-13 读），
+//     配不了，所以悬停开合由 cascade-controller.ts 在父菜单的 Content 上接管（捕获阶段抢在菜单项前处理 pointermove）；Radix 的键盘、焦点、两层上限不动。
 //   - 键盘：→ / Enter / Space 打开，← 关闭回到父项（Radix 的 SUB_OPEN_KEYS / SUB_CLOSE_KEYS）。
 //   - 层数：最多两层（顶层 + 一个子菜单），不做三层（decisions.md 2026-11-13）。组件不拦着，调用方守这条。
 //   - 箭头：父项行尾 ChevronRight 13px，ink-300；全应用统一用它，不手写文字 ›。
@@ -140,7 +160,51 @@ export type SubState = {
 }
 export const SubStateContext = createContext<SubState | null>(null)
 
-/** Sub 的开合：调用方没传 open 就自己持有；onOpenChange 照常通知。 */
+/** 父菜单的级联控制器：Content 提供，Sub 与 SubContent 取用（没有就是没有悬停接管，行为退回 Radix 默认）。 */
+export const CascadeContext = createContext<CascadeController | null>(null)
+
+/** 把几个 ref 合成一个（React 19 的 ref 是普通属性，Content 要同时给调用方的 ref 与控制器的挂载回调）。 */
+export function mergeRefs<T>(...refs: (Ref<T> | undefined)[]) {
+  return (node: T | null) => {
+    for (const ref of refs) {
+      if (typeof ref === 'function') ref(node)
+      else if (ref) ref.current = node
+    }
+  }
+}
+
+/** 父菜单容器（DropdownMenuContent、ContextMenuContent）用：建一个控制器，返回它与要并进 Content 的属性。 */
+export function useCascade(props: {
+  ref?: Ref<HTMLDivElement>
+  onPointerMoveCapture?: PointerEventHandler<HTMLDivElement>
+  onDragOverCapture?: DragEventHandler<HTMLDivElement>
+  onKeyDownCapture?: KeyboardEventHandler<HTMLDivElement>
+}) {
+  const [controller] = useState(() => new CascadeController())
+  // 稳定的 ref 函数：每次渲染换一个会让 React 先卸后装，控制器的计时与保护就被清掉。
+  const ref = useMemo(() => mergeRefs(props.ref, controller.attach), [props.ref, controller])
+  return {
+    controller,
+    contentProps: {
+      ref,
+      // 捕获阶段：抢在 Radix 的菜单项之前；我们处理了就 preventDefault，Radix 的 composeEventHandlers 看到 defaultPrevented 就不再聚焦这一行。
+      onPointerMoveCapture: ((event) => {
+        props.onPointerMoveCapture?.(event)
+        if (!event.defaultPrevented && controller.move(event)) event.preventDefault()
+      }) satisfies PointerEventHandler<HTMLDivElement>,
+      onDragOverCapture: ((event) => {
+        props.onDragOverCapture?.(event)
+        controller.dragOver(event.target)
+      }) satisfies DragEventHandler<HTMLDivElement>,
+      onKeyDownCapture: ((event) => {
+        props.onKeyDownCapture?.(event)
+        controller.keyboard()
+      }) satisfies KeyboardEventHandler<HTMLDivElement>,
+    },
+  }
+}
+
+/** Sub 的开合：调用方没传 open 就自己持有；onOpenChange 照常通知；并向父菜单的控制器登记（悬停开合由它安排）。 */
 export function useSubState({
   open,
   defaultOpen = false,
@@ -150,13 +214,30 @@ export function useSubState({
   defaultOpen?: boolean
   onOpenChange?: (open: boolean) => void
 }) {
+  const cascade = useContext(CascadeContext)
   const [inner, setInner] = useState(defaultOpen)
-  const [trigger, setTrigger] = useState<HTMLElement | null>(null)
+  const [trigger, setTriggerState] = useState<HTMLElement | null>(null)
   const current = open ?? inner
-  const setOpen = (next: boolean) => {
+  // 控制器的计时到点时要读「现在开没开」「怎么开合」：放进 ref，在 effect 里同步，不在渲染里写。
+  const openRef = useRef(current)
+  const changeRef = useRef(onOpenChange)
+  const triggerRef = useRef<HTMLElement | null>(null)
+  useEffect(() => {
+    openRef.current = current
+    changeRef.current = onOpenChange
+  })
+  const setOpen = useCallback((next: boolean) => {
     setInner(next)
-    onOpenChange?.(next)
-  }
+    changeRef.current?.(next)
+  }, [])
+  const setTrigger = useCallback((element: HTMLElement | null) => {
+    triggerRef.current = element
+    setTriggerState(element)
+  }, [])
+  useEffect(
+    () => cascade?.register({ trigger: () => triggerRef.current, isOpen: () => openRef.current, setOpen }),
+    [cascade, setOpen],
+  )
   return {
     open: current,
     onOpenChange: setOpen,

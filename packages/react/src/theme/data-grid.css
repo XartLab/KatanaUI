@@ -310,6 +310,8 @@
 .k-grid-name {
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 .k-grid-tag {
   flex: none;
@@ -693,6 +695,7 @@
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .k-grid-section-count {
   flex: none;

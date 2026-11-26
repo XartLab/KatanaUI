@@ -55,6 +55,8 @@ button.k-pill-main {
 .k-pill-label {
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 .k-pill-icon {
   display: inline-flex;

@@ -137,6 +137,7 @@ button.k-move-row:focus-visible {
 }
 .k-move-value {
   text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 .k-move-value[data-direction='up'] {
   color: var(--pnl-up);
