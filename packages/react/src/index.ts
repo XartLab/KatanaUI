@@ -352,6 +352,13 @@ export {
   type CommandPaletteProps,
   type PaletteCommand,
 } from './patterns/command-palette.tsx'
+export type {
+  CommandStepsLabels,
+  PaletteChecklistStep,
+  PaletteCustomStep,
+  PaletteStep,
+} from './patterns/command-steps.tsx'
+export type { PaletteOption, StepSelections } from './patterns/command-steps-model.ts'
 export { SymbolMark, symbolMarkLetters, type SymbolMarkProps } from './quotes/symbol-mark.tsx'
 // 跑马灯（#77 第 5 条）。
 export { TickerTape, type TickerItem, type TickerTapeLabels, type TickerTapeProps } from './quotes/ticker-tape.tsx'

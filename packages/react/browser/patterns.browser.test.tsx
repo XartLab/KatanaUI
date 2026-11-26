@@ -2,6 +2,7 @@
 // 组件截图：src/patterns 里的公开件。演示直接用 gallery/usage 里最小的一份；浮层件用 OpenFrame 摆成打开态，要点开的件在测试里点一下。
 import { beforeAll, describe, expect, test } from 'vite-plus/test'
 import { page } from 'vite-plus/test/browser'
+import { PlayIcon } from 'lucide-react'
 import { useState } from 'react'
 import {
   Calendar,
@@ -12,6 +13,7 @@ import {
   ComboboxItem,
   ComboboxList,
   ComboboxTrigger,
+  CommandDialog,
   CommandPalette,
   DateRangePicker,
   FilterBar,
@@ -19,10 +21,13 @@ import {
   type FilterBarLabels,
   type FilterCondition,
   type FilterField,
+  type PaletteStep,
+  type StepSelections,
 } from '../src/index.ts'
 import { EXAMPLE_EVENTS, EXAMPLE_INSIGHT } from '../gallery/research-calendar-data.ts'
 import { FileImportUsage } from '../gallery/usage/FileImportUsage.tsx'
 import { TemplateLibraryUsage } from '../gallery/usage/TemplateLibraryUsage.tsx'
+import { CommandSteps, DEFAULT_STEP_LABELS } from '../src/patterns/command-steps.tsx'
 import { AnimatedFileUploadUsage } from '../gallery/usage/AnimatedFileUploadUsage.tsx'
 import { ChipGroupUsage } from '../gallery/usage/ChipGroupUsage.tsx'
 import { ListBoxUsage } from '../gallery/usage/ListBoxUsage.tsx'
@@ -89,6 +94,45 @@ const CONDITIONS: FilterCondition[] = [
 function FilterBarDemo() {
   const [value, setValue] = useState(CONDITIONS)
   return <FilterBar fields={FIELDS} value={value} onValueChange={setValue} labels={BAR_LABELS} />
+}
+
+const STEPS: readonly PaletteStep[] = [
+  {
+    kind: 'checklist',
+    id: 'market',
+    joiner: 'in',
+    heading: 'Select market',
+    options: [
+      { id: 'us', label: 'US', description: '312 symbols' },
+      { id: 'hk', label: 'Hong Kong', description: '148 symbols' },
+      { id: 'cn', label: 'China A', description: '96 symbols' },
+    ],
+  },
+  { kind: 'checklist', id: 'fields', joiner: 'with', options: [{ id: 'ohlc', label: 'OHLC' }] },
+]
+
+function StepsDemo() {
+  const [selections, setSelections] = useState<StepSelections>({ market: ['us', 'hk'] })
+  const [search, setSearch] = useState('')
+  return (
+    <CommandDialog open onOpenChange={() => {}} title="Bulk export" description="Pick markets and fields">
+      <CommandSteps
+        title="Bulk export"
+        icon={<PlayIcon />}
+        steps={STEPS}
+        index={0}
+        selections={selections}
+        onSelectionsChange={setSelections}
+        labels={DEFAULT_STEP_LABELS}
+        placeholder="Search…"
+        empty="No match"
+        search={search}
+        onSearchChange={setSearch}
+        onBack={() => {}}
+        onAdvance={() => {}}
+      />
+    </CommandDialog>
+  )
 }
 
 const settle = () => new Promise((r) => setTimeout(r, 600))
@@ -235,8 +279,26 @@ for (const theme of ['graphite', 'console'] as const) {
             onOpenChange={() => {}}
             recent={['snapshot']}
             commands={[
-              { id: 'reset', label: 'Reset chart', group: 'Chart', shortcut: 'Alt+R', onSelect: () => {} },
+              {
+                id: 'reset',
+                label: 'Reset chart',
+                group: 'Chart',
+                description: 'Default zoom and studies',
+                shortcut: 'Alt+R',
+                onSelect: () => {},
+              },
               { id: 'snapshot', label: 'Take snapshot', group: 'Chart', onSelect: () => {} },
+              {
+                id: 'export',
+                label: 'Bulk export',
+                group: 'Data',
+                description: 'By market and field',
+                steps: [
+                  { kind: 'checklist', id: 'market', options: [{ id: 'us', label: 'US' }] },
+                  { kind: 'checklist', id: 'fields', options: [{ id: 'ohlc', label: 'OHLC' }] },
+                ],
+                onSelect: () => {},
+              },
               { id: 'theme', label: 'Switch theme', group: 'Settings', onSelect: () => {} },
             ]}
             labels={{
@@ -247,6 +309,14 @@ for (const theme of ['graphite', 'console'] as const) {
               recent: 'Recent',
             }}
           />
+        </OpenFrame>,
+      ))
+    // 多步命令的步骤页（#194）：第一步，勾了两项，全选是半选，头部句子带两个小标签。
+    test('command-steps', () =>
+      shot(
+        'command-steps',
+        <OpenFrame width={560} height={420}>
+          <StepsDemo />
         </OpenFrame>,
       ))
     test('side-nav', () => shot('side-nav', <SideNavUsage />))
