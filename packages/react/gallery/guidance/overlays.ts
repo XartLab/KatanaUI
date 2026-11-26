@@ -10,8 +10,9 @@ const overlays: GuidanceMap = {
     avoid: ['里面要放链接或按钮用 popover。', '想补充一小块信息用 hover-card。', '必须读到的内容直接写在页面上。'],
     a11y: [
       'Radix Tooltip，浮层是 role=tooltip，触发器靠 aria-describedby 指向它。',
-      '聚焦触发器也会出现。',
-      '触屏没有悬停，别只放在这里。',
+      '聚焦触发器也会出现，不等延迟。',
+      '悬停停 500ms 才出；出了以后 400ms 内移到邻居立即出、原地换字；离开超过 400ms 再进，重新等 500ms。按下触发器就收。数值在 TooltipProvider（TOOLTIP_DELAY_MS、TOOLTIP_SKIP_MS），件里不另写。出处：kubai Vibe Design Tips 025。',
+      '触屏没有悬停，别只放在这里；本库是桌面工作台，没有触屏方案。',
     ],
   },
   popover: {

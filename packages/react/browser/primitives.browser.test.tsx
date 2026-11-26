@@ -128,7 +128,7 @@ import {
 import { CardUsage } from '../gallery/usage/CardUsage.tsx'
 import { OpenFrame } from './open-frame.tsx'
 import { mount } from './render.tsx'
-import { settled } from './settle.ts'
+import { settled, waitUntil } from './settle.ts'
 
 function StopInput() {
   const control = useFieldControl()
@@ -203,9 +203,9 @@ for (const theme of ['graphite', 'console'] as const) {
           items={[{ label: 'Strategies', href: '#' }, { label: 'Momentum', href: '#' }, { label: 'Backtest 2026-11' }]}
         />,
       ))
-    test('button', () =>
-      shot(
-        'button',
+    // 带进行中一格（kubai 017，#251）：转圈要等满 300ms 才出，所以先等它出现，再把无限循环的转动停在第 0 刻。
+    test('button', async () => {
+      await mount(
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             <Button variant="primary">Primary</Button>
@@ -219,8 +219,27 @@ for (const theme of ['graphite', 'console'] as const) {
               <Info />
             </Button>
           </div>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <Button variant="primary" pending>
+              Saving
+            </Button>
+            <Button size="sm" pending>
+              Small
+            </Button>
+            <Button variant="icon" size="icon" aria-label="Refresh" pending>
+              <Info />
+            </Button>
+          </div>
         </div>,
-      ))
+        theme,
+      )
+      await waitUntil(
+        () => document.querySelectorAll('[data-slot="button-spinner"]').length === 3,
+        'three pending spinners (they show after 300ms)',
+      )
+      await settled({ freezeInfinite: true })
+      await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-button`)
+    })
     test('card', () => shot('card', <CardUsage />))
     test('checkbox', () =>
       shot(

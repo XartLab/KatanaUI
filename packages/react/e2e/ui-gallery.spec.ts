@@ -270,6 +270,76 @@ for (const theme of THEMES) {
       expect(errors).toEqual([])
     })
 
+    // 进行中（kubai Vibe Design Tips 017，#251）：假时钟推时间，300ms 与 500ms 的边界差 1ms 都量得准。
+    test('按钮：进行中——满 300ms 才出转圈、出了至少留 500ms、宽度与字不变、期间再按无效但仍可聚焦', async ({
+      page,
+    }) => {
+      await page.clock.install({ time: 0 })
+      await open(page, theme, 'button')
+      await page.clock.pauseAt(60_000)
+      const area = section(page, 'button')
+      const count = area.locator('[data-gallery-pending-count]')
+      const pendingButton = (key: string) => area.locator(`[data-gallery-pending="${key}"]`)
+      const spinnerOf = (key: string) => pendingButton(key).locator('[data-slot="button-spinner"]')
+      const widthOf = async (key: string) => (await pendingButton(key).boundingBox())!.width
+
+      // 保存修改：1.2 秒的请求。
+      const save = pendingButton('save')
+      const before = await widthOf('save')
+      await save.click()
+      await expect(save).toHaveAttribute('aria-busy', 'true')
+      await expect(save).toHaveAttribute('aria-disabled', 'true')
+      await expect(count).toContainText('保存 1')
+      await page.clock.runFor(299)
+      await expect(spinnerOf('save')).toHaveCount(0)
+      await page.clock.runFor(1)
+      await expect(spinnerOf('save')).toHaveCount(1)
+      // 字与宽度不变（量 boundingBox）。
+      await expect(save).toHaveText('保存修改')
+      expect(await widthOf('save')).toBe(before)
+      // 进行中再按（鼠标、键盘）：不触发，焦点仍在按钮上（不用 disabled 属性）。
+      await save.click({ force: true })
+      await save.focus()
+      await page.keyboard.press('Enter')
+      await page.keyboard.press('Space')
+      await expect(save).toBeFocused()
+      await expect(save).not.toHaveAttribute('disabled', /.*/)
+      await expect(count).toContainText('保存 1')
+      // 1.2 秒到：转圈已留过 500ms，立刻收；aria-busy 摘掉，能再按。
+      await page.clock.runFor(900)
+      await expect(spinnerOf('save')).toHaveCount(0)
+      await expect(save).not.toHaveAttribute('aria-busy', 'true')
+      expect(await widthOf('save')).toBe(before)
+      await save.click()
+      await expect(count).toContainText('保存 2')
+      await page.clock.runFor(1500)
+
+      // 快速保存：0.4 秒的请求。300ms 出转圈，请求在 400ms 结束但转圈留够 500ms（到 800ms）。
+      const quick = pendingButton('quick')
+      await quick.click()
+      await page.clock.runFor(300)
+      await expect(spinnerOf('quick')).toHaveCount(1)
+      await page.clock.runFor(100)
+      await expect(count).toContainText('快速 1')
+      await page.clock.runFor(399)
+      await expect(spinnerOf('quick')).toHaveCount(1)
+      await page.clock.runFor(1)
+      await expect(spinnerOf('quick')).toHaveCount(0)
+
+      // 刷新（图标就是动作）：按下立刻转自己的图标，没有另外的转圈；0.3 秒请求结束后转到整圈（640ms）才停。
+      const refresh = pendingButton('refresh')
+      const iconBefore = await widthOf('refresh')
+      await refresh.click()
+      await expect(refresh).toHaveAttribute('data-spinning', 'true')
+      await expect(spinnerOf('refresh')).toHaveCount(0)
+      await page.clock.runFor(300)
+      await page.clock.runFor(339)
+      await expect(refresh).toHaveAttribute('data-spinning', 'true')
+      await page.clock.runFor(2)
+      await expect(refresh).not.toHaveAttribute('data-spinning', 'true')
+      expect(await widthOf('refresh')).toBe(iconBefore)
+    })
+
     test('按钮：Tailwind 的类压得过旧样式；悬停和按下底色各变一次；禁用的不响应', async ({ page }) => {
       await open(page, theme, 'button')
       const button = section(page, 'button').getByRole('button', { name: 'default', exact: true })
@@ -2029,6 +2099,43 @@ for (const theme of THEMES) {
       await expect(area.locator('[data-gallery-loaded]')).toBeVisible()
     })
 
+    // 最短停留（kubai Vibe Design Tips 017，#251）：骨架出了至少留 500ms。假时钟推时间。
+    test('加载态：骨架出了至少留 500ms（510ms 到的数据骨架留到 1000ms）；400ms 到的数据不出骨架', async ({ page }) => {
+      await page.clock.install({ time: 0 })
+      await open(page, theme, 'loading')
+      await page.clock.pauseAt(60_000)
+      const area = section(page, 'loading')
+      const toggle = area.locator('[data-gallery-toggle]')
+      // 「等数据」那一行的容器（按钮后面紧跟的那一块）；别的行是钉住的各段，也有骨架行，不能混。
+      const demo = toggle.locator('xpath=following-sibling::div[contains(@class, "gal-wide")]')
+      const line = demo.locator('.k-loading-line')
+      const loaded = area.locator('[data-gallery-loaded]')
+      // 先让初始那一轮结束，再重新等：从这一刻起的时间是干净的。
+      // （假时钟跳到 60 秒时骨架才算「出现」，所以这一轮也要再推 500ms 才交出内容。）
+      await toggle.click()
+      await page.clock.runFor(500)
+      await expect(loaded).toBeVisible()
+      await toggle.click()
+      await expect(loaded).toHaveCount(0)
+      await page.clock.runFor(510)
+      await expect(line.first()).toBeVisible()
+      // 510ms 数据到了：骨架还在，内容还没出，直到骨架出现满 500ms（再过 489ms 仍在，490ms 时换成内容）。
+      await toggle.click()
+      await page.clock.runFor(489)
+      await expect(line.first()).toBeVisible()
+      await expect(loaded).toHaveCount(0)
+      await page.clock.runFor(1)
+      await expect(loaded).toBeVisible()
+      await expect(line).toHaveCount(0)
+      // 重新等，400ms 到：从没出过骨架，内容立刻出现。
+      await toggle.click()
+      await page.clock.runFor(400)
+      await expect(line).toHaveCount(0)
+      await toggle.click()
+      await expect(loaded).toBeVisible()
+      await expect(line).toHaveCount(0)
+    })
+
     test('量出来的骨架（MeasuredSkeleton）：加载态有骨架条与读屏名，切到已加载标题与按钮的位置不跳（≤1px）', async ({
       page,
     }) => {
@@ -3415,6 +3522,40 @@ for (const theme of THEMES) {
       await expect(section(page, 'estimate-badge').getByText('Estimated from bars')).toBeVisible()
     })
 
+    // 提示时间统一在 TooltipProvider（kubai Vibe Design Tips 025，#251）。用假时钟推时间：本机忙时真等 500ms 量不准。
+    test('提示时间：停 500ms 才出；出了以后 400ms 内移到邻居立即出；离开超过 400ms 再进又要等 500ms', async ({
+      page,
+    }) => {
+      await page.clock.install({ time: 0 })
+      await open(page, theme, 'toolbar')
+      await page.clock.pauseAt(60_000)
+      const bar = section(page, 'toolbar').getByRole('toolbar', { name: 'Example toolbar' })
+      const tip = page.locator('[data-slot="tooltip-content"]')
+      const centerOf = async (name: string) => {
+        const box = (await bar.getByRole('button', { name, exact: true }).boundingBox())!
+        return { x: box.x + box.width / 2, y: box.y + box.height / 2 }
+      }
+      const alerts = await centerOf('Alerts')
+      const draw = await centerOf('Draw')
+      await page.mouse.move(alerts.x, alerts.y)
+      await page.clock.runFor(499)
+      await expect(tip).toHaveCount(0)
+      await page.clock.runFor(1)
+      await expect(tip).toContainText('Alerts')
+      // 沿工具条移到邻居：立即换字，不再等 500ms。
+      await page.mouse.move(draw.x, draw.y)
+      await expect(tip).toContainText('Draw')
+      // 离开超过 400ms 再回来：重新等。
+      await page.mouse.move(0, 0)
+      await expect(tip).toHaveCount(0)
+      await page.clock.runFor(401)
+      await page.mouse.move(alerts.x, alerts.y)
+      await page.clock.runFor(499)
+      await expect(tip).toHaveCount(0)
+      await page.clock.runFor(1)
+      await expect(tip).toContainText('Alerts')
+    })
+
     // 下面十条是 #1870 补的标准件：每件至少一条用户看得见的断言（打开、键盘、焦点回还）。
     test('弹出提示：键盘弹出，窗口右下角的读屏区域，两条出「全部关掉」，叉与全部关掉都收起并摘掉节点', async ({
       page,
@@ -3423,7 +3564,11 @@ for (const theme of THEMES) {
       const area = section(page, 'toast')
       const viewport = page.getByTestId('toast-viewport')
       await expect(viewport).toHaveAttribute('role', 'region')
-      await expect(viewport).toHaveAttribute('aria-live', 'assertive')
+      // 礼貌播报（kubai 016，#251）：「已复制」这类状态提示不打断读屏；要打断的 warn / danger 那一条自己带 role=alert。
+      await expect(viewport).toHaveAttribute('aria-live', 'polite')
+      await expect(page.getByTestId('toast-danger')).toHaveAttribute('role', 'alert')
+      await expect(page.getByTestId('toast-warn')).toHaveAttribute('role', 'alert')
+      await expect(page.getByTestId('toast-ok')).not.toHaveAttribute('role', /.+/)
       const add = area.getByRole('button', { name: '弹一条提示' })
       await add.focus()
       await page.keyboard.press('Enter')
@@ -3456,6 +3601,29 @@ for (const theme of THEMES) {
       await expect(toasts).toHaveCount(3)
       await page.getByRole('button', { name: '全部关掉（3）' }).click()
       await expect(toasts).toHaveCount(0)
+    })
+
+    test('弹出提示的撤销：带倒计时环与「撤销」，环随时间变短，撤销后字变「已恢复」再收', async ({ page }) => {
+      await open(page, theme, 'toast')
+      const area = section(page, 'toast')
+      await area.getByRole('button', { name: '删除一条画线' }).click()
+      const toast = page.getByTestId('toast-undo')
+      await expect(toast).toHaveCount(1)
+      await expect(toast.getByText('已删除画线')).toBeVisible()
+      // 这一条是 neutral：没有 role=alert，读屏靠常驻的 polite 视口读。
+      await expect(toast).not.toHaveAttribute('role', /.+/)
+      const arc = toast.locator('[data-slot="toast-countdown-arc"]')
+      const offsetOf = async () => Number(await arc.getAttribute('stroke-dashoffset'))
+      const first = await offsetOf()
+      // 环随剩余时间变短：偏移量只增不减（过了 0.5 秒以上，至少多了一格）。
+      await expect.poll(offsetOf, { timeout: 3000 }).toBeGreaterThan(first + 1)
+      // 环里没有写秒数；撤销钮在，点它。
+      await expect(toast.locator('[data-slot="toast-countdown"]')).toHaveText('')
+      await toast.getByRole('button', { name: '撤销', exact: true }).click()
+      await expect(toast.getByText('已恢复')).toBeVisible()
+      await expect(toast.getByRole('button', { name: '撤销', exact: true })).toHaveCount(0)
+      // 约 1.5 秒后收起、摘掉节点。
+      await expect(toast).toHaveCount(0, { timeout: 5000 })
     })
 
     test('弹出提示的语气：色条与图标取 --k-status-*；neutral 色条是主文字色、图标是强调色；说明文字用 ink-2（对比度够）', async ({
@@ -8094,6 +8262,15 @@ for (const theme of THEMES) {
       await expect(slot(buy, 'ticket-rr')).toContainText('3.17 : 1')
       // 可开：250 / 0.011 / 600 = 37.87 张。
       await expect(slot(buy, 'ticket-max')).toContainText('37.87 Cont')
+      // 保证金模式（kubai 020，#251）：两项分段一直看得见；点「Cross」切过去，再点已选的不会取消。
+      const marginMode = ticket.getByRole('group', { name: 'Margin mode' })
+      await expect(marginMode.getByRole('button')).toHaveCount(2)
+      await expect(marginMode.getByRole('button', { name: 'Isolated' })).toHaveAttribute('aria-pressed', 'true')
+      await marginMode.getByRole('button', { name: 'Cross' }).click()
+      await expect(marginMode.getByRole('button', { name: 'Cross' })).toHaveAttribute('aria-pressed', 'true')
+      await expect(marginMode.getByRole('button', { name: 'Isolated' })).toHaveAttribute('aria-pressed', 'false')
+      await marginMode.getByRole('button', { name: 'Cross' }).click()
+      await expect(marginMode.getByRole('button', { name: 'Cross' })).toHaveAttribute('aria-pressed', 'true')
       // 改杠杆到 10：成本框还是 10，张数变成 0.16（10 / 0.101 = 99.01 → 0.165 → 0.16），两栏都变。
       await ticket.locator('[data-slot="ticket-leverage"]').fill('10')
       await expect(slot(buy, 'ticket-amount')).toHaveValue('10')

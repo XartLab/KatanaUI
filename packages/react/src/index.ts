@@ -359,9 +359,11 @@ export {
 export {
   TOAST_EXIT_MS,
   Toast,
+  ToastAction,
   ToastClear,
   ToastClose,
   ToastContent,
+  ToastCountdown,
   ToastDescription,
   ToastIcon,
   ToastText,

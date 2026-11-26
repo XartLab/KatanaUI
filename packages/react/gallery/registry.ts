@@ -88,13 +88,17 @@ export const PAGES: readonly DocPage[] = [
       '30 高的默认按钮，六种变体与三种尺寸；悬停提亮、按下缩到 0.97，禁用降到 45% 不透明度。颜色只读 actionable（bold = primary、subtle = icon、negative = danger）、content、separable、focused 这几类 characteristic，高度与内距读密度（data-density 的 size-base、size-row、spacing-*）；「主题 × 密度」那三行在 high、medium、low 下各摆一遍。',
     exports: ['Button', 'buttonVariants'],
     propParts: [
-      { part: 'Button', note: '其余属性透传给原生 button；type 默认 button，放进表单不会误提交。' },
+      {
+        part: 'Button',
+        note: '其余属性透传给原生 button；type 默认 button，放进表单不会误提交。pending：动作进行中，满 300ms 才在原地出转圈（出了至少留 500ms），字与宽度不变，期间再按无效但仍可聚焦，aria-busy=true；spinIcon 配 pending，按钮自己的图标就是动作（刷新、同步）时转它自己，至少一整圈、停在整圈上。',
+      },
       { part: 'buttonVariants', note: '返回类名的函数，给不是 button 的元素画成按钮（包着文件输入的 label 之类）。' },
     ],
     states: [
       '默认：4% 白底 8% 白边，悬停提亮，按下缩到 0.97。',
       '尺寸：md（默认，30 高）、sm（26 高、圆角 8、字 11 粗 600）、icon（28 见方，只放图标）；旧名 size="default" 等于 md。',
       '禁用：45% 不透明度，不响应指针。',
+      '进行中（pending）：满 300ms 才出一个小环（有字的按钮画在左内边距里，图标按钮里换掉原图标），出了至少留 500ms；字与宽度不变，不灰，aria-busy，再按无效但键盘与读屏仍能到；300ms 内结束的不出转圈。',
       '焦点：键盘 Tab 到时画 focus-ring 的外框。',
       'effect（改自 SmoothUI，MIT）：magnetic 指针靠近时按钮朝它偏、离开弹回；dot-morph 前面一颗点悬停时拉成竖条；clip-corners 四个角切掉、悬停时切口变大。三种只在有精确指针的设备上动。',
     ],
@@ -103,6 +107,7 @@ export const PAGES: readonly DocPage[] = [
       '图标按钮必须带 aria-label。',
       '不要用颜色以外没有字的危险按钮。',
       'effect 一个界面里最多给一两个主操作用，不要成排；dot-morph 不能与 asChild 同用。',
+      '不要在按钮转圈的同时再盖整页遮罩或顶部进度条：一次等待只留一个指示。',
     ],
     composition: 'Button',
     keys: [
@@ -384,17 +389,21 @@ export const PAGES: readonly DocPage[] = [
     group: 'overlays',
     cardHeight: 152,
     title: 'Tooltip 提示',
-    summary: '悬停或聚焦时出现的短说明，从触发处轻升；默认没有延迟。',
+    summary: '悬停或聚焦时出现的短说明，从触发处轻升；悬停停 500ms 才出，出了以后 400ms 内移到邻居立即出。',
     exports: ['Tooltip', 'TooltipContent', 'TooltipProvider', 'TooltipTrigger', 'tooltipContentClass'],
     propParts: [
-      { part: 'TooltipProvider', note: '其余属性透传给 Radix Tooltip.Provider。' },
+      {
+        part: 'TooltipProvider',
+        note: '悬停时间在这里统一：delayDuration 默认 500，skipDelayDuration 默认 400（导出为 TOOLTIP_DELAY_MS、TOOLTIP_SKIP_MS）；其余属性透传给 Radix Tooltip.Provider。',
+      },
       { part: 'Tooltip', note: '其余属性透传给 Radix Tooltip.Root。' },
       { part: 'TooltipTrigger', note: '其余属性透传给 Radix Tooltip.Trigger。用 asChild 套在按钮上。' },
       { part: 'TooltipContent', note: '其余属性透传给 Radix Tooltip.Content。' },
       { part: 'tooltipContentClass', note: '提示的皮肤类名，应用里自己定位的提示（图表悬停）借它长一个样。' },
     ],
     states: [
-      '触发器静止；悬停或聚焦后浮出提示（默认没有延迟）。',
+      '触发器静止；悬停停满 500ms 浮出提示；聚焦立即浮出。',
+      '出过提示以后 400ms 内移到邻居：立即出、原地换字；离开超过 400ms 再进，重新等 500ms。按下触发器就收，指针离开前不再出。',
       '浮出：最深底 + 1px 分隔线色边 + --k-overlay-tooltip-shadow，没有小箭头。',
       '内容里有键帽（.k-kbd）：压成实心浅色块，字用最深底色。',
       '移开或 Esc：直接消失，不播退场动画（#1849）。',
@@ -1321,7 +1330,7 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 554,
     title: 'Loading 加载态',
     summary:
-      '加载态的唯一入口：给 pending 等数据，不给 pending 当 Suspense 边界，给 phase 钉在某一段直接画。500ms 内到了什么也不画；超过了出点阵骨架，2s 说「仍在加载」，10s 转琥珀条加重试。',
+      '加载态的唯一入口：给 pending 等数据，不给 pending 当 Suspense 边界，给 phase 钉在某一段直接画。500ms 内到了什么也不画；超过了出点阵骨架，出了至少留 500ms，2s 说「仍在加载」，10s 转琥珀条加重试。',
     exports: ['Loading', 'LoadingBoundary', 'LoadingView'],
     propParts: [
       {
@@ -1336,6 +1345,7 @@ export const PAGES: readonly DocPage[] = [
       '超过 500ms：caption（亮强调色灯 +「加载 <内容> · <来源>」）加点阵骨架；2s：说「仍在加载」。',
       '10s：琥珀条（warn 灯 + 文案 + 重试），骨架留着、降到半透明；没给 onRetry 就没有重试钮。',
       '数据到了：骨架出过的内容用 2px 模糊揭示，没出过的直接出现。',
+      '最短停留：骨架出了至少留 500ms 再交出内容（510ms 到的数据，骨架留到 1000ms）；只管 pending 模式，Suspense 模式没有。',
     ],
     donts: [
       '不要脉冲、不要转圈。',
@@ -1362,7 +1372,7 @@ export const PAGES: readonly DocPage[] = [
       },
     ],
     states: [
-      '加载中：不到 500ms 不露骨架条（不可见层照样占位），超过了才出，快的请求不闪。',
+      '加载中：不到 500ms 不露骨架条（不可见层照样占位），超过了才出，快的请求不闪；出了至少留 minShown（默认 500ms），数据早到也等满再揭示。',
       '骨架：每行文字一条 line-200 的圆角条，图片、按钮、标签各一块，圆角跟随内容；不闪、不脉冲。',
       '数据到了：真内容淡入到骨架的位置，onReveal 调一次；给了 id 的下次进来第一帧就是上次的形状。',
     ],
@@ -2119,13 +2129,15 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 135,
     title: 'Toast 弹出提示',
     summary:
-      '固定在窗口一角的弹出提示：只管样子与读屏语义（live region），条目表、定时、暂停由调用方管（应用里 AlertToasts 配 toast-queue.ts）。进出走 translate 与不透明度的过渡。',
+      '固定在窗口一角的弹出提示：只管样子与读屏语义（live region），条目表、定时、暂停由调用方管（应用里 AlertToasts 配 toast-queue.ts）。进出走 translate 与不透明度的过渡。视口 polite 礼貌播报，warn / danger 单条 role=alert；能撤销的操作配 ToastAction 与可选的 ToastCountdown。',
     exports: [
       'TOAST_EXIT_MS',
       'Toast',
+      'ToastAction',
       'ToastClear',
       'ToastClose',
       'ToastContent',
+      'ToastCountdown',
       'ToastDescription',
       'ToastIcon',
       'ToastText',
@@ -2135,13 +2147,21 @@ export const PAGES: readonly DocPage[] = [
     propParts: [
       {
         part: 'ToastViewport',
-        note: '其余属性透传给 div。role=region、aria-live=assertive：新插进来的条目读屏马上读；aria-label 由调用方给。',
+        note: '其余属性透传给 div。role=region、aria-live=polite：新插进来的条目读屏等空了再读，不打断；aria-label 由调用方给。',
       },
       {
         part: 'Toast',
-        note: '其余属性透传给 div。过渡的起点与终点由 data-starting-style、data-ending-style 给（phase 换的）。tone（Severity）定色条与图标的颜色，neutral 是主文字色色条加强调色图标。',
+        note: '其余属性透传给 div。过渡的起点与终点由 data-starting-style、data-ending-style 给（phase 换的）。tone（Severity）定色条与图标的颜色，neutral 是主文字色色条加强调色图标。tone 为 warn、danger 时这一条自带 role=alert（插入即打断播报），neutral、ok 不带，靠视口礼貌播报；调用方给的 role 排在后面能盖掉。',
       },
       { part: 'ToastClose', note: '其余属性透传给 Button（icon 变体）。' },
+      {
+        part: 'ToastAction',
+        note: '其余属性透传给 Button（ghost、sm）。一个文字钮，如「撤销」，文字由调用方给；强调色字，悬停才有底。',
+      },
+      {
+        part: 'ToastCountdown',
+        note: 'remaining（0 到 1）是剩余时间的比例，1 刚出现、0 要收了，超出范围收进 0 到 1。计时在调用方（toast-queue），包里不计时；建议每 100ms 更新一次，环随比例变短，中间不写秒数。纯装饰，aria-hidden。其余属性透传给 svg。',
+      },
       {
         part: 'ToastClear / ToastIcon / ToastText / ToastTitle / ToastDescription / ToastContent',
         symbol: 'ToastClear',
@@ -2152,18 +2172,21 @@ export const PAGES: readonly DocPage[] = [
       '收起：反向平移淡出，播完（TOAST_EXIT_MS）调用方再摘节点。',
       '多条：按位置叠，两条以上出「全部关掉」。',
       '语气：neutral（默认）、ok、warn、danger，色条与图标取 --k-status-*-foreground；说明文字是 ink-2（console 主题下 ink-3 不到 4.5:1）。',
+      '动作 toast：标题、倒计时环（16px 空心环，随剩余比例变短，中间不写秒数）、一个「撤销」钮、关闭钮并排；撤销以后调用方把同一条改成「已恢复」，约 1.5 秒后收。',
     ],
     donts: [
       '不要把需要用户处理的事只放在弹出提示里，它会自己消失。',
+      '不要事后 toast 一件不能撤销的事：先确认（AlertDialog），或者做成能撤销的再给「撤销」。',
+      '不要把价格告警这类系统消息当 toast 用：它是通知，应进铃下的列表（NotificationBell），toast 只是到达提示。',
       '不要只靠色条说语气：标题里写明（「下单被拒」而不是「出错了」）。',
       '不要在包里写死文案，关闭名与「全部关掉」都由调用方传。',
       '不要自己再做一套计时与队列放进 Toast，那是调用方的事。',
     ],
     composition:
-      'ToastViewport\n  Toast\n    ToastContent\n      ToastIcon\n      ToastText\n        ToastTitle\n        ToastDescription\n      ToastClose\n  ToastClear',
+      'ToastViewport\n  Toast\n    ToastContent\n      ToastIcon\n      ToastText\n        ToastTitle\n        ToastDescription\n      ToastCountdown（可选）\n      ToastAction（可选）\n      ToastClose\n  ToastClear',
     keys: [
-      ['Tab', '走到关闭钮、「全部关掉」'],
-      ['Enter / Space', '关掉这一条或全部'],
+      ['Tab', '走到「撤销」、关闭钮、「全部关掉」'],
+      ['Enter / Space', '撤销，或关掉这一条或全部'],
     ],
   },
   {
@@ -4964,10 +4987,11 @@ export const PAGES: readonly DocPage[] = [
     states: ['默认值：灰度、像素对齐开、字重 0、字号 100%、斜线零关、中英对齐关', '改任一项立刻生效（写在根节点上）'],
     donts: ['不要在件里存值：存盘交给调用方', '不要只在某个面板上改这些属性：渲染设置是整个应用一份'],
     composition:
-      'RenderingSettings\n  行 × 6（名称、说明、ToggleGroup 或 Slider）\n  字体小节\n    行 × 4（界面、汉字、数据字、代码：Select）\n  恢复默认（Button）',
+      'RenderingSettings\n  行 × 6（名称、说明、Switch、ToggleGroup 或 Slider）\n  字体小节\n    行 × 4（界面、汉字、数据字、代码：Select）\n  恢复默认（Button）',
     keys: [
       ['Tab', '按行的次序走过每个控件，最后是恢复默认'],
-      ['← →', '开关与平滑方式（分段切换）里换一段'],
+      ['Space', '开关（像素对齐、斜线零、中英对齐）翻转'],
+      ['Tab', '平滑方式（分段切换）按钮之间走；Enter 或 Space 按下'],
       ['← → / ↑ ↓', '字重、字号滑块走一格（字重 10，字号 5%）；Home / End 到两头'],
       ['Enter / Space', '打开字体下拉；下拉里 ↑ ↓ 选、Enter 确定、Esc 收起'],
     ],
@@ -8084,7 +8108,7 @@ export const PAGES: readonly DocPage[] = [
       '账户级风控（日亏线、连亏次数）不放进这里。',
     ],
     composition:
-      'OrderTicket\n  ToggleGroup（开仓 / 平仓）\n  Select（保证金模式）· 杠杆框\n  Tabs · TabsList line（限价 / 市价）\n  买栏 · 卖栏（各一份）\n    价格框 · Button（最优价）\n    Select（填法）· 仓位框 · Slider（0–100%）\n    可用 · 可开\n    Checkbox（止盈止损）· Select（出场模板）· 止盈框 · 止损框\n    下单钮 · 锁住原因（locked 时）\n    读数（dl）\n  费率 · Button（计算器）',
+      'OrderTicket\n  ToggleGroup（开仓 / 平仓）\n  ToggleGroup sm（保证金模式）· 杠杆框\n  Tabs · TabsList line（限价 / 市价）\n  买栏 · 卖栏（各一份）\n    价格框 · Button（最优价）\n    Select（填法）· 仓位框 · Slider（0–100%）\n    可用 · 可开\n    Checkbox（止盈止损）· Select（出场模板）· 止盈框 · 止损框\n    下单钮 · 锁住原因（locked 时）\n    读数（dl）\n  费率 · Button（计算器）',
     keys: [
       ['Tab', '开平、保证金模式、杠杆、委托类型，然后买栏从上到下、再卖栏从上到下'],
       ['← →', '在滑杆上按 1% 调仓位'],
@@ -11676,7 +11700,7 @@ export const PAGES: readonly DocPage[] = [
     ],
     states: [
       '改价：点铅笔，价格格换成输入框并全选；Enter 提交（价格没变只关框），Esc 或失焦取消，非法输入标红。',
-      '撤单中：状态标签变警告色，撤单按钮置灰，没有铅笔。',
+      '撤单中：状态标签变警告色，撤单按钮进行中（Button pending：满 300ms 出转圈、再按无效、字与宽不变，不再置灰），没有铅笔。',
       '没传 onCancel / onAmend / onCancelAll 时对应控件不画；空表写 labels.empty。',
     ],
     donts: ['不要在件里等交易所回报：发出回调后由调用方改状态。', '不要做成点一下就提交的改价：回车才提交。'],

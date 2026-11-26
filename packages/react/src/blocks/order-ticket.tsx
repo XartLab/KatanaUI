@@ -683,25 +683,26 @@ export function OrderTicket({
 
       {maxLeverage ? (
         <div className="flex items-center gap-1">
+          {/* 两项、短、互斥：分段，两项一直看得见（kubai Vibe Design Tips 020）；改错代价大，不藏在下拉后面。 */}
           {marginModes && marginMode ? (
-            <Select
+            <ToggleGroup
+              size="sm"
+              fullWidth
+              data-slot="ticket-margin-mode"
+              aria-label={labels.marginMode}
+              className="min-w-0 flex-1"
               value={marginMode}
               onValueChange={(value) => {
                 setMarginMode(value as MarginMode)
                 onMarginModeChange?.(value as MarginMode)
               }}
             >
-              <SelectTrigger aria-label={labels.marginMode} className="min-w-0 flex-1">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {marginModes.map((value) => (
-                  <SelectItem key={value} value={value}>
-                    {labels.marginModes[value]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              {marginModes.map((value) => (
+                <ToggleGroupItem key={value} value={value}>
+                  {labels.marginModes[value]}
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
           ) : null}
           <div className="min-w-0 flex-1">
             <TicketField
