@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 // 浮层组的「怎么用 / 无障碍」（照 Salt 组件页）。
+import { CASCADE_TIMING as T, SAFE_BAND } from '../../src/primitives/cascade-model'
 import type { GuidanceMap } from './types'
 
 const overlays: GuidanceMap = {
@@ -53,17 +54,31 @@ const overlays: GuidanceMap = {
   },
   'dropdown-menu': {
     aliases: ['Menu', 'Action menu', 'Overflow menu', 'Select menu'],
-    use: ['一组相关动作收进一个触发器。', '带勾选、单选或二级菜单的设置项。'],
+    use: [
+      '一组相关动作收进一个触发器。',
+      '带勾选、单选或二级菜单的设置项。',
+      `二级菜单悬停打开：停在父项上 ${T.openDelay}ms 开，离开取消；触摸点一下立即开；拖着东西经过父项 ${T.dragOpenDelay}ms 才开。`,
+      `斜着移向二级走安全三角：顶点取离开触发器前较早的那个 pointermove 点，连到二级近边的上下两角（二级翻到左边用右边缘）；指针还在父菜单靠二级一侧 min(${SAFE_BAND.max}px, max(${SAFE_BAND.min}px, 父宽 ${Math.round(SAFE_BAND.ratio * 100)}%)) 内时，经过的行不亮、不开自己的二级。`,
+      `停在三角里的某一行最多护 ${T.safeWindow}ms（每 ${T.safeRecheck}ms 复查），离开三角或满 ${T.safeWindow / 1000}s 才切换到那一行；指针进了二级，保护全部解除。`,
+      `指针滑出父项、所有层与安全区 ${T.closeDelay}ms 后才收二级，回来就取消；点菜单外面立即关。`,
+      '行的高亮由状态驱动：亮 = 焦点（data-highlighted），父项展开 = data-state=open，被安全三角跳过 = data-k-cascade="skipped"；菜单行上不写 :hover，经过的行不会闪。',
+      '出处：kubai《999 个小技巧》002 级联菜单（vibedesign.tips/002-cascade-menu，2026-11-26），数值照原文，时间都在 primitives/cascade-model.ts 的 CASCADE_TIMING；以前（#1832）是 Radix 默认的 100ms 开、300ms 斜移缓冲。调试：根节点写 data-cascade-debug，画出三角（蓝 16% 填充）与保护带（虚线框）。尺寸、配色、两层上限、键盘规则不变。',
+    ],
     avoid: ['项很多要搜索用 command。', '选一个值填表单用 select。', '右键触发用 context-menu。'],
     a11y: [
       'Radix 菜单：role=menu，项是 menuitem、menuitemcheckbox、menuitemradio。',
       '打开后焦点进菜单，关闭回触发器。',
       '禁用项用 aria-disabled，仍留在读屏序列里。',
+      `二级菜单的延时只管指针；键盘 → / Enter / Space 立即开、← 关并回父项、Esc 收一级，不受 ${T.openDelay}ms 影响。`,
     ],
   },
   'context-menu': {
     aliases: ['Right-click menu', 'Shortcut menu', 'Popup menu', 'Contextual menu'],
-    use: ['图表、行等区域上的二级动作。', '给高级用户的快捷入口。'],
+    use: [
+      '图表、行等区域上的二级动作。',
+      '给高级用户的快捷入口。',
+      '二级菜单的悬停时间与安全三角同 dropdown-menu 一份（menu-parts 共用）。',
+    ],
     avoid: ['唯一入口不要放右键里，同样的动作要有按钮。', '项很多用 command。', '按钮触发用 dropdown-menu。'],
     a11y: [
       'Radix 菜单：role=menu，项同下拉菜单。',

@@ -614,7 +614,7 @@ export const PAGES: readonly DocPage[] = [
       {
         part: 'DropdownMenuSub / DropdownMenuSubTrigger / DropdownMenuSubContent',
         symbol: 'DropdownMenuSub',
-        note: '二级菜单。安全三角：斜着朝二级走时路过下一行不误收。',
+        note: '二级菜单。悬停 220ms 开；安全三角：斜着朝二级走时路过下一行不换不闪，停在三角里最多护 1.2s；滑出 360ms 才收。',
       },
       {
         part: 'DropdownMenuLabel / DropdownMenuSeparator / DropdownMenuShortcut / DropdownMenuGroup / DropdownMenuPortal',
