@@ -303,6 +303,13 @@ export {
   type Flags,
   type UseFlagsOptions,
 } from './katana/flag-mark.tsx'
+// 联动组的选组件（#150，照 TradingView 符号联动）：标题栏里选 A–D 或不联动，进组走联动表（lib/link-group 的 useLinkHub）。
+export {
+  LinkGroupPicker,
+  joinLinkGroup,
+  type LinkGroupPickerLabels,
+  type LinkGroupPickerProps,
+} from './katana/link-group-picker.tsx'
 export {
   ShortcutRecorder,
   type ShortcutRecorderLabels,

@@ -41,6 +41,7 @@
 | [OrderTicket 下单面板](order-ticket.md) | `drive order-ticket` | 两栏算数、改杠杆、超可用报错、止盈止损模板、按风险算张数、开仓与平仓 |
 | [弹出层](overlays.md) | `drive overlays` | Popover 与 Dialog 的点开、Esc 关、点外面关、焦点回到触发处 |
 | [Tabs 页签](tabs.md) | `drive tabs` | 点页签换内容、底块跟随、方向键切换、禁用页签 |
+| [联动组与选组件](link-group.md) | `drive link-group` | 同组同步、选组菜单（打勾与每组品种）、进有品种的组、进空组带着品种走、不联动、键盘选组与 Esc、自选联动、十字线联动 |
 | [对照 Salt 补的七件](salt-gaps.md) | 还没有流程（手走） | Pill 改与删、SystemStatus 关闭、Calendar 选日与不可选日、ListBox 单选与多选、Link / Card / Panel 的样子 |
 | [RatingPanel 技术评级三联](rating-panel.md) | `drive rating-panel` | 点周期与 ← / → + Enter 切周期、悬停与 Tab 聚焦出读数 |
 | [SymbolNote 品种备注](symbol-note.md) | `drive symbol-note` | 悬停预览、点击与 Enter 钉住、编辑后保存、存空就是删除、Esc 收起与放弃草稿 |
@@ -63,3 +64,4 @@
 | 2026-11-23 | `c9634db` | 四条全走 | 全部 PASS | XartLab/KatanaUI#143 |
 | 2026-11-23 | `3281e887`（`feat/150-rating-panel` 合入 main 后） | rating-panel、symbol-note | 两条 PASS；各做一次改坏，变红后还原 | XartLab/KatanaUI#159 |
 | 2026-11-23 | `feat/150-rating-panel` 周期一排改 rovingFocus 后 | rating-panel | PASS 7 步；把 `rovingFocus` 改回 false，第 03 步（→ 到 5m）变红，已还原 | XartLab/KatanaUI#159 |
+| 2026-11-23 | `c3eb2c28` | `link-group`（Graphite，十一步；合并前的工作树另走过一次 Console） | PASS；把选组件进组时的 joinLinkGroup 注释掉，第 06 步 FAIL（迷你图进空的组 C 后不再是 DDD） | XartLab/KatanaUI#162 |
