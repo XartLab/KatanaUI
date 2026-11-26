@@ -53,8 +53,8 @@ export type MoveFeedProps = {
    */
   currentSymbol?: string | null
   /**
-   * Show only rows of `currentSymbol` (controlled). Without a `currentSymbol` the switch is absent and nothing is filtered.
-   * 只看当前品种（受控）；没给 currentSymbol 就没有开关、也不筛。
+   * Show only rows of `currentSymbol` (controlled). Without a `currentSymbol`, or without `labels.onlyCurrent`, the switch is absent and nothing is filtered.
+   * 只看当前品种（受控）；没给 currentSymbol、或 labels.onlyCurrent 缺省，就没有开关、也不筛。
    */
   onlyCurrent?: boolean
   /**
@@ -117,7 +117,9 @@ export function MoveFeed({
   const selected = selectedProp ?? selectedState
   const labelOf = (type: string) => types?.find((def) => def.key === type)?.label ?? labels.types[type] ?? type
   const [onlyState, setOnlyState] = useState(defaultOnlyCurrent)
-  const hasCurrent = typeof currentSymbol === 'string' && currentSymbol.trim() !== ''
+  // 开关要有字才画；没字就没有开关，也不按品种筛（用户没法关它）。
+  const hasCurrent =
+    typeof currentSymbol === 'string' && currentSymbol.trim() !== '' && labels.onlyCurrent !== undefined
   const only = hasCurrent && (onlyCurrentProp ?? onlyState)
   const scoped = only ? filterBySymbol(items, currentSymbol) : items
   const checkId = useId()

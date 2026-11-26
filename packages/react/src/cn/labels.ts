@@ -193,8 +193,8 @@ export type MoveFeedLabels = {
   /** 类型多选筛的读屏名与「全部」。 */
   filter: string
   all: string
-  /** 「只看当前品种」开关上的字，例「当前币对」；只有传了 currentSymbol 才画这个开关。 */
-  onlyCurrent: string
+  /** 「只看当前品种」开关上的字，例「当前币对」；缺省就不画这个开关（也不按品种筛），传了还要有 currentSymbol 才画。 */
+  onlyCurrent?: string
   /** 一类异动的名字，key 是 MOVE_TYPE_KEYS 里的。 */
   types: Record<string, string>
   /** 筛选 chip 上的计数文字。 */

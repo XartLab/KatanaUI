@@ -9,7 +9,7 @@ import { useState } from 'react'
 import { cn } from '../../lib/cn.ts'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../primitives/tooltip.tsx'
 import { ToggleGroup, ToggleGroupItem } from '../../primitives/toggle-group.tsx'
-import { derivativesLabelsZh, type DerivativesLabels } from './derivatives-labels.ts'
+import type { DerivativesLabels } from './derivatives-labels.ts'
 import {
   DEFAULT_PERIODS,
   defaultPeriodOf,
@@ -32,8 +32,8 @@ export type DerivativesCardCommon = {
   defaultPeriod?: string
   /** Called with the card's kind and the period just picked. */
   onPeriodChange?: (kind: DerivativesKind, period: string) => void
-  /** Texts; the Simplified Chinese default is used when omitted. */
-  labels?: DerivativesLabels
+  /** Texts; required, the package carries no language. */
+  labels: DerivativesLabels
   /** Volumes and open interest; defaults to an English compact number. */
   formatAmount?: DerivativesFormats['formatAmount']
   /** Prices and basis; defaults to thousands separators and at most two decimals. */
@@ -62,7 +62,7 @@ export function DerivativesCard(props: DerivativesCardProps) {
     period: periodProp,
     defaultPeriod,
     onPeriodChange,
-    labels = derivativesLabelsZh,
+    labels,
     formatTime = formatClock,
     chartHeight = 168,
     className,

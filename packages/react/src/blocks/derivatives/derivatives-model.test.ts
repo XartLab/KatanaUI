@@ -60,6 +60,23 @@ describe('alignedAxes：左右双轴共用网格', () => {
     expect(right.domain[0]).toBeLessThanOrEqual(0.8)
     expect(right.domain[1]).toBeGreaterThanOrEqual(3.7)
   })
+  it('lockLeft：右轴刻度比左轴多时放粗到跟左轴一样多，右轴的字落在左轴的网格线上，数据盖得住', () => {
+    const [left, right] = alignedAxes([0, 100], [0.8, 3.7], 3, true)
+    expect(left.ticks).toEqual([0, 50, 100])
+    // 不锁左轴时右轴要 8 档以上；锁了之后只能放粗到 3 档
+    expect(alignedAxes([0, 100], [0.8, 3.7], 5)[1].ticks.length).toBeGreaterThan(left.ticks.length)
+    expect(right.ticks).toHaveLength(left.ticks.length)
+    const step = (right.domain[1] - right.domain[0]) / (right.ticks.length - 1)
+    right.ticks.forEach((tick, i) => expect(tick).toBeCloseTo(right.domain[0] + step * i, 8))
+    expect(right.domain[0]).toBeLessThanOrEqual(0.8)
+    expect(right.domain[1]).toBeGreaterThanOrEqual(3.7)
+  })
+  it('lockLeft：左轴只有两档、右轴跨过零点，整步凑不齐，就在数据范围里均分，仍不多于左轴、不切数据', () => {
+    const [left, right] = alignedAxes([0, 1], [-0.1, 1.1], 2, true)
+    expect(left.ticks).toHaveLength(2)
+    expect(right.ticks).toEqual([-0.1, 1.1])
+    expect(right.domain).toEqual([-0.1, 1.1])
+  })
   it('右轴的数据一样高也不崩（上下各留 1）', () => {
     const [, right] = alignedAxes([0, 10], [5, 5], 4)
     expect(right.domain[0]).toBeLessThan(5)

@@ -136,6 +136,7 @@ export function buildSpec(
 ): PlotSpec {
   const { formatAmount, formatPrice } = formats
   const s = labels.series
+  const sep = labels.separator
   const dash = '—'
   const times = input.data.map((point) => point.time)
   const count = input.data.length
@@ -188,7 +189,7 @@ export function buildSpec(
           row('oi', s.openInterest, text(oi[i] ?? null, formatAmount, dash), 'var(--series-1)'),
           row('vol', s.volume, text(volume[i] ?? null, formatAmount, dash), 'var(--k-heat-3)'),
         ],
-        latest: `${s.openInterest} ${text(lastFinite(oi), formatAmount, dash)}，${s.volume} ${text(lastFinite(volume), formatAmount, dash)}`,
+        latest: `${s.openInterest} ${text(lastFinite(oi), formatAmount, dash)}${sep}${s.volume} ${text(lastFinite(volume), formatAmount, dash)}`,
       }
     }
     case 'fundingRate': {
@@ -253,7 +254,7 @@ export function buildSpec(
           row('buy', s.buy, text(buy[i] ?? null, formatAmount, dash), 'var(--pnl-up)'),
           row('sell', s.sell, text(sell[i] ?? null, formatAmount, dash), 'var(--pnl-down)'),
         ],
-        latest: `${s.buy} ${text(lastFinite(buy), formatAmount, dash)}，${s.sell} ${text(lastFinite(sell), formatAmount, dash)}`,
+        latest: `${s.buy} ${text(lastFinite(buy), formatAmount, dash)}${sep}${s.sell} ${text(lastFinite(sell), formatAmount, dash)}`,
       }
     }
     case 'longShortRatio':
@@ -457,10 +458,10 @@ export function PlotArea({
       <span className="sr-only" aria-live="polite">
         {active === null
           ? ''
-          : `${stamp}，${spec
+          : `${stamp}${labels.separator}${spec
               .rows(active)
               .map((r) => `${r.label} ${r.value}`)
-              .join('，')}`}
+              .join(labels.separator)}`}
       </span>
     </div>
   )

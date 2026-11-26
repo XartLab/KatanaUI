@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
-// 交易数据看板（#245 模块 1）：整块六张卡、有空态的一块、加密的异动流，各一张截图。测试名即文件名（derivatives-board.tsx → 'derivatives-board'）。
+// 交易数据看板（#245 模块 1）：整块六张卡、有空态的一块、单张卡、加密的异动流，各一张截图。测试名即文件名（derivatives-board.tsx → 'derivatives-board'，derivatives-card.tsx → 'derivatives-card'）。
 import { describe, test, expect } from 'vite-plus/test'
 import { page } from 'vite-plus/test/browser'
-import { DerivativesBoard } from '../src/blocks'
+import { DerivativesBoard, DerivativesCard } from '../src/blocks'
 import { MoveFeed, cnLabelsZh, type MoveItem } from '../src/cn'
+import { derivativesLabelsZh } from '../gallery/usage/derivatives-labels-zh.ts'
 import { DERIVATIVES_DEMO } from '../gallery/usage/DerivativesBoardUsage.tsx'
 import { mount } from './render.tsx'
 import { settled } from './settle.ts'
@@ -16,13 +17,19 @@ const COINS: MoveItem[] = [
 ]
 
 const items: Record<string, React.ReactNode> = {
-  'derivatives-board': <DerivativesBoard data={DERIVATIVES_DEMO} minCardWidth={420} />,
+  'derivatives-board': <DerivativesBoard data={DERIVATIVES_DEMO} labels={derivativesLabelsZh} minCardWidth={420} />,
   'derivatives-board-empty': (
     <DerivativesBoard
+      labels={derivativesLabelsZh}
       kinds={['fundingRate', 'takerVolume', 'basis']}
       minCardWidth={320}
       data={{ fundingRate: DERIVATIVES_DEMO.fundingRate, takerVolume: [] }}
     />
+  ),
+  'derivatives-card': (
+    <div style={{ width: 460 }}>
+      <DerivativesCard kind="basis" data={DERIVATIVES_DEMO.basis} labels={derivativesLabelsZh} />
+    </div>
   ),
   'move-feed-crypto': (
     <div style={{ width: 460 }}>

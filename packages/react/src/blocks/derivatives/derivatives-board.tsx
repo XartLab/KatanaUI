@@ -7,7 +7,6 @@
 import type { CSSProperties } from 'react'
 import { cn } from '../../lib/cn.ts'
 import { DerivativesCard, type DerivativesCardCommon } from './derivatives-card.tsx'
-import { derivativesLabelsZh } from './derivatives-labels.ts'
 import { DERIVATIVES_KINDS, type DerivativesData, type DerivativesKind } from './derivatives-model.ts'
 
 export type DerivativesBoardProps = Omit<DerivativesCardCommon, 'periods' | 'period' | 'defaultPeriod'> & {
@@ -32,7 +31,7 @@ export function DerivativesBoard({
   period,
   defaultPeriod,
   minCardWidth = 360,
-  labels = derivativesLabelsZh,
+  labels,
   className,
   ...common
 }: DerivativesBoardProps) {

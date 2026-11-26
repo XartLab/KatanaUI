@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { DerivativesBoard, type DerivativesData } from '../../src/blocks'
+import { derivativesLabelsZh } from './derivatives-labels-zh.ts'
 
 // 演示数据：编出来的（闭式公式，不是行情）；整点一根，从 2026-11-24 00:00 UTC 起。
 const HOUR = 3600 * 1000
@@ -42,5 +43,5 @@ export const DERIVATIVES_DEMO: DerivativesData = {
 }
 
 export function DerivativesBoardUsage() {
-  return <DerivativesBoard data={DERIVATIVES_DEMO} />
+  return <DerivativesBoard data={DERIVATIVES_DEMO} labels={derivativesLabelsZh} />
 }

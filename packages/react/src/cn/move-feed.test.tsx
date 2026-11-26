@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
+import { cnLabelsZh } from './labels.ts'
 import { MoveFeed } from './move-feed.tsx'
 import {
   clockText,
@@ -122,6 +123,16 @@ describe('MoveFeed', () => {
     expect(html).toContain('data-slot="move-only-current"')
     expect(html).toContain('当前品种')
     expect(html.match(/data-slot="move-row"/g)).toHaveLength(3)
+  })
+
+  it('labels.onlyCurrent 缺省：不画开关也不筛，老调用方照旧能用', () => {
+    const { onlyCurrent: _omit, ...labels } = cnLabelsZh.moveFeed
+    const html = renderToStaticMarkup(
+      <MoveFeed items={COINS} currentSymbol="BTC-USDT-SWAP" onlyCurrent labels={labels} />,
+    )
+    expect(html).not.toContain('move-only-current')
+    expect(html.match(/data-slot="move-row"/g)).toHaveLength(3)
+    expect(html).toContain('共 3 条')
   })
 
   it('只看当前品种：只列这个品种的行，条数与类型计数按筛后的算；不分大小写', () => {

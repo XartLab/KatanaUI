@@ -433,7 +433,7 @@ export {
   type DerivativesCardCommon,
   type DerivativesCardProps,
 } from './derivatives/derivatives-card.tsx'
-export { derivativesLabelsZh, type DerivativesLabels } from './derivatives/derivatives-labels.ts'
+export type { DerivativesLabels } from './derivatives/derivatives-labels.ts'
 export {
   DEFAULT_PERIODS,
   DERIVATIVES_KINDS,

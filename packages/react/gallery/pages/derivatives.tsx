@@ -2,7 +2,8 @@
 // 交易数据看板（#245 模块 1）的文档站预览。数据是编出来的演示数据（闭式公式），不是行情；件不取数，切周期只发回调，
 // 这里的回调把「哪张卡切到了哪个周期」写在旁边一行字里（e2e 读它），数据并不跟着周期变。
 import { useState } from 'react'
-import { DerivativesBoard, DerivativesCard, derivativesLabelsZh, type DerivativesKind } from '../../src/blocks/index.ts'
+import { DerivativesBoard, DerivativesCard, type DerivativesKind } from '../../src/blocks/index.ts'
+import { derivativesLabelsZh } from '../usage/derivatives-labels-zh.ts'
 import { DERIVATIVES_DEMO } from '../usage/DerivativesBoardUsage.tsx'
 
 const NOTE = '演示数据：编出来的，不是行情；件不取数，切周期只发回调，数据由调用方按周期换。'
@@ -20,6 +21,7 @@ export function DerivativesBoardDemo() {
       <div data-testid="derivatives-board">
         <DerivativesBoard
           data={DERIVATIVES_DEMO}
+          labels={derivativesLabelsZh}
           period={period}
           onPeriodChange={(kind, next) => {
             setPeriod((current) => ({ ...current, [kind]: next }))
@@ -32,6 +34,7 @@ export function DerivativesBoardDemo() {
         <DerivativesBoard
           kinds={['openInterestVolume', 'fundingRate', 'basis']}
           minCardWidth={300}
+          labels={derivativesLabelsZh}
           data={{
             fundingRate: DERIVATIVES_DEMO.fundingRate,
             openInterestVolume: [],
@@ -43,6 +46,7 @@ export function DerivativesBoardDemo() {
       <div data-testid="derivatives-single" style={{ maxWidth: 420 }}>
         <DerivativesCard
           kind="longShortRatio"
+          labels={derivativesLabelsZh}
           data={DERIVATIVES_DEMO.longShortRatio}
           defaultPeriod="1h"
           chartHeight={140}

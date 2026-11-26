@@ -11744,11 +11744,10 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 520,
     title: 'DerivativesBoard 交易数据看板',
     summary:
-      '永续合约的「交易数据」（OKX 永续页，XartLab/KatanaUI#245）：六张卡的网格，每张自己的标题、信息提示与周期按钮。持仓量及成交量（成交量柱在左轴、持仓量线在右轴，两轴共用一套网格）、资金费率（柱按正负着色，零线居中，周期近 7 / 14 天）、主动买卖量（买入在零线上、卖出镜像在零线下）、多空账户比与精英多空趋向（多空 100% 堆叠柱，加多空比折线在右轴）、合约基差（上面合约价与指数价两条线，下面基差柱）。数据按卡由调用方给（时间戳加数值的序列），缺哪张就显示那张的空态，不画假数；没有数的点留缺口，不当零画。周期可受控（period）也可不受控（defaultPeriod），切换只发 onPeriodChange(kind, period)，换数据是调用方的事。悬停或 ← → 扫读出悬停窗。卡可以单独用：DerivativesCard 一个 kind 一张。文字走 labels（默认简体中文 derivativesLabelsZh）。',
+      '永续合约的「交易数据」（OKX 永续页，XartLab/KatanaUI#245）：六张卡的网格，每张自己的标题、信息提示与周期按钮。持仓量及成交量（成交量柱在左轴、持仓量线在右轴，两轴共用一套网格）、资金费率（柱按正负着色，零线居中，周期近 7 / 14 天）、主动买卖量（买入在零线上、卖出镜像在零线下）、多空账户比与精英多空趋向（多空 100% 堆叠柱，加多空比折线在右轴）、合约基差（上面合约价与指数价两条线，下面基差柱）。数据按卡由调用方给（时间戳加数值的序列），缺哪张就显示那张的空态，不画假数；没有数的点留缺口，不当零画。周期可受控（period）也可不受控（defaultPeriod），切换只发 onPeriodChange(kind, period)，换数据是调用方的事。悬停或 ← → 扫读出悬停窗。卡可以单独用：DerivativesCard 一个 kind 一张。文字走 labels（必填，包里不带语言；演示用的简体中文那份在 gallery/usage/derivatives-labels-zh.ts）。',
     exports: [
       'DerivativesBoard',
       'DerivativesCard',
-      'derivativesLabelsZh',
       'DERIVATIVES_KINDS',
       'DEFAULT_PERIODS',
       'hasData',
@@ -11770,7 +11769,7 @@ export const PAGES: readonly DocPage[] = [
       },
       {
         part: 'DerivativesLabels',
-        note: '卡名与信息提示、周期按钮的字、序列名、空态、读屏名；默认 derivativesLabelsZh。',
+        note: '必填。卡名与信息提示、周期按钮的字、序列名、空态、读屏名与读数之间的分隔符（separator）；包里不带语言，整份由调用方传。',
       },
       { part: 'OpenInterestVolumePoint', note: '{ time, openInterest, volume }；缺的值写 null，留缺口。' },
       { part: 'FundingRatePoint', note: '{ time, rate }；rate 是百分数，0.01 就是 0.01%。' },

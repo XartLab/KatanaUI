@@ -122,8 +122,10 @@ export type AxisSpec = { domain: Domain; ticks: readonly number[] }
 /**
  * Two value axes that share one set of grid lines: both get the same number of ticks, so the right axis labels sit on the left axis' grid.
  * The shorter tick list is extended upward by whole steps (stays nice). With `lockLeft` the left axis is kept as it is (the 100% axis of a stacked card must not grow past 100):
- * the right one is recomputed with fewer ticks until it fits, then extended.
- * 左右双轴共用一套网格：两边刻度个数相同，右轴的字落在左轴的网格线上；少的那边按整步往上补。lockLeft：左轴不许动（百分比轴不能长过 100），右轴放粗到放得下再补。
+ * the right one is recomputed with fewer ticks until it fits, then extended. If even the coarsest nice step leaves more ticks than the left axis has
+ * (only when the left axis has very few), the right ticks are spread evenly over the data range instead: not round numbers, but still on the left grid lines and never clipping the data.
+ * 左右双轴共用一套网格：两边刻度个数相同，右轴的字落在左轴的网格线上；少的那边按整步往上补。lockLeft：左轴不许动（百分比轴不能长过 100），右轴放粗到放得下再补；
+ * 粗到头还是比左轴多（左轴刻度很少时才会）就把右轴的刻度在数据范围里均分：不是整数，但仍在左轴的网格线上，也不会切掉数据。
  */
 export function alignedAxes(left: Domain, right: Domain, count = 4, lockLeft = false): [AxisSpec, AxisSpec] {
   const a = niceTicks(left[0], left[1], count)
@@ -137,6 +139,12 @@ export function alignedAxes(left: Domain, right: Domain, count = 4, lockLeft = f
     const ticks = [...spec.ticks]
     while (ticks.length < to) ticks.push(+(ticks[ticks.length - 1]! + spec.step).toFixed(10))
     return { domain: [ticks[0]!, ticks[ticks.length - 1]!], ticks }
+  }
+  if (lockLeft && b.ticks.length > a.ticks.length) {
+    const [lo, hi] = right[1] > right[0] ? right : ([right[0] - 1, right[1] + 1] as Domain)
+    const last = a.ticks.length - 1
+    const even = Array.from({ length: a.ticks.length }, (_, i) => +(lo + ((hi - lo) * i) / last).toFixed(10))
+    return [extend(a, a.ticks.length), { domain: [lo, hi], ticks: even }]
   }
   const n = lockLeft ? a.ticks.length : Math.max(a.ticks.length, b.ticks.length)
   return [extend(a, n), extend(b, n)]
