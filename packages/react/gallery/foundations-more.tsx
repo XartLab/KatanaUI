@@ -56,6 +56,105 @@ export function Table({ head, rows }: { head: readonly string[]; rows: readonly 
 }
 const code = (text: string) => <code>{text}</code>
 
+/* ---------- 圆角规则（#251 批 B，kubai Vibe Design Tips 004，2026-11-27） ---------- */
+
+/** 圆角页在 token 表下面接的规则：谁用哪个、嵌套怎么算、哪些并入了、哪些待用户定。数值写 Graphite / Console，值与 tokens.json 一致。 */
+export function RadiusRules() {
+  return (
+    <>
+      <h2>谁用哪个</h2>
+      <Table
+        head={['角色', 'token', 'Graphite / Console', '用在']}
+        rows={[
+          [
+            '面板',
+            code('--radius-panel'),
+            '0 / 0',
+            '面板壳、窗格、标签页条、工具条：方角（精密仪器风，用户 2026-10-17）',
+          ],
+          [
+            '对话框、抽屉',
+            code('--radius-dialog'),
+            '14 / 14',
+            'Dialog、AlertDialog、Sheet、搜索窗；里面的控件仍用 control，不随它变大',
+          ],
+          [
+            '浮层',
+            code('--radius-overlay'),
+            '8 / 10',
+            '菜单、下拉列表、弹出层、悬停卡，以及面板里 8px 的卡与块；分段控件的外壳',
+          ],
+          [
+            '控件',
+            code('--radius-control'),
+            '6 / 7',
+            '按钮（含 sm）、输入框、OTP、下拉触发、分段、工具条上的钮、面板里的小卡与格',
+          ],
+          [
+            '浮层里的行',
+            code('--radius-inner'),
+            '4 / 5',
+            '菜单项、下拉项、命令项、导航菜单链接、分段的选中块、浮层里的筛选行',
+          ],
+          ['独立的小块', code('--radius-md'), '4 / 4', '键帽、卡的小标、折叠头、芯片：不在浮层里的 4px'],
+          ['细条与小徽记', code('--radius-sm'), '2 / 2', '进度条、条形、色块、图例点：原来写 1 到 3px 的'],
+          ['胶囊与圆', <>{code('--radius-pill')} / 50%</>, '全圆', '胶囊按钮、LED、滑块槽、头像；不参与嵌套'],
+        ]}
+      />
+      <h2>规则</h2>
+      <ul className="gal-list">
+        <li>
+          内角 = 外角 − 内边距，最低 4（kubai Vibe Design Tips 004）：两个角共用一个圆心。菜单外框 8、内边 6，8 − 6 =
+          2，低于 4 取 4，所以行是 {code('--radius-inner')}。同层的框共用一个值。
+        </li>
+        <li>
+          圆角一律从 token 来：CSS 写 {code('border-radius: var(--radius-control)')}，Tailwind 写{' '}
+          {code('rounded-[var(--radius-control)]')}，多角写 {code('var(--radius-control) 0 0 var(--radius-control)')}
+          。不写像素、不写带像素的兜底；{code('src/radius-tokens.test.ts')} 扫 {code('theme/*.css')} 与所有
+          TSX，写一处就红。
+        </li>
+        <li>切主题时一起变：Console 的输入框、下拉触发、OTP 都是 7，不再有 Input 写死 6 而 Select 取 7 的两套。</li>
+        <li>
+          零散值就近并入：1、3 → {code('--radius-sm')}；5 → {code('--radius-inner')}；10 → {code('--radius-overlay')}
+          ；13 是 26 高的胶囊 → {code('--radius-pill')}；8 的卡 → {code('--radius-overlay')}，8 的输入与按钮 →{' '}
+          {code('--radius-control')}。
+        </li>
+        <li>
+          连续曲率：≥ 8px 的面（浮层、悬停卡、对话框、抽屉、搜索窗）在支持 {code('corner-shape')} 的浏览器上取{' '}
+          {code('superellipse(1.25)')}（Chrome、Edge 139+），写在 {code('theme/materials.css')} 的 {code('@supports')}{' '}
+          里；Safari、Firefox 整块跳过，仍是圆弧。2 到 6px 的控件不加。与 {code('Squircle')} 分工： Squircle 用
+          clip-path 生成路径，给要明显超椭圆的地方；这里只是渐进增强。
+        </li>
+        <li>
+          不动：JS 动画里的圆角常量（灵动岛、MorphSurface、GlassCard、BorderBeam 的 {code('borderRadius')}{' '}
+          数）是动画起止值，不是主题圆角。
+        </li>
+      </ul>
+      <h2>并入后变了的（&gt; 1px）</h2>
+      <ul className="gal-list">
+        <li>
+          Graphite：侧栏搜索框、流程图加号钮 8 → 6（控件）；导航菜单链接、新闻筛选浮层的行 6 → 4（浮层里的行）；Peer
+          卡主块与 FolderReveal 的盒 10 → 8。
+        </li>
+        <li>Graphite：Select、Combobox、MultiSelect 的下拉面 7 → 8（+1，同浮层）。</li>
+        <li>Console：控件 6 → 7、浮层与 8 的卡 8 → 10、行 4 → 5，是「跟主题走」的预期结果。</li>
+      </ul>
+      <h2>待用户确认</h2>
+      <ul className="gal-list">
+        <li>
+          sm 按钮原来写死 8，比 md（6）还圆，已改成 {code('--radius-control')}（主会话按默认定，不同意就改回）。Graphite
+          下 sm 另由 graphite.css 取 {code('--radius-inner')}（4），这次没动。
+        </li>
+        <li>
+          Graphite 下对话框实际是 8，不是 14：graphite.css 的玻璃规则把它盖成了 {code('--radius-overlay')}。
+          {code('--radius-dialog')} 现在只在 Console、Sheet、搜索窗生效；要不要让 Graphite 的对话框也取 14，待定。
+        </li>
+      </ul>
+      <Src href="https://vibedesign.tips/004-continuous-corners/">kubai · Vibe Design Tips 004 Continuous corners</Src>
+    </>
+  )
+}
+
 /* ---------- 入门 ---------- */
 
 function DevelopingPage() {
@@ -114,6 +213,23 @@ import { EquityCurve } from '@katana-ui/react/quant'`}
           ],
           ['目录条目', '13px、次级文字色；当前项主文字色加左侧 2px 线'],
           ['切页与锚点', '切页回到顶；锚点落点让开顶栏与页签'],
+          [
+            '页末上一页 / 下一页',
+            '按左栏次序、跨分组接续；两块并排，小字方向 + 页名，边框 --k-separable-primary-borderColor、圆角 --radius-control；第一页没有上一页、最后一页没有下一页',
+          ],
+          [
+            '左栏换页与记位置',
+            '换页后当前项落进渐隐带或看不见时，只滚目录自己的滚动层；滚动位置存 sessionStorage（katanaui-gallery-side-scroll），刷新、收起再展开都回原位；按 / 聚焦搜索',
+          ],
+          [
+            '左栏两端渐隐',
+            '上 40px、下 56px，各留 10% 全透明的边；按滚动位置写 data-more-above / data-more-below 驱动，只在那一端还有内容时出现；滚动条仍是 4px 原生条，不隐藏',
+          ],
+          [
+            '窄屏（≤ 760px）目录',
+            '左栏不渲染；底部固定 48px 一条栏：左「目录」按钮，右是正在读的节名（省略号截断）；点开是从底边升起的 dialog（showModal），上移 24px 淡入、不压暗背后，Esc、点外面、点条目、点关闭都关，焦点回按钮；条目行高 44px 上下',
+          ],
+          ['顶栏', '一直吸顶，不做滚出后变毛玻璃浮条（kubai 008 的这一条不取：顶栏有主题切换与面包屑，常驻有用）'],
           ['基础页表格', '三列顶对齐、行高 20px；长字体栈单行截断，全文在悬停提示'],
         ]}
       />
@@ -290,9 +406,89 @@ function DurationPage() {
           CSS 用 {code('transition: transform var(--dur-gentle) var(--ease-gentle)')}；JS 用 motion/react
           的同名弹簧参数。
         </li>
-        <li>颜色、透明度用 120–200ms 线性过渡，不用弹簧。</li>
+        <li>颜色、透明度的小变化走下面的 {code('--ease-hover')}，不用弹簧，也不再用 linear。</li>
         <li>不跟系统的「减少动态效果」：动效只有三类原因（状态变了、东西进出、跟手），本来就克制（产品底线）。</li>
       </ul>
+      <h2>曲线按角色选</h2>
+      <p>
+        一个角色一条曲线，不在各件里自己调（kubai Vibe Design Tips 011，2026-11-27，#251）。{code('--ease-exit')} 与{' '}
+        {code('--ease-hover')} 是 CSS 关键字 ease-in、ease-out 的同一条曲线，写成 token 是为了全库同一个名字。
+      </p>
+      <Table
+        head={['角色', '曲线与时长', '用在']}
+        rows={[
+          [
+            '入场（位移、缩放）',
+            <>
+              {code('--ease-snappy')} / {code('--ease-gentle')} 弹簧
+            </>,
+            '菜单、弹层、提示、对话框、抽屉：用户定的「动效我们自己做」，不换成 cubic-bezier；菜单从触发处长出',
+          ],
+          [
+            '退场',
+            <>
+              {code('--ease-exit')} {code('cubic-bezier(0.42, 0, 1, 1)')}，{code('--dur-exit')} 120ms
+            </>,
+            '菜单、弹层、悬停卡、对话框、抽屉、折叠收起、富提示、导航菜单、滚动条消失。慢起、全速离开；只用在退场，用在入场会先慢后顿一下',
+          ],
+          [
+            '悬停、按下、淡入、颜色与不透明度的小变化',
+            <>
+              {code('--ease-hover')} {code('cubic-bezier(0, 0, 0.58, 1)')}，{code('--dur-hover')} 120ms
+            </>,
+            '按钮、链接、行、芯片、输入框边框的状态变化，背板与页签内容的淡入。过渡没写时长就取它，不写 CSS 默认的 ease',
+          ],
+          [
+            '一直在屏上、只换位置的',
+            <>{code('--ease-snappy')} 弹簧</>,
+            '页签与分段的底块、重排位移、条长与标记的滑动（用户定的「弹簧滑移」，不换成 ease-in-out）',
+          ],
+          [
+            '在「跑」的东西',
+            'linear',
+            '转圈、不确定进度条、LED 呼吸与闪烁、数据刷新的闪烁淡出（--dur-flash）；位移不用',
+          ],
+        ]}
+      />
+      <ul className="gal-list">
+        <li>
+          每一段 {code('transition')} 都写曲线，不落到默认的 ease；退场动画（{code('kc-*-out')}、折叠收起）写{' '}
+          {code('var(--dur-exit) var(--ease-exit)')}，不写 linear。{code('src/motion-tokens.test.ts')} 扫{' '}
+          {code('theme/*.css')}，漏一处就红。
+        </li>
+        <li>
+          不对 width / height / top / left 做过渡：每帧重排。条长写成 {code('--fill')}（0 到 1）用 {code('scale')} 画（
+          {code('transform-origin')} 贴着零点），带起点的写 {code('--from')} 加 {code('translate')}，标记的位置用{' '}
+          {code('translate')}（轨设 {code('container-type: inline-size')}，位移取 {code('cqw')}
+          ）；有点阵纹理的条（Meter、Slider 的填充）scale 会拉伸点，改用 {code('clip-path')}
+          裁右边（只重绘、不重排）。写法统一在 {code('src/lib/fill.ts')}。
+        </li>
+        <li>
+          豁免在 {code('motion-tokens.test.ts')} 的 {code('LAYOUT_ALLOW')}
+          ，每条写了原因：页签与导航菜单这类宽高跟着文字内容变的、Treemap
+          与热力图的格子重排（布局算法给位置、格里有字）、点阵纹理的 AttributionBars 零轴条（待另做）。
+        </li>
+        <li>
+          效果（#251，文档站订单簿页，模拟行情 15 次 / 秒推 5 秒，Chrome DevTools Protocol 的 Performance
+          指标，同一台机、同一数据，改前改后交替各 3 次取中位）：布局重排 355 次 → 55 次，布局耗时 130 ms → 32
+          ms；样式重算次数没变（约 400 次）。
+        </li>
+      </ul>
+      <h2>没改、待用户确认</h2>
+      <ul className="gal-list">
+        <li>入场弹簧不动（用户定）；不加回弹（overshoot）：三条弹簧都是近临界阻尼，精密仪器风不要回弹。</li>
+        <li>不做 prefers-reduced-motion（产品底线），所以 Tip 011 里「减少动态效果」那一节没有照做。</li>
+        <li>
+          LED 的 60ms 状态色过渡（{code('led.css')}）与数据刷新的闪烁保持
+          linear：它们是状态灯与刷新提示，不是位移；少数几处直接写 {code('ease-out')} / {code('ease-in-out')}{' '}
+          关键字的（热力图格、树图箭头、抖动）等价于 token，没有逐处换名。
+        </li>
+        <li>
+          Tip 011 的 {code('--ease-in-out')}
+          （页签底块、分段底块、侧栏）没有加：这些位置用的是弹簧，用户定过「弹簧滑移」。
+        </li>
+      </ul>
+      <Src href="https://vibedesign.tips/011-easing-curves/">kubai · Vibe Design Tips 011 Easing curves</Src>
       <h2>数据刷新</h2>
       <p>
         数据会自己更新的地方（行情、新闻流、连板天梯、自选），变了的地方要让人看得出，但不能晃眼。五条规则，共用层在{' '}

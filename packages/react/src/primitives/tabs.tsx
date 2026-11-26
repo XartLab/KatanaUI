@@ -82,7 +82,7 @@ function TabsList({
         <span
           aria-hidden="true"
           data-slot="tabs-pill"
-          className="pointer-events-none absolute top-0 left-0 rounded-[6px] bg-(--seg-on-bg)"
+          className="pointer-events-none absolute top-0 left-0 rounded-[var(--radius-control)] bg-(--seg-on-bg)"
           style={{ width: pill.width, height: pill.height, translate: `${pill.left}px ${pill.top}px` }}
         />
       ) : null}
@@ -104,7 +104,7 @@ function TabsTrigger({
       data-slot="tabs-trigger"
       className={cn(
         !bare && [
-          'k-text-data relative inline-flex h-7 cursor-pointer items-center justify-center gap-1.5 rounded-[6px] px-2 leading-none whitespace-nowrap text-(color:--k-content-body-foreground)',
+          'k-text-data relative inline-flex h-7 cursor-pointer items-center justify-center gap-1.5 rounded-[var(--radius-control)] px-2 leading-none whitespace-nowrap text-(color:--k-content-body-foreground)',
           'transition-[color,scale] duration-200 enabled:active:scale-[0.96] enabled:data-[state=inactive]:hover:text-(color:--k-content-primary-foreground)',
           'data-[state=active]:font-medium data-[state=active]:text-(--seg-on-ink)',
           'group-data-[variant=line]/tabs-list:data-[state=active]:text-(color:--k-content-primary-foreground)',

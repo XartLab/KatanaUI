@@ -13,6 +13,8 @@ import {
   SUBMENU_SIDE_OFFSET,
   SubmenuArrow,
   SubStateContext,
+  CascadeContext,
+  useCascade,
   closeSubOnEscape,
   useSubState,
   keepMovedFocus,
@@ -39,18 +41,22 @@ function ContextMenuPortal({ ...props }: ComponentProps<typeof ContextMenuPrimit
 }
 
 function ContextMenuContent({ className, ...props }: ComponentProps<typeof ContextMenuPrimitive.Content>) {
+  const cascade = useCascade(props)
   return (
     <OverlayPortal portal={ContextMenuPrimitive.Portal}>
       <MenuKindContext value="context">
-        <ContextMenuPrimitive.Content
-          data-slot="context-menu-content"
-          className={cn(menuContainerClass, className)}
-          {...(props['aria-label'] ? { 'aria-labelledby': undefined } : {})}
-          // role="presentation" 的容器（里面另有 role=menu 的列表，面板目录）不能带 aria-orientation（axe aria-allowed-attr）。
-          {...(props.role === 'presentation' ? { 'aria-orientation': undefined } : {})}
-          {...props}
-          onCloseAutoFocus={keepMovedFocus(props.onCloseAutoFocus)}
-        />
+        <CascadeContext value={cascade.controller}>
+          <ContextMenuPrimitive.Content
+            data-slot="context-menu-content"
+            className={cn(menuContainerClass, className)}
+            {...(props['aria-label'] ? { 'aria-labelledby': undefined } : {})}
+            // role="presentation" 的容器（里面另有 role=menu 的列表，面板目录）不能带 aria-orientation（axe aria-allowed-attr）。
+            {...(props.role === 'presentation' ? { 'aria-orientation': undefined } : {})}
+            {...props}
+            {...cascade.contentProps}
+            onCloseAutoFocus={keepMovedFocus(props.onCloseAutoFocus)}
+          />
+        </CascadeContext>
       </MenuKindContext>
     </OverlayPortal>
   )
@@ -205,9 +211,11 @@ function ContextMenuSubContent({
   sideOffset = SUBMENU_SIDE_OFFSET,
   alignOffset = SUBMENU_ALIGN_OFFSET,
   onEscapeKeyDown,
+  onFocusOutside,
   ...props
 }: ComponentProps<typeof ContextMenuPrimitive.SubContent>) {
   const sub = useContext(SubStateContext)
+  const cascade = useContext(CascadeContext)
   return (
     <OverlayPortal portal={ContextMenuPrimitive.Portal}>
       <ContextMenuPrimitive.SubContent
@@ -215,6 +223,11 @@ function ContextMenuSubContent({
         onEscapeKeyDown={(event) => {
           onEscapeKeyDown?.(event)
           if (!event.defaultPrevented) closeSubOnEscape(sub, event)
+        }}
+        // 指针驱动的「焦点移到父菜单容器」不立刻收子菜单，由控制器按安全区与 360ms 延时定（menu-parts.tsx 头注释）。
+        onFocusOutside={(event) => {
+          onFocusOutside?.(event)
+          if (!event.defaultPrevented) cascade?.holdFocusOutside(event)
         }}
         sideOffset={sideOffset}
         alignOffset={alignOffset}

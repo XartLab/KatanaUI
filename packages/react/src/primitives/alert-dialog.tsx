@@ -58,7 +58,7 @@ function AlertDialogContent({
         className={cn(
           'k-dlg confirm k-text-body fixed top-1/2 left-1/2 z-41 flex max-h-[calc(100dvh-24px)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden',
           size === 'sm' ? 'w-[min(320px,calc(100vw-24px))]' : 'w-[min(560px,calc(100vw-24px))]',
-          'rounded-[14px] border bg-(--k-surface-raised-background) leading-[1.45] text-(color:--k-content-primary-foreground) outline-0',
+          'rounded-[var(--radius-dialog)] border bg-(--k-surface-raised-background) leading-[1.45] text-(color:--k-content-primary-foreground) outline-0',
           'shadow-(--k-overlay-dialog-shadow)',
           className,
         )}

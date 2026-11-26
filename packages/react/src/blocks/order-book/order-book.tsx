@@ -8,6 +8,7 @@
  * 样子参照 KATANAview 的盘口梯子卡（买卖色、深度条、价差行），只取外观，实现重写。
  */
 import { useState } from 'react'
+import { fillVar } from '../../lib/fill.ts'
 import { cn } from '../../lib/cn.ts'
 import { useValueFlash } from '../../lib/live.ts'
 import { decimalsOf, formatDecimal } from '../../lib/scaled-decimal.ts'
@@ -103,7 +104,7 @@ function BookRowView({
   const flash = useValueFlash(row.size)
   const cells = (
     <>
-      <span className="k-book-bar" style={{ width: `${ratio * 100}%` }} aria-hidden="true" />
+      <span className="k-book-bar" style={fillVar(ratio)} aria-hidden="true" />
       <span className="k-book-price">{fmtPrice(row.price)}</span>
       <span
         key={flash.key}
@@ -269,16 +270,18 @@ export function OrderBook({
             className="k-book-share-bid"
             data-slot="book-share-bid"
             data-pct={model.bidPct}
-            style={{ width: `${model.bidPct}%` }}
+            style={fillVar((model.bidPct ?? 0) / 100)}
           >
+            <i className="k-book-share-fill" aria-hidden="true" />
             {labels.bid} {bidText}
           </span>
           <span
             className="k-book-share-ask"
             data-slot="book-share-ask"
             data-pct={model.askPct}
-            style={{ width: `${model.askPct}%` }}
+            style={fillVar((model.askPct ?? 0) / 100)}
           >
+            <i className="k-book-share-fill" aria-hidden="true" />
             {askText} {labels.ask}
           </span>
         </div>

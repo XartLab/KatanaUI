@@ -26,6 +26,18 @@ export default {
       await aria(ticket, 'order-ticket-default.aria.yml')
       return { buy: await read(buy), sell: await read(sell) }
     })
+    await step('保证金模式是分段：Isolated 与 Cross 两项一直看得见，点 Cross 切过去，再点已选的不取消', async () => {
+      const group = ticket.getByRole('group', { name: 'Margin mode' })
+      await expect(group.getByRole('button')).toHaveCount(2)
+      await expect(group.getByRole('button', { name: 'Isolated' })).toHaveAttribute('aria-pressed', 'true')
+      await group.getByRole('button', { name: 'Cross' }).click()
+      await expect(group.getByRole('button', { name: 'Cross' })).toHaveAttribute('aria-pressed', 'true')
+      await group.getByRole('button', { name: 'Cross' }).click()
+      await expect(group.getByRole('button', { name: 'Cross' })).toHaveAttribute('aria-pressed', 'true')
+      await group.getByRole('button', { name: 'Isolated' }).click()
+      await expect(group.getByRole('button', { name: 'Isolated' })).toHaveAttribute('aria-pressed', 'true')
+      return { 可见项: await group.getByRole('button').allInnerTexts(), 选中: 'Isolated' }
+    })
     await step('杠杆改成 10：成本框不动，两栏张数都变成 0.16', async () => {
       await ticket.locator('[data-slot="ticket-leverage"]').fill('10')
       await expect(slot(buy, 'ticket-amount')).toHaveValue('10')

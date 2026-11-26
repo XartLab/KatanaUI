@@ -53,7 +53,7 @@
 .k-seasonal-key > i {
   width: 8px;
   height: 8px;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
 }
 .k-seasonal-plotwrap {
   display: flex;

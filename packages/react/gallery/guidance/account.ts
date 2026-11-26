@@ -24,7 +24,7 @@ const account: GuidanceMap = {
     a11y: [
       '改价输入框的读屏名带品种；非法输入有文字提示。',
       '买卖、状态都是文字。',
-      '撤单中的单按钮置灰（aria-disabled）。',
+      '撤单中的单，撤单钮是进行中（Button pending）：aria-busy、aria-disabled，再按无效，键盘仍能到，不再置灰。',
     ],
   },
   'account-equity': {

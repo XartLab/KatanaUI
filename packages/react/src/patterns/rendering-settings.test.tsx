@@ -66,7 +66,7 @@ describe('RenderingSettings', () => {
     expect(readRendering(fakeRoot())).toEqual(DEFAULT_RENDERING)
   })
 
-  it('每项一行：名称、说明、控件；开关是两段的分段切换，滑块带读数，末尾有恢复默认', () => {
+  it('每项一行：名称、说明、控件；滑块带读数，末尾有恢复默认', () => {
     const html = renderToStaticMarkup(<RenderingSettings value={DEFAULT_RENDERING} onValueChange={() => {}} />)
     // 六项设置加四个字体角色。
     expect(html.match(/data-slot="rendering-row"/g)).toHaveLength(10)
@@ -74,6 +74,27 @@ describe('RenderingSettings', () => {
     expect(html).toContain('<output class="k-render-out">0</output>')
     expect(html).toContain('<output class="k-render-out">100%</output>')
     expect(html).toContain(RENDERING_LABELS_ZH.reset)
+  })
+
+  it('三个单项设置是 role=switch，aria-checked 跟值；不再是「开 / 关」两段（kubai 020，#251）', () => {
+    const switches = (value: RenderingSettingsValue) =>
+      [
+        ...renderToStaticMarkup(<RenderingSettings value={value} onValueChange={() => {}} />).matchAll(
+          /<button\b[^>]*role="switch"[^>]*>/g,
+        ),
+      ].map((match) => ({
+        name: /aria-label="([^"]*)"/.exec(match[0])?.[1],
+        checked: /aria-checked="([^"]*)"/.exec(match[0])?.[1],
+      }))
+    expect(switches(DEFAULT_RENDERING)).toEqual([
+      { name: RENDERING_LABELS_ZH.pixelSnap, checked: 'true' },
+      { name: RENDERING_LABELS_ZH.zero, checked: 'false' },
+      { name: RENDERING_LABELS_ZH.cjk, checked: 'false' },
+    ])
+    expect(switches(changed).map((item) => item.checked)).toEqual(['false', 'true', 'true'])
+    const html = renderToStaticMarkup(<RenderingSettings value={DEFAULT_RENDERING} onValueChange={() => {}} />)
+    // 只剩文字平滑一组分段（互斥的多选一）。
+    expect(html.match(/data-slot="toggle-group"/g)).toHaveLength(1)
   })
 
   it('旧名 onChange（@deprecated）与 onValueChange 渲染相同', () => {

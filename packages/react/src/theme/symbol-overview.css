@@ -55,7 +55,7 @@
   flex: 0 0 auto;
   width: 8px;
   height: 8px;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
 }
 .k-symov-tab-symbol {
   font-weight: 600;
@@ -75,6 +75,7 @@
 }
 .k-symov-tab-pct {
   font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
 }
 .k-symov-panel {
   min-width: 0;

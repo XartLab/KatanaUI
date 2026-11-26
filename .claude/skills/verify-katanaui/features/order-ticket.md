@@ -5,6 +5,7 @@
 ## Sub-features
 
 - `ticket-calc` 按成本、杠杆、手续费算张数与占用，两栏同时更新。
+- `ticket-margin-mode` 保证金模式是两项分段（Isolated / Cross）：两项一直看得见，点另一项切过去，再点已选的不取消（kubai 020，#251）。
 - `ticket-leverage` 改杠杆：成本框不动，张数跟着变。
 - `ticket-issue` 成本超过可用余额：这一栏报错、下单钮禁用，另一栏不受影响。
 - `ticket-exits` 勾「TP / SL」、选出场模板：按这一栏的方向填止盈止损（空头止盈在下、止损在上）。
@@ -25,6 +26,7 @@
 前置：`$KUI doctor` 全 OK。面板 `section.locator('[data-slot="order-ticket"]').first()`，两栏 `[data-slot="ticket-form"][data-side="buy|sell"]`，栏里的格子都是 `[data-slot="ticket-*"]`，回显是 `section.locator('output').first()`。
 
 - **默认算数。** 打开页。两栏并排；买栏 `ticket-size` 写 `1.51 Cont ≈ 0.0151 BTC`，`ticket-cost` 写 `9.97 USDT`，`ticket-max` 写 `37.87 Cont`；钮写 `Open long` / `Open short`。
+- **保证金模式。** 面板顶部一排：左边 `getByRole('group', { name: 'Margin mode' })` 里并排两个钮 `Isolated`（`aria-pressed="true"`）、`Cross`，右边是杠杆框；不需要先点开什么。点 `Cross`：它 `aria-pressed="true"`、`Isolated` 变 `false`；再点一次 `Cross`，仍是 `true`。注意它是按钮组，不是方向键走的一组：键盘用 Tab 到钮、Enter 或空格按下。
 - **改杠杆。** `ticket-leverage` 填 `10`。买栏成本框仍是 `10`，两栏张数都变成 `0.16 Cont`；填回 `100` 张数回到 `1.51 Cont`。
 - **超可用。** 买栏 `ticket-amount` 填 `300`。买栏 `ticket-issue` 写 `Costs more than the available balance`，买栏下单钮禁用，卖栏下单钮仍可点。
 - **开多。** 买栏填回 `10`，点 `ticket-submit`。回显 `open buy 1.51 @ 60000`。
@@ -38,6 +40,7 @@
 ## Gotchas
 
 - 下单面板只把单交给调用方（`onSubmit`），不连任何交易所；文档站里「下单」唯一能观察的结果就是面板下面的回显，回显没出来就算没下成。
+- 保证金模式不是下拉：`getByRole('combobox', { name: 'Margin mode' })` 找不到它。计量方式 `Size by` 是例外，仍是下拉（嵌在数量框的标签位里放不下分段；切换会清空数量，藏在一次点击后面反而合适）。
 - 下拉框（`Exit template`、`Size by`）的选项渲染在面板外面的弹层里：选项用 `page.getByRole('option', …)` 找，不要在 `section` 里找。
 - 页上的文案是英文（演示传的 `labels`），组件包里不带语言；按名字找控件用英文名。
 - 张数按 `lotSize` 向下取整（0.165 → 0.16），断言写到两位小数，不要用自己算的浮点数比。

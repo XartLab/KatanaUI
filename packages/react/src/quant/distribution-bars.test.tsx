@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vite-plus/test'
 import {
   DistributionBars,
   distributionBarHeight,
+  distributionFill,
   distributionTotals,
   type DistributionBin,
 } from './distribution-bars.tsx'
@@ -29,8 +30,12 @@ describe('DistributionBars', () => {
     const html = renderToStaticMarkup(<DistributionBars bins={BINS} label="dist" />)
     expect(html.match(/data-slot="distribution-bin"/g)).toHaveLength(7)
     expect(html).toContain('data-key="b2" data-tone="down"')
-    expect(html).toContain('<span class="k-dist-count">1,200</span><i class="k-dist-fill" style="height:80px"></i>')
-    expect(html).toContain('<i class="k-dist-fill" style="height:40px"></i>')
+    // 柱长写成 --fill（占柱区的比例，柱区 = 96 − 16），样式用 scaleY 画：80 / 80 与 40 / 80。
+    expect(html).toContain('<span class="k-dist-count">1,200</span><i class="k-dist-fill"></i>')
+    expect(html).toContain('style="--fill:1"')
+    expect(html).toContain('style="--fill:0.5"')
+    expect(distributionFill(600, 1200, 96)).toBe(0.5)
+    expect(distributionFill(null, 1200, 96)).toBe(0)
     expect(html).toContain('<span class="k-dist-label">-3</span>')
     expect(html).toContain('aria-label="dist"')
   })
@@ -67,7 +72,8 @@ describe('DistributionBars', () => {
         label="d"
       />,
     )
-    expect(some).toContain('<span class="k-dist-count">—</span><i class="k-dist-fill" style="height:0"></i>')
+    expect(some).toContain('style="--fill:0"')
+    expect(some).toContain('<span class="k-dist-count">—</span><i class="k-dist-fill"></i>')
   })
 
   it('formatCount 换家数的写法', () => {

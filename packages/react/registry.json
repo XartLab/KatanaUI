@@ -854,6 +854,11 @@
           "target": "~/src/katana/ui/theme/treemap.css"
         },
         {
+          "path": "src/theme/typesetting.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/typesetting.css"
+        },
+        {
           "path": "src/theme/underwater-chart.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/underwater-chart.css"
@@ -937,6 +942,32 @@
           "path": "src/lib/date.ts",
           "type": "registry:lib",
           "target": "~/src/katana/ui/lib/date.ts"
+        }
+      ]
+    },
+    {
+      "name": "delayed-flag",
+      "type": "registry:lib",
+      "title": "Delayed Flag",
+      "description": "「晚出、出了就留够」的旗子：等了 delay 才出、出了至少留 min（Button 的 pending 与 Loading 的骨架共用），以及图标停在整圈上的 useSpinWholeTurns。",
+      "files": [
+        {
+          "path": "src/lib/delayed-flag.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/delayed-flag.ts"
+        }
+      ]
+    },
+    {
+      "name": "fill",
+      "type": "registry:lib",
+      "title": "Fill",
+      "description": "条长与标记位置的写法：把 0 到 1 的比例写成自定义属性 --fill（带起点的写 --from），样式用 scale / translate 画，不对 width / left 做过渡。盘口深度条、行情条、仪表条用。",
+      "files": [
+        {
+          "path": "src/lib/fill.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/fill.ts"
         }
       ]
     },
@@ -1190,6 +1221,19 @@
           "path": "src/lib/tone.ts",
           "type": "registry:lib",
           "target": "~/src/katana/ui/lib/tone.ts"
+        }
+      ]
+    },
+    {
+      "name": "truncation-title",
+      "type": "registry:lib",
+      "title": "Truncation Title",
+      "description": "真被截断时悬停出全文：installTruncationTitles() 装一个委托监听，只给真放不下的省略号文字补 title（#250）。",
+      "files": [
+        {
+          "path": "src/lib/truncation-title.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/truncation-title.ts"
         }
       ]
     },
@@ -1545,6 +1589,7 @@
       ],
       "registryDependencies": [
         "@katana/cn",
+        "@katana/delayed-flag",
         "@katana/focus"
       ],
       "files": [
@@ -1573,6 +1618,35 @@
           "path": "src/primitives/card.tsx",
           "type": "registry:ui",
           "target": "~/src/katana/ui/primitives/card.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cascade-controller",
+      "type": "registry:ui",
+      "title": "Cascade Controller",
+      "description": "级联菜单的悬停控制器（#250）：在父菜单 Content 的捕获阶段接管子菜单的悬停开合、安全三角、1.2s 安全窗口与 360ms 关闭延时；下拉菜单与右键菜单共用。",
+      "registryDependencies": [
+        "@katana/cascade-model"
+      ],
+      "files": [
+        {
+          "path": "src/primitives/cascade-controller.ts",
+          "type": "registry:ui",
+          "target": "~/src/katana/ui/primitives/cascade-controller.ts"
+        }
+      ]
+    },
+    {
+      "name": "cascade-model",
+      "type": "registry:ui",
+      "title": "Cascade Model",
+      "description": "CommandDialog 加「最近」分组：选过的命令放最前（去重、最多 5 条），没输入时显示；记录可受控、存 localStorage 或只在页内存。照 TradingView 的 Ctrl/Cmd+K 快速搜索。",
+      "files": [
+        {
+          "path": "src/primitives/cascade-model.ts",
+          "type": "registry:ui",
+          "target": "~/src/katana/ui/primitives/cascade-model.ts"
         }
       ]
     },
@@ -1859,6 +1933,7 @@
         "lucide-react@1.67.0"
       ],
       "registryDependencies": [
+        "@katana/cascade-controller",
         "@katana/cn",
         "@katana/focus"
       ],
@@ -2282,7 +2357,7 @@
       "name": "tooltip",
       "type": "registry:ui",
       "title": "Tooltip",
-      "description": "悬停或聚焦时出现的短说明，从触发处轻升；默认没有延迟。",
+      "description": "悬停或聚焦时出现的短说明，从触发处轻升；悬停停 500ms 才出，出了以后 400ms 内移到邻居立即出。",
       "dependencies": [
         "radix-ui@1.8.1"
       ],
@@ -2923,6 +2998,9 @@
       "type": "registry:lib",
       "title": "Loading Gate",
       "description": "Loading 的计时与行数量取（纯函数）。",
+      "registryDependencies": [
+        "@katana/delayed-flag"
+      ],
       "files": [
         {
           "path": "src/katana/loading-gate.ts",
@@ -2935,7 +3013,7 @@
       "name": "loading-view",
       "type": "registry:component",
       "title": "Loading View",
-      "description": "加载态的唯一入口：给 pending 等数据，不给 pending 当 Suspense 边界，给 phase 钉在某一段直接画。500ms 内到了什么也不画；超过了出点阵骨架，2s 说「仍在加载」，10s 转琥珀条加重试。",
+      "description": "加载态的唯一入口：给 pending 等数据，不给 pending 当 Suspense 边界，给 phase 钉在某一段直接画。500ms 内到了什么也不画；超过了出点阵骨架，出了至少留 500ms，2s 说「仍在加载」，10s 转琥珀条加重试。",
       "registryDependencies": [
         "@katana/button",
         "@katana/led",
@@ -2971,7 +3049,7 @@
       "name": "loading",
       "type": "registry:component",
       "title": "Loading",
-      "description": "加载态的唯一入口：给 pending 等数据，不给 pending 当 Suspense 边界，给 phase 钉在某一段直接画。500ms 内到了什么也不画；超过了出点阵骨架，2s 说「仍在加载」，10s 转琥珀条加重试。",
+      "description": "加载态的唯一入口：给 pending 等数据，不给 pending 当 Suspense 边界，给 phase 钉在某一段直接画。500ms 内到了什么也不画；超过了出点阵骨架，出了至少留 500ms，2s 说「仍在加载」，10s 转琥珀条加重试。",
       "registryDependencies": [
         "@katana/loading-gate",
         "@katana/loading-view",
@@ -3044,6 +3122,7 @@
       ],
       "registryDependencies": [
         "@katana/cn",
+        "@katana/delayed-flag",
         "@katana/loading-gate"
       ],
       "files": [
@@ -3252,7 +3331,8 @@
       "title": "Scrubber",
       "description": "一条带填充的擦洗控件：左边写名字，右边写读数，在条上按下并拖动就把值擦到那里，松手停住，值按步长吸附。拿来擦回测的回看时间点、拖下单数量、调价格偏移。把手平时小而淡，悬停、聚焦与拖动时变实。",
       "registryDependencies": [
-        "@katana/cn"
+        "@katana/cn",
+        "@katana/fill"
       ],
       "files": [
         {
@@ -3414,7 +3494,7 @@
       "name": "toast",
       "type": "registry:component",
       "title": "Toast",
-      "description": "固定在窗口一角的弹出提示：只管样子与读屏语义（live region），条目表、定时、暂停由调用方管（应用里 AlertToasts 配 toast-queue.ts）。进出走 translate 与不透明度的过渡。",
+      "description": "固定在窗口一角的弹出提示：只管样子与读屏语义（live region），条目表、定时、暂停由调用方管（应用里 AlertToasts 配 toast-queue.ts）。进出走 translate 与不透明度的过渡。视口 polite 礼貌播报，warn / danger 单条 role=alert；能撤销的操作配 ToastAction 与可选的 ToastCountdown。",
       "dependencies": [
         "lucide-react@1.67.0"
       ],
@@ -4115,6 +4195,7 @@
         "@katana/font-catalog",
         "@katana/select",
         "@katana/slider",
+        "@katana/switch",
         "@katana/toggle-group"
       ],
       "files": [
@@ -4533,7 +4614,8 @@
       "title": "Gauge Bar",
       "description": "上面一行名字、数和档位词，中间一条进度条标出数的位置，下面一句说明数是怎么来的。取不到时不画填充，数那里写原因。从应用的分析视图提来。",
       "registryDependencies": [
-        "@katana/emphasis"
+        "@katana/emphasis",
+        "@katana/fill"
       ],
       "files": [
         {
@@ -4612,6 +4694,7 @@
       "registryDependencies": [
         "@katana/change-text",
         "@katana/cn",
+        "@katana/fill",
         "@katana/metric-tile",
         "@katana/quote-tone",
         "@katana/readout-value",
@@ -4827,6 +4910,9 @@
       "type": "registry:component",
       "title": "Range Bar",
       "description": "一条横线从最低到最高，标记指着现价在区间里的位置，两端写最低与最高。用来看当日区间、52 周区间。",
+      "registryDependencies": [
+        "@katana/fill"
+      ],
       "files": [
         {
           "path": "src/quotes/range-bar.tsx",
@@ -4970,6 +5056,7 @@
       "title": "Sparkline Instrument",
       "description": "Sparkline 的 instrument 画风：点阵、对位角标、投影谱、极值十字与批注、档案编号与 SOURCES。",
       "registryDependencies": [
+        "@katana/fill",
         "@katana/live-line",
         "@katana/sparkline",
         "@katana/sparkline-model",
@@ -5763,7 +5850,8 @@
       "registryDependencies": [
         "@katana/button",
         "@katana/cn",
-        "@katana/fan-out-model"
+        "@katana/fan-out-model",
+        "@katana/fill"
       ],
       "files": [
         {
@@ -6866,6 +6954,7 @@
       "description": "把一批品种按涨跌幅分成 9 或 11 档（跌停…涨停），每档一根柱，柱顶标家数，底部一行汇总（涨 x / 平 y / 跌 z）。档的边界、档名与汇总的名字都由调用方传，件只按家数画柱、按色调汇总；没有数据显示空态，不画样本。",
       "registryDependencies": [
         "@katana/cn",
+        "@katana/fill",
         "@katana/gauge-bar"
       ],
       "files": [
@@ -7409,6 +7498,7 @@
       ],
       "registryDependencies": [
         "@katana/cn",
+        "@katana/fill",
         "@katana/parallel-attempts-model"
       ],
       "files": [
@@ -9030,6 +9120,7 @@
       "title": "Meter",
       "description": "横向仪表，三种形态：条（进度、负载、敞口）、刻度（0 到 100 的读数带指针）、同步率条（带齿分段加琥珀评估刻度与右侧大百分比）；限额板传预警线与硬限，越线自己换色；颜色只传 tone。",
       "registryDependencies": [
+        "@katana/fill",
         "@katana/severity"
       ],
       "files": [
@@ -9079,6 +9170,9 @@
       "type": "registry:component",
       "title": "Flow Gauges",
       "description": "订单流四个仪表一行：Market Pressure、Price Change（零轴居中，−100…+100）、DOM Pressure（前 N 档买卖挂单柱）、Delta Divergence（多周期 LED 矩阵）；只收算好的数，窗口不足写 N/A。",
+      "registryDependencies": [
+        "@katana/fill"
+      ],
       "files": [
         {
           "path": "src/blocks/flow-gauges/flow-gauges-model.ts",
@@ -9294,6 +9388,7 @@
         "@katana/attribution-bars",
         "@katana/change-text",
         "@katana/cn",
+        "@katana/fill",
         "@katana/quant-format",
         "@katana/symbol-mark",
         "@katana/tag"
@@ -9502,6 +9597,7 @@
       "description": "买卖挂单的阶梯：买卖并列（卖在上买在下，中间一行是最新价与价差）、只看买、只看卖三种模式；档位按 tick 合并（选项由调用方给，合并在 model 里按整数算：买盘向下取整、卖盘向上取整，同档的量十进制精确相加，不会出现 0.30000000000000004）；每行底下一条累计量深度条；底部买卖占比条（买量 /（买 + 卖），保留一位小数，两个数相加恒为 100）；点一行回调 onPriceSelect(价, 买或卖)，下单面板拿去回填价格，件不认下单面板。变了量的档位闪一下涨跌色（共用层 live.ts）。只吃 props，快照与增量由调用方合并好整份传，不连交易所。",
       "registryDependencies": [
         "@katana/cn",
+        "@katana/fill",
         "@katana/flash-price",
         "@katana/live",
         "@katana/scaled-decimal",
@@ -9806,7 +9902,8 @@
       "registryDependencies": [
         "@katana/button",
         "@katana/chart-kit",
-        "@katana/cn"
+        "@katana/cn",
+        "@katana/fill"
       ],
       "files": [
         {
@@ -9930,6 +10027,7 @@
         "@katana/button",
         "@katana/cn",
         "@katana/dialog",
+        "@katana/fill",
         "@katana/select",
         "@katana/textarea"
       ],

@@ -81,7 +81,7 @@ function NavigationMenuLink({ className, ...props }: ComponentProps<typeof Navig
     <NavigationMenuPrimitive.Link
       data-slot="navigation-menu-link"
       className={cn(
-        'k-text-body block cursor-pointer rounded-[6px] p-2 text-(color:--k-content-body-foreground) no-underline select-none transition-colors duration-100 hover:bg-(--k-selectable-background-hover) hover:text-(color:--k-content-primary-foreground)',
+        'k-text-body block cursor-pointer rounded-[var(--radius-inner)] p-2 text-(color:--k-content-body-foreground) no-underline select-none transition-colors duration-100 hover:bg-(--k-selectable-background-hover) hover:text-(color:--k-content-primary-foreground)',
         'data-[active]:bg-(--k-selectable-background-active) data-[active]:text-(color:--k-content-primary-foreground)',
         focusRingInset,
         className,

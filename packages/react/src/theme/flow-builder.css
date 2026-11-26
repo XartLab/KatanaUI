@@ -41,7 +41,7 @@
   position: relative;
   overflow: auto;
   border: var(--hairline);
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   cursor: grab;
 }
 .k-fb-canvas[data-panning] {
@@ -68,7 +68,7 @@
   height: 52px;
   padding: 0 10px;
   border: 1px solid var(--k-separable-secondary-borderColor);
-  border-radius: 8px;
+  border-radius: var(--radius-overlay);
   background: var(--k-container-secondary-background);
   color: var(--k-content-primary-foreground);
   font: inherit;
@@ -195,7 +195,7 @@
   height: 32px;
   padding: 0 14px;
   border-style: dashed;
-  border-radius: 8px;
+  border-radius: var(--radius-control);
 }
 .k-fb-menu-item {
   align-items: flex-start;
@@ -255,7 +255,7 @@
   padding: 1px 8px;
   overflow: hidden;
   border: 1px solid var(--k-fb-line);
-  border-radius: 10px;
+  border-radius: var(--radius-pill);
   background: var(--k-container-primary-background);
   color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);

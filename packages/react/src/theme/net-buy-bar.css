@@ -101,6 +101,8 @@
 .k-netbuy-track {
   position: relative;
   height: 6px;
+  /* 净额条的起点与长度用 translate 加 scale 画，起点要量轨宽：轨是容器，取 cqw（kubai Vibe Design Tips 011，#251）。 */
+  container-type: inline-size;
 }
 .k-netbuy-track::before {
   position: absolute;
@@ -115,11 +117,16 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  border-radius: 1px;
+  border-radius: var(--radius-sm);
   background: var(--k-tone-flat-foreground);
+  left: 0;
+  width: 100%;
+  transform-origin: left;
+  translate: calc(var(--from, 0) * 100cqw) 0;
+  scale: var(--fill, 0) 1;
   transition:
-    left var(--dur-gentle) var(--ease-gentle),
-    width var(--dur-gentle) var(--ease-gentle);
+    translate var(--dur-gentle) var(--ease-gentle),
+    scale var(--dur-gentle) var(--ease-gentle);
 }
 .k-netbuy-track i[data-tone='up'] {
   background: color-mix(in srgb, var(--k-tone-up-foreground) 60%, transparent);
@@ -175,16 +182,18 @@
 .k-netbuy-seat-name > span:first-child {
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 .k-netbuy-seat-track {
   height: 4px;
-  border-radius: 1px;
+  border-radius: var(--radius-sm);
   background: var(--k-container-track-background);
 }
 .k-netbuy-seat-track i {
   display: block;
   height: 100%;
-  border-radius: 1px;
+  border-radius: var(--radius-sm);
 }
 .k-netbuy-seats[data-side='buy'] .k-netbuy-seat-track i {
   background: color-mix(in srgb, var(--k-tone-up-foreground) 60%, transparent);

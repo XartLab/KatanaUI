@@ -30,6 +30,8 @@ variant：primary（默认）、danger（不能撤回的）、default。画成 B
 | `effect` | `ButtonEffect` | — | Optional hover effect from SmoothUI: magnetic leans toward the pointer, dot-morph stretches a leading dot into a bar, clip-corners cuts the corners wider. |
 | `magnetStrength` | `number` | — | How far a magnetic button leans: the fraction of the pointer offset it follows (0 to 1). |
 | `magnetRadius` | `number` | — | Distance in px from the button center within which a magnetic button reacts. |
+| `pending` | `boolean` | — | The action is running. |
+| `spinIcon` | `boolean` | — | Use with pending when the button's own icon already means the action (refresh, sync): that icon turns from the press, at least one whole turn, and stops on a whole turn; no separate spinner. |
 | `variant` | `'primary' \| 'danger' \| 'default'` | `'primary'` | Button style: primary by default, danger for an action that cannot be undone. |
 
 ### AlertDialogCancel
@@ -44,6 +46,8 @@ variant：primary（默认）、danger（不能撤回的）、default。画成 B
 | `effect` | `ButtonEffect` | — | Optional hover effect from SmoothUI: magnetic leans toward the pointer, dot-morph stretches a leading dot into a bar, clip-corners cuts the corners wider. |
 | `magnetStrength` | `number` | — | How far a magnetic button leans: the fraction of the pointer offset it follows (0 to 1). |
 | `magnetRadius` | `number` | — | Distance in px from the button center within which a magnetic button reacts. |
+| `pending` | `boolean` | — | The action is running. |
+| `spinIcon` | `boolean` | — | Use with pending when the button's own icon already means the action (refresh, sync): that icon turns from the press, at least one whole turn, and stops on a whole turn; no separate spinner. |
 
 ### AlertDialogHeader / AlertDialogBody / AlertDialogFooter
 

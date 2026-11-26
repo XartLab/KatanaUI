@@ -133,7 +133,7 @@ function Tile({
       <span
         aria-hidden="true"
         className={cn(
-          'k-text-caption pointer-events-none absolute z-10 rounded-[6px] border border-alpha-white-6 bg-surface-4 px-2 py-1 whitespace-nowrap text-ink-2 transition-[opacity,scale] duration-150',
+          'k-text-caption pointer-events-none absolute z-10 rounded-[var(--radius-control)] border border-alpha-white-6 bg-surface-4 px-2 py-1 whitespace-nowrap text-ink-2 transition-[opacity,scale] duration-150',
           vertical ? 'top-1/2 left-full ml-3 -translate-y-1/2' : 'bottom-full left-1/2 mb-3 -translate-x-1/2',
           hot ? 'scale-100 opacity-100' : 'scale-95 opacity-0',
         )}

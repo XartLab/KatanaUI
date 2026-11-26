@@ -100,7 +100,7 @@
   top: 0;
   bottom: 0;
   border: 1px solid var(--k-content-tertiary-foreground);
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
 }
 .k-pva-track [data-part='actual'] {
   background: var(--k-content-secondary-foreground);

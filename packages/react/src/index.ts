@@ -207,6 +207,7 @@ export {
   truncateText,
   wrapText,
 } from './lib/text-measure.ts'
+export { installTruncationTitles } from './lib/truncation-title.ts'
 export {
   LIVE_ENTER_MS,
   LIVE_FLASH_GAP_MS,
@@ -367,9 +368,11 @@ export {
 export {
   TOAST_EXIT_MS,
   Toast,
+  ToastAction,
   ToastClear,
   ToastClose,
   ToastContent,
+  ToastCountdown,
   ToastDescription,
   ToastIcon,
   ToastText,
