@@ -5,11 +5,16 @@
  */
 import '@katana-ui/tokens/tokens.css'
 import '../src/fonts.css'
+// 中文只用仓库自带的字体，不看机器上装了什么（#202）；说明在这份 css 的开头。
+import '../shot/fonts.css'
 import '../src/ui.css'
 import type { ReactNode } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { userEvent } from 'vite-plus/test/browser'
 import { flushSync } from 'react-dom'
+
+// 与文档站 index.html 的 <html lang="zh-CN"> 一致：字体里的 locl 会按语言换几个标点的字形（· — … 引号），截图页与文档站要同一套（#202）。
+document.documentElement.lang = 'zh-CN'
 
 let root: Root | undefined
 

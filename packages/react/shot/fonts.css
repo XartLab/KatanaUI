@@ -1,0 +1,4 @@
+/* SPDX-License-Identifier: MIT */
+/* 截图环境专用：只用仓库自带的字体渲染中文，不看机器上装了什么字体（#202）。
+   这份文件在磁盘上只是个占位：内容由 shot/fonts-plugin.ts 的 Vite 插件在加载时换成真正的 @font-face，
+   所以只有装了这个插件的配置才有效（组件截图 vitest.browser.config.ts、整页回归 pixelgate.vite.config.ts）；线上站点与使用方不加载它。 */
