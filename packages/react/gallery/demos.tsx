@@ -112,6 +112,9 @@ import {
   TechnicalRatingDemo,
 } from './pages/quant.tsx'
 import { FlowSankeyDemo, VintageSeriesDemo } from './pages/flows.tsx'
+import { MarketBrowserDemo } from './pages/market-browser.tsx'
+import { StrategyLauncherDemo } from './pages/strategy-launcher.tsx'
+import { FloatingWindowDemo } from './pages/floating-window.tsx'
 import { KeyStatsDemo, PeerCardsDemo, PerformanceStripDemo, RangeBarTvDemo, WatchlistDemo } from './pages/overview.tsx'
 import {
   CompanyProfileDemo,
@@ -218,7 +221,7 @@ import {
 } from './pages/smoothui-forms.tsx'
 import { OrderTicketDemo } from './pages/order-ticket.tsx'
 import { PositionCalculatorUsage } from './usage/PositionCalculatorUsage.tsx'
-import { ComponentCatalogUsage } from './usage/ComponentCatalogUsage.tsx'
+import { ComponentCatalogDemo } from './pages/component-catalog.tsx'
 import { PanelTabsUsage } from './usage/PanelTabsUsage.tsx'
 import { AccordionDemo, TabsDemo } from './pages/layout.tsx'
 import {
@@ -466,6 +469,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'company-profile': CompanyProfileDemo,
   'seasonal-chart': SeasonalChartDemo,
   watchlist: WatchlistDemo,
+  'market-browser': MarketBrowserDemo,
   'metric-card': MetricCardDemo,
   'distribution-bars': DistributionBarsDemo,
   'cn-basics': CnBasicsDemo,
@@ -649,7 +653,9 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'order-ticket': OrderTicketDemo,
   'position-calculator': PositionCalculatorUsage,
   'panel-tabs': PanelTabsUsage,
-  'component-catalog': ComponentCatalogUsage,
+  'component-catalog': ComponentCatalogDemo,
+  'strategy-launcher': StrategyLauncherDemo,
+  'floating-window': FloatingWindowDemo,
   avatar: AvatarDemo,
   breadcrumb: BreadcrumbDemo,
   pagination: PaginationDemo,

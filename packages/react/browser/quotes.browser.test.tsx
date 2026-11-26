@@ -5,6 +5,7 @@ import { page } from 'vite-plus/test/browser'
 import { ChangeTextUsage } from '../gallery/usage/ChangeTextUsage.tsx'
 import { GaugeBarUsage } from '../gallery/usage/GaugeBarUsage.tsx'
 import { KeyStatsUsage } from '../gallery/usage/KeyStatsUsage.tsx'
+import { MarketBrowserUsage } from '../gallery/usage/MarketBrowserUsage.tsx'
 import { MetricCardUsage } from '../gallery/usage/MetricCardUsage.tsx'
 import { MiniChartUsage } from '../gallery/usage/MiniChartUsage.tsx'
 import { PeerCardsUsage } from '../gallery/usage/PeerCardsUsage.tsx'
@@ -34,6 +35,7 @@ const items: Record<string, React.ReactNode> = {
   'change-text': <ChangeTextUsage />,
   'gauge-bar': <GaugeBarUsage />,
   'key-stats': <KeyStatsUsage />,
+  'market-browser': <MarketBrowserUsage />,
   'metric-card': <MetricCardUsage />,
   'mini-chart': <MiniChartUsage />,
   'peer-cards': <PeerCardsUsage />,
