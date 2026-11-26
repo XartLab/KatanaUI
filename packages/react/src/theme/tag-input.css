@@ -75,6 +75,8 @@
 .k-tagin-text {
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 .k-tagin-remove {
   display: inline-flex;

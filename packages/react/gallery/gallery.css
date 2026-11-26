@@ -740,3 +740,71 @@ body {
 .gal-orb-level > span {
   flex: none;
 }
+
+/* 「基础 → 中英排版开关」页的并排演示（#250）：没开 / 开了，各一个框；样子只取页面已有的 token。 */
+.gal-ts-compare {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin: 0 0 var(--space-4);
+}
+.gal-ts-compare figure {
+  margin: 0;
+}
+.gal-ts-compare figcaption {
+  margin: 0 0 var(--space-1);
+  color: var(--ink-300);
+  font: var(--text-micro) var(--font-sans);
+}
+.gal-ts-box {
+  box-sizing: border-box;
+  min-height: 72px;
+  padding: var(--space-3);
+  border: 1px solid var(--line-100);
+  border-radius: var(--radius-md);
+  color: var(--ink-100);
+  font: var(--text-body) var(--font-sans);
+  line-height: var(--space-6);
+  overflow: hidden;
+}
+.gal-ts-box p,
+.gal-ts-box h4 {
+  margin: 0;
+  max-width: none;
+}
+.gal-ts-box h4 {
+  width: 9em;
+  font-weight: 600;
+}
+.gal-ts-nums {
+  font-size: var(--text-title-size);
+  text-align: right;
+}
+.gal-ts-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 240px;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--line-100);
+  border-radius: var(--radius-sm);
+}
+.gal-ts-row i {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--ink-300);
+}
+.gal-ts-row b {
+  flex: none;
+}
+.gal-ts-item[data-fixed='on'] {
+  min-width: 0;
+}
+.gal-ts-label {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -134,6 +134,7 @@
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .k-sidenav-link:hover {
   color: color-mix(in srgb, var(--k-content-primary-foreground) 80%, transparent);

@@ -59,6 +59,7 @@
 .k-pr-total-head,
 .k-pr-total {
   width: 72px;
+  font-variant-numeric: tabular-nums;
 }
 .k-pr-cell {
   height: 28px;

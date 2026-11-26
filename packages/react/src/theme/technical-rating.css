@@ -160,6 +160,7 @@
 .k-trating-total {
   color: var(--k-content-secondary-foreground);
   font: 400 11px/14px var(--font-sans);
+  font-variant-numeric: tabular-nums;
 }
 .k-trating-disclaimer {
   margin: 0;

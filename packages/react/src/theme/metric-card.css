@@ -49,6 +49,7 @@
   font-weight: 500;
   line-height: round(nearest, 1.1em, 1px);
   letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
 }
 .k-metric-value small {
   margin-left: 4px;

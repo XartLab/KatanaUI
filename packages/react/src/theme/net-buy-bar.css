@@ -175,6 +175,8 @@
 .k-netbuy-seat-name > span:first-child {
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 .k-netbuy-seat-track {
   height: 4px;

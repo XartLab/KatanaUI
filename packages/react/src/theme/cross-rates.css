@@ -68,6 +68,7 @@ th.k-xrates-head[scope='row'] {
 .k-xrates-change {
   display: block;
   font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
 }
 .k-xrates[data-mode='heatmap'] .k-xrates-cell {
   color: oklch(from var(--xrates-cell) clamp(0, (0.565 - l) * 1000, 1) 0 0);

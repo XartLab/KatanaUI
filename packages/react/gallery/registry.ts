@@ -74,6 +74,8 @@ export const NON_COMPONENT_EXPORTS: readonly string[] = [
   'focusRingInset',
   'InlineOverlays',
   'LOADING_TIMEOUT_MS',
+  // 全局的小工具，不是件：说明在「基础 → 中英排版开关」页（#250）。
+  'installTruncationTitles',
 ]
 
 export const PAGES: readonly DocPage[] = [

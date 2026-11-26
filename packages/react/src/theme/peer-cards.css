@@ -108,6 +108,7 @@
 .k-peers-change {
   grid-area: change;
   font: 500 13px/18px var(--font-sans);
+  font-variant-numeric: tabular-nums;
 }
 .k-peers-add {
   position: absolute;

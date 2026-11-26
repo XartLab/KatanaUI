@@ -81,6 +81,7 @@ button.k-book-row:focus-visible {
 .k-book-total {
   position: relative;
   text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 /* 累计列压在深度条上，ink-300 只有 3.4–4.2:1（console，axe #190），用 body。 */
 .k-book-total {

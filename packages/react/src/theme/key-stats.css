@@ -48,6 +48,7 @@
 }
 .k-keystats-value {
   font: 600 20px/26px var(--font-sans);
+  font-variant-numeric: tabular-nums;
 }
 .k-keystats-item small {
   color: var(--k-content-secondary-foreground);

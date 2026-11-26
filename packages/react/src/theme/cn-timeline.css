@@ -160,6 +160,7 @@
   color: var(--ink-100);
   font: var(--text-data) var(--font-sans);
   line-height: 18px;
+  font-variant-numeric: tabular-nums;
 }
 .k-cntl-track {
   position: relative;
@@ -243,6 +244,7 @@ button.k-cntl-card:focus-visible {
   flex: none;
   color: var(--ink-200);
   font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
 }
 /* 行末的拐弯：从这一行轨道的中线，沿流向一端的边竖直接到下一行轨道的中线。 */
 .k-cntl-turn {

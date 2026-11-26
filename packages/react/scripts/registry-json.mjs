@@ -33,6 +33,8 @@ const INTERNAL = {
   'sparkline-ascii': 'Sparkline 的 ascii 画风：方块或盲文字形画走势，一个 pre，新列乱码落定。',
   'sparkline-instrument': 'Sparkline 的 instrument 画风：点阵、对位角标、投影谱、极值十字与批注、档案编号与 SOURCES。',
   'sparkline-shared': 'Sparkline 各画风共用的钩子：量容器、设备像素比、文字测量重置。',
+  'truncation-title':
+    '真被截断时悬停出全文：installTruncationTitles() 装一个委托监听，只给真放不下的省略号文字补 title（#250）。',
   'flash-price': '最新价只闪变了的尾数（照 TradingView 自选栏）：Watchlist 与 QuoteTable 的价格格共用。',
   'cell-type':
     '表格的格内排版（#92）：代码芯片 CodeChip、全称 CodeName、单位小字 UnitValue、按 locale 缩写的 CompactValue；DataGrid、QuoteTable、Watchlist、LimitLadder、EventCalendar 共用，样式在 theme/cell-type.css。',

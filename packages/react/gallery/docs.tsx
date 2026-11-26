@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+import { phrased } from './phrased'
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import {
   CodeBlock,
@@ -152,7 +153,7 @@ function DocBody({ page }: { page: DocPage }) {
   return (
     <article className="gal-doc" data-page={page.id}>
       <header className="gal-doc-head">
-        <h1>{page.title}</h1>
+        <h1 {...phrased(page.title)} />
         <p>{page.summary}</p>
         <dl className="gal-doc-meta">
           <div>

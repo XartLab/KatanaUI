@@ -1,0 +1,81 @@
+/* SPDX-License-Identifier: MIT */
+/* 中英排版开关（2026-11-26，#250 第一部分）。
+   照 kubai（@kubai087）《999 个小技巧》第 007 期「中英文排版的 CSS 设置」（https://vibedesign.tips/007-type-switches/ ，数值照 issue #250 抄录的原文，2026-11-26 读）。
+   全是渐进增强：不认的浏览器直接忽略，不加垫片。
+   - 选择器都包在 :where() 里，权重为 0：组件与应用自己写的样式照旧压得过它，这里只是「没人管的文字」的默认值。
+   - 中文规则一律用 :lang(zh) 限定（文档站与 KATANAview 的 <html lang> 随界面语言切换设好），英文界面一条都不动。
+   - 每条规则的数值与理由在文档站「基础 → 中英排版开关」。 */
+
+/* 标题均衡换行：h1–h3 与卡片、提示的标题。只给短标题用，浏览器自己限行数（Chromium 6 行，Firefox 10 行），超了退回普通换行。
+   不给整页（`* { text-wrap: balance }`）开：均衡换行是二分查找，贵。 */
+:where(h1, h2, h3, [data-slot='card-title'], [data-slot='alert-title'], [data-slot='sheet-title']) {
+  text-wrap: balance;
+}
+
+/* 段落不留孤字：段落、列表项、说明文字。pretty 只看最后几行，三行以上才看得出差别；Firefox 还不认，忽略。
+   数字与单位、破折号与名字之间的不换行空格写在文案里（U+00A0），CSS 管不到。 */
+:where(
+  p,
+  li,
+  dd,
+  blockquote,
+  figcaption,
+  [data-slot='card-description'],
+  [data-slot='alert-description'],
+  [data-slot='sheet-description'],
+  [data-slot='dialog-description']
+) {
+  text-wrap: pretty;
+}
+
+/* 变动的数字等宽：表格、计时、输出值。数据件（价格、读数、表格格）各自的样式里已经写了；这里兜住没人写的。
+   字体要有 tnum 特性（Barlow、DM Mono 等随包字体都有），不然只是没效果，不会坏。 */
+:where(table, time, output) {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 按钮文字不折行：只管「里面只有文字与图标」的按钮；按钮里放了段落、标题、列表（卡片式按钮）的不动，
+   因为 white-space 会往下继承，把里面的长文字也压成一行。真要允许折行的按钮写 data-wrap。 */
+:where(button, [role='button'], [role='tab']):where(:not(:has(p, ul, ol, h1, h2, h3, h4, h5, h6, [data-wrap]))) {
+  white-space: nowrap;
+}
+
+/* 截断的写法（给没有现成件的地方）：flex 子项 min-width:0 才缩得下，文字 overflow:hidden + nowrap + ellipsis。
+   真被截断时悬停出全文：应用启动时调一次 installTruncationTitles()（lib/truncation-title.ts），它只给真被截断的元素补 title。 */
+:where([data-truncate]) {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 中西文间距：汉字与拉丁字母、数字之间浏览器自动留约四分之一字宽；文案与翻译文件里不再手打空格。
+   代码、输入框、等宽字不加（那里的空格有含义，也要对齐）。 */
+:where(:root:lang(zh), [lang|='zh']) {
+  text-autospace: normal;
+}
+:where(code, pre, kbd, samp, input, textarea, [contenteditable]) {
+  text-autospace: no-autospace;
+}
+
+/* 行首括号去半格：行首的全角开括号（「（《“）左边那半格是空的，对不齐左边线；trim-start 把它去掉。
+   只在 Chrome 系有，别处忽略。不用于首行缩进的正文（缩进本来就留着空）。 */
+:where(:root:lang(zh), [lang|='zh']) {
+  text-spacing-trim: trim-start;
+}
+
+/* 中文长段落两端对齐：data-zh-justify 才开，且只在 :lang(zh) 下生效。行长取整数个字宽（默认 26em，改 --k-zh-measure），
+   不然每行末尾的空隙会被拉成大缝。窄栏（不到 15 字）、短文、按钮、英文为主的段落不要开。文档站长文用，组件里基本不用。 */
+:where([data-zh-justify]:lang(zh)) {
+  max-width: var(--k-zh-measure, 26em);
+  text-align: justify;
+}
+
+/* 中文标题按词断行：文案先过 BudouX 在词与词之间插 <wbr>（文档站的 Phrased 做这件事），带了断点的标题标 data-phrased，
+   这里才开 keep-all（词不拆开），overflow-wrap:anywhere 兜底超长词，balance 让几行一样长。
+   没有断点的标题绝不标 data-phrased：keep-all 在没有断点的汉字串里会整串不折行、冲出容器。不用 Intl.Segmenter，不用于正文。 */
+:where([data-phrased]) {
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+  word-break: keep-all;
+}
