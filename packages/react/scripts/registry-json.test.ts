@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
-import { existsSync, readFileSync } from 'node:fs'
-import { fileURLToPath } from 'node:url'
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { describe, expect, it } from 'vite-plus/test'
 import { PAGES } from '../gallery/registry'
 import { buildRegistry, registryText } from './registry-json.mjs'
@@ -100,5 +102,35 @@ describe('shadcn 注册表清单', () => {
     // 没有出口的页（#115：排版规则、这一块用哪档分量）是写给人看的选法，不对应注册表里的 item。
     for (const page of PAGES.filter((item) => item.exports.length > 0))
       expect(descriptions.has(page.summary), `${page.id} 的说明没进注册表`).toBe(true)
+  })
+})
+
+describe('buildRegistry 的读文件缓存只管一次生成（#214 审查 6）', () => {
+  it('同一进程里源码变了，下一次生成读到新内容（isolate: false、watch 下不能拿旧的）', async () => {
+    // 临时的迷你包：脚本拷进去，它按自己所在位置找 package.json、src、gallery。
+    const dir = mkdtempSync(join(tmpdir(), 'registry-cache-'))
+    try {
+      mkdirSync(join(dir, 'scripts'))
+      mkdirSync(join(dir, 'gallery'))
+      mkdirSync(join(dir, 'src/lib'), { recursive: true })
+      copyFileSync(`${pkgDir}scripts/registry-json.mjs`, join(dir, 'scripts/registry-json.mjs'))
+      writeFileSync(
+        join(dir, 'package.json'),
+        JSON.stringify({
+          dependencies: { tailwindcss: '4.0.0' },
+          peerDependencies: { '@katana-ui/tokens': '1.0.0' },
+          devDependencies: {},
+        }),
+      )
+      writeFileSync(join(dir, 'gallery/registry.ts'), 'export const PAGES = []\n')
+      writeFileSync(join(dir, 'src/lib/num.ts'), 'export const one = 1\n')
+      const mod = await import(/* @vite-ignore */ pathToFileURL(join(dir, 'scripts/registry-json.mjs')).href)
+      // 迷你包不全，第一次会在后面某项（quant-format 没有说明）报错，但 num.ts 的内容已经读进缓存了。
+      await expect(mod.buildRegistry()).rejects.toThrow(/quant-format/)
+      writeFileSync(join(dir, 'src/lib/num.ts'), "import 'zz-probe-pkg'\nexport const one = 1\n")
+      await expect(mod.buildRegistry()).rejects.toThrow(/zz-probe-pkg/)
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
   })
 })
