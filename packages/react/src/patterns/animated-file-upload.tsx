@@ -10,6 +10,7 @@ import { unit } from '../lib/spring.ts'
 import { Button } from '../primitives/button.tsx'
 
 // 文件上传区：拖进来时区块放大一点、图标上浮，放下后文件行错落滑入，删除时向右滑出、剩下的行补位（原件的分镜）。
+// #226：多文件导入的列表（进度、失败重试、移除）由 FileImport 管，那边把 list 设成 false、只用 onFilesAdded 拿新加的文件：上传本身是调用方的事，这里不碰网络。
 // 用来导入回测数据、策略文件。整块是一个按钮（名字与说明由调用方传），隐藏的 input 不进读屏树；超限的文件过滤掉并提示。弹簧换成我们的 snappy。
 /** 原件拖入时图标的弹簧（SmoothUI animated-file-upload 的 SPRING_BOUNCY：bounce 0.2 · 0.3s）。 */
 const ICON_SPRING = { type: 'spring' as const, bounce: 0.2, duration: 0.3 }
@@ -30,8 +31,12 @@ export type FileUploadLabels = {
 }
 
 export type AnimatedFileUploadProps = {
-  /** Called with the whole list of chosen files after each change. */
-  onFilesSelected: (files: File[]) => void
+  /** Called with the whole list of chosen files after each change (not called when `list` is false: there is no list to report). */
+  onFilesSelected?: (files: File[]) => void
+  /** Called with only the files that were just added (after the size check), once per pick or drop. */
+  onFilesAdded?: (files: File[]) => void
+  /** Show the component's own list of chosen files (default true); false when the caller keeps the list, as FileImport does. */
+  list?: boolean
   /** All visible and spoken text (required). */
   labels: FileUploadLabels
   /** Comma-separated types for the picker, e.g. ".csv,.parquet". */
@@ -55,6 +60,8 @@ export function formatBytes(bytes: number): string {
 
 export function AnimatedFileUpload({
   onFilesSelected,
+  onFilesAdded,
+  list = true,
   labels,
   accept,
   multiple = true,
@@ -79,14 +86,18 @@ export function AnimatedFileUpload({
       }
     }
     if (!valid.length) return
-    const next = multiple ? [...files, ...valid] : valid.slice(0, 1)
+    const added = multiple ? valid : valid.slice(0, 1)
+    onFilesAdded?.(added)
+    // 调用方自己管列表（list=false）：这里不留文件，也就没有「整份列表」可报。
+    if (!list) return
+    const next = multiple ? [...files, ...valid] : added
     setFiles(next)
-    onFilesSelected(next)
+    onFilesSelected?.(next)
   }
   const remove = (index: number) => {
     const next = files.filter((_, i) => i !== index)
     setFiles(next)
-    onFilesSelected(next)
+    onFilesSelected?.(next)
   }
   const open = () => {
     if (!disabled) input.current?.click()
@@ -190,7 +201,7 @@ export function AnimatedFileUpload({
           </motion.p>
         ) : null}
       </AnimatePresence>
-      {files.length ? (
+      {list && files.length ? (
         <ul aria-label={labels.list} className="m-0 flex list-none flex-col gap-1.5 p-0">
           <AnimatePresence initial={false}>
             {files.map((file, index) => (

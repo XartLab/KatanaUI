@@ -25,6 +25,7 @@ import {
   type TimelineEvent,
 } from '../../src/blocks/index.ts'
 import { Row } from './parts.tsx'
+import { RangeEventsRow } from './research-calendar.tsx'
 
 // #1919 的操作与结构件的演示。数据都是演示用的（页上写明），不是行情。
 
@@ -219,6 +220,8 @@ export function DateRangePickerDemo() {
         commit=apply：挑完点「应用」才生效，Esc 或点外面丢掉；前两行是默认的 immediate，点完终点就生效；第二行 min 是
         2026-11-02，早于它的预设（本月、年初至今）禁用。
       </p>
+      <RangeEventsRow />
+      <p className="gal-note">演示：「今天」固定为 2026-11-14（周六）。预设都是截至今天；日历是双月，点两下选起止。</p>
     </>
   )
 }

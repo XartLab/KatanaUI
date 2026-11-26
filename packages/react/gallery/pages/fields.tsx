@@ -9,6 +9,7 @@ import {
   type LoadingLabels,
 } from '../../src/index.ts'
 import { Row } from './parts.tsx'
+import { DateTimeEventsRow } from './research-calendar.tsx'
 
 // 数字框、日期时间框与加载骨架的演示（#1860 从 src/ui 搬进包）。这几件的文字都是调用方给的，这里给一份演示用的中文。
 
@@ -116,6 +117,7 @@ export function DateTimeInputDemo() {
           max="2026-11-30"
         />
       </Row>
+      <DateTimeEventsRow />
     </>
   )
 }

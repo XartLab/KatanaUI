@@ -1,0 +1,117 @@
+/* SPDX-License-Identifier: MIT */
+/* 资料导入（#226，patterns/file-import.tsx）：来源页签与上传区是现有的 Tabs 与 AnimatedFileUpload，这里只管清单。
+   一行：类型图标、名字（长了省略，title 给全名）与大小、状态字（颜色是 lib/severity 的语气，写进行内样式）、操作钮；
+   上传中行底贴一条 4 高的 Progress（不知道进度时是不确定态）；失败行换成危险色的边与底，原因写在名字下面。
+   状态不只靠颜色：完成带勾、失败带叹号，字也写出来。 */
+.k-imp {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+.k-imp-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+.k-imp-pane > :first-child {
+  align-self: stretch;
+}
+.k-imp-link {
+  display: flex;
+  gap: 8px;
+  align-self: stretch;
+}
+.k-imp-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.k-imp-count {
+  margin: 0;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-imp-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-imp-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 6px 8px 6px 12px;
+  overflow: hidden;
+  border: 1px solid var(--k-container-borderColor);
+  border-radius: var(--radius-control);
+  background: var(--k-container-secondary-background);
+}
+.k-imp-row[data-status='failed'] {
+  border-color: var(--k-status-danger-borderColor);
+  background: var(--k-status-danger-background);
+}
+.k-imp-icon {
+  display: inline-flex;
+  flex: none;
+  color: var(--k-content-secondary-foreground);
+}
+.k-imp-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+.k-imp-line {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+.k-imp-name {
+  overflow: hidden;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-imp-size {
+  flex: none;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-num-small);
+  font-variant-numeric: tabular-nums;
+}
+.k-imp-error {
+  margin: 0;
+  color: var(--k-status-danger-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-imp-status {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.k-imp-actions {
+  display: inline-flex;
+  flex: none;
+  gap: 2px;
+}
+.k-imp-row > .k-imp-progress {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: auto;
+  height: 3px;
+  border-radius: 0;
+}

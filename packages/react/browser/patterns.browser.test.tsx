@@ -20,6 +20,9 @@ import {
   type FilterCondition,
   type FilterField,
 } from '../src/index.ts'
+import { EXAMPLE_EVENTS, EXAMPLE_INSIGHT } from '../gallery/research-calendar-data.ts'
+import { FileImportUsage } from '../gallery/usage/FileImportUsage.tsx'
+import { TemplateLibraryUsage } from '../gallery/usage/TemplateLibraryUsage.tsx'
 import { AnimatedFileUploadUsage } from '../gallery/usage/AnimatedFileUploadUsage.tsx'
 import { ChipGroupUsage } from '../gallery/usage/ChipGroupUsage.tsx'
 import { ListBoxUsage } from '../gallery/usage/ListBoxUsage.tsx'
@@ -103,6 +106,21 @@ for (const theme of ['graphite', 'console'] as const) {
     await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-${name}`)
   }
   describe(theme, () => {
+    // #226：日历的事件点与洞察（单独的 Calendar 带 events 与 insight，选中 11-20，读数行读选中日的事）。
+    test('calendar-events', () =>
+      shot(
+        'calendar-events',
+        <Calendar
+          label="Go to date"
+          locale="en-US"
+          labels={{ previousMonth: 'Previous month', nextMonth: 'Next month' }}
+          defaultValue="2026-11-20"
+          events={EXAMPLE_EVENTS}
+          insight={EXAMPLE_INSIGHT}
+        />,
+      ))
+    test('file-import', () => shot('file-import', <FileImportUsage />))
+    test('template-library', () => shot('template-library', <TemplateLibraryUsage />))
     test('animated-file-upload', () => shot('animated-file-upload', <AnimatedFileUploadUsage />))
     test('chip-group', () => shot('chip-group', <ChipGroupUsage />))
     test('combobox', () =>
