@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: MIT */
 /* 季节性图 SeasonalChart（#147，KATANAview #1884：对 TradingView 的 Seasonal Chart 小组件）。线色取 series-*（assignSeries 按年分配，写在行内）；
-   网格、零线、十字线、读数、横轴复用 chart-kit.css；纵轴刻度在右边（同 SymbolOverview）。 */
+   网格、零线、十字线、读数、横轴、右上的图操作复用 chart-kit.css；纵轴刻度在右边（同 SymbolOverview）。
+   整张图窄于 520px（容器查询）：图例单独占图操作下面的一整行，横轴只留单数月的字。 */
 
 .k-seasonal {
   display: flex;
@@ -11,11 +12,34 @@
   color: var(--k-content-primary-foreground);
   font: var(--text-data) var(--font-sans);
   font-variant-numeric: tabular-nums;
+  container: seasonal / inline-size;
+}
+.k-seasonal-bar {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.k-seasonal-bar .k-ck-actions {
+  flex: none;
+  margin-left: auto;
 }
 .k-seasonal-legend {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
+  min-width: 0;
+}
+@container seasonal (width < 520px) {
+  .k-seasonal-bar {
+    flex-wrap: wrap;
+  }
+  .k-seasonal-legend {
+    order: 1;
+    flex-basis: 100%;
+  }
+  .k-seasonal-xaxis > span[data-even='true'] {
+    display: none;
+  }
 }
 .k-seasonal-key {
   display: inline-flex;
@@ -55,12 +79,20 @@
   height: 8px;
   border-radius: 2px;
 }
+.k-seasonal-key-value {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-num-sm) var(--font-num-small);
+  font-weight: 400;
+}
 .k-seasonal-plotwrap {
   display: flex;
   flex-direction: column;
   gap: 4px;
   margin-right: 56px;
   font: var(--text-num-sm) var(--font-num-small);
+}
+.k-seasonal-plotwrap[hidden] {
+  display: none;
 }
 .k-seasonal-plot {
   position: relative;

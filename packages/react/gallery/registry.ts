@@ -7776,23 +7776,25 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 330,
     title: 'SeasonalChart 季节性图',
     summary:
-      '对 TradingView 的 Seasonal Chart 小组件（KatanaUI #147；它的页面写「把各年的价格表现叠在一起的多年季节性图」）：横轴 1 月 1 日到 12 月 31 日，纵轴是相对各年第一个价的涨跌幅，几年叠在一张图上看某段时间是不是年年涨或年年跌。最新的一年（或 highlight）2px，其余淡显；上面一排年份开关（aria-pressed）隐去 / 显出一年，至少留一年；悬停或键盘走出 LCD 读数，列出这一天各年的涨跌幅。数据先用 seasonalSeries 按年切好再传，件不取数据。',
+      '对 TradingView 的 Seasonal Chart 小组件（KatanaUI #147；它的页面写「把各年的价格表现叠在一起的多年季节性图」）：横轴是 366 格日历（1 月 1 日到 12 月 31 日，同一个日期每年同一格），纵轴是相对年初基准（上一年最后一个收盘价）的涨跌幅，几年叠在一张图上看某段时间是不是年年涨或年年跌。最新的一年（或 highlight）2px，其余淡显；上面一排年份开关（aria-pressed，各带这一年的涨跌幅）隐去 / 显出一年，至少留一年，可受控（hidden / onHiddenChange）；悬停或键盘走出 LCD 读数，列出这一天各年的涨跌幅；给了 actionLabels 右上有表格视图。数据先用 seasonalSeries 按年切好再传，件不取数据。',
     exports: ['SeasonalChart', 'seasonalSeries'],
     propParts: [
       {
         part: 'SeasonalChart',
-        note: 'years 是 { year, points: { day, pct }[] }（day 是一年里的第几天，0 是 1 月 1 日）；月份的字在 labels.months（12 个）。',
+        note: 'years 是 { year, points: { day, pct }[] }（day 是 366 格日历的格：0 是 1 月 1 日，59 是 2 月 29 日，60 是 3 月 1 日）；月份的字在 labels.months（12 个）。hidden / onHiddenChange 受控图例，不给是内部状态（defaultHidden）；actionLabels（加 tableLabel、labels.month、onExport、onFullscreen）给了才画右上的图操作。',
       },
       {
         part: 'seasonalSeries(points, offsetMs)',
         symbol: 'seasonalSeries',
-        note: 'points 是从旧到新的 { time, value }；按 UTC 加 offsetMs（交易所时区，东八区给 8 × 3600000）切年；同一天取最后一个；一年的第一个价是 0 时不要这一年。口径是相对这一年第一个价，TradingView 用年初开盘还是上年收盘待核对。',
+        note: 'points 是从旧到新的 { time, value }；按 UTC 加 offsetMs（交易所时区，东八区给 8 × 3600000）切年；同一天取最后一个。基准是上一年最后一天的收盘，数据里没有上一年（或它是 0）时用这一年第一个价，基准是 0 时不要这一年（#147 起；之前一律用这一年第一个价）。',
       },
     ],
     states: [
       '默认：每年一条线，颜色按年份次序取 series-*，关掉一年不让其余换色；月初画淡虚线，跨过 0 画零线。',
       '关掉的年：开关淡显、色块变空心，线不画；最后一条线不让关。',
-      '悬停或聚焦后按方向键：竖线 + 读数（「月 日」与每年的涨跌幅）；今年还没走到的日子不列今年。',
+      '悬停或聚焦后按方向键：竖线 + 读数（「月 日」与每年的涨跌幅）；往年最后一个点之后沿用到年底，今年还没走到的日子写「—」。',
+      '表格视图（右上按钮）：每月一行、每个看得见的年一列，写月末涨跌幅；图藏起来。',
+      '整张图窄于 520px：图例单独占一行，横轴只留单数月。',
       '没有至少两个点的年：画 labels.empty。',
     ],
     donts: [
@@ -7800,10 +7802,11 @@ export const PAGES: readonly DocPage[] = [
       '年份多于七个时第八个起都是「其他」色：只留最近几年。',
     ],
     composition:
-      'SeasonalChart figure\n  div[role=group]（button[aria-pressed] × 年：色块 · 年份）\n  div[role=slider]（svg：网格 · 月初虚线 · 零线 · 线 × 年；纵轴刻度 · 十字线 · LcdTooltip）\n  div（月份刻度）\n  figcaption（来源）',
+      'SeasonalChart figure\n  div（div[role=group]（button[aria-pressed] × 年：色块 · 年份 · 涨跌幅）· ChartActions）\n  ChartTable（表格视图）\n  div[role=slider]（svg：网格 · 月初虚线 · 零线 · 线 × 年；纵轴刻度 · 十字线 · LcdTooltip）\n  div（月份刻度）\n  figcaption（来源）',
     keys: [
-      ['← / →（图上）', '前一天 / 后一天，出读数'],
+      ['← / →（图上）', '前一天 / 后一天，出读数；没选中时第一下落在今年最后一个点'],
       ['Shift + ← / →', '一次走三天'],
+      ['PageUp / PageDown', '上一个 / 下一个月初'],
       ['Home / End', '到 1 月 1 日 / 12 月 31 日'],
       ['Esc', '清掉读数'],
       ['Tab / Enter / Space', '到年份开关、切换'],
