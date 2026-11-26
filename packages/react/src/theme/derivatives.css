@@ -23,6 +23,7 @@
 }
 .k-deriv-head {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 4px;
   min-width: 0;
@@ -35,6 +36,9 @@
   font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
+  /* 窄卡（约 300px）里周期按钮放不下时换到第二行，标题不被挤成 0 宽（CI 截图 2026-11-26 发现） */
+  flex: 0 1 auto;
+  min-width: 4em;
 }
 .k-deriv-info {
   display: inline-grid;
