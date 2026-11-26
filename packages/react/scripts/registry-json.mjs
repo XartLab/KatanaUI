@@ -110,6 +110,7 @@ const INTERNAL = {
     'ThemeHeatMatrix 的数据形状、五档档位（与 CalendarHeatmap 换手视图同一条规则）与键盘走格（纯函数）。',
   'calendar-model': 'CalendarHeatmap 的格子排布、档位与键盘（纯函数）：日历日按 UTC 算，一周一列。',
   'horizon-model': 'HorizonChart 的分带（纯函数）：把带正负的一列数折成几条叠起来的窄带。',
+  fill: '条长与标记位置的写法：把 0 到 1 的比例写成自定义属性 --fill（带起点的写 --from），样式用 scale / translate 画，不对 width / left 做过渡。盘口深度条、行情条、仪表条用。',
   'live-line':
     '走势线新点追加时的延伸过场（钩子加纯函数）：旧线各点平滑走到新位置，新点从末端长出来，Sparkline、SparkTile、EquityCurve 用。',
   'live-readout':

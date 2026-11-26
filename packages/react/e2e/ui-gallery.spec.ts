@@ -2292,9 +2292,11 @@ for (const theme of THEMES) {
       const meters = section(page, 'meter')
       const bars = meters.getByTestId('meter-bars').locator('.k-meter')
       const fill = async (meter: Locator) => {
-        const track = (await meter.locator('.k-meter-track').boundingBox())!
-        const filled = (await meter.locator('.k-meter-fill').boundingBox())!
-        return filled.width / (track.width - 2)
+        // 条长是 --fill，用 clip-path 裁右边画（点阵纹理不能 scale；#251）：看到的长度 = 1 − 右边裁掉的百分比。
+        return meter.locator('.k-meter-fill').evaluate((el) => {
+          const cut = /inset\(\s*\S+\s+([\d.]+)%/.exec(getComputedStyle(el).clipPath)
+          return cut ? 1 - Number(cut[1]) / 100 : Number.NaN
+        })
       }
       // 长度编码量：72% 就是约 72% 的槽宽。弹簧还在走时等它停。
       await expect.poll(async () => Math.round((await fill(bars.nth(0))) * 100)).toBe(72)
@@ -4946,7 +4948,9 @@ for (const theme of THEMES) {
       expect(Number(await big.locator('.k-spark-ins-now').getAttribute('y1'))).toBeCloseTo(dotY, 1)
       // 实时：走一步，线延伸、投影谱与当前值线跟着最新点。
       const barWidths = () =>
-        big.locator('.k-spark-ins-bar').evaluateAll((els) => els.map((el) => (el as SVGElement).style.width).join())
+        big
+          .locator('.k-spark-ins-bar')
+          .evaluateAll((els) => els.map((el) => (el as SVGElement).style.getPropertyValue('--fill')).join())
       const before = await barWidths()
       await page.evaluate(() => window.__liveStep?.(1))
       await expect.poll(barWidths).not.toBe(before)
@@ -7819,9 +7823,9 @@ test('读数刷新（SparkTile）：数值闪涨跌色，走势线延伸，末�
   await expect(tile.locator('.k-spark-tile-value .k-live-flash')).toHaveAttribute('data-flash', /^(up|down)$/)
   await expect(tile.locator('.k-spark-tile-halo')).toHaveAttribute('data-flash', /^(up|down)$/)
   await expect.poll(() => sawAttr(line)).toBe(true)
-  // 末点跟着线一起滑（top 有过渡，时长是 --dur-reorder）。
+  // 末点跟着线一起滑（translate 有过渡，时长是 --dur-reorder；不再对 top 做过渡，#251）。
   expect(await tile.locator('.k-spark-tile-end').evaluate((el) => getComputedStyle(el).transitionProperty)).toContain(
-    'top',
+    'translate',
   )
 })
 

@@ -14,7 +14,7 @@ import { OverlayPortal } from '../lib/overlay.tsx'
 // 旧版默认延迟 0（注释写「等 700ms 反而像卡了」）：Toolbar / DecimalField 又各写 500 加 skip 0，三套手感不一，扫过工具条一路弹或一闪一闪，所以改成一条规则。
 // 悬停卡（hover-card.tsx）是另一回事，维持 700 / 300；触屏没有悬停，不做方案（桌面工作台）。
 const tooltipContentClass = [
-  'k-text-data z-60 inline-flex items-center gap-2 rounded-[6px] border border-(color:--k-separable-tertiary-borderColor) bg-(--k-surface-sunken-background) px-2 py-1.5 leading-[1.3] font-normal text-(color:--k-content-body-foreground)',
+  'k-text-data z-60 inline-flex items-center gap-2 rounded-[var(--radius-control)] border border-(color:--k-separable-tertiary-borderColor) bg-(--k-surface-sunken-background) px-2 py-1.5 leading-[1.3] font-normal text-(color:--k-content-body-foreground)',
   'shadow-(--k-overlay-tooltip-shadow)',
   '[&_.k-kbd]:border-transparent [&_.k-kbd]:bg-(--k-content-primary-foreground) [&_.k-kbd]:font-semibold [&_.k-kbd]:text-(color:--k-surface-sunken-background)',
 ].join(' ')

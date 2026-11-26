@@ -61,11 +61,14 @@ button.k-book-row:focus-visible {
 }
 .k-book-bar {
   position: absolute;
-  inset: 1px 0 1px auto;
+  inset: 1px 0;
   /* 12% 而不是 18%：最深的几行深度条铺到价格底下，18% 的同色底让卖价红字只剩 4.4:1（console，axe #190），12% 是 4.8:1（同成交明细大单行的底）。 */
   background: color-mix(in srgb, var(--k-bar-tone) 12%, transparent);
   pointer-events: none;
-  transition: width var(--dur-snappy) var(--ease-snappy);
+  /* 深度条：长度是 --fill（0 到 1），贴右边用 scale 画；行情一刷新就变，不重排（kubai Vibe Design Tips 011，#251）。 */
+  transform-origin: right;
+  scale: var(--fill, 0) 1;
+  transition: scale var(--dur-snappy) var(--ease-snappy);
 }
 .k-book-side[data-side='bid'] {
   --k-bar-tone: var(--k-tone-up-foreground);
@@ -121,27 +124,33 @@ button.k-book-row:focus-visible {
 }
 /* 买卖占比条：左买右卖，宽度各占百分比；字写在条里，条再窄也不挤出去（溢出裁掉，读屏有 aria-label）。 */
 .k-book-share {
+  position: relative;
   display: flex;
   height: 20px;
   margin: var(--space-2) var(--inset-x) var(--space-3);
   overflow: hidden;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   font: 500 11px/20px var(--font-sans);
   font-variant-numeric: tabular-nums;
 }
+/* 两段各铺满整条，用 clip-path 裁出自己的占比（--fill，0 到 1）：字留在原位、条长变化不重排。 */
 .k-book-share > span {
+  position: absolute;
+  inset: 0;
   min-width: 0;
   overflow: hidden;
   padding: 0 6px;
   white-space: nowrap;
-  transition: width var(--dur-snappy) var(--ease-snappy);
+  transition: clip-path var(--dur-snappy) var(--ease-snappy);
 }
 /* 条里的字压在 28% 的同色底上原样只有 3.9–4.4:1（axe #190），往 primary 混 35%，仍是红 / 绿（混 25% 时最深一格 4.45:1）。 */
 .k-book-share-bid {
+  clip-path: inset(0 calc((1 - var(--fill, 0)) * 100%) 0 0);
   background: color-mix(in srgb, var(--k-tone-up-foreground) 28%, transparent);
   color: color-mix(in srgb, var(--k-tone-up-foreground) 65%, var(--k-content-primary-foreground));
 }
 .k-book-share-ask {
+  clip-path: inset(0 0 0 calc((1 - var(--fill, 0)) * 100%));
   background: color-mix(in srgb, var(--k-tone-down-foreground) 28%, transparent);
   color: color-mix(in srgb, var(--k-tone-down-foreground) 65%, var(--k-content-primary-foreground));
   text-align: right;

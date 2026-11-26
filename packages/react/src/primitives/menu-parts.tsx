@@ -52,7 +52,7 @@ export const menuContainerClass =
  * 行的皮肤（不含禁用态）：cmdk 在可用的行上也写 data-disabled="false"，`data-[disabled]` 会把每一行都画成禁用（命令面板的行因此只有 2.67:1，G1 修），所以禁用态分开写。
  */
 export const menuRowBaseClass = cn(
-  'k-pop-item relative flex h-[30px] cursor-pointer items-center justify-between gap-3 rounded-[6px] px-2 whitespace-nowrap text-(color:--k-content-body-foreground) select-none',
+  'k-pop-item relative flex h-[30px] cursor-pointer items-center justify-between gap-3 rounded-[var(--radius-inner)] px-2 whitespace-nowrap text-(color:--k-content-body-foreground) select-none',
   'transition-[background-color,color] duration-100 data-[highlighted]:bg-(--k-selectable-subtle-background-hover) data-[highlighted]:text-(color:--k-content-primary-foreground)',
   '[&_svg]:shrink-0',
   focusRingInset,
@@ -124,7 +124,7 @@ export function MenuShortcut({ className, ...props }: ComponentProps<'kbd'>) {
     <kbd
       data-slot="menu-shortcut"
       className={cn(
-        'k-kbd k-text-caption ml-auto inline-flex h-5 min-w-5 items-center justify-center rounded-[4px] border border-(color:--k-content-kbd-borderColor) bg-(--k-content-kbd-background) px-1 leading-none font-medium text-(color:--k-content-body-foreground)',
+        'k-kbd k-text-caption ml-auto inline-flex h-5 min-w-5 items-center justify-center rounded-[var(--radius-md)] border border-(color:--k-content-kbd-borderColor) bg-(--k-content-kbd-background) px-1 leading-none font-medium text-(color:--k-content-body-foreground)',
         className,
       )}
       {...props}

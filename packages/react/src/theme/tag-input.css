@@ -20,9 +20,9 @@
   padding: var(--k-tagin-pad) 6px;
   background: var(--k-editable-background);
   border: 1px solid var(--k-editable-borderColor);
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   cursor: text;
-  transition: border-color 120ms;
+  transition: border-color var(--dur-hover) var(--ease-hover);
 }
 .k-tagin[data-size='sm'] .k-tagin-box {
   --k-tagin-pad: 3px;

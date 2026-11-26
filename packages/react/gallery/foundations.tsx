@@ -9,7 +9,7 @@ import { Button } from '../src/index'
 import { DECISION_PAGES } from './decisions'
 import { phrased } from './phrased'
 import { TYPESETTING_PAGES } from './typesetting-page'
-import { HEAT, MORE_PAGES as BASE_PAGES } from './foundations-more'
+import { HEAT, MORE_PAGES as BASE_PAGES, RadiusRules } from './foundations-more'
 
 const MORE_PAGES = { ...BASE_PAGES, ...DECISION_PAGES, ...TYPESETTING_PAGES }
 
@@ -349,6 +349,7 @@ export function FoundationPage({ id }: { id: FoundationId }) {
               rows={T.radius.tokens}
               preview={(t) => <span className="gal-fd-box" style={{ borderRadius: `var(--${t.name})` }} />}
             />
+            <RadiusRules />
           </>
         )
       case 'shadow':

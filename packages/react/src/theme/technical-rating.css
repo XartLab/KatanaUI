@@ -132,7 +132,7 @@
   max-width: 220px;
   margin-top: 6px;
   border: 1px solid var(--k-separable-secondary-borderColor);
-  border-radius: 8px;
+  border-radius: var(--radius-overlay);
   font-variant-numeric: tabular-nums;
 }
 .k-trating-counts span {
@@ -257,7 +257,7 @@
   scrollbar-width: none;
 }
 .k-trating-bar [data-state='on'] {
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   background: var(--alpha-white-9);
 }
 .k-trating-bar > div {
@@ -265,6 +265,6 @@
   background: transparent;
 }
 .k-trating-bar button {
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   white-space: nowrap;
 }

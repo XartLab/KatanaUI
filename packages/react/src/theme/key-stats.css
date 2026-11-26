@@ -57,7 +57,7 @@
 .k-keystats-badge {
   align-self: center;
   padding: 1px 8px;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   background: var(--alpha-white-7);
   color: var(--k-content-body-foreground);
   font: 600 10px/16px var(--font-sans);

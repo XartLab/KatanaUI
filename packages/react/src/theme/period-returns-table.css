@@ -25,7 +25,7 @@
 .k-pr-scale i {
   width: 120px;
   height: 8px;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
 }
 .k-pr-scroll {
   overflow-x: auto;
@@ -64,7 +64,7 @@
 .k-pr-cell {
   height: 28px;
   padding: 0 4px;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   background: var(--k-container-secondary-background);
   color: var(--k-content-primary-foreground);
   text-align: center;

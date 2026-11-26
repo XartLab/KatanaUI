@@ -204,7 +204,7 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   color: var(--mheat-fg);
   background: var(--mheat-bg);
   font: 500 var(--text-data-size)/14px var(--font-sans);
@@ -244,7 +244,7 @@
   z-index: 1;
   box-sizing: border-box;
   border: 1px solid var(--k-content-primary-foreground);
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   pointer-events: none !important;
 }
 .k-mheat-cell[data-selected] {
@@ -401,7 +401,7 @@
 .k-mheat-swatch {
   display: block;
   height: 10px;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   background: var(--mheat-bg);
 }
 .k-mheat-swatch[data-off] {
@@ -424,7 +424,7 @@
   height: 28px;
   margin-left: auto;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   background: transparent;
   color: var(--k-content-body-foreground);
   cursor: pointer;

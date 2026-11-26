@@ -12,7 +12,7 @@
   height: 26px;
   padding: 0 10px;
   border: var(--hairline);
-  border-radius: 13px;
+  border-radius: var(--radius-pill);
   background: var(--k-container-secondary-background);
   color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
@@ -75,7 +75,7 @@
   height: 44px;
   padding: 0 8px;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   background: none;
   color: inherit;
   font: var(--text-data) var(--font-sans);
