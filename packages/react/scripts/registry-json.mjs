@@ -308,6 +308,8 @@ function collectItems() {
       'orders-table',
       'account-equity',
       'funding-rate',
+      // #245 交易数据看板：六张卡、画法与纯函数在一个子目录里。
+      'derivatives',
       'options-chain',
       // #104 盘口三件：订单簿、深度图、成交明细，各一个子目录（组件与它的纯函数一起装；深度图用订单簿的档位合并）。
       'order-book',

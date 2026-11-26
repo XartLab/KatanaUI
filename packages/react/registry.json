@@ -249,6 +249,11 @@
           "target": "~/src/katana/ui/theme/depth-chart.css"
         },
         {
+          "path": "src/theme/derivatives.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/derivatives.css"
+        },
+        {
           "path": "src/theme/dialog.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/dialog.css"
@@ -8042,7 +8047,7 @@
       "name": "cn-move-feed-model",
       "type": "registry:lib",
       "title": "Cn Move Feed Model",
-      "description": "盘口异动的流：一行一条，时间 · 名称（带代码）· 类型胶囊 · 数值；按时间从新到旧排，新来的从顶上进（淡入一下，reduced-motion 时不播）。类型胶囊按涨 / 跌 / 量 / 板着色（涨跌读 --pnl-up / --pnl-down 跟 data-updown，量是中性强调，板是警示色），顶上一排类型多选筛（点一个只看它、再点取消，一个都没选是全部，带条数）。点行触发 onSelect 联动个股页，selectedId 标出联动的那一行。随包认识十一种类型（火箭发射、封涨停板、大笔卖出…），也可以传自己的类型表。条目由调用方给。与 NewsFeed（新闻阅读器）、EventTimeline（公司事件）不同。",
+      "description": "盘口异动的流：一行一条，时间 · 名称（带代码）· 类型胶囊 · 数值；按时间从新到旧排，新来的从顶上进（淡入一下，reduced-motion 时不播）。类型胶囊按涨 / 跌 / 量 / 板着色（涨跌读 --pnl-up / --pnl-down 跟 data-updown，量是中性强调，板是警示色），顶上一排类型多选筛（点一个只看它、再点取消，一个都没选是全部，带条数）。点行触发 onSelect 联动个股页，selectedId 标出联动的那一行。随包认识十三种类型（火箭发射、封涨停板、大笔卖出、5 分钟涨幅 / 跌幅…），也可以传自己的类型表。加密市场的用法（#245，照 OKX 的「市场异动」）：条目的 symbol 写币对，传 currentSymbol 就多一个「只看当前品种」开关（onlyCurrent 受控或 defaultOnlyCurrent 不受控），类型文字走 labels.types（「5 分钟涨幅」「15 分钟跌幅」…，没有的窗口用 types 自定）。条目由调用方给。与 NewsFeed（新闻阅读器）、EventTimeline（公司事件）不同。",
       "registryDependencies": [
         "@katana/cn-format",
         "@katana/cn-session",
@@ -8060,8 +8065,9 @@
       "name": "cn-move-feed",
       "type": "registry:component",
       "title": "Cn Move Feed",
-      "description": "盘口异动的流：一行一条，时间 · 名称（带代码）· 类型胶囊 · 数值；按时间从新到旧排，新来的从顶上进（淡入一下，reduced-motion 时不播）。类型胶囊按涨 / 跌 / 量 / 板着色（涨跌读 --pnl-up / --pnl-down 跟 data-updown，量是中性强调，板是警示色），顶上一排类型多选筛（点一个只看它、再点取消，一个都没选是全部，带条数）。点行触发 onSelect 联动个股页，selectedId 标出联动的那一行。随包认识十一种类型（火箭发射、封涨停板、大笔卖出…），也可以传自己的类型表。条目由调用方给。与 NewsFeed（新闻阅读器）、EventTimeline（公司事件）不同。",
+      "description": "盘口异动的流：一行一条，时间 · 名称（带代码）· 类型胶囊 · 数值；按时间从新到旧排，新来的从顶上进（淡入一下，reduced-motion 时不播）。类型胶囊按涨 / 跌 / 量 / 板着色（涨跌读 --pnl-up / --pnl-down 跟 data-updown，量是中性强调，板是警示色），顶上一排类型多选筛（点一个只看它、再点取消，一个都没选是全部，带条数）。点行触发 onSelect 联动个股页，selectedId 标出联动的那一行。随包认识十三种类型（火箭发射、封涨停板、大笔卖出、5 分钟涨幅 / 跌幅…），也可以传自己的类型表。加密市场的用法（#245，照 OKX 的「市场异动」）：条目的 symbol 写币对，传 currentSymbol 就多一个「只看当前品种」开关（onlyCurrent 受控或 defaultOnlyCurrent 不受控），类型文字走 labels.types（「5 分钟涨幅」「15 分钟跌幅」…，没有的窗口用 types 自定）。条目由调用方给。与 NewsFeed（新闻阅读器）、EventTimeline（公司事件）不同。",
       "registryDependencies": [
+        "@katana/checkbox",
         "@katana/cn",
         "@katana/cn-labels",
         "@katana/cn-move-feed-model"
@@ -9352,6 +9358,53 @@
           "path": "src/blocks/funding-rate/funding-rate.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/funding-rate/funding-rate.tsx"
+        }
+      ]
+    },
+    {
+      "name": "derivatives",
+      "type": "registry:component",
+      "title": "Derivatives",
+      "description": "永续合约的「交易数据」（OKX 永续页，XartLab/KatanaUI#245）：六张卡的网格，每张自己的标题、信息提示与周期按钮。持仓量及成交量（成交量柱在左轴、持仓量线在右轴，两轴共用一套网格）、资金费率（柱按正负着色，零线居中，周期近 7 / 14 天）、主动买卖量（买入在零线上、卖出镜像在零线下）、多空账户比与精英多空趋向（多空 100% 堆叠柱，加多空比折线在右轴）、合约基差（上面合约价与指数价两条线，下面基差柱）。数据按卡由调用方给（时间戳加数值的序列），缺哪张就显示那张的空态，不画假数；没有数的点留缺口，不当零画。周期可受控（period）也可不受控（defaultPeriod），切换只发 onPeriodChange(kind, period)，换数据是调用方的事。悬停或 ← → 扫读出悬停窗。卡可以单独用：DerivativesCard 一个 kind 一张。文字走 labels（必填，包里不带语言；演示用的简体中文那份在 gallery/usage/derivatives-labels-zh.ts）。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/cn",
+        "@katana/funding-rate",
+        "@katana/num",
+        "@katana/quant-format",
+        "@katana/series-geometry",
+        "@katana/toggle-group",
+        "@katana/tooltip",
+        "@katana/use-scrubber"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/derivatives/derivatives-board.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/derivatives/derivatives-board.tsx"
+        },
+        {
+          "path": "src/blocks/derivatives/derivatives-card.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/derivatives/derivatives-card.tsx"
+        },
+        {
+          "path": "src/blocks/derivatives/derivatives-labels.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/derivatives/derivatives-labels.ts"
+        },
+        {
+          "path": "src/blocks/derivatives/derivatives-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/derivatives/derivatives-model.ts"
+        },
+        {
+          "path": "src/blocks/derivatives/derivatives-plots.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/derivatives/derivatives-plots.tsx"
         }
       ]
     },

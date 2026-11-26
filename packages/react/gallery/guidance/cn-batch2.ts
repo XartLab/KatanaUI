@@ -71,10 +71,12 @@ const cnBatch2: GuidanceMap = {
     use: [
       '盘中盘口异动的流：一行一条（时间 · 名称 · 类型 · 数值），新的从顶上进，点行联动个股。',
       '顶上的类型多选筛：点一个只看它，再点取消，一个都没选是全部。',
+      '加密市场：条目的 symbol 写币对，传 currentSymbol 多出「只看当前品种」勾选；类型名写进 labels.types（「5 分钟涨幅」），没有的窗口用 types 自定色调。',
     ],
     avoid: ['新闻、公告用 NewsFeed；公司事件用 EventTimeline。'],
     a11y: [
       '类型筛选是一组 aria-pressed 的按钮；类型胶囊上有字，不只靠颜色。',
+      '「只看当前品种」是带 label 的勾选框，Space 切换；勾上后顶上的总条数跟着变。',
       '给了 onSelect 行是 button，读屏名写时间、名称、类型与数值；联动那一行标 aria-pressed。',
       '新行淡入的动画在 prefers-reduced-motion 下不播，列表不使用 aria-live（高频更新会吵）。',
     ],
