@@ -100,7 +100,7 @@ export function shotPlan(pkgDir, changed) {
   for (const file of changed) {
     if (/\.test\.tsx?$/.test(file) || file.startsWith('.pixelgate-unit/')) continue
     if (file.startsWith('browser/')) {
-      covered = false // 改了截图测试本身：整套跑，见 fast.mjs
+      // 改了截图测试本身：fast.mjs 只截 diff 里新加 / 改动的那几项（#247），不算缺口，不退回整页 vr:fast。
       continue
     }
     const css = /^src\/theme\/(.+)\.css$/.exec(file)
