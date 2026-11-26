@@ -75,9 +75,13 @@ function TypesettingPage() {
           [
             '按钮文字不折行',
             <>
-              {code('button')}、{code('[role=button]')}、{code('[role=tab]')}：{code('white-space: nowrap')}
+              库里「只放文字与图标」的按钮类件默认不折行：{code('[data-slot=button]')}、{code('toggle')}、
+              {code('toggle-group-item')}、{code('tabs-trigger')}、各菜单项：{code('white-space: nowrap')}
             </>,
-            <>里面放了段落、标题、列表的卡片式按钮不动（white-space 会往下继承）；要折行的写 {code('data-wrap')}。</>,
+            <>
+              应用自己的按钮自己定：全局的 {code('button')} 不开，因为卡片式按钮里的多行说明会被 white-space
+              继承压成一行冲出去。
+            </>,
           ],
           [
             '截断真生效',
@@ -219,9 +223,6 @@ function TypesettingPage() {
 
       <h2>待用户定</h2>
       <ul className="gal-list">
-        <li>
-          按钮、页签的 nowrap 是全局默认值（带 data-wrap 或里面有段落的除外）；觉得太宽可以收窄到只在 Button 件上写。
-        </li>
         <li>BudouX 现在只在文档站；要进 EmptyState 与卡片标题，得先定怎么承担它的体积与传递依赖。</li>
         <li>installTruncationTitles() 要应用启动时调一次；KATANAview 那边另开票接上。</li>
       </ul>

@@ -34,9 +34,23 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* 按钮文字不折行：只管「里面只有文字与图标」的按钮；按钮里放了段落、标题、列表（卡片式按钮）的不动，
-   因为 white-space 会往下继承，把里面的长文字也压成一行。真要允许折行的按钮写 data-wrap。 */
-:where(button, [role='button'], [role='tab']):where(:not(:has(p, ul, ol, h1, h2, h3, h4, h5, h6, [data-wrap]))) {
+/* 按钮文字不折行：只管库里自己的、「只放文字与图标」的按钮类件（按 data-slot 点名）：Button、页签触发器、Toggle 与分段项、菜单项。
+   不给全局的 button / [role=button] 开：应用里有卡片式按钮（里面是多行的 span 说明行，:has 拦不住），white-space 会往下继承，把说明行压成一行冲出去；
+   应用自己的按钮自己定。这些件的 Tailwind 类里本来就带 whitespace-nowrap，这里是兜底，防止谁改类名时丢掉。 */
+:where(
+  [data-slot='button'],
+  [data-slot='toggle'],
+  [data-slot='toggle-group-item'],
+  [data-slot='tabs-trigger'],
+  [data-slot='dropdown-menu-item'],
+  [data-slot='dropdown-menu-checkbox-item'],
+  [data-slot='dropdown-menu-radio-item'],
+  [data-slot='dropdown-menu-sub-trigger'],
+  [data-slot='context-menu-item'],
+  [data-slot='context-menu-checkbox-item'],
+  [data-slot='context-menu-radio-item'],
+  [data-slot='context-menu-sub-trigger']
+) {
   white-space: nowrap;
 }
 

@@ -121,3 +121,25 @@ test('规则表：十条规则都在，每条有做法与边界', async ({ page 
   const article = await open(page)
   await expect(article.locator('table').first().locator('tbody tr')).toHaveCount(10)
 })
+
+test('按钮不折行只管库里的按钮类件：data-slot 的不折行，应用自己的卡片式按钮不受影响', async ({ page }) => {
+  await open(page)
+  const result = await page.evaluate(() => {
+    const host = document.createElement('div')
+    host.style.width = '80px'
+    host.innerHTML =
+      '<button data-slot="button">很长很长的按钮文字很长很长</button>' +
+      '<button data-slot="tabs-trigger">很长很长的页签文字</button>' +
+      '<button id="card"><span>卡片式按钮的说明行很长很长很长很长</span></button>'
+    document.body.append(host)
+    const white = (selector: string) => getComputedStyle(host.querySelector(selector)!).whiteSpace
+    const out = {
+      button: white('[data-slot=button]'),
+      tab: white('[data-slot=tabs-trigger]'),
+      card: white('#card span'),
+    }
+    host.remove()
+    return out
+  })
+  expect(result).toEqual({ button: 'nowrap', tab: 'nowrap', card: 'normal' })
+})
