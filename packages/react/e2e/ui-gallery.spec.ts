@@ -3236,6 +3236,40 @@ for (const theme of THEMES) {
       await expect(section(page, 'estimate-badge').getByText('Estimated from bars')).toBeVisible()
     })
 
+    // 提示时间统一在 TooltipProvider（kubai Vibe Design Tips 025，#251）。用假时钟推时间：本机忙时真等 500ms 量不准。
+    test('提示时间：停 500ms 才出；出了以后 400ms 内移到邻居立即出；离开超过 400ms 再进又要等 500ms', async ({
+      page,
+    }) => {
+      await page.clock.install({ time: 0 })
+      await open(page, theme, 'toolbar')
+      await page.clock.pauseAt(60_000)
+      const bar = section(page, 'toolbar').getByRole('toolbar', { name: 'Example toolbar' })
+      const tip = page.locator('[data-slot="tooltip-content"]')
+      const centerOf = async (name: string) => {
+        const box = (await bar.getByRole('button', { name, exact: true }).boundingBox())!
+        return { x: box.x + box.width / 2, y: box.y + box.height / 2 }
+      }
+      const alerts = await centerOf('Alerts')
+      const draw = await centerOf('Draw')
+      await page.mouse.move(alerts.x, alerts.y)
+      await page.clock.runFor(499)
+      await expect(tip).toHaveCount(0)
+      await page.clock.runFor(1)
+      await expect(tip).toContainText('Alerts')
+      // 沿工具条移到邻居：立即换字，不再等 500ms。
+      await page.mouse.move(draw.x, draw.y)
+      await expect(tip).toContainText('Draw')
+      // 离开超过 400ms 再回来：重新等。
+      await page.mouse.move(0, 0)
+      await expect(tip).toHaveCount(0)
+      await page.clock.runFor(401)
+      await page.mouse.move(alerts.x, alerts.y)
+      await page.clock.runFor(499)
+      await expect(tip).toHaveCount(0)
+      await page.clock.runFor(1)
+      await expect(tip).toContainText('Alerts')
+    })
+
     // 下面十条是 #1870 补的标准件：每件至少一条用户看得见的断言（打开、键盘、焦点回还）。
     test('弹出提示：键盘弹出，窗口右下角的读屏区域，两条出「全部关掉」，叉与全部关掉都收起并摘掉节点', async ({
       page,
