@@ -23921,6 +23921,7 @@ button.k-sm-head:focus-visible {
 }
 
 .k-deriv-head {
+  flex-wrap: wrap;
   align-items: center;
   gap: 4px;
   min-width: 0;
@@ -23932,6 +23933,8 @@ button.k-sm-head:focus-visible {
   font: var(--text-data) var(--font-sans);
   text-overflow: ellipsis;
   white-space: nowrap;
+  flex: 0 auto;
+  min-width: 4em;
   margin: 0;
   font-weight: 600;
   overflow: hidden;
