@@ -969,3 +969,28 @@ export {
   type PixelBrushCanvasLabels,
   type PixelBrushCanvasProps,
 } from './motion/media/pixel-brush-canvas.tsx'
+// 万能框（#224）：分类页签、作用域标签、意图检测、行尾提示、悬停预览；接近度高亮钩子可给菜单与列表复用。
+export {
+  Omnibox,
+  OmniboxDialog,
+  type OmniboxDialogProps,
+  type OmniboxLabels,
+  type OmniboxProps,
+  type OmniboxQuery,
+  type OmniboxSelectInfo,
+} from './patterns/omnibox/omnibox.tsx'
+export {
+  createIntentDetector,
+  detectIntent,
+  type IntentOptions,
+  type OmniboxCategory,
+  type OmniboxItem,
+  type OmniboxKind,
+} from './patterns/omnibox/omnibox-model.ts'
+export {
+  nearestRow,
+  useProximityHighlight,
+  type NearestRowOptions,
+  type ProximityHighlightOptions,
+  type ProximityRect,
+} from './lib/proximity-highlight.ts'

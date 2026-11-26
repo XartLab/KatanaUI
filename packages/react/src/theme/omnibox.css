@@ -1,0 +1,359 @@
+/* SPDX-License-Identifier: MIT */
+/* Omnibox 万能框（#224）：交互借 Jamie Merrill 的搜索系列（2026-11-24 看的录屏帧），样子是我们的：Graphite token，只读 --k-* 与间距、字体、动效 token。
+   覆盖 Tailwind 工具类（行高、选中底色）一律用 .k-omnibox-panel 前缀抬高权重，不靠引入次序。
+   动效（高亮滑动、占位轮播、收起、预览卡入场）无条件写：产品不跟系统的「减少动态效果」（theme/motion.css 头部，AGENTS.md 产品底线）。 */
+
+.k-omnibox {
+  position: relative;
+}
+.k-omnibox-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid var(--k-overlay-dialog-borderColor);
+  background: var(--k-surface-raised-background);
+  box-shadow: var(--k-overlay-dialog-shadow);
+}
+
+/* 输入行：搜索图标、作用域标签、输入框（含占位轮播）、问句提示。 */
+.k-omnibox-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 48px;
+  padding: 0 14px;
+  border-bottom: 1px solid var(--k-separable-subtle-borderColor);
+  transition: border-color 0.12s;
+}
+.k-omnibox[data-asking] .k-omnibox-bar {
+  border-bottom-color: transparent;
+}
+.k-omnibox-search-icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: var(--k-content-secondary-foreground);
+}
+.k-omnibox-field {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+}
+.k-omnibox-input {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-body) var(--font-sans);
+  outline: 0;
+}
+.k-omnibox-input::placeholder {
+  color: var(--k-content-secondary-foreground);
+}
+/* 轮播的示例盖在输入框上时，输入框自己的静态占位藏起来（读屏读的还是静态占位）。 */
+.k-omnibox-field[data-example] .k-omnibox-input::placeholder {
+  color: transparent;
+}
+.k-omnibox-example {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-body) var(--font-sans);
+  white-space: nowrap;
+  pointer-events: none;
+  animation: k-omnibox-example-in var(--dur-snappy) var(--ease-snappy);
+}
+@keyframes k-omnibox-example-in {
+  from {
+    opacity: 0;
+    translate: 0 6px;
+  }
+}
+
+/* 作用域标签：选中的对象；× 删掉它回到全局。 */
+.k-omnibox-scope {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  max-width: 45%;
+  height: 24px;
+  padding: 0 4px 0 8px;
+  border: 1px solid var(--k-actionable-borderColor);
+  border-radius: var(--radius-pill);
+  background: var(--k-actionable-background);
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+  font-weight: 500;
+}
+.k-omnibox-scope-icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+}
+.k-omnibox-scope-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-omnibox-scope-remove {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--k-content-secondary-foreground);
+  cursor: pointer;
+}
+.k-omnibox-scope-remove:hover {
+  background: var(--k-actionable-background-hover);
+  color: var(--k-content-primary-foreground);
+}
+.k-omnibox-scope-remove svg {
+  width: 11px;
+  height: 11px;
+}
+
+/* 问句模式：输入框右边的「问 ↵」。 */
+.k-omnibox-ask {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+
+.k-omnibox-ask-alt {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  color: var(--k-content-secondary-foreground);
+  cursor: pointer;
+}
+.k-omnibox-ask-alt:hover {
+  background: var(--k-selectable-subtle-background-hover, transparent);
+  color: var(--k-content-primary-foreground);
+}
+
+.k-omnibox-ask-instead {
+  display: block;
+  margin-top: 4px;
+  color: var(--k-content-secondary-foreground);
+}
+
+/* 结果区：问句模式整块收起（grid 0fr，里面 inert）。 */
+.k-omnibox-body {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows var(--dur-snappy) var(--ease-snappy);
+}
+.k-omnibox-body[data-collapsed] {
+  grid-template-rows: 0fr;
+}
+.k-omnibox-body-inner {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* 分类页签。 */
+.k-omnibox-tabs {
+  display: flex;
+  flex: none;
+  gap: 4px;
+  overflow-x: auto;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--k-separable-subtle-borderColor);
+}
+.k-omnibox-tab {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-data) var(--font-sans);
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color 0.12s,
+    color 0.12s;
+}
+.k-omnibox-tab:hover {
+  background: var(--k-selectable-subtle-background-hover);
+  color: var(--k-content-primary-foreground);
+}
+.k-omnibox-tab[aria-selected='true'] {
+  background: var(--k-selectable-subtle-background-selected);
+  color: var(--k-content-primary-foreground);
+}
+.k-omnibox-tab-count {
+  color: var(--k-content-secondary-foreground);
+  font-variant-numeric: tabular-nums;
+  font-weight: 400;
+}
+
+/* 列表：高亮底色是 .k-proximity-highlight（theme/proximity-highlight.css），在行间滑动；行自己的选中底色改成透明。 */
+.k-omnibox-panel .k-omnibox-list {
+  position: relative;
+  max-height: min(380px, 52dvh);
+  padding: 6px;
+  overscroll-behavior: contain;
+}
+.k-omnibox-panel .k-omnibox-row {
+  height: 36px;
+  gap: 10px;
+  border-radius: 8px;
+  padding: 0 8px;
+}
+.k-omnibox-panel .k-omnibox-row[data-slot='command-item'][data-selected='true'] {
+  background: transparent;
+}
+.k-omnibox-icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  color: var(--k-content-secondary-foreground);
+}
+.k-omnibox-text {
+  display: flex;
+  flex: 1;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+.k-omnibox-label {
+  overflow: hidden;
+  color: var(--k-content-body-foreground);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-omnibox-row[data-selected='true'] .k-omnibox-label {
+  color: var(--k-content-primary-foreground);
+}
+.k-omnibox-desc {
+  overflow: hidden;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-omnibox-text mark {
+  background: transparent;
+  color: var(--k-content-primary-foreground);
+  font-weight: 700;
+}
+.k-omnibox-meta,
+.k-omnibox-hint {
+  flex: none;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans);
+}
+/* 高亮行：行尾的 meta 换成回车提示。 */
+.k-omnibox-hint {
+  display: none;
+  align-items: center;
+  gap: 6px;
+}
+.k-omnibox-hint svg {
+  width: 13px;
+  height: 13px;
+}
+.k-omnibox-row[data-selected='true'] .k-omnibox-hint {
+  display: inline-flex;
+}
+.k-omnibox-row[data-selected='true']:has(.k-omnibox-hint) > .k-omnibox-meta {
+  display: none;
+}
+.k-omnibox-more {
+  color: var(--k-content-secondary-foreground);
+}
+/* 「最近」的清除：列表里最后一个真选项，摆到标题右端。 */
+.k-omnibox-panel .k-omnibox-clear {
+  position: absolute;
+  top: 1px;
+  right: 2px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 6px;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans);
+}
+.k-omnibox-note {
+  padding: 24px 0;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-data) var(--font-sans);
+  text-align: center;
+}
+
+/* 底栏键位提示。 */
+.k-omnibox-footer {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 16px;
+  height: 36px;
+  padding: 0 14px;
+  border-top: 1px solid var(--k-separable-subtle-borderColor);
+  background: var(--k-surface-sunken-background);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans);
+}
+.k-omnibox-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.k-omnibox-key-end {
+  margin-inline-start: auto;
+}
+
+/* 预览卡：高亮的对象行停一会儿后浮在面板旁，纯展示（读屏不读，不放要读的信息）。 */
+.k-omnibox-preview {
+  position: absolute;
+  top: 0;
+  z-index: 1;
+  width: 260px;
+  padding: 12px;
+  border: 1px solid var(--k-overlay-dialog-borderColor);
+  border-radius: 12px;
+  background: var(--k-surface-raised-background);
+  box-shadow: var(--k-overlay-dialog-shadow);
+  color: var(--k-content-body-foreground);
+  font: var(--text-body) var(--font-sans);
+  pointer-events: none;
+  &[data-side='right'] {
+    left: calc(100% + 12px);
+  }
+  &[data-side='left'] {
+    right: calc(100% + 12px);
+  }
+  transition: translate var(--dur-snappy) var(--ease-snappy);
+  animation: k-omnibox-preview-in var(--dur-snappy) var(--ease-snappy);
+}
+@keyframes k-omnibox-preview-in {
+  from {
+    opacity: 0;
+  }
+}
