@@ -267,7 +267,12 @@ export function DecisionTree({ decisions, onChoose, allowOther = true, title, la
                       autoFocus
                       onChange={(event) => setDraft(event.target.value)}
                       onKeyDown={(event) => {
-                        if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
+                        if (
+                          event.key === 'Enter' &&
+                          !event.shiftKey &&
+                          !event.nativeEvent.isComposing &&
+                          event.keyCode !== 229
+                        ) {
                           event.preventDefault()
                           void send()
                         }

@@ -113,6 +113,13 @@ export function InlineEdit({
   const focusDisplay = useRef(false)
   const saveRun = useRef(0)
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  // 卸载时补存要用的最新值（清理函数里读不到最新的 state）：是否在编辑、最后一次确认的草稿（组字中的不算）、已显示的值、回调。
+  const live = useRef({ editing: false, draft: value, shown: value, validate, onSave })
+  useLayoutEffect(() => {
+    live.current.shown = shown
+    live.current.validate = validate
+    live.current.onSave = onSave
+  })
 
   // 外面传来的新值：在渲染时对齐（由 props 推导的状态），正在打字或保存中就先不换。
   if (value !== seen) {
@@ -124,6 +131,21 @@ export function InlineEdit({
   }
 
   useEffect(() => () => clearTimeout(timer.current), [])
+
+  // 编辑中被卸载（例如条件渲染换成了别的东西）与失焦一致：草稿与原值不同、校验也过，就补存一次，草稿不丢。
+  // 组字中被卸载用组字前已确认的文字（live.draft 只在不组字时更新）。没有界面可显示了，所以不管保存的结果。
+  useEffect(
+    () => () => {
+      const current = live.current
+      if (!current.editing) return
+      const next = clean(current.draft)
+      if (next === current.shown || current.validate?.(next)) return
+      void Promise.resolve()
+        .then(() => current.onSave(next))
+        .catch(() => {})
+    },
+    [],
+  )
 
   // 焦点跟着模式走：进编辑时进输入框（光标放在点的地方或全选），Enter / Esc 之后回到字上。
   useLayoutEffect(() => {
@@ -147,6 +169,8 @@ export function InlineEdit({
     if (editing || saving || disabled) return
     clearTimeout(timer.current)
     setDraft(text)
+    live.current.draft = text
+    live.current.editing = true
     setEditing(true)
     setError(null)
     setFailed(null)
@@ -168,6 +192,7 @@ export function InlineEdit({
       if (source !== 'blur') field.current?.focus()
       return
     }
+    live.current.editing = false
     setEditing(false)
     setError(null)
     if (source !== 'blur') focusDisplay.current = true
@@ -199,6 +224,7 @@ export function InlineEdit({
   }
 
   function cancel() {
+    live.current.editing = false
     setEditing(false)
     setError(null)
     focusDisplay.current = true
@@ -207,18 +233,22 @@ export function InlineEdit({
   function onChange(event: ChangeEvent<HTMLInputElement>) {
     const next = event.currentTarget.value
     setDraft(next)
+    // 组字中的输入还不是确认的文字：卸载补存只认组字前的。
+    if (!(event.nativeEvent as InputEvent).isComposing) live.current.draft = next
     if (error) setError(validate?.(clean(next)) || null)
   }
 
   function onKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    // 输入法组字中的按键先让给输入法：Enter 是选字（不是保存），Esc 是取消候选词（不是放弃整次编辑，已经打的字不能丢）。
+    // Safari 上屏的那一下 Enter 已经不是 isComposing，但 keyCode 还是 229，两个都要判。
+    if (event.nativeEvent.isComposing || event.keyCode === 229) return
     if (event.key === 'Escape') {
       event.preventDefault()
       event.stopPropagation()
       cancel()
       return
     }
-    // 输入法组字时的 Enter 是选字，不是保存。
-    if (event.key === 'Enter' && !event.nativeEvent.isComposing) {
+    if (event.key === 'Enter') {
       event.preventDefault()
       submit('key')
     }
@@ -272,6 +302,9 @@ export function InlineEdit({
               enterKeyHint="done"
               onChange={onChange}
               onKeyDown={onKeyDown}
+              onCompositionEnd={(event) => {
+                live.current.draft = event.currentTarget.value
+              }}
             />
           </span>
         ) : (

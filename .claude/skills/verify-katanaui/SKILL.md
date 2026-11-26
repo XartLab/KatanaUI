@@ -64,6 +64,7 @@ $KUI drive data-grid       # features/data-grid.md
 $KUI drive order-ticket    # features/order-ticket.md
 $KUI drive overlays        # features/overlays.md
 $KUI drive tabs            # features/tabs.md
+$KUI drive date-range-picker  # features/date-range-picker.md
 $KUI drive tabs --theme console   # 换主题走同一条
 $KUI drive tabs --headed          # 开着窗口看它走
 ```

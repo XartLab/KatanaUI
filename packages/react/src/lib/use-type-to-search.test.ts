@@ -30,6 +30,8 @@ describe('typeToSearchKey', () => {
     expect(press('ArrowDown')).toBeNull()
     expect(press('Process')).toBeNull()
     expect(press('a', { isComposing: true })).toBeNull()
+    // Safari 上屏那一下：isComposing 已是 false，keyCode 仍是 229。
+    expect(press('a', { keyCode: 229 })).toBeNull()
     expect(press('k', { ctrlKey: true })).toBeNull()
     expect(press('k', { metaKey: true })).toBeNull()
     expect(press('w', { altKey: true })).toBeNull()
