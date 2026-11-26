@@ -42,6 +42,7 @@
 | [DerivativesBoard 交易数据看板与加密异动](derivatives-board.md) | 还没有流程（手走） | 六张卡的周期按钮、悬停与键盘扫读、信息提示、空态，MoveFeed 的「只看当前品种」与 5 分钟涨幅 / 跌幅 |
 | [弹出层](overlays.md) | `drive overlays` | Popover 与 Dialog 的点开、Esc 关、点外面关、焦点回到触发处 |
 | [Toast 弹出提示](toast.md) | 还没有流程（手走） | 视口 polite、warn / danger 单条 alert、弹出与叠放、带倒计时环与「撤销」的动作 toast |
+| [加载状态：Loading 最短停留与 Button 进行中](loading.md) | 还没有流程（手走） | 骨架出了至少留 500ms、500ms 内到的不出骨架；按钮 300ms 后出转圈、至少留 500ms、宽度不变、进行中再按无效、刷新钮转整圈 |
 | [Tabs 页签](tabs.md) | `drive tabs` | 点页签换内容、底块跟随、方向键切换、禁用页签 |
 | [对照 Salt 补的七件](salt-gaps.md) | 还没有流程（手走） | Pill 改与删、SystemStatus 关闭、Calendar 选日与不可选日、ListBox 单选与多选、Link / Card / Panel 的样子 |
 

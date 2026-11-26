@@ -22,6 +22,8 @@ const TARGET_ROOT = '~/src/katana/ui'
 const INTERNAL = {
   'tag-input-model':
     'TagInput 的纯逻辑：草稿与粘贴的拆分（逗号、分号、换行、制表符）、判重（不分大小写）、校验与上限，以及键盘在标签之间怎么走。',
+  'delayed-flag':
+    '「晚出、出了就留够」的旗子：等了 delay 才出、出了至少留 min（Button 的 pending 与 Loading 的骨架共用），以及图标停在整圈上的 useSpinWholeTurns。',
   'scaled-decimal':
     '盘口三件（订单簿、深度图、成交明细）共用的十进制整数运算：价格与数量按小数位乘成整数再加减比，不经浮点累加。',
   'research-color':

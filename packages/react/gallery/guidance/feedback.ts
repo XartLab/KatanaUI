@@ -19,6 +19,8 @@ const feedback: GuidanceMap = {
       '等 React.lazy / use()：pending 这个属性不写，Loading 就是 Suspense 边界；按属性在不在判，pending={undefined} 仍是等数据（当没在等），不会切模式。',
       '文档、测试、截图要看某一段：给 phase（loading / slow / timeout）。',
       '撑满面板主体给 fill，骨架行数按高度量；表头已知就传 header。',
+      '骨架出了至少留 500ms（LOADING_MIN_SHOWN_MS）：510ms 到的数据，骨架留到 1000ms 才换成内容；500ms 内到的不出骨架。只管 pending 模式，Suspense 模式的骨架是 React 自己摘的，没有最短停留。出处：kubai Vibe Design Tips 017。',
+      '一个按钮等一次请求（0.3 到 3 秒）不用 Loading，用 Button 的 pending：满 300ms 才出转圈、出了至少留 500ms、字与宽度不变、期间再按无效（见 button 页）。',
     ],
     avoid: [
       '知道进度时用 progress。',
@@ -37,7 +39,7 @@ const feedback: GuidanceMap = {
     use: [
       '卡片、文章、建议队列这类形状复杂的加载占位，内容到了位置不动。',
       '示例数据排出的版面要和真数据同样的行数与控件。',
-      '前 500ms 整块不可见、只占位（连卡片的边框底色也不露），之后才出骨架条；快的请求不闪。',
+      '前 500ms 整块不可见、只占位（连卡片的边框底色也不露），之后才出骨架条；快的请求不闪。骨架条出了至少留 minShown（默认 500ms），数据早到也等满再揭示（kubai Vibe Design Tips 017）。',
     ],
     avoid: ['表格用按行高的 skeleton，图表自己画占位。', '知道进度时用 progress。'],
     a11y: [

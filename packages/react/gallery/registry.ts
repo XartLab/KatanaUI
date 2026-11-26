@@ -86,13 +86,17 @@ export const PAGES: readonly DocPage[] = [
       '30 高的默认按钮，六种变体与三种尺寸；悬停提亮、按下缩到 0.97，禁用降到 45% 不透明度。颜色只读 actionable（bold = primary、subtle = icon、negative = danger）、content、separable、focused 这几类 characteristic，高度与内距读密度（data-density 的 size-base、size-row、spacing-*）；「主题 × 密度」那三行在 high、medium、low 下各摆一遍。',
     exports: ['Button', 'buttonVariants'],
     propParts: [
-      { part: 'Button', note: '其余属性透传给原生 button；type 默认 button，放进表单不会误提交。' },
+      {
+        part: 'Button',
+        note: '其余属性透传给原生 button；type 默认 button，放进表单不会误提交。pending：动作进行中，满 300ms 才在原地出转圈（出了至少留 500ms），字与宽度不变，期间再按无效但仍可聚焦，aria-busy=true；spinIcon 配 pending，按钮自己的图标就是动作（刷新、同步）时转它自己，至少一整圈、停在整圈上。',
+      },
       { part: 'buttonVariants', note: '返回类名的函数，给不是 button 的元素画成按钮（包着文件输入的 label 之类）。' },
     ],
     states: [
       '默认：4% 白底 8% 白边，悬停提亮，按下缩到 0.97。',
       '尺寸：md（默认，30 高）、sm（26 高、圆角 8、字 11 粗 600）、icon（28 见方，只放图标）；旧名 size="default" 等于 md。',
       '禁用：45% 不透明度，不响应指针。',
+      '进行中（pending）：满 300ms 才出一个小环（有字的按钮画在左内边距里，图标按钮里换掉原图标），出了至少留 500ms；字与宽度不变，不灰，aria-busy，再按无效但键盘与读屏仍能到；300ms 内结束的不出转圈。',
       '焦点：键盘 Tab 到时画 focus-ring 的外框。',
       'effect（改自 SmoothUI，MIT）：magnetic 指针靠近时按钮朝它偏、离开弹回；dot-morph 前面一颗点悬停时拉成竖条；clip-corners 四个角切掉、悬停时切口变大。三种只在有精确指针的设备上动。',
     ],
@@ -101,6 +105,7 @@ export const PAGES: readonly DocPage[] = [
       '图标按钮必须带 aria-label。',
       '不要用颜色以外没有字的危险按钮。',
       'effect 一个界面里最多给一两个主操作用，不要成排；dot-morph 不能与 asChild 同用。',
+      '不要在按钮转圈的同时再盖整页遮罩或顶部进度条：一次等待只留一个指示。',
     ],
     composition: 'Button',
     keys: [
@@ -1323,7 +1328,7 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 554,
     title: 'Loading 加载态',
     summary:
-      '加载态的唯一入口：给 pending 等数据，不给 pending 当 Suspense 边界，给 phase 钉在某一段直接画。500ms 内到了什么也不画；超过了出点阵骨架，2s 说「仍在加载」，10s 转琥珀条加重试。',
+      '加载态的唯一入口：给 pending 等数据，不给 pending 当 Suspense 边界，给 phase 钉在某一段直接画。500ms 内到了什么也不画；超过了出点阵骨架，出了至少留 500ms，2s 说「仍在加载」，10s 转琥珀条加重试。',
     exports: ['Loading', 'LoadingBoundary', 'LoadingView'],
     propParts: [
       {
@@ -1338,6 +1343,7 @@ export const PAGES: readonly DocPage[] = [
       '超过 500ms：caption（亮强调色灯 +「加载 <内容> · <来源>」）加点阵骨架；2s：说「仍在加载」。',
       '10s：琥珀条（warn 灯 + 文案 + 重试），骨架留着、降到半透明；没给 onRetry 就没有重试钮。',
       '数据到了：骨架出过的内容用 2px 模糊揭示，没出过的直接出现。',
+      '最短停留：骨架出了至少留 500ms 再交出内容（510ms 到的数据，骨架留到 1000ms）；只管 pending 模式，Suspense 模式没有。',
     ],
     donts: [
       '不要脉冲、不要转圈。',
@@ -1364,7 +1370,7 @@ export const PAGES: readonly DocPage[] = [
       },
     ],
     states: [
-      '加载中：不到 500ms 不露骨架条（不可见层照样占位），超过了才出，快的请求不闪。',
+      '加载中：不到 500ms 不露骨架条（不可见层照样占位），超过了才出，快的请求不闪；出了至少留 minShown（默认 500ms），数据早到也等满再揭示。',
       '骨架：每行文字一条 line-200 的圆角条，图片、按钮、标签各一块，圆角跟随内容；不闪、不脉冲。',
       '数据到了：真内容淡入到骨架的位置，onReveal 调一次；给了 id 的下次进来第一帧就是上次的形状。',
     ],
@@ -11692,7 +11698,7 @@ export const PAGES: readonly DocPage[] = [
     ],
     states: [
       '改价：点铅笔，价格格换成输入框并全选；Enter 提交（价格没变只关框），Esc 或失焦取消，非法输入标红。',
-      '撤单中：状态标签变警告色，撤单按钮置灰，没有铅笔。',
+      '撤单中：状态标签变警告色，撤单按钮进行中（Button pending：满 300ms 出转圈、再按无效、字与宽不变，不再置灰），没有铅笔。',
       '没传 onCancel / onAmend / onCancelAll 时对应控件不画；空表写 labels.empty。',
     ],
     donts: ['不要在件里等交易所回报：发出回调后由调用方改状态。', '不要做成点一下就提交的改价：回车才提交。'],
