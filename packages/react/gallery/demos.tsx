@@ -112,6 +112,7 @@ import {
   TechnicalRatingDemo,
 } from './pages/quant.tsx'
 import { FlowSankeyDemo, VintageSeriesDemo } from './pages/flows.tsx'
+import { MarketBrowserDemo } from './pages/market-browser.tsx'
 import { KeyStatsDemo, PeerCardsDemo, PerformanceStripDemo, RangeBarTvDemo, WatchlistDemo } from './pages/overview.tsx'
 import {
   CompanyProfileDemo,
@@ -464,6 +465,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'company-profile': CompanyProfileDemo,
   'seasonal-chart': SeasonalChartDemo,
   watchlist: WatchlistDemo,
+  'market-browser': MarketBrowserDemo,
   'metric-card': MetricCardDemo,
   'distribution-bars': DistributionBarsDemo,
   'cn-basics': CnBasicsDemo,

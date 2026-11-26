@@ -132,6 +132,7 @@
 @import './theme/peer-cards.css';
 @import './theme/key-stats.css';
 @import './theme/watchlist.css';
+@import './theme/market-browser.css';
 @import './theme/ticker-tape.css';
 @import './theme/refresh-control.css';
 @import './theme/metric-card.css';
