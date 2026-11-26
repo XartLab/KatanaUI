@@ -7,7 +7,6 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  SideNav,
   Tabs,
   TabsContent,
   TabsList,
@@ -20,6 +19,9 @@ import { PATTERN_GROUPS, PatternPage, patternById } from './patterns'
 import { packageOf, sourceOf } from './source-map'
 import { CopyButton } from './CopyButton'
 import { DocToc } from './DocToc'
+import { NavDrawer } from './NavDrawer'
+import { PageNav } from './PageNav'
+import { SideRail } from './SideRail'
 import { DemoCopyToast } from './pages/demo-copy'
 import { CoveragePage } from './coverage'
 import { RENDERING_ID, RenderingPage } from './rendering'
@@ -69,6 +71,19 @@ const subscribe = (listener: () => void) => {
   window.addEventListener('hashchange', listener)
   return () => window.removeEventListener('hashchange', listener)
 }
+/** 窄屏（与 gallery.css 的 @media (max-width: 760px) 同一个界）：左栏换成底栏 + 抽屉，两套目录不同时在页上。 */
+const NARROW = '(max-width: 760px)'
+const subscribeNarrow = (listener: () => void) => {
+  const query = matchMedia(NARROW)
+  query.addEventListener('change', listener)
+  return () => query.removeEventListener('change', listener)
+}
+const useNarrow = () =>
+  useSyncExternalStore(
+    subscribeNarrow,
+    () => matchMedia(NARROW).matches,
+    () => false,
+  )
 const currentId = () => location.hash.replace(/^#\/?/, '')
 
 /** 把主题写到根节点与地址上（地址的 ?theme= 让刷新、分享链接都停在同一个主题）。 */
@@ -366,6 +381,8 @@ export function Docs({ theme, onTheme }: { theme: ThemeName; onTheme: (theme: Th
   const onFoundation = isFoundation(id)
   const pattern = patternById(id)
   const [navOpen, setNavOpen] = useState(true)
+  const narrow = useNarrow()
+  const [section, setSection] = useState('')
   const body = useRef<HTMLDivElement>(null)
   // 切页回到顶：侧栏、锚点或上一页的滚动位置都可能把页面带下去，标题会藏到顶栏后面。
   useEffect(() => {
@@ -375,13 +392,13 @@ export function Docs({ theme, onTheme }: { theme: ThemeName; onTheme: (theme: Th
   const crumb = currentNav ? crumbOf(currentNav) : null
   return (
     <div className="gal-shell" data-gallery-theme={theme}>
-      {navOpen ? (
+      {navOpen && !narrow ? (
         <aside className="gal-side">
-          <SideNav
-            aria-label="文档目录"
+          <SideRail
             groups={navGroups}
             current={currentNav}
-            labels={{ search: '搜索组件与文档', empty: '没有匹配的页' }}
+            remember
+            slashFocus
             header={
               <div className="gal-side-head">
                 <button
@@ -455,10 +472,12 @@ export function Docs({ theme, onTheme }: { theme: ThemeName; onTheme: (theme: Th
                 没有「{id}」这一页，从左侧目录里选。
               </p>
             )}
+            <PageNav groups={navGroups} current={currentNav} />
           </div>
-          <DocToc key={id} root={body} />
+          <DocToc key={id} root={body} onActive={setSection} />
         </main>
       </div>
+      {narrow ? <NavDrawer groups={navGroups} current={currentNav} section={section || crumb?.name} /> : null}
       <DemoCopyToast />
     </div>
   )

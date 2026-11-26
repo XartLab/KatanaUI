@@ -339,9 +339,9 @@ body {
   .gal-shell {
     grid-template-columns: minmax(0, 1fr);
   }
-  .gal-side {
-    position: static;
-    height: 60vh;
+  /* 窄屏左栏不渲染（docs.tsx 的 useNarrow），目录收进底栏 + 抽屉（.gal-dock、.gal-drawer）。 */
+  .gal-bar .gal-side-toggle {
+    display: none;
   }
   .gal-main {
     margin: 0 8px 8px;
@@ -353,8 +353,216 @@ body {
     top: 0;
   }
   .gal-page {
-    padding: var(--space-4) var(--space-4) calc(var(--space-8) + var(--space-4));
+    /* 底栏固定在底，页尾留出它的高度。 */
+    padding: var(--space-4) var(--space-4) calc(var(--gal-dock-h) + var(--space-8));
   }
+}
+
+/* 左栏两端的渐隐（kubai 008）：上 40px、下 56px，各留 10% 全透明的边，免得切了一半的行在边上留一道淡线；
+   SideRail 按滚动位置写 data-more-above / data-more-below，只在那一端还有内容时才有渐隐（顶部没滚过、滚到底都没有）。
+   取代 side-nav.css 里写死的底部渐隐。 */
+@property --gal-fade-above {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+@property --gal-fade-below {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+.gal-rail {
+  height: 100%;
+  min-height: 0;
+}
+.gal-rail .k-sidenav-scroll {
+  scroll-padding-block: 24px 56px;
+  mask:
+    linear-gradient(#000, #000) no-clip subtract,
+    linear-gradient(to bottom, #000 0 10%, transparent) 0 0 / 100% var(--gal-fade-above) no-repeat no-clip,
+    linear-gradient(to bottom, transparent, #000 90%) 0 100% / 100% var(--gal-fade-below) no-repeat no-clip;
+  transition:
+    --gal-fade-above 160ms,
+    --gal-fade-below 160ms;
+}
+.gal-rail .k-sidenav-scroll[data-more-above] {
+  --gal-fade-above: 40px;
+}
+.gal-rail .k-sidenav-scroll[data-more-below] {
+  --gal-fade-below: 56px;
+}
+
+/* 页末上一页 / 下一页（kubai 008）：两块并排，小字方向 + 页名；只有一个方向时它仍在自己那一侧。 */
+.gal-pager {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin-top: calc(var(--space-8) * 2);
+}
+.gal-pager-link {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--k-separable-primary-borderColor);
+  border-radius: var(--radius-control);
+  color: var(--k-content-primary-foreground);
+  text-decoration: none;
+  transition: background-color 120ms;
+}
+.gal-pager-link[data-dir='next'] {
+  grid-column: 2;
+  text-align: right;
+}
+.gal-pager-link:hover {
+  background: var(--k-actionable-background-hover);
+}
+.gal-pager-link:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+.gal-pager-dir {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans);
+}
+.gal-pager-title {
+  overflow: hidden;
+  font: var(--text-body) var(--font-sans);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 窄屏底栏：不在窄屏时不显示（窄屏才渲染 NavDrawer，这里再保一道）。 */
+.gal-dock {
+  display: none;
+}
+@media (max-width: 760px) {
+  .gal-shell {
+    --gal-dock-h: 48px;
+  }
+  .gal-dock {
+    position: fixed;
+    inset: auto 8px 8px;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    box-sizing: border-box;
+    height: var(--gal-dock-h);
+    padding: 0 var(--space-2);
+    border-radius: var(--radius-overlay);
+    background: var(--bg-200);
+    box-shadow:
+      inset 0 0 0 1px var(--k-overlay-borderColor),
+      var(--shadow-overlay-sm);
+  }
+  .gal-dock-button {
+    flex: none;
+    height: 36px;
+    padding: 0 var(--space-4);
+    border: 0;
+    border-radius: var(--radius-control);
+    background: var(--k-actionable-background);
+    color: var(--k-content-primary-foreground);
+    font: var(--text-body) var(--font-sans);
+    cursor: pointer;
+  }
+  .gal-dock-button:hover {
+    background: var(--k-actionable-background-hover);
+  }
+  .gal-dock-section {
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+    color: var(--k-content-secondary-foreground);
+    font: var(--text-body) var(--font-sans);
+    text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+/* 抽屉：从底边升起，上移 24px 淡入，不压暗背后；退场反过来（display、overlay 离散过渡，关的时候也走完）。 */
+.gal-drawer {
+  inset: auto 0 0;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  height: min(72dvh, 560px);
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: calc(var(--radius-overlay) * 2) calc(var(--radius-overlay) * 2) 0 0;
+  background: var(--bg-200);
+  box-shadow:
+    inset 0 0 0 1px var(--k-overlay-borderColor),
+    var(--shadow-overlay);
+  color: var(--k-content-primary-foreground);
+  overflow: hidden;
+  overscroll-behavior: contain;
+  opacity: 0;
+  translate: 0 24px;
+  transition:
+    opacity 200ms var(--ease-gentle),
+    translate 200ms var(--ease-gentle),
+    display 200ms allow-discrete,
+    overlay 200ms allow-discrete;
+}
+.gal-drawer[open] {
+  opacity: 1;
+  translate: 0 0;
+}
+@starting-style {
+  .gal-drawer[open] {
+    opacity: 0;
+    translate: 0 24px;
+  }
+}
+.gal-drawer::backdrop {
+  background: transparent;
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+.gal-drawer[open] {
+  display: flex;
+}
+.gal-drawer-sheet {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  padding: var(--space-3) var(--space-3) 0;
+}
+.gal-drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-1) var(--space-3);
+  font: var(--text-body) var(--font-sans);
+}
+.gal-drawer-close {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: var(--k-actionable-background);
+  color: var(--k-content-primary-foreground);
+  cursor: pointer;
+}
+.gal-drawer-close:hover {
+  background: var(--k-actionable-background-hover);
+}
+/* 点按的目标比桌面的大一档：条目行高 44px 上下。 */
+.gal-drawer .k-sidenav-link {
+  padding-block: 11px;
+}
+.gal-drawer .gal-rail {
+  flex: 1;
 }
 /* 用法源码里的注释（文件头的 SPDX 行）与行号：代码块默认用装饰灰 ink-400，在页面底上对比度不够（Console 1.95:1、Graphite 3.95:1），这里提到 ink-300 过 axe。 */
 [data-usage-code] .italic,
