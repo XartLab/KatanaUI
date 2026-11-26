@@ -113,6 +113,7 @@ import {
 } from './pages/quant.tsx'
 import { FlowSankeyDemo, VintageSeriesDemo } from './pages/flows.tsx'
 import { MarketBrowserDemo } from './pages/market-browser.tsx'
+import { StrategyLauncherDemo } from './pages/strategy-launcher.tsx'
 import { KeyStatsDemo, PeerCardsDemo, PerformanceStripDemo, RangeBarTvDemo, WatchlistDemo } from './pages/overview.tsx'
 import {
   CompanyProfileDemo,
@@ -650,6 +651,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'position-calculator': PositionCalculatorUsage,
   'panel-tabs': PanelTabsUsage,
   'component-catalog': ComponentCatalogUsage,
+  'strategy-launcher': StrategyLauncherDemo,
   avatar: AvatarDemo,
   breadcrumb: BreadcrumbDemo,
   pagination: PaginationDemo,

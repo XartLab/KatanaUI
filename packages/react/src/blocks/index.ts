@@ -329,6 +329,12 @@ export {
   type PanelTabsProps,
 } from './panel-tabs/panel-tabs.tsx'
 export {
+  StrategyLauncher,
+  type StrategyEntry,
+  type StrategyLauncherLabels,
+  type StrategyLauncherProps,
+} from './strategy-launcher/strategy-launcher.tsx'
+export {
   CATALOG_ITEM_MIME,
   ComponentCatalog,
   type ComponentCatalogLabels,

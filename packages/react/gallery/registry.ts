@@ -8214,6 +8214,38 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'strategy-launcher',
+    group: 'blocks',
+    cardHeight: 420,
+    title: 'StrategyLauncher 策略入口',
+    summary:
+      '一列策略与工具的入口卡（照 OKX 永续页的「工具」组件，2026-11-26 实测）：顶上一条可关的风险提示（文字由调用方给，点关闭钮收起并回调），下面每张卡是图标、名字、可选的「新」角标、标签串（默认用「 / 」连成一行，tagStyle="chips" 画成小标签）、右箭头。点卡回调 onOpen(id)。件只列入口，入口指向什么（下单策略、运行中心、信号）由宿主定，包里不带任何策略。',
+    exports: ['StrategyLauncher'],
+    propParts: [
+      {
+        part: 'StrategyLauncher',
+        note: 'entries 是 { id, name, icon?, isNew?, tags? }[]；labels 必填：整件的读屏名、关闭钮的读屏名、角标文字。notice 不给就没有提示条。',
+      },
+    ],
+    states: [
+      '有 notice：顶上一条 warn 语气的提示条，右上角关闭钮；关了就不再画（件内记住，同时回调 onNoticeDismiss）。',
+      '卡悬停：底色提亮、箭头变主文字色；键盘聚焦画内缩焦点环。',
+      '带 isNew：名字后面一个 ok 语气的小角标。',
+      '没有 icon 的卡：不留图标位，文字顶到左边。',
+    ],
+    donts: [
+      '不要把风险提示写在卡里：它在整列顶上，关掉以后不再回来。',
+      '不要每张卡写超过四个标签：一行放不下就是写多了。',
+      '不要在包里放策略名单：入口全由宿主传。',
+    ],
+    composition:
+      'StrategyLauncher section[aria-label]\n  Alert（warn，role=note）：图标 · 说明 · 关闭钮\n  ul > li > button 卡：图标块 · 名字 + 角标 · 标签串 | 右箭头',
+    keys: [
+      ['Tab', '关闭钮、各张卡，依次走'],
+      ['Enter / 空格', '打开聚焦的卡；在关闭钮上收起提示'],
+    ],
+  },
+  {
     id: 'order-book',
     group: 'blocks',
     cardHeight: 520,

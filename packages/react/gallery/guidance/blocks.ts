@@ -548,6 +548,25 @@ const blocks: GuidanceMap = {
       '「…」「+」与右端的动作各有读屏名，由 labels 与宿主给。',
     ],
   },
+  'strategy-launcher': {
+    aliases: ['Tools panel', 'Strategy list', 'Launcher', 'Entry cards', '工具', '策略入口', '入口卡'],
+    use: [
+      '给一个格子放「去做某件事」的入口：下单策略、运行中心、信号；点了跳到哪由宿主定，件只回调 onOpen(id)。',
+      '风险提示放在整列顶上、可关；文字由宿主按监管与产品写，关闭后宿主自己决定下次还出不出（件内只记本次）。',
+      '一张卡：图标块 32、名字 13px w500、标签 12px 次要色；标签三四个，一行写完，默认用「 / 」连。',
+      '「新」角标只给上线不久的入口，一次不超过一张；文字走 labels.new。',
+      '入口不超过八张；再多就要分组或搜索，别把这件拉成菜单。',
+    ],
+    avoid: [
+      '要在列表里直接操作（启停、改参数）用 ScheduledRuns 或 DataGrid；入口卡只是跳转。',
+      '入口是一个动作且不需要说明时用按钮或 Toolbar。',
+    ],
+    a11y: [
+      '整件是 section，读屏名取 labels.region；卡是 ul > li 里的原生 button，Tab 逐张走，Enter / 空格打开。',
+      '卡的读屏名是名字加标签文字（图标与箭头 aria-hidden）；「新」角标是文字，不靠颜色。',
+      '风险提示是 role=note（一直在的内容，不是动态弹出）；关闭钮读屏名取 labels.dismiss。',
+    ],
+  },
   'component-catalog': {
     aliases: ['Add widget', 'Widget gallery', 'Component picker', '添加组件', '组件库', '小组件目录'],
     use: [

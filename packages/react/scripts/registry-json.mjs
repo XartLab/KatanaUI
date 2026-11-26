@@ -331,6 +331,8 @@ function collectItems() {
       'agent-tree',
       'agent-fleet',
       'agent-crew',
+      // #245 模块 2：策略入口。
+      'strategy-launcher',
     ])
       add(
         dir,
