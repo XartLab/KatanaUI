@@ -2405,7 +2405,10 @@ export const PAGES: readonly DocPage[] = [
     propParts: [
       { part: 'Combobox', note: '其余属性透传给 Radix Popover.Root。open、onOpenChange 受控。' },
       { part: 'ComboboxContent', note: '其余属性透传给 Radix Popover.Content。宽跟触发器一样（最窄 220）。' },
-      { part: 'ComboboxItem', note: '同 CommandItem。' },
+      {
+        part: 'ComboboxItem',
+        note: '同 CommandItem，另加三个可选属性：selected 画勾；prefix 是文字前的节点（头像、图标，纯装饰，读屏不读）；description 是文字下的第二行说明（带它时行自己长高，不带还是 30 高）。带 prefix 或 description 时 value 默认取主文字（children 是字符串时），说明不进搜索、onSelect 收到的也是主文字；要按说明搜就把它放进 keywords，children 不是字符串时一定要自己传 value。',
+      },
       {
         part: 'ComboboxTrigger / ComboboxInput / ComboboxList / ComboboxEmpty / ComboboxGroup',
         symbol: 'ComboboxTrigger',
@@ -2416,8 +2419,10 @@ export const PAGES: readonly DocPage[] = [
       '打开：焦点在搜索框，列表可过滤。',
       '单选：选中后收起；多选：点一项不收，触发器写已选个数。',
       '已选的行 data-checked 且前面有勾。',
+      '带 prefix / description：前缀在勾与文字之间，说明在文字下一行，行长高到放得下两行。',
     ],
     donts: [
+      '要在输入框里带标签的多选，用 TagCombobox，不要拿触发器写已选个数硬凑。',
       '不要少于十来项就用它，少的用 Select。',
       '不要忘了给搜索框与列表传 label。',
       '行的 aria-selected 是高亮不是已选，已选用 selected。',
@@ -2430,6 +2435,45 @@ export const PAGES: readonly DocPage[] = [
       ['↑ ↓', '移动高亮'],
       ['Enter', '选中'],
       ['Esc', '收起，焦点回触发器'],
+    ],
+  },
+  {
+    id: 'tag-combobox',
+    group: 'forms',
+    cardHeight: 120,
+    title: 'TagCombobox 带标签的多选',
+    summary:
+      '字段本身是输入框：已选项以小标签排在框里（可换行、可带头像或图标、每个有 ×），光标跟在最后一个标签后面，打字就过滤，命中的字加强。列表每行主文字加可选第二行说明与前缀节点，已选行尾画勾；选或取消后列表不收、输入清空。输入框空着时退格第一次选中最后一个标签、第二次删掉；← → 在标签间移。弹层锚在整个字段上，标签多到换行字段长高时弹层跟着下移。交互参照 Jamie Merrill 的 Multi select combobox，只借交互，样子是我们的。',
+    exports: ['TagCombobox'],
+    propParts: [
+      {
+        part: 'TagCombobox',
+        note: 'options 是 { id, label, description?, prefix?, keywords? }；value 受控（id 数组，标签按这个先后排）或 defaultValue 非受控；label 是输入框的读屏名。labels.remove、labels.empty 必填，toggle（右端箭头按钮的读屏名，不传就不画）、list、added、removed、picked 可选；播报走一个 aria-live=polite 的屏外区。defaultOpen、onOpenChange 管列表开关。',
+      },
+    ],
+    states: [
+      '空：显示占位，列表点字段才开。',
+      '有标签：标签在框里换行排，输入框跟在最后；字段随之长高，弹层贴着字段下沿。',
+      '过滤：只留含输入词（大小写与重音不分，空格分开的词都要命中）的行，命中的字加粗提亮；没有匹配写 labels.empty。',
+      '高亮行：底色一档（--k-selectable-subtle-background-hover），键盘移动时滚进视野；已选行主文字加粗，行尾有勾。',
+      '选中标签：退格或 ← → 选中的标签画一圈焦点色的环，再按退格或 Delete 删掉。',
+      '禁用：整框半透明，标签的 × 与箭头也不能点。',
+    ],
+    donts: [
+      '标签是用户自由打出来的文字（代码清单、关键词）时用 TagInput，不要用它。',
+      '选一个值用 Combobox 或 Select。',
+      '头像、图标放 prefix，不要把名字只放进图片里：prefix 对读屏是隐藏的，label 才是名字。',
+    ],
+    composition:
+      'TagCombobox\n  PopoverAnchor → div.k-tagcb-box\n    span.k-tagcb-tag × n\n      span（prefix）\n      span（字）\n      button（×，不进 Tab 序列）\n    input（role=combobox）\n    button（箭头，不进 Tab 序列，可选）\n  PopoverContent\n    div.k-tagcb-list（role=listbox，aria-multiselectable）\n      div.k-tagcb-option × n（role=option）\n        span（prefix）· span（主文字）· span（说明）· span（勾）\n    div（没有匹配时，role=status）',
+    keys: [
+      ['点字段 / ↓ / 打字', '打开列表；光标在输入框里'],
+      ['↑ ↓', '移动高亮（首尾相接）'],
+      ['Enter', '切换高亮行：选中或取消，输入清空，列表不收'],
+      ['Esc', '收起列表；列表已收时取消标签选中'],
+      ['Backspace', '输入框空着：第一次选中最后一个标签，第二次删掉它'],
+      ['← →', '在标签间移选中；→ 过了最后一个回到输入框'],
+      ['Delete', '删除选中的标签'],
     ],
   },
   {
