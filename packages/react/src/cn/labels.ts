@@ -193,6 +193,8 @@ export type MoveFeedLabels = {
   /** 类型多选筛的读屏名与「全部」。 */
   filter: string
   all: string
+  /** 「只看当前品种」开关上的字，例「当前币对」；只有传了 currentSymbol 才画这个开关。 */
+  onlyCurrent: string
   /** 一类异动的名字，key 是 MOVE_TYPE_KEYS 里的。 */
   types: Record<string, string>
   /** 筛选 chip 上的计数文字。 */
@@ -410,6 +412,7 @@ export const cnLabelsZh: CnLabels = {
     region: '盘口异动',
     filter: '按异动类型筛选',
     all: '全部',
+    onlyCurrent: '当前品种',
     types: {
       rocket: '火箭发射',
       rebound: '快速反弹',
@@ -422,6 +425,8 @@ export const cnLabelsZh: CnLabels = {
       sealDown: '封跌停板',
       openUp: '打开涨停板',
       openDown: '打开跌停板',
+      rise5m: '5 分钟涨幅',
+      fall5m: '5 分钟跌幅',
     },
     typeChip: (name, count) => `${name} ${count}`,
     summary: (count) => `共 ${count} 条`,

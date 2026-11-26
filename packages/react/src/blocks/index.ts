@@ -427,6 +427,32 @@ export {
   type FundingRateProps,
 } from './funding-rate/funding-rate.tsx'
 export { countdownTo, formatCountdown, formatRate, fundingBars, rateTone } from './funding-rate/funding-model.ts'
+export { DerivativesBoard, type DerivativesBoardProps } from './derivatives/derivatives-board.tsx'
+export {
+  DerivativesCard,
+  type DerivativesCardCommon,
+  type DerivativesCardProps,
+} from './derivatives/derivatives-card.tsx'
+export { derivativesLabelsZh, type DerivativesLabels } from './derivatives/derivatives-labels.ts'
+export {
+  DEFAULT_PERIODS,
+  DERIVATIVES_KINDS,
+  alignedAxes,
+  basisOf,
+  hasData,
+  longShare,
+  longShortRatioOf,
+  signedBars,
+  symmetricAxis,
+  type AxisSpec,
+  type BasisPoint,
+  type DerivativesData,
+  type DerivativesKind,
+  type FundingRatePoint,
+  type LongShortPoint,
+  type OpenInterestVolumePoint,
+  type TakerVolumePoint,
+} from './derivatives/derivatives-model.ts'
 export {
   OptionsChain,
   type OptionExpiry,

@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import { cn } from '../lib/cn.ts'
+import { Checkbox } from '../primitives/checkbox.tsx'
 import { cnLabelsZh, type MoveFeedLabels } from './labels.ts'
 import {
   clockText,
+  filterBySymbol,
   filterMoves,
   freshIds,
   moveTone,
@@ -46,6 +48,26 @@ export type MoveFeedProps = {
    */
   onSelectedTypesChange?: (types: string[]) => void
   /**
+   * The symbol on screen (`BTC-USDT-SWAP`). Giving it adds the 「只看当前品种」 switch; rows are matched on `item.symbol` (then `code`, then `name`), ignoring case.
+   * 当前看的品种；给了才有「只看当前品种」开关，按行的 symbol（再 code、再 name）比，不分大小写。
+   */
+  currentSymbol?: string | null
+  /**
+   * Show only rows of `currentSymbol` (controlled). Without a `currentSymbol` the switch is absent and nothing is filtered.
+   * 只看当前品种（受控）；没给 currentSymbol 就没有开关、也不筛。
+   */
+  onlyCurrent?: boolean
+  /**
+   * Initial state of the switch when uncontrolled; off by default.
+   * 不受控时开关的初始状态；默认关。
+   */
+  defaultOnlyCurrent?: boolean
+  /**
+   * Called with the new state of the switch.
+   * 开关变化时的回调。
+   */
+  onOnlyCurrentChange?: (onlyCurrent: boolean) => void
+  /**
    * Called when a row is picked; without it the rows are plain.
    * 点行的回调；不给行就是普通行。
    */
@@ -80,6 +102,10 @@ export function MoveFeed({
   selectedTypes: selectedProp,
   defaultSelectedTypes = [],
   onSelectedTypesChange,
+  currentSymbol,
+  onlyCurrent: onlyCurrentProp,
+  defaultOnlyCurrent = false,
+  onOnlyCurrentChange,
   onSelect,
   selectedId = null,
   limit = 200,
@@ -90,8 +116,13 @@ export function MoveFeed({
   const [selectedState, setSelectedState] = useState<readonly string[]>(defaultSelectedTypes)
   const selected = selectedProp ?? selectedState
   const labelOf = (type: string) => types?.find((def) => def.key === type)?.label ?? labels.types[type] ?? type
-  const chips = typeCounts(items, types)
-  const shown = sortFeed(filterMoves(items, selected)).slice(0, Math.max(0, Math.floor(limit)))
+  const [onlyState, setOnlyState] = useState(defaultOnlyCurrent)
+  const hasCurrent = typeof currentSymbol === 'string' && currentSymbol.trim() !== ''
+  const only = hasCurrent && (onlyCurrentProp ?? onlyState)
+  const scoped = only ? filterBySymbol(items, currentSymbol) : items
+  const checkId = useId()
+  const chips = typeCounts(scoped, types)
+  const shown = sortFeed(filterMoves(scoped, selected)).slice(0, Math.max(0, Math.floor(limit)))
 
   // 新出现的行：和上一轮的 id 比。首次渲染没有「新」，免得一开页整屏都在闪。
   // 用渲染期 setState（React 认可的派生写法）而不是读 ref，渲染里不碰 ref。
@@ -133,8 +164,21 @@ export function MoveFeed({
             </button>
           ))}
         </div>
+        {hasCurrent && (
+          <span className="k-move-only" data-slot="move-only-current">
+            <Checkbox
+              id={checkId}
+              checked={only}
+              onCheckedChange={(next) => {
+                setOnlyState(next === true)
+                onOnlyCurrentChange?.(next === true)
+              }}
+            />
+            <label htmlFor={checkId}>{labels.onlyCurrent}</label>
+          </span>
+        )}
         <span className="k-move-summary" data-slot="move-summary">
-          {labels.summary(filterMoves(items, selected).length)}
+          {labels.summary(filterMoves(scoped, selected).length)}
         </span>
       </header>
       {shown.length === 0 ? (

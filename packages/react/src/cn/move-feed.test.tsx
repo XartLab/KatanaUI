@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vite-plus/test'
 import { MoveFeed } from './move-feed.tsx'
 import {
   clockText,
+  filterBySymbol,
   filterMoves,
   freshIds,
   moveTone,
@@ -99,5 +100,51 @@ describe('MoveFeed', () => {
     expect(html.match(/class="k-move-row"/g)).toHaveLength(5)
     expect(html).toMatch(/data-id="2"[^>]*data-selected="true"/)
     expect(renderToStaticMarkup(<MoveFeed items={[]} />)).toContain('暂无异动')
+  })
+
+  // #245：加密异动（OKX 市场异动）。示例数据，币对与数值都是虚构的。
+  const COINS: MoveItem[] = [
+    { id: 'c1', time: '10:00:05', name: 'BTC-USDT', symbol: 'BTC-USDT-SWAP', type: 'rise5m', value: 1.2 },
+    { id: 'c2', time: '10:01:10', name: 'ETH-USDT', symbol: 'ETH-USDT-SWAP', type: 'fall5m', value: -2.4 },
+    { id: 'c3', time: '10:02:30', name: 'BTC-USDT', symbol: 'BTC-USDT-SWAP', type: 'fall5m', value: -1.1 },
+  ]
+
+  it('5 分钟涨幅 / 跌幅：随包的类型文字与涨跌色调', () => {
+    const html = renderToStaticMarkup(<MoveFeed items={COINS} />)
+    expect(html).toContain('data-slot="move-type" data-tone="up">5 分钟涨幅<')
+    expect(html).toContain('data-slot="move-type" data-tone="down">5 分钟跌幅<')
+    expect(moveTone('rise5m')).toBe('up')
+  })
+
+  it('没给 currentSymbol 没有开关；给了就有「当前品种」勾选，默认关、全部显示', () => {
+    expect(renderToStaticMarkup(<MoveFeed items={COINS} />)).not.toContain('move-only-current')
+    const html = renderToStaticMarkup(<MoveFeed items={COINS} currentSymbol="BTC-USDT-SWAP" />)
+    expect(html).toContain('data-slot="move-only-current"')
+    expect(html).toContain('当前品种')
+    expect(html.match(/data-slot="move-row"/g)).toHaveLength(3)
+  })
+
+  it('只看当前品种：只列这个品种的行，条数与类型计数按筛后的算；不分大小写', () => {
+    const html = renderToStaticMarkup(<MoveFeed items={COINS} currentSymbol="btc-usdt-swap" onlyCurrent />)
+    expect(html.match(/data-slot="move-row"/g)).toHaveLength(2)
+    expect(html).toContain('共 2 条')
+    expect(html).toContain('5 分钟涨幅 1')
+    expect(html).toContain('5 分钟跌幅 1')
+    expect(html).not.toContain('ETH-USDT<')
+  })
+
+  it('开着开关却没有 currentSymbol：不筛', () => {
+    const html = renderToStaticMarkup(<MoveFeed items={COINS} onlyCurrent />)
+    expect(html.match(/data-slot="move-row"/g)).toHaveLength(3)
+  })
+
+  it('filterBySymbol：按 symbol、再 code、再 name 比；空 symbol 不筛，不改原数组', () => {
+    const copy = [...COINS]
+    expect(filterBySymbol(COINS, 'ETH-USDT-SWAP').map((item) => item.id)).toEqual(['c2'])
+    expect(filterBySymbol(COINS, ' ')).toHaveLength(3)
+    expect(filterBySymbol(COINS, null)).toHaveLength(3)
+    expect(filterBySymbol(ITEMS, '000001').map((item) => item.id)).toEqual(['1'])
+    expect(filterBySymbol(ITEMS, '示例乙').map((item) => item.id)).toEqual(['2'])
+    expect(COINS).toEqual(copy)
   })
 })

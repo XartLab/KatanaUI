@@ -332,6 +332,7 @@ import {
   SmartRecommendationDemo,
 } from './pages/affect-agent.tsx'
 import { AgentCrewDemo, AgentFleetDemo, AgentTreeDemo, FlowBuilderDemo } from './pages/affect-flow.tsx'
+import { DerivativesBoardDemo } from './pages/derivatives.tsx'
 import {
   AccountEquityDemo,
   FundingRateDemo,
@@ -448,6 +449,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'orders-table': OrdersTableDemo,
   'account-equity': AccountEquityDemo,
   'funding-rate': FundingRateDemo,
+  'derivatives-board': DerivativesBoardDemo,
   'options-chain': OptionsChainDemo,
   'order-book': OrderBookDemo,
   'depth-chart': DepthChartDemo,

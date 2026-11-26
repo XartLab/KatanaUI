@@ -42,6 +42,24 @@ const account: GuidanceMap = {
     avoid: ['不要在件里读结算时间表，nextSettlement 由调用方传。', '历史柱按这段历史归一，不当绝对值比较。'],
     a11y: ['费率正负靠符号与文字，不只靠颜色。', '倒计时不做 aria-live 播报，避免每秒打扰。'],
   },
+  'derivatives-board': {
+    aliases: ['Trading data', 'Derivatives data', 'Market stats', '交易数据', '衍生品数据'],
+    use: [
+      '永续合约详情页的「交易数据」：持仓量、资金费率、主动买卖、多空比、大户多空、基差一屏看。',
+      '一张卡一个周期：onPeriodChange(kind, period) 里换那张卡的数据，别的卡不动。',
+      '只要其中几张：kinds 选画哪几张与次序；单张放进自己的面板用 DerivativesCard。',
+    ],
+    avoid: [
+      '不要在件里定周期档：OKX 的实际档位待核对，用 periods 传你的数据源支持的几档。',
+      '单品种的价格走势用图表包；这里只放衍生品的统计序列。',
+    ],
+    a11y: [
+      '每张卡是 article，标题是 h3；信息钮的读屏名写「某某的说明」，说明在悬停或焦点出的提示里。',
+      '周期按钮组是 role=group，读屏名写「某某的周期」，选中项 aria-pressed。',
+      '图是一个 role=group 的停靠点，读屏名写卡名与最新值；← → 扫读时一个 aria-live 区读出时间与各序列的值。',
+      '序列靠图例的字与悬停窗的字区分，涨跌不只靠颜色；空态是 role=status。',
+    ],
+  },
   'options-chain': {
     aliases: ['Option chain', 'T-quote', 'T 型报价', '期权链'],
     use: [
