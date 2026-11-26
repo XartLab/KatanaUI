@@ -18,10 +18,10 @@
   white-space: nowrap;
   vertical-align: middle;
   transition:
-    color 0.12s,
-    background-color 0.12s,
-    border-color 0.12s,
-    scale 0.15s;
+    color var(--dur-hover) var(--ease-hover),
+    background-color var(--dur-hover) var(--ease-hover),
+    border-color var(--dur-hover) var(--ease-hover),
+    scale var(--dur-hover) var(--ease-hover);
 }
 .k-pill[data-size='sm'] {
   height: 20px;

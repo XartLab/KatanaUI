@@ -96,6 +96,8 @@
   display: flex;
   gap: 2px;
   height: 8px;
+  /* 标记的位置用 translate 画，百分比要量带宽：带是容器，标记取 cqw（kubai Vibe Design Tips 011，#251）。 */
+  container-type: inline-size;
 }
 .k-metric-seg {
   --t: var(--stage-t);
@@ -116,10 +118,12 @@
   position: absolute;
   top: -3px;
   bottom: -3px;
+  left: 0;
   width: 2px;
   margin-left: -1px;
   background: var(--k-content-primary-foreground);
-  transition: left var(--dur-gentle) var(--ease-gentle);
+  translate: calc(var(--fill, 0) * 100cqw) 0;
+  transition: translate var(--dur-gentle) var(--ease-gentle);
 }
 .k-metric-stage-names {
   display: flex;

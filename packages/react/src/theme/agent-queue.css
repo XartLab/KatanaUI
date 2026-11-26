@@ -165,9 +165,12 @@
 }
 .k-aq-bar b {
   display: block;
+  width: 100%;
   height: 100%;
   background: var(--k-content-secondary-foreground);
-  transition: width var(--dur-snappy) var(--ease-snappy);
+  transform-origin: left;
+  scale: var(--fill, 0) 1;
+  transition: scale var(--dur-snappy) var(--ease-snappy);
 }
 .k-aq-job[data-limited] .k-aq-bar b {
   background: var(--k-status-warn-foreground);

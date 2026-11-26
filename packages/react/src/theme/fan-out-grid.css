@@ -39,9 +39,12 @@
 }
 .k-fan-meter b {
   display: block;
+  width: 100%;
   height: 100%;
   background: var(--k-status-ok-foreground);
-  transition: width var(--dur-snappy) var(--ease-snappy);
+  transform-origin: left;
+  scale: var(--fill, 0) 1;
+  transition: scale var(--dur-snappy) var(--ease-snappy);
 }
 .k-fan-grid {
   display: grid;

@@ -50,7 +50,7 @@
   transition:
     translate var(--dur-snappy) var(--ease-snappy),
     scale var(--dur-snappy) var(--ease-snappy),
-    color 120ms linear;
+    color var(--dur-hover) var(--ease-hover);
 }
 
 /* OTP：当前格的框是一块跟着滑的外框；输入的字翻进来；空的当前格里一根闪的光标。 */

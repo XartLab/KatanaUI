@@ -389,9 +389,89 @@ function DurationPage() {
           CSS 用 {code('transition: transform var(--dur-gentle) var(--ease-gentle)')}；JS 用 motion/react
           的同名弹簧参数。
         </li>
-        <li>颜色、透明度用 120–200ms 线性过渡，不用弹簧。</li>
+        <li>颜色、透明度的小变化走下面的 {code('--ease-hover')}，不用弹簧，也不再用 linear。</li>
         <li>不跟系统的「减少动态效果」：动效只有三类原因（状态变了、东西进出、跟手），本来就克制（产品底线）。</li>
       </ul>
+      <h2>曲线按角色选</h2>
+      <p>
+        一个角色一条曲线，不在各件里自己调（kubai Vibe Design Tips 011，2026-11-27，#251）。{code('--ease-exit')} 与{' '}
+        {code('--ease-hover')} 是 CSS 关键字 ease-in、ease-out 的同一条曲线，写成 token 是为了全库同一个名字。
+      </p>
+      <Table
+        head={['角色', '曲线与时长', '用在']}
+        rows={[
+          [
+            '入场（位移、缩放）',
+            <>
+              {code('--ease-snappy')} / {code('--ease-gentle')} 弹簧
+            </>,
+            '菜单、弹层、提示、对话框、抽屉：用户定的「动效我们自己做」，不换成 cubic-bezier；菜单从触发处长出',
+          ],
+          [
+            '退场',
+            <>
+              {code('--ease-exit')} {code('cubic-bezier(0.42, 0, 1, 1)')}，{code('--dur-exit')} 120ms
+            </>,
+            '菜单、弹层、悬停卡、对话框、抽屉、折叠收起、富提示、导航菜单、滚动条消失。慢起、全速离开；只用在退场，用在入场会先慢后顿一下',
+          ],
+          [
+            '悬停、按下、淡入、颜色与不透明度的小变化',
+            <>
+              {code('--ease-hover')} {code('cubic-bezier(0, 0, 0.58, 1)')}，{code('--dur-hover')} 120ms
+            </>,
+            '按钮、链接、行、芯片、输入框边框的状态变化，背板与页签内容的淡入。过渡没写时长就取它，不写 CSS 默认的 ease',
+          ],
+          [
+            '一直在屏上、只换位置的',
+            <>{code('--ease-snappy')} 弹簧</>,
+            '页签与分段的底块、重排位移、条长与标记的滑动（用户定的「弹簧滑移」，不换成 ease-in-out）',
+          ],
+          [
+            '在「跑」的东西',
+            'linear',
+            '转圈、不确定进度条、LED 呼吸与闪烁、数据刷新的闪烁淡出（--dur-flash）；位移不用',
+          ],
+        ]}
+      />
+      <ul className="gal-list">
+        <li>
+          每一段 {code('transition')} 都写曲线，不落到默认的 ease；退场动画（{code('kc-*-out')}、折叠收起）写{' '}
+          {code('var(--dur-exit) var(--ease-exit)')}，不写 linear。{code('src/motion-tokens.test.ts')} 扫{' '}
+          {code('theme/*.css')}，漏一处就红。
+        </li>
+        <li>
+          不对 width / height / top / left 做过渡：每帧重排。条长写成 {code('--fill')}（0 到 1）用 {code('scale')} 画（
+          {code('transform-origin')} 贴着零点），带起点的写 {code('--from')} 加 {code('translate')}，标记的位置用{' '}
+          {code('translate')}（轨设 {code('container-type: inline-size')}，位移取 {code('cqw')}
+          ）；有点阵纹理的条（Meter、Slider 的填充）scale 会拉伸点，改用 {code('clip-path')}
+          裁右边（只重绘、不重排）。写法统一在 {code('src/lib/fill.ts')}。
+        </li>
+        <li>
+          豁免在 {code('motion-tokens.test.ts')} 的 {code('LAYOUT_ALLOW')}
+          ，每条写了原因：页签与导航菜单这类宽高跟着文字内容变的、Treemap
+          与热力图的格子重排（布局算法给位置、格里有字）、点阵纹理的 AttributionBars 零轴条（待另做）。
+        </li>
+        <li>
+          效果（#251，文档站订单簿页，模拟行情 15 次 / 秒推 5 秒，Chrome DevTools Protocol 的 Performance
+          指标，同一台机、同一数据，改前改后交替各 3 次取中位）：布局重排 355 次 → 55 次，布局耗时 130 ms → 32
+          ms；样式重算次数没变（约 400 次）。
+        </li>
+      </ul>
+      <h2>没改、待用户确认</h2>
+      <ul className="gal-list">
+        <li>入场弹簧不动（用户定）；不加回弹（overshoot）：三条弹簧都是近临界阻尼，精密仪器风不要回弹。</li>
+        <li>不做 prefers-reduced-motion（产品底线），所以 Tip 011 里「减少动态效果」那一节没有照做。</li>
+        <li>
+          LED 的 60ms 状态色过渡（{code('led.css')}）与数据刷新的闪烁保持
+          linear：它们是状态灯与刷新提示，不是位移；少数几处直接写 {code('ease-out')} / {code('ease-in-out')}{' '}
+          关键字的（热力图格、树图箭头、抖动）等价于 token，没有逐处换名。
+        </li>
+        <li>
+          Tip 011 的 {code('--ease-in-out')}
+          （页签底块、分段底块、侧栏）没有加：这些位置用的是弹簧，用户定过「弹簧滑移」。
+        </li>
+      </ul>
+      <Src href="https://vibedesign.tips/011-easing-curves/">kubai · Vibe Design Tips 011 Easing curves</Src>
       <h2>数据刷新</h2>
       <p>
         数据会自己更新的地方（行情、新闻流、连板天梯、自选），变了的地方要让人看得出，但不能晃眼。五条规则，共用层在{' '}

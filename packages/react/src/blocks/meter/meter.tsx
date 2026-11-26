@@ -15,6 +15,7 @@
 // 越硬限转红照 LossLimits 卡（同目录，≥ 100% red）；状态按「达到」算、没给 max 时满刻度取已用与两条线里最大的，照 KATANAview #1925 里原 BulletMeter 的定法。
 // 功能参照 Arc Budget variance（uiarc.dev，2026-11-14 读，见 KATANAview #1917），实现原创。
 import { useId, type ReactNode } from 'react'
+import { fillVar } from '../../lib/fill.ts'
 import type { SeverityExt } from '../../lib/severity.ts'
 
 /** @deprecated Use `SeverityExt` from the severity helpers; kept for one version. */
@@ -119,7 +120,7 @@ export function Meter({
       {display === 'gauge' ? (
         <>
           <span className="k-meter-base" aria-hidden="true" />
-          <span className="k-meter-pin" style={{ left: `calc(6px + (100% - 12px) * ${share})` }} aria-hidden="true" />
+          <span className="k-meter-pin" style={fillVar(share)} aria-hidden="true" />
           <span className="k-meter-ticks" aria-hidden="true">
             {TICKS.map((tick) => (
               <span key={tick}>{tick}</span>
@@ -128,7 +129,7 @@ export function Meter({
         </>
       ) : (
         <>
-          <span className="k-meter-fill" style={{ width: `${share * 100}%` }} aria-hidden="true" />
+          <span className="k-meter-fill" style={fillVar(share)} aria-hidden="true" />
           {markShare !== null && (
             <span className="k-meter-mark" style={{ left: `${markShare * 100}%` }} aria-hidden="true" />
           )}

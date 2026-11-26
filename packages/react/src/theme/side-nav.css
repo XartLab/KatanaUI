@@ -115,7 +115,7 @@
   text-decoration: none;
   text-overflow: ellipsis;
   white-space: nowrap;
-  transition: color 200ms;
+  transition: color var(--dur-hover) var(--ease-hover);
 }
 .k-sidenav-icon {
   display: inline-grid;
@@ -149,7 +149,9 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  transition: opacity 200ms;
+  /* 线整根铺满、往上藏，露出的长度 = --k-trail-h（px）：用 translate 移，不动 height / top。 */
+  overflow: hidden;
+  transition: opacity var(--dur-hover) var(--ease-hover);
 }
 .k-sidenav-trail[data-kind='hover'] {
   color: color-mix(in srgb, var(--k-content-primary-foreground) 30%, transparent);
@@ -162,13 +164,17 @@
   top: 0;
   left: 2px;
   width: 1px;
+  height: 100%;
   background-image: repeating-linear-gradient(to top, transparent 0 2px, currentColor 2px 4px);
-  transition: height 200ms;
+  translate: 0 calc(var(--k-trail-h, 0px) - 100%);
+  transition: translate var(--dur-snappy) var(--ease-snappy);
 }
 .k-sidenav-hook {
   position: absolute;
+  top: 0;
   left: 2px;
-  transition: top 200ms;
+  translate: 0 var(--k-trail-h, -6px);
+  transition: translate var(--dur-snappy) var(--ease-snappy);
 }
 .k-sidenav-empty {
   margin: 0;

@@ -257,8 +257,11 @@
 .k-spark-ins-bar {
   fill: var(--k-content-tertiary-foreground);
   fill-opacity: 0.7;
-  /* 新点进来投影谱的柱子平滑变化（宽度写在 style 里，CSS 才能过渡）。 */
-  transition: width var(--dur-reorder) var(--ease-snappy);
+  /* 新点进来投影谱的柱子平滑变化：宽度是属性，长度 --fill（0 到 1）用 scale 画，CSS 才能过渡又不重排。 */
+  transform-box: fill-box;
+  transform-origin: left center;
+  scale: var(--fill, 0) 1;
+  transition: scale var(--dur-reorder) var(--ease-snappy);
 }
 .k-spark-ins-now {
   stroke: var(--k-content-primary-foreground);

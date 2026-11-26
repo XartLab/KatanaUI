@@ -96,7 +96,7 @@
   border: 1px solid var(--k-separable-bold-borderColor);
   border-radius: var(--radius-control);
   background: var(--k-container-secondary-background);
-  transition: opacity 120ms;
+  transition: opacity var(--dur-hover) var(--ease-hover);
 }
 .k-wb .react-flow__node:hover .k-wb-node {
   background: var(--k-surface-raised-background);
@@ -224,7 +224,7 @@
   width: 7px;
   height: 7px;
   opacity: 0;
-  transition: opacity 120ms;
+  transition: opacity var(--dur-hover) var(--ease-hover);
 }
 .k-wb .react-flow__node:hover .react-flow__handle,
 .k-wb .react-flow__node.selected .react-flow__handle,
@@ -293,7 +293,7 @@
   stroke: var(--wb-color);
   stroke-width: 1.75;
   stroke-dasharray: var(--wb-dash);
-  transition: opacity 120ms;
+  transition: opacity var(--dur-hover) var(--ease-hover);
 }
 .k-wb .react-flow__edge-path.k-wb-edge-line[data-feedback='true'] {
   stroke-dasharray: 2 4;

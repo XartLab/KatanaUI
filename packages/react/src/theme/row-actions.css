@@ -39,8 +39,8 @@
   color: var(--k-content-body-foreground);
   cursor: pointer;
   transition:
-    background-color 100ms,
-    color 100ms;
+    background-color var(--dur-hover) var(--ease-hover),
+    color var(--dur-hover) var(--ease-hover);
 }
 .k-row-action:hover:not(:disabled) {
   background: var(--alpha-white-9);
