@@ -118,6 +118,8 @@ const INTERNAL = {
   'code-highlight': 'CodeBlock 用的小型词法切分：注释、字符串、数字、关键字、函数、标点（纯函数，不加依赖）。',
   'matrix-orb-model': 'MatrixOrb 的纯数学：某状态下圆盘上一点在某一时刻的亮度。',
   'step-player-model': 'StepPlayer 的纯逻辑：一步放完后是前进、循环还是结束。',
+  'toast-stack-model':
+    'ToastStack 的几何与手势判定（纯函数）：收拢与展开时每条的位置、缩放、不透明度，滑动关的距离与速度判定。',
   overlay: '浮层内容的 Portal 包装：平时挂到 body，包在 InlineOverlays 里时原地渲染（静态预览用）。',
   'hover-open': '悬停打开弹层、延迟关闭的钩子。',
   'menu-any': '同一份菜单内容既能下拉又能右键时，按种类挑对应的零件。',

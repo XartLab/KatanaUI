@@ -49,6 +49,7 @@
 | [Omnibox 万能框](omnibox.md) | `drive omnibox` | 页签与计数、AAPL 变标签与退格、问句收起与回车去问、行尾提示、预览卡、Ctrl+回车新标签 |
 | [AgentDrawer Agent 档案抽屉](agent-drawer.md) | `drive agent-drawer` | 三种状态、页签、热力格读数与方向键、最近运行点行回调 id、列表点开抽屉 |
 | [研究资料与日历](research-calendar.md) | `drive calendar-events`、`drive file-import`、`drive template-library` | 日历事件点与洞察、资料导入（进度、重试、移除、粘贴、链接）、模板库（搜索、键盘、就地编辑、复制、使用） |
+| [ToastStack 叠放提示](toast-stack.md) | `drive toast-stack` | 连推三条收拢、悬停展开、点「撤销」原地变状态、Tab 进叠层展开；拖动、计时暂停、最多条数、减弱动效、受控由 `e2e/toast-stack.spec.ts` 走 |
 | [对照 Salt 补的七件](salt-gaps.md) | 还没有流程（手走） | Pill 改与删、SystemStatus 关闭、Calendar 选日与不可选日、ListBox 单选与多选、Link / Card / Panel 的样子 |
 | [RatingPanel 技术评级三联](rating-panel.md) | `drive rating-panel` | 点周期与 ← / → + Enter 切周期、悬停与 Tab 聚焦出读数 |
 | [SymbolNote 品种备注](symbol-note.md) | `drive symbol-note` | 悬停预览、点击与 Enter 钉住、编辑后保存、存空就是删除、Esc 收起与放弃草稿 |
