@@ -333,6 +333,9 @@ function collectItems() {
       'agent-tree',
       'agent-fleet',
       'agent-crew',
+      // KatanaUI #196：Agent 单次运行详情与运行列表。
+      'agent-run-detail',
+      'agent-run-list',
     ])
       add(
         dir,

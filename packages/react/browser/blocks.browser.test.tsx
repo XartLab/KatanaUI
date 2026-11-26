@@ -45,6 +45,7 @@ import { SeriesTable } from '../src/blocks/series-explorer/series-explorer-table
 import { ChartTable } from '../src/lib/chart/chart-kit/chart-table.tsx'
 import { STOCKS, STOCK_COLUMNS, STOCK_LAYOUT } from '../gallery/pages/screener-data.tsx'
 import { UseUndoStackUsage } from '../gallery/usage/UseUndoStackUsage.tsx'
+import { agentRunDetailStates, agentRunList } from './agent-run-detail.fixture.tsx'
 import { mount } from './render.tsx'
 import { settled } from './settle.ts'
 
@@ -120,6 +121,8 @@ const chartTable = (
 )
 
 const items: Record<string, React.ReactNode> = {
+  'agent-run-detail': agentRunDetailStates,
+  'agent-run-list': agentRunList,
   'attribution-bars': <AttributionBarsUsage />,
   'column-set-tabs': <ColumnSetTabsUsage />,
   'consensus-block': <ConsensusBlockUsage />,
@@ -169,7 +172,7 @@ const items: Record<string, React.ReactNode> = {
 
 const settle: Record<string, number> = { 'page-preloader': 1500, whiteboard: 600 }
 /** 默认框宽 720；整页的表要更宽。 */
-const widths: Record<string, number> = { 'data-grid-comfortable': 1480 }
+const widths: Record<string, number> = { 'data-grid-comfortable': 1480, 'agent-run-detail': 440, 'agent-run-list': 440 }
 
 // Freeze the clock (Date only, so timers still run): today/relative-time cells must not drift between days.
 beforeAll(() => {
