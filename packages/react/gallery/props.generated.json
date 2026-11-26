@@ -4123,6 +4123,18 @@
           "description": "Distance in px from the button center within which a magnetic button reacts."
         },
         {
+          "name": "pending",
+          "type": "boolean",
+          "required": false,
+          "description": "The action is running."
+        },
+        {
+          "name": "spinIcon",
+          "type": "boolean",
+          "required": false,
+          "description": "Use with pending when the button's own icon already means the action (refresh, sync): that icon turns from the press, at least one whole turn, and stops on a whole turn; no separate spinner."
+        },
+        {
           "name": "variant",
           "type": "'primary' | 'danger' | 'default'",
           "required": false,
@@ -4175,6 +4187,18 @@
           "type": "number",
           "required": false,
           "description": "Distance in px from the button center within which a magnetic button reacts."
+        },
+        {
+          "name": "pending",
+          "type": "boolean",
+          "required": false,
+          "description": "The action is running."
+        },
+        {
+          "name": "spinIcon",
+          "type": "boolean",
+          "required": false,
+          "description": "Use with pending when the button's own icon already means the action (refresh, sync): that icon turns from the press, at least one whole turn, and stops on a whole turn; no separate spinner."
         }
       ]
     },
@@ -7946,6 +7970,20 @@
           "required": false,
           "default": "120",
           "description": "Distance in px from the button center within which a magnetic button reacts."
+        },
+        {
+          "name": "pending",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "The action is running."
+        },
+        {
+          "name": "spinIcon",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Use with pending when the button's own icon already means the action (refresh, sync): that icon turns from the press, at least one whole turn, and stops on a whole turn; no separate spinner."
         }
       ]
     },
@@ -31337,6 +31375,12 @@
           "description": "Milliseconds to wait before the bars show; defaults to LoadingWait's 500."
         },
         {
+          "name": "minShown",
+          "type": "number",
+          "required": false,
+          "description": "Minimum milliseconds the bars stay once shown, even if the data arrives sooner; defaults to LoadingWait's 500."
+        },
+        {
           "name": "className",
           "type": "string",
           "required": false,
@@ -31397,6 +31441,12 @@
           "description": "Milliseconds to wait before the bars show; defaults to LoadingWait's 500."
         },
         {
+          "name": "minShown",
+          "type": "number",
+          "required": false,
+          "description": "Minimum milliseconds the bars stay once shown, even if the data arrives sooner; defaults to LoadingWait's 500."
+        },
+        {
           "name": "className",
           "type": "string",
           "required": false,
@@ -31455,6 +31505,12 @@
           "type": "number",
           "required": false,
           "description": "Milliseconds to wait before the bars show; defaults to LoadingWait's 500."
+        },
+        {
+          "name": "minShown",
+          "type": "number",
+          "required": false,
+          "description": "Minimum milliseconds the bars stay once shown, even if the data arrives sooner; defaults to LoadingWait's 500."
         },
         {
           "name": "className",
@@ -45621,14 +45677,14 @@
         {
           "name": "on",
           "type": "string",
-          "required": true,
-          "description": ""
+          "required": false,
+          "description": "No longer used: a one-item setting is a Switch, not an on / off segment."
         },
         {
           "name": "off",
           "type": "string",
-          "required": true,
-          "description": ""
+          "required": false,
+          "description": "No longer used: see `on`."
         },
         {
           "name": "reset",
@@ -60592,6 +60648,60 @@
         }
       ]
     },
+    "ToastAction": {
+      "kind": "component",
+      "source": "src/katana/toast.tsx",
+      "props": [
+        {
+          "name": "variant",
+          "type": "\"link\" | \"danger\" | \"default\" | \"primary\" | \"ghost\" | \"icon\"",
+          "required": false,
+          "description": "Visual style: primary is the solid light button, danger uses the danger text color, icon is a borderless 28px icon button."
+        },
+        {
+          "name": "size",
+          "type": "ButtonSize | 'default' | null",
+          "required": false,
+          "description": "Height: sm is 26px, md (default) is 30px, icon is a 28px square."
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "description": "Render the child element itself (a link, a menu trigger) instead of wrapping it in a button."
+        },
+        {
+          "name": "effect",
+          "type": "ButtonEffect",
+          "required": false,
+          "description": "Optional hover effect from SmoothUI: magnetic leans toward the pointer, dot-morph stretches a leading dot into a bar, clip-corners cuts the corners wider."
+        },
+        {
+          "name": "magnetStrength",
+          "type": "number",
+          "required": false,
+          "description": "How far a magnetic button leans: the fraction of the pointer offset it follows (0 to 1)."
+        },
+        {
+          "name": "magnetRadius",
+          "type": "number",
+          "required": false,
+          "description": "Distance in px from the button center within which a magnetic button reacts."
+        },
+        {
+          "name": "pending",
+          "type": "boolean",
+          "required": false,
+          "description": "The action is running."
+        },
+        {
+          "name": "spinIcon",
+          "type": "boolean",
+          "required": false,
+          "description": "Use with pending when the button's own icon already means the action (refresh, sync): that icon turns from the press, at least one whole turn, and stops on a whole turn; no separate spinner."
+        }
+      ]
+    },
     "ToastClear": {
       "kind": "component",
       "source": "src/katana/toast.tsx",
@@ -60638,6 +60748,18 @@
           "description": "Distance in px from the button center within which a magnetic button reacts."
         },
         {
+          "name": "pending",
+          "type": "boolean",
+          "required": false,
+          "description": "The action is running."
+        },
+        {
+          "name": "spinIcon",
+          "type": "boolean",
+          "required": false,
+          "description": "Use with pending when the button's own icon already means the action (refresh, sync): that icon turns from the press, at least one whole turn, and stops on a whole turn; no separate spinner."
+        },
+        {
           "name": "label",
           "type": "string",
           "required": true,
@@ -60649,6 +60771,18 @@
       "kind": "component",
       "source": "src/katana/toast.tsx",
       "props": []
+    },
+    "ToastCountdown": {
+      "kind": "component",
+      "source": "src/katana/toast.tsx",
+      "props": [
+        {
+          "name": "remaining",
+          "type": "number",
+          "required": true,
+          "description": "Time left as a fraction, 1 (just shown) down to 0 (about to close)."
+        }
+      ]
     },
     "ToastDescription": {
       "kind": "component",
@@ -67019,16 +67153,16 @@
       "source": "src/lib/copy-image.ts",
       "props": [
         {
-          "name": "background",
-          "type": "string",
-          "required": false,
-          "description": "底色；默认取节点或最近一个有底色的祖先的背景色（图片默认透明，贴进聊天里会变成黑底或白底）。"
-        },
-        {
           "name": "scale",
           "type": "number",
           "required": false,
           "description": "像素倍数；默认 devicePixelRatio（至少 1，最多 3）。"
+        },
+        {
+          "name": "background",
+          "type": "string",
+          "required": false,
+          "description": "底色；默认取节点或最近一个有底色的祖先的背景色（图片默认透明，贴进聊天里会变成黑底或白底）。"
         },
         {
           "name": "embedFonts",
@@ -67626,6 +67760,11 @@
           "description": "Paths of a branch step."
         }
       ]
+    },
+    "installTruncationTitles": {
+      "kind": "function",
+      "source": "src/lib/truncation-title.ts",
+      "props": []
     },
     "isEditableTarget": {
       "kind": "function",

@@ -388,7 +388,7 @@ export class CascadeController {
       triangle.setAttribute('fill', 'color-mix(in srgb, var(--k-status-info-foreground) 16%, transparent)')
       const band = document.createElementNS(svgNs, 'rect')
       band.setAttribute('fill', 'none')
-      band.setAttribute('stroke', 'var(--k-status-info-border)')
+      band.setAttribute('stroke', 'var(--k-status-info-borderColor)')
       band.setAttribute('stroke-dasharray', '4 3')
       svg.append(triangle, band)
       root.append(svg)
