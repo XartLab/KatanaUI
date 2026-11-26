@@ -144,7 +144,11 @@ const forms: GuidanceMap = {
   },
   switch: {
     aliases: ['Toggle', 'Switch (Salt / MUI / Radix)', '开关'],
-    use: ['设置项立即生效，如「实时推送」「深色模式」。', '策略的启停。'],
+    use: [
+      '设置项立即生效，如「实时推送」「深色模式」。',
+      '策略的启停。',
+      '即时生效的单项开关用 Switch，不要做成「开 / 关」两段的分段切换：读的人要读两边才知道状态（kubai Vibe Design Tips 020）。RenderingSettings 的像素对齐、斜线零、中英对齐已换成 Switch。',
+    ],
     avoid: ['要点提交才生效的选项用 Checkbox。', '一次性动作用 Button 或 HoldToConfirm。'],
     a11y: [
       'Radix Switch：role=switch，状态在 aria-checked，读屏读「开 / 关」。',
@@ -163,6 +167,8 @@ const forms: GuidanceMap = {
     use: [
       'K 线周期、买卖方向、视图模式这类二到五项的互斥切换。',
       '设置页里少量选项并排摆开。',
+      '2 到 5 个短选项、互斥、各有名字：用分段，选项一直看得见，不藏进下拉。例：下单面板的保证金模式（全仓 / 逐仓，改错代价大）（kubai Vibe Design Tips 020）。',
+      '例外：下单面板的计量方式（按金额 / 数量 / 风险）保持下拉：它嵌在数量框的标签位里，一行放不下分段；切换会清空数量，藏在一次点击后面反而合适。',
       '尺寸用 size：md（默认，设置页：有边框、按钮 24 高）与 sm（工具条：无边框、选中块滑动）。原来叫 variant="default | sm"，体检认定那是尺寸，改名 size；variant 留一个版本（G1，2026-11-18）。',
     ],
     avoid: ['选项多于五个用 Select。', '切换页面内容用 Tabs。'],
@@ -384,7 +390,8 @@ const forms: GuidanceMap = {
     a11y: [
       '每项一行：名称、说明、控件，控件读屏名取该项名称。',
       '各字体角色的下拉读屏名取角色标题。',
-      '用的是 Select、Slider、ToggleGroup 等原件，读屏行为随各原件。',
+      '像素对齐、斜线零、中英对齐是 Switch（role=switch，aria-checked 跟值，读屏名取该项名称），点一下立即生效，没有保存钮；文字平滑是互斥的两项，用分段（ToggleGroup）。',
+      '用的是 Select、Slider、Switch、ToggleGroup 等原件，读屏行为随各原件。',
     ],
   },
   'decimal-field': {

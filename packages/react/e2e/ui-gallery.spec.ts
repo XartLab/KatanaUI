@@ -7949,6 +7949,15 @@ for (const theme of THEMES) {
       await expect(slot(buy, 'ticket-rr')).toContainText('3.17 : 1')
       // 可开：250 / 0.011 / 600 = 37.87 张。
       await expect(slot(buy, 'ticket-max')).toContainText('37.87 Cont')
+      // 保证金模式（kubai 020，#251）：两项分段一直看得见；点「Cross」切过去，再点已选的不会取消。
+      const marginMode = ticket.getByRole('group', { name: 'Margin mode' })
+      await expect(marginMode.getByRole('button')).toHaveCount(2)
+      await expect(marginMode.getByRole('button', { name: 'Isolated' })).toHaveAttribute('aria-pressed', 'true')
+      await marginMode.getByRole('button', { name: 'Cross' }).click()
+      await expect(marginMode.getByRole('button', { name: 'Cross' })).toHaveAttribute('aria-pressed', 'true')
+      await expect(marginMode.getByRole('button', { name: 'Isolated' })).toHaveAttribute('aria-pressed', 'false')
+      await marginMode.getByRole('button', { name: 'Cross' }).click()
+      await expect(marginMode.getByRole('button', { name: 'Cross' })).toHaveAttribute('aria-pressed', 'true')
       // 改杠杆到 10：成本框还是 10，张数变成 0.16（10 / 0.101 = 99.01 → 0.165 → 0.16），两栏都变。
       await ticket.locator('[data-slot="ticket-leverage"]').fill('10')
       await expect(slot(buy, 'ticket-amount')).toHaveValue('10')
