@@ -660,3 +660,34 @@ export {
   type RuleTextTemplates,
   type RuleValue,
 } from './rule-builder/rule-model.ts'
+export {
+  AgentDrawer,
+  initialsOf,
+  type AgentDrawerLabels,
+  type AgentDrawerProps,
+  type AgentDrawerTab,
+  type AgentMetric,
+  type AgentRecentRun,
+} from './agent-drawer/agent-drawer.tsx'
+export { AgentActivity, type AgentActivityProps } from './agent-drawer/agent-activity.tsx'
+export {
+  ACTIVITY_LEVELS,
+  ACTIVITY_PAGE_WEEKS,
+  activityCuts,
+  activityGrid,
+  activityLevel,
+  activityLevelByCuts,
+  activityMax,
+  activityTotal,
+  agentStatusTone,
+  moveActivity,
+  recentFrom,
+  runResultTone,
+  type ActivityCell,
+  type ActivityGridModel,
+  type AgentActivityDay,
+  type AgentRunResult,
+  type AgentStatus,
+  type AgentTone,
+  type AgentTrigger,
+} from './agent-drawer/agent-drawer-model.ts'
