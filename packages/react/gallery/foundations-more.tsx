@@ -233,6 +233,9 @@ import { EquityCurve } from '@katana-ui/react/quant'`}
               与字形不同，同样的代码也会红（primitives 七张浮层图在沙箱红、在 runner 过，#218）。CI
               上组件截图红了，artifact pixelgate-unit 里有 runner 的实际截图，核对是预期改动后用{' '}
               {code('pnpm exec pixelgate approve --out-dir .pixelgate-unit --from <下载的目录>')} 收
+            </>,
+          ],
+          [
             '字体固定（#202）',
             <>
               截图里的中文只用仓库自带的 Noto Sans SC（开发依赖 @fontsource-variable/noto-sans-sc，OFL

@@ -69,8 +69,7 @@ export type DateRangeApplyLabels = {
   clear: string
 }
 
-type DateRangePickerBaseProps = {
-export type DateRangePickerProps = CalendarEventProps & {
+type DateRangePickerBaseProps = CalendarEventProps & {
   /** The current range (inclusive YYYY-MM-DD pair); null means nothing picked. */
   value: DateRange | null
   /** Called with a valid range once both ends are filled and start ≤ end (typing, calendar or a preset). */
@@ -358,12 +357,13 @@ export function DateRangePicker({
                 </header>
                 <div className="k-rcal-months">
                   <CalendarGrid className="k-cal-grid">
-                    {(day) => <CalendarCell date={day} className="k-cal-cell" data-k-today={isToday(day, today)} />}
+                    {(day) => view.cell(day, { 'data-k-today': isToday(day, today) })}
                   </CalendarGrid>
                   <CalendarGrid className="k-cal-grid" offset={{ months: 1 }}>
-                    {(day) => <CalendarCell date={day} className="k-cal-cell" data-k-today={isToday(day, today)} />}
+                    {(day) => view.cell(day, { 'data-k-today': isToday(day, today) })}
                   </CalendarGrid>
                 </div>
+                {view.foot}
               </RangeCalendar>
               {apply && (
                 <footer className="k-dr-foot">
@@ -388,35 +388,6 @@ export function DateRangePicker({
                 </footer>
               )}
             </div>
-            <RangeCalendar
-              className="k-cal k-rcal"
-              aria-label={labels.calendar}
-              value={start && end ? { start, end } : null}
-              minValue={minValue}
-              maxValue={maxValue}
-              defaultFocusedValue={start ?? undefined}
-              visibleDuration={{ months: 2 }}
-              pageBehavior="visible"
-              autoFocus
-              onChange={(range) => choose({ start: range.start.toString(), end: range.end.toString() })}
-            >
-              <header className="k-cal-head">
-                <AriaButton slot="previous" className="k-cal-nav" aria-label={labels.previousMonth}>
-                  <ChevronLeft size={14} aria-hidden />
-                </AriaButton>
-                <Heading className="k-cal-title" />
-                <AriaButton slot="next" className="k-cal-nav" aria-label={labels.nextMonth}>
-                  <ChevronRight size={14} aria-hidden />
-                </AriaButton>
-              </header>
-              <div className="k-rcal-months">
-                <CalendarGrid className="k-cal-grid">{(day) => view.cell(day)}</CalendarGrid>
-                <CalendarGrid className="k-cal-grid" offset={{ months: 1 }}>
-                  {(day) => view.cell(day)}
-                </CalendarGrid>
-              </div>
-              {view.foot}
-            </RangeCalendar>
           </PopoverContent>
         </Popover>
       </span>

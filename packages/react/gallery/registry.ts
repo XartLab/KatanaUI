@@ -12560,6 +12560,9 @@ export const PAGES: readonly DocPage[] = [
       ['Ctrl+Z / ⌘+Z', '撤销上一次改动（在文字框里让位给浏览器自己的撤销）'],
       ['Ctrl+Shift+Z / ⌘+Shift+Z / Ctrl+Y', '重做'],
       ['Esc', '拖动中：取消；下拉里：关'],
+    ],
+  },
+  {
     id: 'agent-drawer',
     group: 'ai',
     cardHeight: 700,

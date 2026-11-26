@@ -23,12 +23,9 @@ const ROW_TONE: Readonly<Record<AiDiffLineKind, string>> = {
   context: '',
 }
 const PREFIX_TONE: Readonly<Record<AiDiffLineKind, string>> = {
-  added: 'text-(color:--signal-green)',
-  removed: 'text-(color:--signal-red)',
-  context: 'text-ink-3',
   added: 'text-(color:--k-status-ok-foreground)',
   removed: 'text-(color:--k-status-danger-foreground)',
-  context: 'text-ink-4',
+  context: 'text-ink-3',
 }
 
 export type AiDiffLabels = {
