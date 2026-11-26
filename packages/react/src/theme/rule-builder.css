@@ -1,0 +1,482 @@
+/* SPDX-License-Identifier: MIT */
+/* RuleBuilder（KatanaUI #223）：交互与信息结构借自 Jamie Merrill 的规则构建器，皮肤是 Graphite（只读 --k-* 与语义 token）。
+   版面：一行 = 把手 · 字段 · 运算符 · 值 · 删除，放不下就换行（flex-wrap），行高最小 40；组是带细边的圆角卡，嵌套的组往里缩一个 44px 的槽。
+   树形连线画在槽里：每个 li 画一条通向自己的横线（行：对着第一行的中线；组：对着整个组的垂直中点），竖线连起第一条与最后一条横线；And / Or 小标签坐在槽的竖线上、列表垂直居中。
+   错误：行红边、行下一行 danger 色字（aria-describedby 接到出错的格子）。拖动：被拖的行淡到 50%，目标缝画一条焦点色的线；拖到别处时整件的光标是 not-allowed。 */
+.k-rb {
+  --k-rb-line: var(--k-separable-primary-borderColor);
+  --k-rb-row-h: 40px;
+  --k-rb-gutter: 44px;
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-rb[data-drag] {
+  user-select: none;
+  cursor: grabbing;
+}
+.k-rb[data-drag='blocked'],
+.k-rb[data-drag='blocked'] * {
+  cursor: not-allowed;
+}
+.k-rb-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+.k-rb-readback-wrap {
+  flex: 1 1 280px;
+  min-width: 0;
+}
+.k-rb-readback {
+  margin: 0;
+  padding: 8px 10px;
+  border: var(--hairline);
+  border-radius: 8px;
+  background: var(--k-container-secondary-background);
+  color: var(--k-content-primary-foreground);
+  font: var(--text-body) var(--font-sans);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.k-rb-tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+}
+.k-rb-tools svg {
+  width: 14px;
+  height: 14px;
+}
+.k-rb-status {
+  padding: 2px 4px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  font: var(--text-caption) var(--font-sans-small);
+  white-space: nowrap;
+}
+/* 有问题时状态是按钮（点了全显并跳到第一个出错的格子）：下划线提示可点。 */
+button.k-rb-status {
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+button.k-rb-status:hover {
+  background: var(--k-container-secondary-background);
+}
+button.k-rb-status:focus-visible {
+  outline: 1px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+/* 只给读屏看的字：回读那一行的组名。 */
+.k-rb-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.k-rb-status[data-tone='ok'] {
+  color: var(--k-status-ok-foreground);
+}
+.k-rb-status[data-tone='warn'] {
+  color: var(--k-status-warn-foreground);
+}
+.k-rb-part {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+.k-rb-heading {
+  margin: 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+  letter-spacing: 0.04em;
+}
+.k-rb-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* 组 */
+.k-rb-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.k-rb-group:not([data-root]) {
+  padding: 8px 10px 10px;
+  border: 1px solid var(--k-separable-secondary-borderColor);
+  border-radius: 10px;
+  background: var(--k-container-primary-background);
+}
+.k-rb-group[data-invalid] {
+  border-color: var(--k-status-danger-foreground);
+}
+.k-rb-grouphead {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+}
+.k-rb-title {
+  flex: 1;
+  min-width: 0;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-rb-tree {
+  position: relative;
+}
+.k-rb-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0 0 0 var(--k-rb-gutter);
+  list-style: none;
+}
+.k-rb-item {
+  --k-rb-stub: calc(3px + var(--k-rb-row-h) / 2);
+  position: relative;
+  padding-block: 3px;
+}
+.k-rb-item[data-type='group'] {
+  --k-rb-stub: 50%;
+}
+/* 横线：从槽里的竖线（距列表左 22px）画到行的左边。 */
+.k-rb-item::before {
+  position: absolute;
+  top: var(--k-rb-stub);
+  left: calc(22px - var(--k-rb-gutter));
+  width: calc(var(--k-rb-gutter) - 22px);
+  border-top: 1px solid var(--k-rb-line);
+  content: '';
+}
+/* 竖线：一条以上才画；第一条从自己的横线往下，最后一条画到自己的横线。 */
+.k-rb-item:not(:only-child)::after {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(22px - var(--k-rb-gutter));
+  border-left: 1px solid var(--k-rb-line);
+  content: '';
+}
+.k-rb-item:first-child:not(:only-child)::after {
+  top: var(--k-rb-stub);
+}
+.k-rb-item:last-child:not(:only-child)::after {
+  bottom: calc(100% - var(--k-rb-stub));
+}
+.k-rb-item[data-dragging] {
+  opacity: 0.5;
+}
+.k-rb-item[data-drop='before'] {
+  box-shadow: inset 0 2px 0 0 var(--focus-ring);
+}
+.k-rb-item[data-drop='after'] {
+  box-shadow: inset 0 -2px 0 0 var(--focus-ring);
+}
+/* And / Or：坐在槽的竖线上，列表垂直居中。 */
+.k-rb-mode {
+  position: absolute;
+  top: 50%;
+  left: 22px;
+  z-index: 1;
+  min-width: 34px;
+  height: 22px;
+  padding: 0 8px;
+  border: 1px solid var(--k-rb-line);
+  border-radius: 11px;
+  background: var(--k-container-primary-background);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  transition:
+    color var(--dur-snappy) var(--ease-snappy),
+    border-color var(--dur-snappy) var(--ease-snappy);
+}
+.k-rb-mode:hover {
+  border-color: var(--k-separable-bold-borderColor);
+  color: var(--k-content-primary-foreground);
+}
+.k-rb-mode:focus-visible {
+  outline: 1px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* 行 */
+.k-rb-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  box-sizing: border-box;
+  min-height: var(--k-rb-row-h);
+  padding: 4px 6px;
+  border: 1px solid var(--k-separable-secondary-borderColor);
+  border-radius: 8px;
+  background: var(--k-container-secondary-background);
+}
+.k-rb-row[data-invalid] {
+  border-color: var(--k-status-danger-foreground);
+}
+.k-rb-row[data-locked] {
+  color: var(--k-content-secondary-foreground);
+}
+.k-rb-row .k-rb-remove {
+  margin-left: auto;
+}
+/* 组里有锁定条件，删不掉：灰着，焦点还能到（读屏读得到原因），不显示成可点。 */
+.k-rb-remove[data-blocked] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.k-rb-handle,
+.k-rb-lock {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 20px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--k-content-tertiary-foreground);
+}
+.k-rb-handle {
+  cursor: grab;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.k-rb-handle:hover,
+.k-rb-handle:focus-visible {
+  background: var(--k-actionable-subtle-background-hover);
+  color: var(--k-content-primary-foreground);
+}
+.k-rb-handle:focus-visible {
+  outline: var(--k-focused-outlineWidth) solid var(--k-focused-outlineColor);
+  outline-offset: -2px;
+}
+.k-rb-handle svg,
+.k-rb-lock svg {
+  width: 14px;
+  height: 14px;
+}
+.k-rb-fixed {
+  padding: 0 4px;
+  color: var(--k-content-secondary-foreground);
+  white-space: nowrap;
+}
+.k-rb-connector {
+  color: var(--k-content-secondary-foreground);
+}
+.k-rb-select {
+  min-width: 96px;
+}
+.k-rb-select-label {
+  padding: 6px 8px 2px;
+  color: var(--k-content-tertiary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-rb-numwrap {
+  display: inline-flex;
+  flex: none;
+}
+.k-rb-range {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.k-rb-range-to {
+  color: var(--k-content-secondary-foreground);
+}
+.k-rb-text-input {
+  width: 160px;
+}
+.k-rb-ref {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--k-actionable-borderColor);
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--k-content-secondary-foreground);
+  cursor: pointer;
+}
+.k-rb-ref svg {
+  width: 13px;
+  height: 13px;
+}
+.k-rb-ref:hover {
+  background: var(--k-actionable-background-hover);
+}
+.k-rb-ref[aria-pressed='true'] {
+  border-color: var(--k-focused-outlineColor);
+  background: var(--k-selectable-background-selected);
+  color: var(--k-content-primary-foreground);
+}
+.k-rb-ref:focus-visible,
+.k-rb-chip-add:focus-visible,
+.k-rb-chip-x:focus-visible {
+  outline: var(--k-focused-outlineWidth) solid var(--k-focused-outlineColor);
+  outline-offset: 1px;
+}
+.k-rb-issue {
+  margin: 2px 0 0 30px;
+  color: var(--k-status-danger-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+
+/* 多选标签 */
+.k-rb-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  box-sizing: border-box;
+  min-height: 30px;
+  padding: 3px 4px;
+  border: 1px solid var(--k-editable-borderColor);
+  border-radius: 6px;
+  background: var(--k-editable-background);
+}
+.k-rb-chips[data-invalid] {
+  border-color: var(--k-status-danger-foreground);
+}
+.k-rb-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  box-sizing: border-box;
+  height: 22px;
+  padding: 0 2px 0 6px;
+  border: 1px solid var(--k-actionable-borderColor);
+  border-radius: var(--radius-sm);
+  background: var(--k-actionable-background);
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+  white-space: nowrap;
+}
+.k-rb-chip-x,
+.k-rb-chip-add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--k-content-secondary-foreground);
+  cursor: pointer;
+}
+.k-rb-chip-x {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+}
+.k-rb-chip-x:hover,
+.k-rb-chip-add:hover {
+  color: var(--k-content-primary-foreground);
+}
+.k-rb-chip-add {
+  height: 22px;
+  padding: 0 4px;
+  border-radius: var(--radius-sm);
+  font: var(--text-data) var(--font-sans);
+}
+.k-rb-chip svg {
+  width: 11px;
+  height: 11px;
+}
+.k-rb-chip-add svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* 按钮行与 THEN */
+.k-rb-adds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.k-rb-adds svg {
+  width: 13px;
+  height: 13px;
+}
+.k-rb-branch-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.k-rb-branch-block + .k-rb-branch-block {
+  margin-top: 6px;
+}
+.k-rb-branch {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 4px;
+  height: 22px;
+  margin: 0;
+  padding: 0 8px 0 6px;
+  border: 1px solid var(--k-status-neutral-borderColor);
+  border-radius: 11px;
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-rb-branch svg {
+  width: 12px;
+  height: 12px;
+}
+.k-rb-branch[data-tone='ok'] {
+  border-color: var(--k-status-ok-borderColor);
+  background: var(--k-status-ok-background);
+  color: var(--k-status-ok-foreground);
+}
+.k-rb-branch[data-tone='danger'] {
+  border-color: var(--k-status-danger-borderColor);
+  background: var(--k-status-danger-background);
+  color: var(--k-status-danger-foreground);
+}
+.k-rb-draft {
+  padding: 1px 6px;
+  border: 1px solid var(--k-status-warn-borderColor);
+  border-radius: var(--radius-sm);
+  background: var(--k-status-warn-background);
+  color: var(--k-status-warn-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  white-space: nowrap;
+}
+@container (max-width: 520px) {
+  .k-rb {
+    --k-rb-gutter: 36px;
+  }
+  .k-rb-text-input {
+    width: 120px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .k-rb-mode {
+    transition: none;
+  }
+}

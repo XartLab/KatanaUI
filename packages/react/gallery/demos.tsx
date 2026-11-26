@@ -362,6 +362,8 @@ import {
   SystemStatusDemo,
 } from './pages/salt-gaps.tsx'
 
+import { RuleBuilderDemo } from './pages/rule-builder.tsx'
+
 /** 每一页的实时预览，键是 registry.ts 里的页 id（registry.test.ts 核对两边一一对应）。 */
 export const DEMOS: Readonly<Record<string, ComponentType>> = {
   button: ButtonDemo,
@@ -706,6 +708,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   link: LinkDemo,
   card: CardDemo,
   panel: PanelDemo,
+  'rule-builder': RuleBuilderDemo,
 }
 
 /**

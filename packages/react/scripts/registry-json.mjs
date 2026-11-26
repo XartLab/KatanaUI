@@ -345,6 +345,8 @@ function collectItems() {
       // KatanaUI #196：Agent 单次运行详情与运行列表。
       'agent-run-detail',
       'agent-run-list',
+      // KatanaUI #223：规则构建器（组件、行内格子、模型与文案类型合成一项）。
+      'rule-builder',
     ])
       add(
         dir,

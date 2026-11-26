@@ -635,3 +635,28 @@ export {
   type RunSegments,
   type RunTimeLine,
 } from './agent-run-detail/run-model.ts'
+// KatanaUI #223：规则构建器（WHEN 条件树 + THEN 两段动作，整份是可序列化 JSON）。
+export { RuleBuilder, type RuleBuilderLabels, type RuleBuilderProps } from './rule-builder/rule-builder.tsx'
+export {
+  ruleToText,
+  validateRule,
+  type Rule,
+  type RuleAction,
+  type RuleActionDef,
+  type RuleActionParam,
+  type RuleCondition,
+  type RuleField,
+  type RuleFieldType,
+  type RuleGroup,
+  type RuleInput,
+  type RuleIssue,
+  type RuleIssueCode,
+  type RuleIssuePart,
+  type RuleMode,
+  type RuleNode,
+  type RuleOperator,
+  type RuleOption,
+  type RuleSchema,
+  type RuleTextTemplates,
+  type RuleValue,
+} from './rule-builder/rule-model.ts'

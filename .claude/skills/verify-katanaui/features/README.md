@@ -45,6 +45,7 @@
 | [TagCombobox 带标签的多选](tag-combobox.md) | `drive tag-combobox` | 点字段开、点两项成标签、打字过滤并加强命中字、空输入退格两次删标签、标签换行时弹层下移 |
 | [DateRangePicker 日期区间](date-range-picker.md) | `drive date-range-picker` | commit=apply 先挑再应用：状态字三档、悬停预览、Esc / 点外面丢草稿、应用、清除、键盘全程 |
 | [AgentRunDetail 运行详情与 AgentRunList](agent-run-detail.md) | `drive agent-run-detail`（列表手走） | 五种状态的刻度与动作钮、进度条语义、阻塞问题卡确认、完成后接着跑、详情与步骤键盘收起、运行列表点开 |
+| [RuleBuilder 规则构建器](rule-builder.md) | `drive rule-builder` | 条件树与回读、切 And / Or、同组换序（Alt+↑↓、拖动，跨组不落）、校验、动作与撤销 |
 | [对照 Salt 补的七件](salt-gaps.md) | 还没有流程（手走） | Pill 改与删、SystemStatus 关闭、Calendar 选日与不可选日、ListBox 单选与多选、Link / Card / Panel 的样子 |
 | [RatingPanel 技术评级三联](rating-panel.md) | `drive rating-panel` | 点周期与 ← / → + Enter 切周期、悬停与 Tab 聚焦出读数 |
 | [SymbolNote 品种备注](symbol-note.md) | `drive symbol-note` | 悬停预览、点击与 Enter 钉住、编辑后保存、存空就是删除、Esc 收起与放弃草稿 |
