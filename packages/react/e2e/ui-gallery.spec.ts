@@ -989,7 +989,7 @@ for (const theme of THEMES) {
       expect(await font(page.locator('[data-slot="dialog-title"]'))).toEqual(['15px', '600'])
     })
 
-    // 级联菜单（#250，kubai 002）：打开 220ms、安全三角（顶点取离开触发器前较早的点，保护带 min(90, max(56, 43%)) 宽）、
+    // 级联菜单（#250，kubai 002）：打开 220ms、普通行 220ms 才收深一层、安全三角（顶点是最近两次 pointermove 里较早的点，随移动更新；保护带 min(90, max(56, 43%)) 宽）、
     // 在三角里停在兄弟行最多护 1200ms（80ms 复查）、滑出所有层 360ms 才收、进了子菜单保护解除。数值在 primitives/cascade-model.ts 的 CASCADE_TIMING。
     // 计时都是 setTimeout / setInterval / performance.now：用假时钟一格一格走，停多久由测试定，不被机器忙不忙拖成真实的几百毫秒。
     const openSubMenu = async (page: Page) => {
@@ -1066,12 +1066,60 @@ for (const theme of THEMES) {
       // 进了二级：保护解除，路过的标记也撤了。
       await expect(below).not.toHaveAttribute('data-k-cascade', /.*/)
 
-      // 对照：回到「更多」，直着往下到「删除看板」（背离二级）：二级收起，那一行亮。
+      // 对照：回到「更多」，直着往下到「删除看板」（背离二级）：那一行马上亮，二级要满 220ms 才收（普通行与父项一样）。
       await page.mouse.move(start.x, start.y, { steps: 6 })
       await page.clock.runFor(300)
       await expect(image).toBeVisible()
       await page.mouse.move(start.x, yMid, { steps: 6 })
-      await expect(image, '背离二级：收起').toHaveCount(0)
+      await expect(below).toHaveAttribute('data-highlighted', /.*/)
+      await page.clock.runFor(200)
+      await expect(image, '219ms 前：二级还开着').toBeVisible()
+      await page.clock.runFor(30)
+      await expect(image, '背离二级：满 220ms 收起').toHaveCount(0)
+    })
+
+    test('子菜单普通行：行马上亮，深一层满 220ms 才收，这期间回到父项就不收', async ({ page }) => {
+      const { trigger, below, csv, image } = await openSubMenu(page)
+      const from = (await trigger.boundingBox())!
+      const x = from.x + from.width - 60
+      await page.mouse.move(x, from.y + from.height / 2, { steps: 4 })
+      await page.clock.runFor(300)
+      await expect(csv).toBeVisible()
+      const row = (await below.boundingBox())!
+      // 指针从父项直着落到「删除看板」（背离二级）：不在三角里，行马上亮；Radix 自带的 focus-outside 不能把二级当场收掉。
+      await page.mouse.move(x, row.y + row.height / 2, { steps: 4 })
+      await expect(below).toHaveAttribute('data-highlighted', /.*/)
+      await page.clock.runFor(150)
+      await expect(csv, '150ms：二级还开着').toBeVisible()
+      // 回到父项：待收的计时取消，一直开着。
+      await page.mouse.move(x, from.y + from.height / 2, { steps: 4 })
+      await page.clock.runFor(1000)
+      await expect(image, '回到父项：取消').toBeVisible()
+      await page.mouse.move(x, row.y + row.height / 2, { steps: 4 })
+      await page.clock.runFor(219)
+      await expect(image, '219ms：还开着').toBeVisible()
+      await page.clock.runFor(1)
+      await expect(image, '满 220ms：收起').toHaveCount(0)
+    })
+
+    // 顶点随移动更新：在三角里停在一行上被护着；指针再往下走一小步（背离二级），新三角（顶点是上一个点）里已经没有这个点，立刻放行。
+    // 冻结在离开触发器那一刻的旧三角会继续护着这一行，那就是 002 说的「经过的行该切不切」。
+    test('子菜单安全三角：顶点随移动更新，在三角里往下走一小步立刻放行', async ({ page }) => {
+      const { trigger, below, csv } = await openSubMenu(page)
+      const from = (await trigger.boundingBox())!
+      const start = { x: from.x + from.width - 24, y: from.y + from.height / 2 }
+      await page.mouse.move(start.x, start.y, { steps: 3 })
+      await page.clock.runFor(300)
+      await expect(csv).toBeVisible()
+      const row = (await below.boundingBox())!
+      const held = { x: row.x + row.width - 6, y: row.y + 6 }
+      await page.mouse.move(held.x, held.y, { steps: 3 })
+      await page.clock.runFor(80)
+      await expect(below, '斜着停到这一行：护着').toHaveAttribute('data-k-cascade', 'skipped')
+      await expect(below).not.toHaveAttribute('data-highlighted', /.*/)
+      // 往下走 4px，仍在这一行里，x 不变（步子小，冻结的旧三角里这个点还在）。
+      await page.mouse.move(held.x, held.y + 4)
+      await expect(below, '往下走一小步：放行').not.toHaveAttribute('data-k-cascade', /.*/)
       await expect(below).toHaveAttribute('data-highlighted', /.*/)
     })
 
@@ -1091,9 +1139,11 @@ for (const theme of THEMES) {
       await expect(csv, '1.1s：还护着').toBeVisible()
       await expect(below).not.toHaveAttribute('data-highlighted', /.*/)
       await page.clock.runFor(160)
-      await expect(image, '满 1.2s：切换，二级收起').toHaveCount(0)
-      await expect(below).toHaveAttribute('data-highlighted', /.*/)
+      await expect(below, '满 1.2s：放行，这一行亮').toHaveAttribute('data-highlighted', /.*/)
       await expect(below).not.toHaveAttribute('data-k-cascade', /.*/)
+      await expect(csv, '放行后二级再等 220ms 才收').toBeVisible()
+      await page.clock.runFor(230)
+      await expect(image).toHaveCount(0)
     })
 
     test('子菜单关闭延时：滑出所有层 360ms 才收，回来就取消', async ({ page }) => {
@@ -1142,7 +1192,7 @@ for (const theme of THEMES) {
       await expect(below).toHaveAttribute('data-k-cascade', 'skipped')
       await expect(overlay, '默认关').toHaveCount(0)
       await page.evaluate(() => document.documentElement.setAttribute('data-cascade-debug', ''))
-      await page.mouse.move(inside.x - 1, inside.y)
+      await page.mouse.move(inside.x + 1, inside.y)
       await expect(overlay, '开了：画出来').toHaveCount(1)
       await expect(overlay.locator('polygon')).toHaveAttribute('points', /\d/)
       const target = (await csv.boundingBox())!

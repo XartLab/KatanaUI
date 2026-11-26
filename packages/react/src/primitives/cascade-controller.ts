@@ -11,8 +11,10 @@
 import {
   CASCADE_TIMING,
   DwellGuard,
+  apexOf,
   inSafeZone,
   openDelayFor,
+  pushRecent,
   safeZone,
   type Point,
   type SafeZone,
@@ -49,10 +51,13 @@ export class CascadeController {
   #recent: Point[] = []
   #last: Point | null = null
   #apex: Point | null = null
-  #wasOnTrigger = false
   #skipped: Element | null = null
   #pending: HTMLElement | null = null
   #pendingOff: (() => void) | null = null
+  #switching: HTMLElement | null = null
+  #switchOff: (() => void) | null = null
+  #switchTimer = 0
+  #focusing = false
   #openTimer = 0
   #closeTimer = 0
   #recheck = 0
@@ -79,6 +84,7 @@ export class CascadeController {
     this.#detach?.()
     this.#detach = null
     this.#cancelOpen()
+    this.#cancelSwitch()
     this.#cancelClose()
     this.#stopRecheck()
     this.#unmark()
@@ -90,13 +96,13 @@ export class CascadeController {
   /** 键盘接手：悬停的计时与保护全部撤掉（键盘走的是 Radix 自己的逻辑）。 */
   keyboard() {
     this.#cancelOpen()
+    this.#cancelSwitch()
     this.#cancelClose()
     this.#stopRecheck()
     this.#unmark()
     this.#undraw()
     this.#guard.reset()
     this.#apex = null
-    this.#wasOnTrigger = false
   }
 
   /**
@@ -112,7 +118,7 @@ export class CascadeController {
     if (!parent) return false
     const point = { x: event.clientX, y: event.clientY }
     this.#last = point
-    this.#recent = [...this.#recent.slice(-1), point]
+    this.#recent = pushRecent(this.#recent, point)
     const target = event.target instanceof Element ? event.target : null
     const sub = this.#openSub()
     if (!sub) return this.#hoverClosed(target, event.buttons)
@@ -121,6 +127,7 @@ export class CascadeController {
     // 指针进了子菜单：保护全部解除，关闭计时取消。
     if (target && content.contains(target)) {
       this.#clearProtection()
+      this.#cancelSwitch()
       this.#cancelClose()
       return false
     }
@@ -139,12 +146,14 @@ export class CascadeController {
   }
 
   /**
-   * SubContent 的 onFocusOutside：Radix 在指针离开一行时把焦点移到菜单容器上，这会立刻收掉子菜单（也就绕过了 360ms 关闭延时与安全区）。
-   * 焦点落在父菜单容器本身，只有这一种来路（Radix 的 onItemLeave；打开菜单时的自动聚焦发生在子菜单开之前，键盘移动落在某个菜单项上）：
+   * SubContent 的 onFocusOutside：Radix 在指针离开一行时把焦点移到菜单容器上，也会因焦点落在别的行上，这都会立刻收掉子菜单
+   * （绕过 360ms 关闭延时、安全区与普通行的 220ms）。我们挡的是两种来路：
+   *   1. 焦点落在父菜单容器本身（Radix 的 onItemLeave；打开菜单时的自动聚焦发生在子菜单开之前，键盘移动落在某个菜单项上）；
+   *   2. 我们自己 row.focus() 亮起指针底下那一行（#focusing 只在那一行代码里为真）。
    * preventDefault 挡住，由控制器按安全区与延时决定收不收。不看「刚有没有指针移动」：指针先离开、后才有 pointermove，指针停了很久再走时那个时间差是旧的。
    */
   holdFocusOutside(event: Event) {
-    if (event.target === this.parent && this.#openSub()) event.preventDefault()
+    if ((event.target === this.parent || this.#focusing) && this.#openSub()) event.preventDefault()
   }
 
   // ---------- 子菜单还没开 ----------
@@ -167,18 +176,15 @@ export class CascadeController {
   #hoverOpen(sub: CascadeSub, content: HTMLElement, point: Point, row: HTMLElement | null, inParent: boolean): boolean {
     const parent = this.parent!
     const trigger = sub.trigger()
-    // 回到触发器：保护与关闭计时都撤掉，顺手记下「刚在触发器上」，下一次离开时取顶点。
+    // 回到触发器：保护、待切换与关闭计时都撤掉。
     if (row && row === trigger) {
       this.#clearProtection()
+      this.#cancelSwitch()
       this.#cancelClose()
-      this.#wasOnTrigger = true
       return false
     }
-    // 离开触发器的第一次移动：顶点取前两次 pointermove 里较早的那个（最近两个点里靠前的，即离开前最后落在触发器上的点）。
-    if (this.#wasOnTrigger) {
-      this.#apex = this.#recent.length >= 2 ? this.#recent[0]! : point
-      this.#wasOnTrigger = false
-    }
+    // 顶点随移动更新：最近两次 pointermove 里较早的那个点（离开触发器后的每一次移动都重取，不冻结）。
+    this.#apex = apexOf(this.#recent)
     const zone = this.#apex
       ? safeZone(this.#apex, parent.getBoundingClientRect(), content.getBoundingClientRect())
       : null
@@ -187,6 +193,7 @@ export class CascadeController {
       this.#cancelClose()
       const verdict = this.#guard.judge({ row, now: performance.now(), inZone: true })
       if (verdict === 'hold') {
+        this.#cancelSwitch()
         this.#mark(row)
         this.#ensureRecheck()
         return true
@@ -196,6 +203,7 @@ export class CascadeController {
     // 三角外：行换亮（子菜单收起，新行是父项的话照 220ms 开）；不在行上而还在父菜单里（边距、分隔线）算还在层里。
     this.#clearProtection()
     if (row) return this.#switchTo(row)
+    this.#cancelSwitch()
     if (inParent) {
       this.#cancelClose()
       return false
@@ -204,16 +212,45 @@ export class CascadeController {
     return false
   }
 
-  /** 切到指针底下的这一行：收掉开着的子菜单，行亮起，是父项就照 220ms 安排开。row 为 null 只解除保护。 */
+  /**
+   * 切到指针底下的这一行：行马上亮起，开着的子菜单要等 220ms 才收（普通行与父项一样，002）；
+   * 新行是父项的话同一刻开它自己的子菜单。这期间指针离开这一行、回到触发器或进了子菜单都取消。row 为 null 只解除保护。
+   */
   #switchTo(row: HTMLElement | null): boolean {
     this.#clearProtection()
     this.#cancelClose()
     if (!row) return false
-    for (const sub of this.#subs) if (sub.isOpen()) sub.setOpen(false)
-    const entry = this.#subFor(row)
-    if (entry && !isDisabled(row)) this.#startOpen(entry, row, openDelayFor(false))
-    row.focus({ preventScroll: true })
+    this.#startSwitch(row)
+    this.#focusing = true
+    try {
+      row.focus({ preventScroll: true })
+    } finally {
+      this.#focusing = false
+    }
     return true
+  }
+
+  #startSwitch(row: HTMLElement) {
+    if (this.#switching === row) return
+    this.#cancelSwitch()
+    this.#switching = row
+    const cancel = () => this.#cancelSwitch()
+    row.addEventListener('pointerleave', cancel, { once: true })
+    this.#switchOff = () => row.removeEventListener('pointerleave', cancel)
+    this.#switchTimer = window.setTimeout(() => {
+      this.#cancelSwitch()
+      if (!row.isConnected) return
+      for (const sub of this.#subs) if (sub.isOpen()) sub.setOpen(false)
+      const entry = this.#subFor(row)
+      if (entry && !isDisabled(row)) entry.setOpen(true)
+    }, CASCADE_TIMING.openDelay)
+  }
+  #cancelSwitch() {
+    window.clearTimeout(this.#switchTimer)
+    this.#switchTimer = 0
+    this.#switchOff?.()
+    this.#switchOff = null
+    this.#switching = null
   }
 
   // ---------- 保护 ----------
@@ -291,7 +328,6 @@ export class CascadeController {
       if (this.#pointerInside()) return
       for (const sub of this.#subs) if (sub.isOpen()) sub.setOpen(false)
       this.#clearProtection()
-      this.#wasOnTrigger = false
     }, CASCADE_TIMING.closeDelay)
   }
   #cancelClose() {
@@ -333,6 +369,7 @@ export class CascadeController {
   }
 
   // ---------- 调试覆盖层（默认关；根节点 data-cascade-debug 打开） ----------
+  // 画蓝色三角与保护带；没画计时器（002 的调试层还画了 220 / 1200 的倒计时，这里不做，2026-11-26 定）。
 
   #draw(zone: SafeZone | null) {
     if (!zone || !document.documentElement.hasAttribute('data-cascade-debug')) return this.#undraw()

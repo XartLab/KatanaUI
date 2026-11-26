@@ -3,9 +3,11 @@ import { describe, expect, it } from 'vite-plus/test'
 import {
   CASCADE_TIMING,
   DwellGuard,
+  apexOf,
   inSafeZone,
   inTriangle,
   openDelayFor,
+  pushRecent,
   safeBandWidth,
   safeZone,
   submenuSide,
@@ -131,5 +133,32 @@ describe('DwellGuard：1200ms 安全窗口', () => {
     guard.judge({ row: 'a', now: 0, inZone: true })
     guard.reset()
     expect(guard.judge({ row: 'a', now: 5000, inZone: true })).toBe('hold')
+  })
+})
+
+describe('apexOf：顶点是最近两次 pointermove 里较早的点，随移动更新', () => {
+  const p = (x: number, y: number) => ({ x, y })
+  it('只有一个点：取它自己；一个都没有：没有顶点', () => {
+    expect(apexOf([])).toBeNull()
+    expect(apexOf(pushRecent([], p(1, 1)))).toEqual(p(1, 1))
+  })
+  it('每次移动都往前滚：取上一个点，不停在离开触发器的那一刻', () => {
+    let recent = pushRecent([], p(0, 0))
+    recent = pushRecent(recent, p(10, 5))
+    expect(apexOf(recent)).toEqual(p(0, 0))
+    recent = pushRecent(recent, p(20, 10))
+    expect(apexOf(recent)).toEqual(p(10, 5))
+    recent = pushRecent(recent, p(21, 30))
+    expect(apexOf(recent)).toEqual(p(20, 10))
+    expect(recent).toHaveLength(2)
+  })
+  it('顶点滚动后三角跟着变窄：指针直着往下，冻结的旧顶点还护着，滚动的新顶点已经不护', () => {
+    const parent = { left: 0, top: 0, right: 200, bottom: 100 }
+    const sub = { left: 202, top: 0, right: 400, bottom: 100 }
+    const frozen = p(150, 15)
+    const rolled = p(180, 40)
+    const now = p(181, 52)
+    expect(inSafeZone(now, safeZone(frozen, parent, sub))).toBe(true)
+    expect(inSafeZone(now, safeZone(rolled, parent, sub))).toBe(false)
   })
 })

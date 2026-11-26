@@ -46,7 +46,7 @@ export function submenuSide(parent: Box, sub: Box): 'right' | 'left' {
 }
 
 export type SafeZone = {
-  /** 三角的顶点：离开触发器那一刻的指针位置。 */
+  /** 三角的顶点：最近两次 pointermove 里较早的那个点（apexOf），随移动更新。 */
   apex: Point
   /** 三角的另外两个角：子菜单近边的上下两角（向右开用左边缘，翻到左边用右边缘）。 */
   near: readonly [Point, Point]
@@ -77,6 +77,19 @@ export function inSafeZone(point: Point, zone: SafeZone): boolean {
   return (
     point.x >= zone.band.from && point.x <= zone.band.to && inTriangle(point, zone.apex, zone.near[0], zone.near[1])
   )
+}
+
+/** 记下最近两次 pointermove 的点（含这一次）。 */
+export function pushRecent(recent: readonly Point[], point: Point): Point[] {
+  return [...recent.slice(-1), point]
+}
+
+/**
+ * 安全三角的顶点：最近两次 pointermove 里较早的那个点，随每次移动更新（002）。
+ * 不冻结在离开触发器的那一刻：指针往下走时冻结的顶点会让三角过宽，经过的行该切不切。只有一个点时取它自己。
+ */
+export function apexOf(recent: readonly Point[]): Point | null {
+  return recent[0] ?? null
 }
 
 /** 打开延时：拖着东西经过 420，普通悬停 220。 */

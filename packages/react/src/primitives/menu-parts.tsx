@@ -30,9 +30,9 @@ import { focusRingInset } from '../lib/focus.ts'
 //     alignOffset -7 = 容器 6px 内边 + 1px 边，把二级菜单往上抬这么多，两个第一项才对齐。
 //   - 悬停（#250 改，照 kubai《999 个小技巧》002 级联菜单，https://vibedesign.tips/002-cascade-menu/ ，数值照 issue 抄录的原文，2026-11-26）：
 //     停在父项上 220ms 开（离开取消，触摸点一下立即开，拖着东西经过 420ms）；离开父项斜着移向子菜单走安全三角
-//     （顶点取前两次 pointermove 里较早的点，连到子菜单近边的上下两角，且指针在父菜单靠子菜单一侧 min(90px, max(56px, 父宽 43%)) 内才护），
+//     （顶点是最近两次 pointermove 里较早的点、随移动更新，连到子菜单近边的上下两角，且指针在父菜单靠子菜单一侧 min(90px, max(56px, 父宽 43%)) 内才护），
 //     三角里经过的行不亮、不开自己的子菜单；停在三角里某一行最多护 1200ms（每 80ms 复查），离开三角或满 1.2s 才切换；
-//     指针进了子菜单保护全解除；滑出父项、所有层与安全区 360ms 后才收子菜单，回来取消。时间集中在 cascade-model.ts 的 CASCADE_TIMING。
+//     指针落到不在三角里的普通行：行马上亮，开着的子菜单 220ms 才收（Radix 的 focus-outside 由控制器挡住）；指针进了子菜单保护全解除；滑出父项、所有层与安全区 360ms 后才收子菜单，回来取消。时间集中在 cascade-model.ts 的 CASCADE_TIMING。
 //     以前（#1832）用 Radix 默认：停 100ms 开、pointer grace 300ms，是 @radix-ui/react-menu 2.2.1 dist/index.mjs 的 MenuSubTrigger 写死的值（2026-11-13 读），
 //     配不了，所以悬停开合由 cascade-controller.ts 在父菜单的 Content 上接管（捕获阶段抢在菜单项前处理 pointermove）；Radix 的键盘、焦点、两层上限不动。
 //   - 键盘：→ / Enter / Space 打开，← 关闭回到父项（Radix 的 SUB_OPEN_KEYS / SUB_CLOSE_KEYS）。
