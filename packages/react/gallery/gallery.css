@@ -985,6 +985,10 @@ body {
   font-weight: 600;
 }
 .gal-ts-nums {
+  /* 演示用随包的 Barlow Condensed：它默认是比例数字、带 tnum / pnum，开关的差别在任何机器上都看得见；系统界面字体栈在没有
+     Segoe UI / Roboto 的机器（CI 的 Linux 容器）上回退到不带 tnum 的字体，两边会一样。 */
+  font-family: var(--font-display);
+  font-weight: 600;
   font-size: var(--text-title-size);
   text-align: right;
 }

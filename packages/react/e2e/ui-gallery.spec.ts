@@ -620,10 +620,11 @@ for (const theme of THEMES) {
         'transition-duration',
         'color',
       ])
-      // Graphite：行 32 高、左右 12、圆角 inner（4）。
+      // Graphite：行 32 高、左右 12。圆角：浮层里的行统一 --radius-inner（#256，kubai 004）：旧 6 → Console 5（Graphite 本来就是 4）。
       expect(item.height).toBe(graphite ? '32px' : '30px')
       expect([item['padding-left'], item['padding-top']]).toEqual([graphite ? '12px' : '8px', '0px'])
-      expect(item['border-top-left-radius']).toBe(graphite ? '4px' : '6px')
+      expect(item['border-top-left-radius']).toBe(await radius(page, '--radius-inner'))
+      expect(item['border-top-left-radius']).toBe(graphite ? '4px' : '5px')
       expect(item['column-gap']).toBe('12px')
       expect([item['white-space'], item.cursor, item.display, item['justify-content']]).toEqual([
         'nowrap',
@@ -1352,20 +1353,22 @@ for (const theme of THEMES) {
       const fields = section(page, 'input')
       const input = fields.getByRole('textbox', { name: '输入', exact: true })
       const small = fields.getByRole('textbox', { name: '输入 sm' })
-      // .k-in（ui.css 118-129）：30 高 · 内边 8 · 1px 边 · 圆角 6 · 13px/18px 400 · 字色 ink-100 · sans 字族（系统界面字体栈，含 Segoe UI）。
+      // .k-in（ui.css 118-129）：30 高 · 内边 8 · 1px 边 · 圆角 · 13px/18px 400 · 字色 ink-100 · sans 字族（系统界面字体栈，含 Segoe UI）。
+      // 圆角：旧值写死 6；#256（kubai 004）起读 --radius-control（Graphite 6、Console 7）。
       expect(
         await css(input, ['height', 'padding-left', 'padding-top', 'border-top-width', 'border-top-left-radius']),
-      ).toEqual(['30px', '8px', '0px', '1px', '6px'])
+      ).toEqual(['30px', '8px', '0px', '1px', await radius(page, '--radius-control')])
+      expect((await css(input, ['border-top-left-radius']))[0]).toBe(graphite ? '6px' : '7px')
       expect(await css(input, ['font-size', 'font-weight', 'line-height'])).toEqual(['13px', '400', '18px'])
       expect((await css(input, ['font-family']))[0]).toContain('Segoe UI')
       expect(await colorOf(input)).toBe(await token(page, '--ink-100'))
       expect(await bg(input)).toMatch(/0\.04\)$/)
-      // .k-in.sm（ui.css 140-145）：26 高 · 内边 6 · 圆角 6 · 字号 12px，字重与行高、字族仍是 .k-in 的 400 / 18px / 系统界面字体栈。
+      // .k-in.sm（ui.css 140-145）：26 高 · 内边 6 · 圆角（同 .k-in，--radius-control）· 字号 12px，字重与行高、字族仍是 .k-in 的 400 / 18px / 系统界面字体栈。
       expect(await css(small, ['height', 'padding-left', 'padding-top', 'border-top-left-radius'])).toEqual([
         '26px',
         '6px',
         '0px',
-        '6px',
+        graphite ? '6px' : '7px',
       ])
       expect(await css(small, ['font-size', 'font-weight', 'line-height', 'font-style'])).toEqual([
         '12px',
@@ -1396,10 +1399,11 @@ for (const theme of THEMES) {
       const list = page.locator('[data-slot="select-content"]')
       await expect(list).toBeVisible()
       await settled(page)
-      // .k-sel-pop（ui.css 287-300）：4 内边 · 圆角 7 · 9% 白边 · 底 bg-400（surface-4）。Graphite：圆角 overlay（8）、玻璃底。
+      // .k-sel-pop（ui.css 287-300）：4 内边 · 9% 白边 · 底 bg-400（surface-4）。圆角：旧值写死 7；#256（kubai 004）起读 --radius-overlay
+      // （Graphite 8、Console 10）。Graphite：玻璃底。
       expect(await css(list, ['padding-left', 'border-top-left-radius', 'border-top-width'])).toEqual([
         '4px',
-        graphite ? '8px' : '7px',
+        graphite ? '8px' : '10px',
         '1px',
       ])
       expect(await bg(list)).toBe(await token(page, graphite ? '--glass-bg' : '--bg-400'))
@@ -1429,11 +1433,11 @@ for (const theme of THEMES) {
       await expect(list).toBeVisible()
       await settled(page)
       const pop = page.locator('[data-slot="popover-content"]')
-      // .k-sel-pop（ui.css 287-300）：4 内边 · 圆角 7 · 9% 白边 · 阴影 0 8 24 · overflow auto · max-height min(可用高, 100dvh-16)。
-      // Graphite：圆角 overlay（8），边、影子、底是玻璃。
+      // .k-sel-pop（ui.css 287-300）：4 内边 · 9% 白边 · 阴影 0 8 24 · overflow auto · max-height min(可用高, 100dvh-16)。
+      // 圆角：旧值写死 7；#256（kubai 004）起读 --radius-overlay（Graphite 8、Console 10）。Graphite：边、影子、底是玻璃。
       expect(await css(pop, ['padding-left', 'border-top-left-radius', 'border-top-width', 'overflow-y'])).toEqual([
         '4px',
-        graphite ? '8px' : '7px',
+        graphite ? '8px' : '10px',
         '1px',
         'auto',
       ])
@@ -1491,11 +1495,12 @@ for (const theme of THEMES) {
       expect(Math.round((await link.boundingBox())!.height)).toBeLessThan(26)
       // .k-btn:disabled（ui.css 67-70）：不透明度 0.45。
       await expect(by('default 禁用')).toHaveCSS('opacity', '0.45')
-      // .k-btn.sm（ui.css 71-77）：26 高 · 内边 8 · 圆角 8 · 11px 600。Graphite：sm 按钮圆角 inner（4）。
+      // .k-btn.sm（ui.css 71-77）：26 高 · 内边 8 · 11px 600。圆角：旧值 8（比 md 还圆）；#256 起改 --radius-control（主会话按 #251 的默认定的，
+      // Console 7）。Graphite：sm 按钮圆角 inner（4），没动。
       const small = by('default sm')
       expect(
         await css(small, ['height', 'padding-left', 'border-top-left-radius', 'font-size', 'font-weight']),
-      ).toEqual(['26px', '8px', graphite ? '4px' : '8px', '11px', '600'])
+      ).toEqual(['26px', '8px', graphite ? '4px' : '7px', '11px', '600'])
       // .k-btn svg.lucide（ui.css 78-82）：13px；带图标的按钮里图标与字隔 6px（:6-25 gap）。
       const withIcon = by('带图标')
       expect((await css(withIcon.locator('svg'), ['width']))[0]).toBe('13px')
@@ -1584,9 +1589,9 @@ for (const theme of THEMES) {
       await settled(page)
       const pop = (await list.boundingBox())!
       expect(Math.abs(pop.y - (trigger.y + trigger.height + 2))).toBeLessThan(2)
-      // .k-sel-pop（ui.css 287-300）：4 内边 · 圆角 7（Graphite overlay 8）；当前项 600（:328）。
+      // .k-sel-pop（ui.css 287-300）：4 内边；圆角旧值 7，#256（kubai 004）起 --radius-overlay（Graphite 8、Console 10）；当前项 600（:328）。
       expect(await list.evaluate((n) => getComputedStyle(n).paddingLeft)).toBe('4px')
-      expect(await list.evaluate((n) => getComputedStyle(n).borderTopLeftRadius)).toBe(graphite ? '8px' : '7px')
+      expect(await list.evaluate((n) => getComputedStyle(n).borderTopLeftRadius)).toBe(graphite ? '8px' : '10px')
       await expect(page.getByRole('option', { name: '折线' })).toHaveCSS('font-weight', '600')
       await page.getByRole('option', { name: 'K 线' }).click()
       await expect(list).toHaveCount(0)
@@ -2019,12 +2024,13 @@ for (const theme of THEMES) {
       const shown = area.locator('[data-gallery-datetime]')
       await expect(shown).toHaveText('2026-11-14 09:30')
       const input = area.locator('.k-dt-date .k-dt-input').first()
-      // .k-dt-input（ui.css 618-632）：30 高 · 内边 0 8 · 4% 白底 8% 白边 · 圆角 6；sm（:640-644）26 高 · 内边 0 6。
+      // .k-dt-input（ui.css 618-632）：30 高 · 内边 0 8 · 4% 白底 8% 白边 · 圆角；sm（:640-644）26 高 · 内边 0 6。
+      // 圆角：旧值写死 6；#256（kubai 004）起 --radius-control（Graphite 6、Console 7）。
       await expect(input).toHaveCSS('height', '30px')
       await expect(input).toHaveCSS('padding', '0px 8px')
       await expect(input).toHaveCSS('background-color', 'rgba(255, 255, 255, 0.04)')
       await expect(input).toHaveCSS('border-top-color', 'rgba(255, 255, 255, 0.08)')
-      await expect(input).toHaveCSS('border-top-left-radius', '6px')
+      await expect(input).toHaveCSS('border-top-left-radius', graphite ? '6px' : '7px')
       await expect(area.locator('.k-dt.sm .k-dt-input')).toHaveCSS('height', '26px')
       // 分段：聚焦的那一段橙暗底（:651-654，28% 橙）；打字改值（月 → 12）。
       const month = area.locator('.k-dt-date .k-dt-seg').nth(1)
@@ -5209,14 +5215,14 @@ for (const theme of THEMES) {
         .evaluateAll((nodes) => nodes.map((node) => Math.round(node.getBoundingClientRect().right)))
       expect(rights, '每行都有价格格').toHaveLength(3)
       expect(new Set(rights).size, '价格列右缘对齐').toBe(1)
-      // 格内排版跟 DataGrid 同一份（#92）：代码芯片高 24、12px w600；成交量按 zh-CN 缩写（万 / 亿，写法同 cnAmount，#158），单位「股」是 10px 次要色小字。
+      // 格内排版跟 DataGrid 同一份（#92）：代码芯片高 24、12px w600；成交量按 zh-CN 缩写（万 / 亿，写法同 cnAmount，#158），数与单位之间是不换行空格 U+00A0（#250，kubai 007），单位「股」是 10px 次要色小字。
       const chip = rows.nth(0).locator('.k-code-chip')
       await expect(chip).toBeVisible()
       expect((await chip.boundingBox())!.height).toBe(24)
       await expect(chip).toHaveCSS('font-size', '12px')
       await expect(chip).toHaveCSS('font-weight', '600')
       const volume = rows.nth(0).locator('.k-quote-rows-volume')
-      await expect(volume).toHaveText(/^\d[\d,]*(\.\d{1,2})?(万|亿) 股$/)
+      await expect(volume).toHaveText(/^\d[\d,]*(\.\d{1,2})?(万|亿)\u00a0股$/)
       await expect(volume.locator('.k-num-unit')).toHaveCSS('font-size', '10px')
       await expect(volume.locator('.k-num-unit')).toHaveCSS(
         'color',
