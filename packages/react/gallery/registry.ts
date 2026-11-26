@@ -11367,13 +11367,14 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 520,
     title: 'MoveFeed 异动时间流',
     summary:
-      '盘口异动的流：一行一条，时间 · 名称（带代码）· 类型胶囊 · 数值；按时间从新到旧排，新来的从顶上进（淡入一下，reduced-motion 时不播）。类型胶囊按涨 / 跌 / 量 / 板着色（涨跌读 --pnl-up / --pnl-down 跟 data-updown，量是中性强调，板是警示色），顶上一排类型多选筛（点一个只看它、再点取消，一个都没选是全部，带条数）。点行触发 onSelect 联动个股页，selectedId 标出联动的那一行。随包认识十一种类型（火箭发射、封涨停板、大笔卖出…），也可以传自己的类型表。条目由调用方给。与 NewsFeed（新闻阅读器）、EventTimeline（公司事件）不同。',
+      '盘口异动的流：一行一条，时间 · 名称（带代码）· 类型胶囊 · 数值；按时间从新到旧排，新来的从顶上进（淡入一下，reduced-motion 时不播）。类型胶囊按涨 / 跌 / 量 / 板着色（涨跌读 --pnl-up / --pnl-down 跟 data-updown，量是中性强调，板是警示色），顶上一排类型多选筛（点一个只看它、再点取消，一个都没选是全部，带条数）。点行触发 onSelect 联动个股页，selectedId 标出联动的那一行。随包认识十三种类型（火箭发射、封涨停板、大笔卖出、5 分钟涨幅 / 跌幅…），也可以传自己的类型表。加密市场的用法（#245，照 OKX 的「市场异动」）：条目的 symbol 写币对，传 currentSymbol 就多一个「只看当前品种」开关（onlyCurrent 受控或 defaultOnlyCurrent 不受控），类型文字走 labels.types（「5 分钟涨幅」「15 分钟跌幅」…，没有的窗口用 types 自定）。条目由调用方给。与 NewsFeed（新闻阅读器）、EventTimeline（公司事件）不同。',
     exports: [
       'MoveFeed',
       'MOVE_TYPE_TONES',
       'moveTone',
       'sortFeed',
       'filterMoves',
+      'filterBySymbol',
       'typeCounts',
       'toggleType',
       'moveValue',
@@ -11390,6 +11391,10 @@ export const PAGES: readonly DocPage[] = [
       { part: 'moveTone(type, defs)', note: '纯函数：类型的色调；自定义表优先，不认识的按 volume。' },
       { part: 'sortFeed(items)', note: '纯函数：按时间从新到旧排，同一时刻后传入的在上，写不对的时刻沉底。' },
       { part: 'filterMoves(items, selected)', note: '纯函数：按选中的类型筛，一个都没选是全部。' },
+      {
+        part: 'filterBySymbol(items, symbol)',
+        note: '纯函数：只留属于这个品种的行（symbol，再 code，再 name），不分大小写；symbol 为空不筛。',
+      },
       { part: 'typeCounts(items, defs)', note: '纯函数：各类型的条数，没出现的不列。' },
       { part: 'toggleType(selected, type)', note: '纯函数：切换一个类型的选中状态。' },
       { part: 'moveValue(item)', note: '纯函数：数值的字与方向；取不到写「—」。' },
@@ -11403,6 +11408,7 @@ export const PAGES: readonly DocPage[] = [
       '新条目进来：排到该在的位置，新出现的那一行淡入；首次渲染不播。',
       '数值：百分数带正负号与涨跌色，金额写万 / 亿，取不到写「—」。',
       '给了 onSelect 行是按钮；selectedId 那一行高亮并标 aria-pressed。',
+      '给了 currentSymbol 顶栏多一个「只看当前品种」勾选：勾上只列这个品种的行，类型条数与总条数都按筛后的算；currentSymbol 换了，筛的对象跟着换。',
       '没有条目：写一行空态文字。',
     ],
     donts: [
@@ -11410,10 +11416,11 @@ export const PAGES: readonly DocPage[] = [
       '不要传色值：类型胶囊只靠 tone。',
       '不要在包里取数或轮询：条目由调用方推进来。',
     ],
-    composition: 'MoveFeed\n  顶栏（类型多选筛 · 总条数）\n  ul\n    li（时间 · 名称 + 代码 · 类型胶囊 · 数值）',
+    composition:
+      'MoveFeed\n  顶栏（类型多选筛 · 只看当前品种（可选）· 总条数）\n  ul\n    li（时间 · 名称 + 代码 · 类型胶囊 · 数值）',
     keys: [
       ['Tab', '到类型筛选按钮与行（给了 onSelect 时）'],
-      ['Enter / Space', '切换类型，或选中一行'],
+      ['Enter / Space', '切换类型、勾选「只看当前品种」，或选中一行'],
     ],
   },
   {
@@ -11846,6 +11853,78 @@ export const PAGES: readonly DocPage[] = [
     ],
     composition: 'FundingRate\n  Lcd × 3\n  历史小柱状图',
     keys: [],
+  },
+  {
+    id: 'derivatives-board',
+    group: 'blocks',
+    cardHeight: 520,
+    title: 'DerivativesBoard 交易数据看板',
+    summary:
+      '永续合约的「交易数据」（OKX 永续页，XartLab/KatanaUI#245）：六张卡的网格，每张自己的标题、信息提示与周期按钮。持仓量及成交量（成交量柱在左轴、持仓量线在右轴，两轴共用一套网格）、资金费率（柱按正负着色，零线居中，周期近 7 / 14 天）、主动买卖量（买入在零线上、卖出镜像在零线下）、多空账户比与精英多空趋向（多空 100% 堆叠柱，加多空比折线在右轴）、合约基差（上面合约价与指数价两条线，下面基差柱）。数据按卡由调用方给（时间戳加数值的序列），缺哪张就显示那张的空态，不画假数；没有数的点留缺口，不当零画。周期可受控（period）也可不受控（defaultPeriod），切换只发 onPeriodChange(kind, period)，换数据是调用方的事。悬停或 ← → 扫读出悬停窗。卡可以单独用：DerivativesCard 一个 kind 一张。文字走 labels（必填，包里不带语言；演示用的简体中文那份在 gallery/usage/derivatives-labels-zh.ts）。',
+    exports: [
+      'DerivativesBoard',
+      'DerivativesCard',
+      'DERIVATIVES_KINDS',
+      'DEFAULT_PERIODS',
+      'hasData',
+      'alignedAxes',
+      'symmetricAxis',
+      'longShare',
+      'longShortRatioOf',
+      'basisOf',
+      'signedBars',
+    ],
+    propParts: [
+      {
+        part: 'DerivativesBoard',
+        note: '渲染一个 section；data、periods、period、defaultPeriod 都按 kind 给。kinds 选画哪几张与次序。',
+      },
+      {
+        part: 'DerivativesCard',
+        note: 'kind 决定画法，data 的形状跟着 kind 走（见下面各点的类型）；onPeriodChange 带上 kind。',
+      },
+      {
+        part: 'DerivativesLabels',
+        note: '必填。卡名与信息提示、周期按钮的字、序列名、空态、读屏名与读数之间的分隔符（separator）；包里不带语言，整份由调用方传。',
+      },
+      { part: 'OpenInterestVolumePoint', note: '{ time, openInterest, volume }；缺的值写 null，留缺口。' },
+      { part: 'FundingRatePoint', note: '{ time, rate }；rate 是百分数，0.01 就是 0.01%。' },
+      { part: 'TakerVolumePoint', note: '{ time, buy, sell }；两个都是非负数，卖出由卡镜像到零线下。' },
+      { part: 'LongShortPoint', note: '{ time, long, short }；账户数或持仓量都行，只画比例，多空比是 long / short。' },
+      { part: 'BasisPoint', note: '{ time, contract, index }；基差是两者之差，有一个缺就没有基差柱。' },
+      { part: 'hasData(kind, points)', note: '纯函数：卡有没有东西可画；空、缺、全是缺失值都是没有。' },
+      {
+        part: 'alignedAxes(left, right, count, lockLeft)',
+        note: '纯函数：左右双轴取同样个数的刻度，右轴的字落在左轴的网格线上；lockLeft 时左轴不动（百分比轴不能长过 100）。',
+      },
+      { part: 'symmetricAxis(values, count)', note: '纯函数：以零为中心、盖住最大绝对值的轴，给带符号的柱用。' },
+      { part: 'longShare(point)', note: '纯函数：多头占比 0 到 1；缺值、负数或两边都是零给 null。' },
+      { part: 'longShortRatioOf(point)', note: '纯函数：多空比；空头不是正数给 null。' },
+      { part: 'basisOf(point)', note: '纯函数：合约价减指数价；缺一个给 null。' },
+      { part: 'signedBars(values)', note: '纯函数：带符号的柱：序号、值与方向；缺失值没有柱。' },
+      { part: 'DERIVATIVES_KINDS', note: '六种 kind，次序同 OKX。' },
+      { part: 'DEFAULT_PERIODS', note: '每种卡默认给的周期 id；字由 labels.periods 给。' },
+    ],
+    states: [
+      '周期：每张卡自己一组按钮，选中项高亮；资金费率默认近 7 / 14 天，别的卡 5 分钟 / 1 小时 / 1 天（待核对 OKX 的实际档位，用 periods 改）。',
+      '空态：没给 data、空序列、序列里全是缺失值，这张卡写 labels.empty，高度与有图时一样，别的卡不受影响。',
+      '缺值：折线断开、柱不画，不当零；悬停窗里写「—」。',
+      '悬停或 ← → 扫读：竖线加悬停窗，写时间与这一格各序列的值；Home / End 到头尾，Esc 清掉。',
+      '涨跌色：正资金费率、买入、多头、升水读 --pnl-up，反之读 --pnl-down，随 data-updown 互换；图例与悬停窗写字，不只靠颜色。',
+    ],
+    donts: [
+      '不要在件里取数或轮询：数据与周期由调用方按 onPeriodChange 换。',
+      '不要把缺失值补成 0：传 null。',
+      '不要拿它画单品种的 K 线：用图表包。',
+    ],
+    composition:
+      'DerivativesBoard\n  DerivativesCard × 6（article）\n    标题 · 信息钮（Tooltip）· 周期按钮（ToggleGroup）\n    图例\n    图（面板 × 1–2 · 左右轴 · 十字线与悬停窗 · 时间轴）或 空态',
+    keys: [
+      ['Tab', '到信息钮、周期按钮、图（图是一个停靠点）'],
+      ['← / →', '图上扫读一格；Shift 一次三格'],
+      ['Home / End', '图上到头尾'],
+      ['Esc', '清掉扫读'],
+    ],
   },
   {
     id: 'options-chain',
