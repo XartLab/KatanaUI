@@ -114,6 +114,7 @@ import {
 import { FlowSankeyDemo, VintageSeriesDemo } from './pages/flows.tsx'
 import { MarketBrowserDemo } from './pages/market-browser.tsx'
 import { StrategyLauncherDemo } from './pages/strategy-launcher.tsx'
+import { FloatingWindowDemo } from './pages/floating-window.tsx'
 import { KeyStatsDemo, PeerCardsDemo, PerformanceStripDemo, RangeBarTvDemo, WatchlistDemo } from './pages/overview.tsx'
 import {
   CompanyProfileDemo,
@@ -652,6 +653,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'panel-tabs': PanelTabsUsage,
   'component-catalog': ComponentCatalogUsage,
   'strategy-launcher': StrategyLauncherDemo,
+  'floating-window': FloatingWindowDemo,
   avatar: AvatarDemo,
   breadcrumb: BreadcrumbDemo,
   pagination: PaginationDemo,

@@ -8246,6 +8246,50 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'floating-window',
+    group: 'blocks',
+    cardHeight: 300,
+    title: 'FloatingWindow 悬浮窗',
+    summary:
+      '把任意子树放进一个置顶的小窗（照 OKX 下单面板的「在悬浮窗中交易」，2026-11-26 实测）：浏览器有 Document Picture-in-Picture（Chrome / Edge 116+）时开真窗口，开窗时复制当前文档的样式表、根元素的 data-theme 与正文底色字色；没有时退成页内可拖的浮层（popover 顶层，标题栏拖动或方向键移动，关闭钮与 Esc 关）。受控：open 与 onClose，配 useFloatingWindow。子树始终渲染进同一个 host 元素、换窗只搬这个元素，所以输入的半截字、滚动位置、组件状态都不丢；关窗回到原处。',
+    exports: ['FloatingWindow', 'useFloatingWindow', 'isFloatingWindowSupported'],
+    propParts: [
+      {
+        part: 'FloatingWindow',
+        note: 'open 受控，用户关窗时回调 onClose，宿主再把 open 设回 false。placeholder 画在原位（窗开着时）。width / height 只在开窗那一刻读。inPageOnly 强制只用页内浮层。',
+      },
+      {
+        part: 'useFloatingWindow(initialOpen?)',
+        symbol: 'useFloatingWindow',
+        note: '返回 { open, supported, show, hide, toggle, props }；props 直接展开到 FloatingWindow 上。',
+      },
+      {
+        part: 'isFloatingWindowSupported()',
+        symbol: 'isFloatingWindowSupported',
+        note: '浏览器现在能不能开真 PiP 窗（每次调用时现读）。',
+      },
+    ],
+    states: [
+      '关着：子树在原处，不画占位。',
+      '开着、浏览器有 PiP：先在原处，窗一开成功就搬进小窗，原位画 placeholder。',
+      '开着、没有 PiP（或开窗被拒：没有刚操作过、已有一个窗）：搬进页内浮层，默认贴右下角 16px，拖过之后用 left / top。',
+      '用户关 PiP 窗、点浮层的关闭钮或在浮层里按 Esc：回调 onClose；宿主设回 open=false，子树回到原处，状态还在。',
+      '主文档切主题：PiP 窗的 data-theme 等根属性跟着同步。',
+    ],
+    donts: [
+      '不要用 key 或条件渲染在窗内外各放一份：子树只传一份，件自己搬 DOM，状态才不丢。',
+      '不要在没有用户操作的时候把 open 设成 true：PiP 要用户刚点过，否则被拒、退到页内浮层。',
+      '开窗之后新加的样式表（懒加载的 CSS）不会跟过去；要用到的样式先在开窗前载入。',
+    ],
+    composition:
+      'FloatingWindow\n  slot（关着时子树的家）· placeholder（窗开着时）\n  页内浮层（popover=manual，role=dialog）：标题栏把手 button · 关闭钮 · 内容区\n  host（子树的容器，在 slot、浮层内容区、PiP 窗 body 之间被搬动）',
+    keys: [
+      ['Tab', '到页内浮层的标题栏把手、关闭钮与子树里的控件'],
+      ['← ↑ → ↓', '焦点在标题栏把手上，移动页内浮层 8px；按住 Shift 32px'],
+      ['Esc', '焦点在页内浮层里，关窗（onClose）'],
+    ],
+  },
+  {
     id: 'order-book',
     group: 'blocks',
     cardHeight: 520,
