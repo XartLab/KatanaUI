@@ -165,6 +165,8 @@ export function NoteNode({ id, data, selected }: NodeProps<Rf<WhiteboardNoteNode
           }}
           onKeyDown={(event) => {
             event.stopPropagation()
+            // 组字时的 Esc 是取消候选词，不是收起便签（失焦会把写了一半的拼音存进去）。
+            if (event.nativeEvent.isComposing || event.keyCode === 229) return
             if (event.key === 'Escape') event.currentTarget.blur()
           }}
         />

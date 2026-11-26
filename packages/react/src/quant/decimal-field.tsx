@@ -128,6 +128,9 @@ export function DecimalField({
     if (next !== null) onValue(next)
   }
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    // 组字中的键（选字的 Enter、取消候选词的 Esc、选候选的 ↑ ↓）不是提交 / 取消 / 改价，连调用方的 onKeyDown 也不传：
+    // 调用方常在价格框上自己接 Enter 下单。Safari 上屏那一下 isComposing 已是 false、keyCode 仍是 229，两个都要判。
+    if (event.nativeEvent.isComposing || event.keyCode === 229) return
     onKeyDown?.(event)
     if (event.defaultPrevented || (event.key !== 'ArrowUp' && event.key !== 'ArrowDown')) return
     // 只读与禁用时方向键什么也不做；输入框自己的光标移动（Home / End 的效果）也不要。
