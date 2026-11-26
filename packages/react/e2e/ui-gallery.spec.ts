@@ -3278,7 +3278,11 @@ for (const theme of THEMES) {
       const area = section(page, 'toast')
       const viewport = page.getByTestId('toast-viewport')
       await expect(viewport).toHaveAttribute('role', 'region')
-      await expect(viewport).toHaveAttribute('aria-live', 'assertive')
+      // 礼貌播报（kubai 016，#251）：「已复制」这类状态提示不打断读屏；要打断的 warn / danger 那一条自己带 role=alert。
+      await expect(viewport).toHaveAttribute('aria-live', 'polite')
+      await expect(page.getByTestId('toast-danger')).toHaveAttribute('role', 'alert')
+      await expect(page.getByTestId('toast-warn')).toHaveAttribute('role', 'alert')
+      await expect(page.getByTestId('toast-ok')).not.toHaveAttribute('role', /.+/)
       const add = area.getByRole('button', { name: '弹一条提示' })
       await add.focus()
       await page.keyboard.press('Enter')
@@ -3311,6 +3315,29 @@ for (const theme of THEMES) {
       await expect(toasts).toHaveCount(3)
       await page.getByRole('button', { name: '全部关掉（3）' }).click()
       await expect(toasts).toHaveCount(0)
+    })
+
+    test('弹出提示的撤销：带倒计时环与「撤销」，环随时间变短，撤销后字变「已恢复」再收', async ({ page }) => {
+      await open(page, theme, 'toast')
+      const area = section(page, 'toast')
+      await area.getByRole('button', { name: '删除一条画线' }).click()
+      const toast = page.getByTestId('toast-undo')
+      await expect(toast).toHaveCount(1)
+      await expect(toast.getByText('已删除画线')).toBeVisible()
+      // 这一条是 neutral：没有 role=alert，读屏靠常驻的 polite 视口读。
+      await expect(toast).not.toHaveAttribute('role', /.+/)
+      const arc = toast.locator('[data-slot="toast-countdown-arc"]')
+      const offsetOf = async () => Number(await arc.getAttribute('stroke-dashoffset'))
+      const first = await offsetOf()
+      // 环随剩余时间变短：偏移量只增不减（过了 0.5 秒以上，至少多了一格）。
+      await expect.poll(offsetOf, { timeout: 3000 }).toBeGreaterThan(first + 1)
+      // 环里没有写秒数；撤销钮在，点它。
+      await expect(toast.locator('[data-slot="toast-countdown"]')).toHaveText('')
+      await toast.getByRole('button', { name: '撤销', exact: true }).click()
+      await expect(toast.getByText('已恢复')).toBeVisible()
+      await expect(toast.getByRole('button', { name: '撤销', exact: true })).toHaveCount(0)
+      // 约 1.5 秒后收起、摘掉节点。
+      await expect(toast).toHaveCount(0, { timeout: 5000 })
     })
 
     test('弹出提示的语气：色条与图标取 --k-status-*；neutral 色条是主文字色、图标是强调色；说明文字用 ink-2（对比度够）', async ({

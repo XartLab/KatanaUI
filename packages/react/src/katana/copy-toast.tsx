@@ -19,6 +19,7 @@ import {
 
 // 复制的结果提示（#77 第 4 条，#22 G11「统一的结果提示」）：复制图、复制文字（lib/copy-image 的 CopyResult）共用一条 Toast。
 //   copied → ok 语气、勾；downloaded（剪贴板不支持或被拒，改成下载了）→ warn、下载图标，说明写为什么；failed → danger、警示图标，说明写为什么。
+//   读屏（#251，kubai 016）：视口 polite；downloaded（warn）与 failed（danger）这两条自带 role=alert，copied 走视口礼貌播报。
 //   语气不只靠颜色：标题就是结果（「已复制图片」「已改为下载」「复制失败」）。
 // 计时：useCopyFeedback 管一条，默认 2400ms 后自己收；指针停在上面或焦点在里面时不收（离开后重新计时）。再复制一次是新的一条（新 key），
 //   读屏会再读一遍（VoiceOver 同一句不读第二遍的问题由「新插入的节点」避开，modern-web-guidance copy-button）。

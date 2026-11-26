@@ -2121,13 +2121,15 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 135,
     title: 'Toast 弹出提示',
     summary:
-      '固定在窗口一角的弹出提示：只管样子与读屏语义（live region），条目表、定时、暂停由调用方管（应用里 AlertToasts 配 toast-queue.ts）。进出走 translate 与不透明度的过渡。',
+      '固定在窗口一角的弹出提示：只管样子与读屏语义（live region），条目表、定时、暂停由调用方管（应用里 AlertToasts 配 toast-queue.ts）。进出走 translate 与不透明度的过渡。视口 polite 礼貌播报，warn / danger 单条 role=alert；能撤销的操作配 ToastAction 与可选的 ToastCountdown。',
     exports: [
       'TOAST_EXIT_MS',
       'Toast',
+      'ToastAction',
       'ToastClear',
       'ToastClose',
       'ToastContent',
+      'ToastCountdown',
       'ToastDescription',
       'ToastIcon',
       'ToastText',
@@ -2137,13 +2139,21 @@ export const PAGES: readonly DocPage[] = [
     propParts: [
       {
         part: 'ToastViewport',
-        note: '其余属性透传给 div。role=region、aria-live=assertive：新插进来的条目读屏马上读；aria-label 由调用方给。',
+        note: '其余属性透传给 div。role=region、aria-live=polite：新插进来的条目读屏等空了再读，不打断；aria-label 由调用方给。',
       },
       {
         part: 'Toast',
-        note: '其余属性透传给 div。过渡的起点与终点由 data-starting-style、data-ending-style 给（phase 换的）。tone（Severity）定色条与图标的颜色，neutral 是主文字色色条加强调色图标。',
+        note: '其余属性透传给 div。过渡的起点与终点由 data-starting-style、data-ending-style 给（phase 换的）。tone（Severity）定色条与图标的颜色，neutral 是主文字色色条加强调色图标。tone 为 warn、danger 时这一条自带 role=alert（插入即打断播报），neutral、ok 不带，靠视口礼貌播报；调用方给的 role 排在后面能盖掉。',
       },
       { part: 'ToastClose', note: '其余属性透传给 Button（icon 变体）。' },
+      {
+        part: 'ToastAction',
+        note: '其余属性透传给 Button（ghost、sm）。一个文字钮，如「撤销」，文字由调用方给；强调色字，悬停才有底。',
+      },
+      {
+        part: 'ToastCountdown',
+        note: 'remaining（0 到 1）是剩余时间的比例，1 刚出现、0 要收了，超出范围收进 0 到 1。计时在调用方（toast-queue），包里不计时；建议每 100ms 更新一次，环随比例变短，中间不写秒数。纯装饰，aria-hidden。其余属性透传给 svg。',
+      },
       {
         part: 'ToastClear / ToastIcon / ToastText / ToastTitle / ToastDescription / ToastContent',
         symbol: 'ToastClear',
@@ -2154,18 +2164,21 @@ export const PAGES: readonly DocPage[] = [
       '收起：反向平移淡出，播完（TOAST_EXIT_MS）调用方再摘节点。',
       '多条：按位置叠，两条以上出「全部关掉」。',
       '语气：neutral（默认）、ok、warn、danger，色条与图标取 --k-status-*-foreground；说明文字是 ink-2（console 主题下 ink-3 不到 4.5:1）。',
+      '动作 toast：标题、倒计时环（16px 空心环，随剩余比例变短，中间不写秒数）、一个「撤销」钮、关闭钮并排；撤销以后调用方把同一条改成「已恢复」，约 1.5 秒后收。',
     ],
     donts: [
       '不要把需要用户处理的事只放在弹出提示里，它会自己消失。',
+      '不要事后 toast 一件不能撤销的事：先确认（AlertDialog），或者做成能撤销的再给「撤销」。',
+      '不要把价格告警这类系统消息当 toast 用：它是通知，应进铃下的列表（NotificationBell），toast 只是到达提示。',
       '不要只靠色条说语气：标题里写明（「下单被拒」而不是「出错了」）。',
       '不要在包里写死文案，关闭名与「全部关掉」都由调用方传。',
       '不要自己再做一套计时与队列放进 Toast，那是调用方的事。',
     ],
     composition:
-      'ToastViewport\n  Toast\n    ToastContent\n      ToastIcon\n      ToastText\n        ToastTitle\n        ToastDescription\n      ToastClose\n  ToastClear',
+      'ToastViewport\n  Toast\n    ToastContent\n      ToastIcon\n      ToastText\n        ToastTitle\n        ToastDescription\n      ToastCountdown（可选）\n      ToastAction（可选）\n      ToastClose\n  ToastClear',
     keys: [
-      ['Tab', '走到关闭钮、「全部关掉」'],
-      ['Enter / Space', '关掉这一条或全部'],
+      ['Tab', '走到「撤销」、关闭钮、「全部关掉」'],
+      ['Enter / Space', '撤销，或关掉这一条或全部'],
     ],
   },
   {
