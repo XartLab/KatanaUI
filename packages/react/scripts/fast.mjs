@@ -63,9 +63,17 @@ run('受影响的单测', 'pnpm', ['exec', 'vp', 'test', 'run', '--changed', bas
 const plan = shotPlan(pkgDir, changed)
 const browserTests = readdirSync(join(pkgDir, 'browser')).filter((f) => f.endsWith('.browser.test.tsx'))
 const shotArgs = ['exec', 'vp', 'test', 'run', '-c', 'vitest.browser.config.ts']
+// 改了截图测试文件：多半是给新件加了一项（`'name': <Usage />`）。只截新加 / 改动的那几项，不再整套（整套约 4.5 分钟，#247）。
+// 名字从 diff 里加的行取；新建的截图测试文件整份跑（它本来就只有新件）。
+const newBrowserFiles = changed.filter((f) => f.startsWith('browser/') && !capture('git', ['ls-files', '--', f]).trim())
 if (plan.browserTestsChanged)
-  run('组件截图（改了截图测试：整套）', 'pnpm', [...shotArgs, ...browserTests.map((f) => `browser/${f}`)])
-else if (plan.names.size) {
+  for (const line of capture('git', ['diff', base, '--', 'browser/']).split('\n')) {
+    const m = /^\+\s*['"]([a-z0-9-]+)['"]\s*:/.exec(line)
+    if (m) plan.names.add(m[1])
+  }
+if (newBrowserFiles.length)
+  run(`组件截图（新建的截图测试文件 ${newBrowserFiles.length} 个）`, 'pnpm', [...shotArgs, ...newBrowserFiles])
+if (plan.names.size) {
   // 预算：一张约 0.6 秒，最多截 MAX_SHOTS 个件。波及更多（改了 lib、原语这类底层）就截代表件（与波及的取交集，不够再从波及的里补），
   // 其余留给合并前的整套。
   const MAX_SHOTS = 30
