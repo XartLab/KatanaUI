@@ -7994,7 +7994,7 @@
     },
     "CATALOG_ITEM_MIME": {
       "kind": "value",
-      "source": "src/blocks/component-catalog/component-catalog.tsx",
+      "source": "src/blocks/component-catalog/component-catalog-model.ts",
       "props": []
     },
     "CN_AXIS_MINUTES": {
@@ -11013,6 +11013,13 @@
       "source": "src/blocks/component-catalog/component-catalog.tsx",
       "props": [
         {
+          "name": "variant",
+          "type": "'drawer' | 'menu'",
+          "required": false,
+          "default": "'drawer'",
+          "description": "drawer (default): title, reset, search, category tabs and a grid of thumbnail cards, for a side drawer or sheet."
+        },
+        {
           "name": "items",
           "type": "readonly CatalogItem[]",
           "required": true,
@@ -11040,7 +11047,7 @@
           "name": "onToggle",
           "type": "(id: string, add: boolean) => void",
           "required": true,
-          "description": "Called when a card is clicked: `add` is true for a card not yet in the workspace, false to remove one that is."
+          "description": "Called when a card is clicked: `add` is true for a card not yet in the workspace, false to remove one that is (the menu variant only adds: rows in use are greyed)."
         },
         {
           "name": "onReset",
@@ -21657,6 +21664,164 @@
         }
       ]
     },
+    "FloatingWindow": {
+      "kind": "component",
+      "source": "src/blocks/floating-window/floating-window.tsx",
+      "props": [
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": true,
+          "description": "Whether the content is in the small window."
+        },
+        {
+          "name": "onClose",
+          "type": "() => void",
+          "required": false,
+          "description": "Called when the user closes the window (closes the picture-in-picture window, clicks the close button, presses Esc)."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "description": "The subtree."
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Title of the window: the title bar of the in-page layer and its accessible name."
+        },
+        {
+          "name": "placeholder",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Drawn in place of the subtree while it is in the window (a line saying where it went, with a button to bring it back)."
+        },
+        {
+          "name": "width",
+          "type": "number",
+          "required": false,
+          "default": "380",
+          "description": "Width of the window in pixels."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "default": "560",
+          "description": "Height of the window in pixels."
+        },
+        {
+          "name": "inPageOnly",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Use only the in-page layer even when the browser has picture-in-picture (embedded pages, tests)."
+        },
+        {
+          "name": "labels",
+          "type": "FloatingWindowLabels",
+          "required": true,
+          "description": "Accessible names."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "FloatingWindowLabels": {
+      "kind": "type",
+      "source": "src/blocks/floating-window/floating-window.tsx",
+      "props": [
+        {
+          "name": "close",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the close button of the in-page floating layer."
+        },
+        {
+          "name": "move",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the title bar, which drags and moves with the arrow keys."
+        }
+      ]
+    },
+    "FloatingWindowMode": {
+      "kind": "type",
+      "source": "src/blocks/floating-window/floating-window.tsx",
+      "props": []
+    },
+    "FloatingWindowProps": {
+      "kind": "type",
+      "source": "src/blocks/floating-window/floating-window.tsx",
+      "props": [
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": true,
+          "description": "Whether the content is in the small window."
+        },
+        {
+          "name": "onClose",
+          "type": "() => void",
+          "required": false,
+          "description": "Called when the user closes the window (closes the picture-in-picture window, clicks the close button, presses Esc)."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "description": "The subtree."
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Title of the window: the title bar of the in-page layer and its accessible name."
+        },
+        {
+          "name": "placeholder",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Drawn in place of the subtree while it is in the window (a line saying where it went, with a button to bring it back)."
+        },
+        {
+          "name": "width",
+          "type": "number",
+          "required": false,
+          "description": "Width of the window in pixels."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "description": "Height of the window in pixels."
+        },
+        {
+          "name": "inPageOnly",
+          "type": "boolean",
+          "required": false,
+          "description": "Use only the in-page layer even when the browser has picture-in-picture (embedded pages, tests)."
+        },
+        {
+          "name": "labels",
+          "type": "FloatingWindowLabels",
+          "required": true,
+          "description": "Accessible names."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
     "FlowBuilder": {
       "kind": "component",
       "source": "src/blocks/flow-builder/flow-builder.tsx",
@@ -30672,6 +30837,234 @@
         }
       ]
     },
+    "MarketBrowser": {
+      "kind": "component",
+      "source": "src/quotes/market-browser.tsx",
+      "props": [
+        {
+          "name": "categories",
+          "type": "readonly MarketCategory[]",
+          "required": true,
+          "description": "The category tabs, each with its rows."
+        },
+        {
+          "name": "labels",
+          "type": "MarketBrowserLabels",
+          "required": true,
+          "description": "Visible text and accessible names."
+        },
+        {
+          "name": "formatPrice",
+          "type": "FormatPrice",
+          "required": false,
+          "description": "Writes the last price; two decimals when omitted."
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "The selected category id when controlled."
+        },
+        {
+          "name": "defaultValue",
+          "type": "string",
+          "required": false,
+          "description": "The initially selected category id when uncontrolled; the first category when omitted."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called with the category id when the tab changes."
+        },
+        {
+          "name": "onQueryChange",
+          "type": "(query: string) => void",
+          "required": false,
+          "description": "Called with the search word on every keystroke."
+        },
+        {
+          "name": "sort",
+          "type": "MarketSort | null",
+          "required": false,
+          "description": "Sort (controlled); null is the caller's order."
+        },
+        {
+          "name": "onSortChange",
+          "type": "(sort: MarketSort | null) => void",
+          "required": false,
+          "description": "Called with the next sort when the price or change header is clicked."
+        },
+        {
+          "name": "onSelect",
+          "type": "(row: MarketRow) => void",
+          "required": false,
+          "description": "Called with the row when it is clicked or Enter is pressed on it; rows become links when given."
+        },
+        {
+          "name": "onToggleFavorite",
+          "type": "(row: MarketRow, favorite: boolean) => void",
+          "required": false,
+          "description": "Called when a row's star is toggled, with the state it should become."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "MarketBrowserLabels": {
+      "kind": "type",
+      "source": "src/quotes/market-browser.tsx",
+      "props": [
+        {
+          "name": "search",
+          "type": "string",
+          "required": true,
+          "description": "Placeholder and accessible name of the search box."
+        },
+        {
+          "name": "categories",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the category tab strip."
+        },
+        {
+          "name": "list",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the list."
+        },
+        {
+          "name": "columns",
+          "type": "{ symbol: string; last: string; change: string }",
+          "required": true,
+          "description": "Header text of the price and the 24-hour change columns (the symbol column has no sort and uses `symbol`)."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Written when a category has no rows (the favorites tab before anything is starred, say)."
+        },
+        {
+          "name": "noResults",
+          "type": "string",
+          "required": true,
+          "description": "Written when the search word matches nothing in the category."
+        },
+        {
+          "name": "favorite",
+          "type": "(row: MarketRow) => string",
+          "required": true,
+          "description": "Accessible name of a row's star button."
+        }
+      ]
+    },
+    "MarketBrowserProps": {
+      "kind": "type",
+      "source": "src/quotes/market-browser.tsx",
+      "props": [
+        {
+          "name": "categories",
+          "type": "readonly MarketCategory[]",
+          "required": true,
+          "description": "The category tabs, each with its rows."
+        },
+        {
+          "name": "labels",
+          "type": "MarketBrowserLabels",
+          "required": true,
+          "description": "Visible text and accessible names."
+        },
+        {
+          "name": "formatPrice",
+          "type": "FormatPrice",
+          "required": false,
+          "description": "Writes the last price; two decimals when omitted."
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "The selected category id when controlled."
+        },
+        {
+          "name": "defaultValue",
+          "type": "string",
+          "required": false,
+          "description": "The initially selected category id when uncontrolled; the first category when omitted."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called with the category id when the tab changes."
+        },
+        {
+          "name": "onQueryChange",
+          "type": "(query: string) => void",
+          "required": false,
+          "description": "Called with the search word on every keystroke."
+        },
+        {
+          "name": "sort",
+          "type": "MarketSort | null",
+          "required": false,
+          "description": "Sort (controlled); null is the caller's order."
+        },
+        {
+          "name": "onSortChange",
+          "type": "(sort: MarketSort | null) => void",
+          "required": false,
+          "description": "Called with the next sort when the price or change header is clicked."
+        },
+        {
+          "name": "onSelect",
+          "type": "(row: MarketRow) => void",
+          "required": false,
+          "description": "Called with the row when it is clicked or Enter is pressed on it; rows become links when given."
+        },
+        {
+          "name": "onToggleFavorite",
+          "type": "(row: MarketRow, favorite: boolean) => void",
+          "required": false,
+          "description": "Called when a row's star is toggled, with the state it should become."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "MarketCategory": {
+      "kind": "type",
+      "source": "src/quotes/market-browser.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Category id (the tab value)."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Tab text."
+        },
+        {
+          "name": "rows",
+          "type": "readonly MarketRow[]",
+          "required": true,
+          "description": "The rows of this category."
+        }
+      ]
+    },
     "MarketHeatmap": {
       "kind": "component",
       "source": "src/quant/market-heatmap.tsx",
@@ -31240,6 +31633,96 @@
           "type": "CnValue",
           "required": false,
           "description": "Main-force net inflow, in yuan (signed)."
+        }
+      ]
+    },
+    "MarketRow": {
+      "kind": "type",
+      "source": "src/quotes/market-browser.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable row id (used for keys, reordering and enter marks)."
+        },
+        {
+          "name": "symbol",
+          "type": "string",
+          "required": true,
+          "description": "Symbol code (BTCUSDT, 600519)."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "description": "Display name; the symbol is shown when omitted."
+        },
+        {
+          "name": "last",
+          "type": "number",
+          "required": true,
+          "description": "Last price."
+        },
+        {
+          "name": "change",
+          "type": "number",
+          "required": true,
+          "description": "Change amount, signed."
+        },
+        {
+          "name": "changePct",
+          "type": "number",
+          "required": true,
+          "description": "Change as a percentage (1.5 means 1.5%)."
+        },
+        {
+          "name": "favorite",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether the star is on."
+        },
+        {
+          "name": "logoSrc",
+          "type": "string",
+          "required": false,
+          "description": "Logo image of the symbol mark; the surrounding LogoProvider is asked, then letters are drawn, when omitted."
+        },
+        {
+          "name": "venue",
+          "type": "string",
+          "required": false,
+          "description": "Venue (BINANCE, XNAS), passed to the symbol mark."
+        },
+        {
+          "name": "assetClass",
+          "type": "AssetClass",
+          "required": false,
+          "description": "Asset class, passed to the symbol mark."
+        },
+        {
+          "name": "keywords",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Extra words the search matches (aliases, the other language's name)."
+        }
+      ]
+    },
+    "MarketSort": {
+      "kind": "type",
+      "source": "src/quotes/market-browser.tsx",
+      "props": [
+        {
+          "name": "key",
+          "type": "WatchlistSortKey",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "dir",
+          "type": "'asc' | 'desc'",
+          "required": true,
+          "description": ""
         }
       ]
     },
@@ -54370,6 +54853,163 @@
       "source": "src/blocks/system-monitor/system-monitor-model.ts",
       "props": []
     },
+    "StrategyEntry": {
+      "kind": "type",
+      "source": "src/blocks/strategy-launcher/strategy-launcher.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable id passed to onOpen."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Name of the strategy or tool."
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Icon node in a 32px tile; decorative, give it aria-hidden."
+        },
+        {
+          "name": "isNew",
+          "type": "boolean",
+          "required": false,
+          "description": "Draws the New badge after the name."
+        },
+        {
+          "name": "tags",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Short tags under the name (three or four words each at most)."
+        }
+      ]
+    },
+    "StrategyLauncher": {
+      "kind": "component",
+      "source": "src/blocks/strategy-launcher/strategy-launcher.tsx",
+      "props": [
+        {
+          "name": "entries",
+          "type": "readonly StrategyEntry[]",
+          "required": true,
+          "description": "The entry cards, in order."
+        },
+        {
+          "name": "onOpen",
+          "type": "(id: string) => void",
+          "required": true,
+          "description": "Called with the entry id when a card is clicked or opened with Enter or Space."
+        },
+        {
+          "name": "notice",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Risk notice above the cards; nothing is drawn when omitted or after it is closed."
+        },
+        {
+          "name": "onNoticeDismiss",
+          "type": "() => void",
+          "required": false,
+          "description": "Called when the risk notice is closed."
+        },
+        {
+          "name": "tagStyle",
+          "type": "'text' | 'chips'",
+          "required": false,
+          "default": "'text'",
+          "description": "How tags are drawn: joined with \" / \" in one line (default) or as small outlined tags."
+        },
+        {
+          "name": "labels",
+          "type": "StrategyLauncherLabels",
+          "required": true,
+          "description": "Accessible names and the New badge text."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "StrategyLauncherLabels": {
+      "kind": "type",
+      "source": "src/blocks/strategy-launcher/strategy-launcher.tsx",
+      "props": [
+        {
+          "name": "region",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the whole launcher."
+        },
+        {
+          "name": "dismiss",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the risk notice's close button."
+        },
+        {
+          "name": "new",
+          "type": "string",
+          "required": true,
+          "description": "Text of the New badge."
+        }
+      ]
+    },
+    "StrategyLauncherProps": {
+      "kind": "type",
+      "source": "src/blocks/strategy-launcher/strategy-launcher.tsx",
+      "props": [
+        {
+          "name": "entries",
+          "type": "readonly StrategyEntry[]",
+          "required": true,
+          "description": "The entry cards, in order."
+        },
+        {
+          "name": "onOpen",
+          "type": "(id: string) => void",
+          "required": true,
+          "description": "Called with the entry id when a card is clicked or opened with Enter or Space."
+        },
+        {
+          "name": "notice",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Risk notice above the cards; nothing is drawn when omitted or after it is closed."
+        },
+        {
+          "name": "onNoticeDismiss",
+          "type": "() => void",
+          "required": false,
+          "description": "Called when the risk notice is closed."
+        },
+        {
+          "name": "tagStyle",
+          "type": "'text' | 'chips'",
+          "required": false,
+          "description": "How tags are drawn: joined with \" / \" in one line (default) or as small outlined tags."
+        },
+        {
+          "name": "labels",
+          "type": "StrategyLauncherLabels",
+          "required": true,
+          "description": "Accessible names and the New badge text."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
     "StrategyReport": {
       "kind": "component",
       "source": "src/blocks/strategy-report/strategy-report.tsx",
@@ -67290,6 +67930,11 @@
       "source": "src/cn/timeline-model.ts",
       "props": []
     },
+    "filterMarketRows": {
+      "kind": "function",
+      "source": "src/quotes/market-browser-model.ts",
+      "props": []
+    },
     "filterMoves": {
       "kind": "function",
       "source": "src/cn/move-feed-model.ts",
@@ -67769,6 +68414,11 @@
     "isEditableTarget": {
       "kind": "function",
       "source": "src/patterns/hotkeys-model.ts",
+      "props": []
+    },
+    "isFloatingWindowSupported": {
+      "kind": "function",
+      "source": "src/blocks/floating-window/floating-window.tsx",
       "props": []
     },
     "isItm": {
@@ -70379,6 +71029,11 @@
     "useFlipList": {
       "kind": "function",
       "source": "src/lib/live.ts",
+      "props": []
+    },
+    "useFloatingWindow": {
+      "kind": "function",
+      "source": "src/blocks/floating-window/floating-window.tsx",
       "props": []
     },
     "useHotkeyEntries": {

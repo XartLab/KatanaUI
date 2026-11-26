@@ -6577,6 +6577,44 @@ export const PAGES: readonly DocPage[] = [
     keys: [['Tab / Enter', '列头排序、旗标']],
   },
   {
+    id: 'market-browser',
+    group: 'quotes',
+    cardHeight: 430,
+    title: 'MarketBrowser 市场浏览器',
+    summary:
+      '找品种的入口（照 OKX 永续页的「市场」组件，2026-11-26 实测）：一个搜索框、一排分类页签（自选 / 全部 / 主流币……由调用方给，每类带自己的行）、下面是当前分类的列表：星标、徽标、代码与全称、最新价、24h 涨跌。点价格或涨跌的列头排序（升、降、回原顺序）；点行回调 onSelect；点星标回调 onToggleFavorite，不触发 onSelect。搜索在当前分类里按代码、名称与别名找。表的版式、价格尾数闪色、列头排序都沿用 Watchlist，不另写一份；数据与文字全由调用方传，包里没有数据源。',
+    exports: ['MarketBrowser', 'filterMarketRows'],
+    propParts: [
+      {
+        part: 'MarketBrowser',
+        note: 'categories 是 { id, label, rows }[]，「自选」页签就是调用方把 favorite 为真的行放进第一个分类；行是 QuoteRow 加 favorite / logoSrc / venue / assetClass / keywords。labels 必填。sort 与分类 value 可受控也可不受控。',
+      },
+      {
+        part: 'filterMarketRows(rows, query)',
+        symbol: 'filterMarketRows',
+        note: '搜索用的纯函数：代码、名称、别名里含有搜索词（不分大小写）的行。',
+      },
+    ],
+    states: [
+      '当前排序列的列头带 ▲ / ▼，th 的 aria-sort 跟着变；换分类、改搜索词，排序保留。',
+      '星标：没标是描边，标上是实心；常亮，不要等悬停。',
+      '分类里没有行：写 labels.empty；有行但搜索没找到：写 labels.noResults。',
+      '最新价与涨跌变了：只闪变了的尾数与涨跌格（同 Watchlist）。',
+    ],
+    donts: [
+      '不要把「自选」做成包里的特殊页签：它就是第一个分类，行由调用方按 favorite 筛。',
+      '不要传写好的价格字符串：行是数，位数交给 formatPrice。',
+      '不要在包里放数据源或默认分类：分类名由市场决定（永续、现货、股票各不相同）。',
+    ],
+    composition:
+      'MarketBrowser\n  Input（搜索）\n  Tabs · TabsList line（分类，放不下横向滚）\n  table（k-watch）：列头按钮 × 2\n    tr：星标按钮 · SymbolMark · CodeChip · 全称 | FlashPrice | ChangeText',
+    keys: [
+      ['Tab', '搜索框、分类页签、列头、各行、各行的星标，依次走'],
+      ['← →', '在分类页签间移动'],
+      ['Enter', '在行上选品种；在列头上排序；在星标上切星标'],
+    ],
+  },
+  {
     id: 'range-bar',
     group: 'quotes',
     cardHeight: 60,
@@ -8178,10 +8216,11 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 620,
     title: 'ComponentCatalog 添加组件',
     summary:
-      'PanelTabs 的「+」打开的目录（照 OKX 的「添加组件」抽屉，2026-11-19 实测）：标题与「重置布局」、一句说明、搜索框、类别页签，下面按类别分组的卡片，每张一个缩略图加名字；已在工作区里的打勾，当前品种用不了的置灰并写明原因；卡片可拖（带 CATALOG_ITEM_MIME）。我们加的：搜索（名字与别名）、最前面一组「推荐」：宿主按当前品种与市场包标 recommended，或组件自己声明 pairsWith（适合放在哪种组件旁边），传入 context（当前页签的 kind）后自动推荐，已在用的不再推荐。点卡片回调 onToggle（加或移除）。没给缩略图时按 kind 画一张示意。只是目录本身，放进 Sheet 还是侧栏由宿主定。',
+      'PanelTabs 的「+」打开的目录（照 OKX 的「添加组件」抽屉，2026-11-19 实测）：标题与「重置布局」、一句说明、搜索框、类别页签，下面按类别分组的卡片，每张一个缩略图加名字；已在工作区里的打勾，当前品种用不了的置灰并写明原因；卡片可拖（带 CATALOG_ITEM_MIME）。variant="menu"（2026-11-26，OKX 页签栏「+」垂下来的清单）是紧凑样式：没有标题、搜索与类别页签，每类一个可折叠标题，每行名字加右边的「+」，已添加的与不可用的置灰、悬停或聚焦时用提示说明原因（已添加写 labels.inUse，不可用写条目自带的 unavailable）。我们加的：搜索（名字与别名）、最前面一组「推荐」：宿主按当前品种与市场包标 recommended，或组件自己声明 pairsWith（适合放在哪种组件旁边），传入 context（当前页签的 kind）后自动推荐，已在用的不再推荐。点卡片回调 onToggle（加或移除）。没给缩略图时按 kind 画一张示意。只是目录本身，放进 Sheet 还是侧栏由宿主定。',
     exports: ['ComponentCatalog', 'CATALOG_ITEM_MIME', 'groupCatalog'],
     propParts: [{ part: 'ComponentCatalog' }],
     states: [
+      'variant="menu"：每类一个标题按钮（aria-expanded），点开合；行是名字加「+」，点一行只添加（onToggle(id, true)）；灰的行点了没反应，悬停与键盘聚焦都出提示。',
       '没搜索、没选类别：先「推荐」一组，再按类别各一组；推荐过的不在类别里重复出现。',
       '选了类别：只看这一类，没有「推荐」。',
       '在搜索：按名字与别名筛，不分「推荐」；搜不到写 labels.empty。',
@@ -8192,13 +8231,90 @@ export const PAGES: readonly DocPage[] = [
       '缩略图是示意，不要拿它当真实数据的预览；要真截图由宿主经 thumbnails 传。',
       '不要把「用不了」的项直接藏掉：留着并写原因，用户才知道有这个组件、为什么现在加不了。',
       '「重置布局」是不可撤的，宿主要自己再确认一次（HoldToConfirm 或对话框）。',
+      'menu 样式不要塞缩略图与搜索：要那些用抽屉样式；menu 里组件超过三十个就该换抽屉。',
     ],
     composition:
       'ComponentCatalog\n  标题 · Button（重置布局）\n  Input（搜索）\n  Tabs · TabsList line（类别）\n  分组 · 卡片（button aria-pressed：缩略图 · 名字 · 原因）',
     keys: [
-      ['Tab', '搜索框、类别页签、各卡片，依次走'],
+      ['Tab', '搜索框、类别页签、各卡片，依次走；menu 样式是各分组标题与各行'],
       ['← →', '在类别页签间移动'],
-      ['Enter / 空格', '在卡片上加进工作区或移除'],
+      ['Enter / 空格', '在卡片上加进工作区或移除；menu 样式里在分组标题上开合、在行上添加（灰的行只出提示）'],
+    ],
+  },
+  {
+    id: 'strategy-launcher',
+    group: 'blocks',
+    cardHeight: 420,
+    title: 'StrategyLauncher 策略入口',
+    summary:
+      '一列策略与工具的入口卡（照 OKX 永续页的「工具」组件，2026-11-26 实测）：顶上一条可关的风险提示（文字由调用方给，点关闭钮收起并回调），下面每张卡是图标、名字、可选的「新」角标、标签串（默认用「 / 」连成一行，tagStyle="chips" 画成小标签）、右箭头。点卡回调 onOpen(id)。件只列入口，入口指向什么（下单策略、运行中心、信号）由宿主定，包里不带任何策略。',
+    exports: ['StrategyLauncher'],
+    propParts: [
+      {
+        part: 'StrategyLauncher',
+        note: 'entries 是 { id, name, icon?, isNew?, tags? }[]；labels 必填：整件的读屏名、关闭钮的读屏名、角标文字。notice 不给就没有提示条。',
+      },
+    ],
+    states: [
+      '有 notice：顶上一条 warn 语气的提示条，右上角关闭钮；关了就不再画（件内记住，同时回调 onNoticeDismiss）。',
+      '卡悬停：底色提亮、箭头变主文字色；键盘聚焦画内缩焦点环。',
+      '带 isNew：名字后面一个 ok 语气的小角标。',
+      '没有 icon 的卡：不留图标位，文字顶到左边。',
+    ],
+    donts: [
+      '不要把风险提示写在卡里：它在整列顶上，关掉以后不再回来。',
+      '不要每张卡写超过四个标签：一行放不下就是写多了。',
+      '不要在包里放策略名单：入口全由宿主传。',
+    ],
+    composition:
+      'StrategyLauncher section[aria-label]\n  Alert（warn，role=note）：图标 · 说明 · 关闭钮\n  ul > li > button 卡：图标块 · 名字 + 角标 · 标签串 | 右箭头',
+    keys: [
+      ['Tab', '关闭钮、各张卡，依次走'],
+      ['Enter / 空格', '打开聚焦的卡；在关闭钮上收起提示'],
+    ],
+  },
+  {
+    id: 'floating-window',
+    group: 'blocks',
+    cardHeight: 300,
+    title: 'FloatingWindow 悬浮窗',
+    summary:
+      '把任意子树放进一个置顶的小窗（照 OKX 下单面板的「在悬浮窗中交易」，2026-11-26 实测）：浏览器有 Document Picture-in-Picture（Chrome / Edge 116+）时开真窗口，开窗时复制当前文档的样式表、根元素的 data-theme 与正文底色字色；没有时退成页内可拖的浮层（popover 顶层，标题栏拖动或方向键移动，关闭钮与 Esc 关）。受控：open 与 onClose，配 useFloatingWindow。子树始终渲染进同一个 host 元素、换窗只搬这个元素，所以输入的半截字、滚动位置、组件状态都不丢；关窗回到原处。',
+    exports: ['FloatingWindow', 'useFloatingWindow', 'isFloatingWindowSupported'],
+    propParts: [
+      {
+        part: 'FloatingWindow',
+        note: 'open 受控，用户关窗时回调 onClose，宿主再把 open 设回 false。placeholder 画在原位（窗开着时）。width / height 只在开窗那一刻读。inPageOnly 强制只用页内浮层。',
+      },
+      {
+        part: 'useFloatingWindow(initialOpen?)',
+        symbol: 'useFloatingWindow',
+        note: '返回 { open, supported, show, hide, toggle, props }；props 直接展开到 FloatingWindow 上。',
+      },
+      {
+        part: 'isFloatingWindowSupported()',
+        symbol: 'isFloatingWindowSupported',
+        note: '浏览器现在能不能开真 PiP 窗（每次调用时现读）。',
+      },
+    ],
+    states: [
+      '关着：子树在原处，不画占位。',
+      '开着、浏览器有 PiP：先在原处，窗一开成功就搬进小窗，原位画 placeholder。',
+      '开着、没有 PiP（或开窗被拒：没有刚操作过、已有一个窗）：搬进页内浮层，默认贴右下角 16px，拖过之后用 left / top。',
+      '用户关 PiP 窗、点浮层的关闭钮或在浮层里按 Esc：回调 onClose；宿主设回 open=false，子树回到原处，状态还在。',
+      '主文档切主题：PiP 窗的 data-theme 等根属性跟着同步。',
+    ],
+    donts: [
+      '不要用 key 或条件渲染在窗内外各放一份：子树只传一份，件自己搬 DOM，状态才不丢。',
+      '不要在没有用户操作的时候把 open 设成 true：PiP 要用户刚点过，否则被拒、退到页内浮层。',
+      '开窗之后新加的样式表（懒加载的 CSS）不会跟过去；要用到的样式先在开窗前载入。',
+    ],
+    composition:
+      'FloatingWindow\n  slot（关着时子树的家）· placeholder（窗开着时）\n  页内浮层（popover=manual，role=dialog）：标题栏把手 button · 关闭钮 · 内容区\n  host（子树的容器，在 slot、浮层内容区、PiP 窗 body 之间被搬动）',
+    keys: [
+      ['Tab', '到页内浮层的标题栏把手、关闭钮与子树里的控件'],
+      ['← ↑ → ↓', '焦点在标题栏把手上，移动页内浮层 8px；按住 Shift 32px'],
+      ['Esc', '焦点在页内浮层里，关窗（onClose）'],
     ],
   },
   {

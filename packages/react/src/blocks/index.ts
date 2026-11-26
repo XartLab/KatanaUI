@@ -329,6 +329,20 @@ export {
   type PanelTabsProps,
 } from './panel-tabs/panel-tabs.tsx'
 export {
+  FloatingWindow,
+  isFloatingWindowSupported,
+  useFloatingWindow,
+  type FloatingWindowLabels,
+  type FloatingWindowMode,
+  type FloatingWindowProps,
+} from './floating-window/floating-window.tsx'
+export {
+  StrategyLauncher,
+  type StrategyEntry,
+  type StrategyLauncherLabels,
+  type StrategyLauncherProps,
+} from './strategy-launcher/strategy-launcher.tsx'
+export {
   CATALOG_ITEM_MIME,
   ComponentCatalog,
   type ComponentCatalogLabels,
