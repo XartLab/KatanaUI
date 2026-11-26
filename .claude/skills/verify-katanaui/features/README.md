@@ -39,7 +39,7 @@
 | --- | --- | --- |
 | [DataGrid 数据表](data-grid.md) | `drive data-grid` | 点表头排序（升 / 降 / 取消）、窄容器按优先级收列与「+N cols」展开收起 |
 | [OrderTicket 下单面板](order-ticket.md) | `drive order-ticket` | 两栏算数、改杠杆、超可用报错、止盈止损模板、按风险算张数、开仓与平仓 |
-| [弹出层](overlays.md) | `drive overlays` | Popover 与 Dialog 的点开、Esc 关、点外面关、焦点回到触发处 |
+| [弹出层](overlays.md) | `drive overlays` | Popover 与 Dialog 的点开、Esc 关、点外面关、焦点回到触发处；Popover 滚页面或滚装着触发钮的容器就关、滚不相干的容器不关 |
 | [Tabs 页签](tabs.md) | `drive tabs` | 点页签换内容、底块跟随、方向键切换、禁用页签 |
 | [联动组与选组件](link-group.md) | `drive link-group` | 同组同步、选组菜单（打勾与每组品种）、进有品种的组、进空组带着品种走、不联动、键盘选组与 Esc、自选联动、十字线联动 |
 | [TagCombobox 带标签的多选](tag-combobox.md) | `drive tag-combobox` | 点字段开、点两项成标签、打字过滤并加强命中字、空输入退格两次删标签、标签换行时弹层下移 |
@@ -51,6 +51,9 @@
 | [研究资料与日历](research-calendar.md) | `drive calendar-events`、`drive file-import`、`drive template-library` | 日历事件点与洞察、资料导入（进度、重试、移除、粘贴、链接）、模板库（搜索、键盘、就地编辑、复制、使用） |
 | [ToastStack 叠放提示](toast-stack.md) | `drive toast-stack` | 连推三条收拢、悬停展开、点「撤销」原地变状态、Tab 进叠层展开；拖动、计时暂停、最多条数、减弱动效、受控由 `e2e/toast-stack.spec.ts` 走 |
 | [命令面板：行内说明与多步命令](command-palette.md) | `drive command-palette` | 行带说明与「2 步」徽标、进步骤页、勾选与全选三态、Backspace 退回、走完 onRun、焦点回触发钮 |
+| [盘口三件](orderbook.md) | `drive orderbook` | 订单簿买卖两侧与三种模式、合并档位、占比条与累计、点价；深度图键盘与鼠标读数；成交明细逐笔与聚合 |
+| [Markdown 安全正文](markdown.md) | `drive markdown` | 粗体、列表、表格、代码与引用小标的渲染；HTML、图片被拦，外链新标签页；文档模式的锚点与相对链接 |
+| [TradingView 小组件四件](tv-widgets.md) | `drive tv-widgets` | SymbolInfo 报价与区间、SymbolOverview 页签 / 读数 / 区间 / percent 叠图、CrossRates 点格与键盘与热力、CompanyProfile 展开收起与空态 |
 | [对照 Salt 补的七件](salt-gaps.md) | 还没有流程（手走） | Pill 改与删、SystemStatus 关闭、Calendar 选日与不可选日、ListBox 单选与多选、Link / Card / Panel 的样子 |
 | [RatingPanel 技术评级三联](rating-panel.md) | `drive rating-panel` | 点周期与 ← / → + Enter 切周期、悬停与 Tab 聚焦出读数 |
 | [SymbolNote 品种备注](symbol-note.md) | `drive symbol-note` | 悬停预览、点击与 Enter 钉住、编辑后保存、存空就是删除、Esc 收起与放弃草稿 |
@@ -62,9 +65,6 @@
 
 | 件 | 等哪个 PR | 合并后要补什么 |
 | --- | --- | --- |
-| 订单簿、深度图、成交明细 | XartLab/KatanaUI#140（`feat/104-orderbook`） | 新建 `orderbook.md` 与 `flows/orderbook.mjs`：合并档位、买卖两侧、占比 |
-| Markdown 安全正文 | XartLab/KatanaUI#133（`feat/132-markdown`） | 新建 `markdown.md` 与流程：渲染、危险内容被拦下 |
-| 弹出层滚动即关 | XartLab/KatanaUI#135（`fix/125-popover-scroll`） | 在 [弹出层](overlays.md) 加子功能 `popover-scroll-close`：页面或装着锚点的容器一滚就关；用 `el.click()` 开（见那份的 Gotchas） |
 | 对照 Salt 补的七件 | XartLab/KatanaUI#104 的补件 PR | 写 `flows/salt-gaps.mjs`，把 [salt-gaps.md](salt-gaps.md) 里手走的几步变成 `drive salt-gaps` |
 
 ## 已走过的记录
@@ -76,3 +76,4 @@
 | 2026-11-23 | `feat/150-rating-panel` 周期一排改 rovingFocus 后 | rating-panel | PASS 7 步；把 `rovingFocus` 改回 false，第 03 步（→ 到 5m）变红，已还原 | XartLab/KatanaUI#159 |
 | 2026-11-23 | `c3eb2c28` | `link-group`（Graphite，十一步；合并前的工作树另走过一次 Console） | PASS；把选组件进组时的 joinLinkGroup 注释掉，第 06 步 FAIL（迷你图进空的组 C 后不再是 DDD） | XartLab/KatanaUI#162 |
 | 2026-11-23 | `b0928449`（`feat/147-seasonal-port` 合入 main 后） | seasonal-chart | PASS；做了一次改坏，变红后还原 | XartLab/KatanaUI#169 |
+| 2026-11-23 | `3ecfbf6` | 新补的 `orderbook`、`markdown`、`tv-widgets`，加了 `popover-scroll-close` 的 `overlays` | 四条全部 PASS（10 / 5 / 11 / 11 步）；每条各改坏一处组件代码都在对应那步变红，已还原 | XartLab/KatanaUI#143 |
