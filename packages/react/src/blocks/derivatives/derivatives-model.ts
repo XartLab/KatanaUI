@@ -104,14 +104,14 @@ export function lastFinite(values: readonly Maybe[]): number | null {
   return null
 }
 
-/** Periods a card offers by default (ids; the words come from labels.periods). 待核对：OKX 的周期档没读到具体值，先用行业通用的 5 分钟 / 1 小时 / 1 天；资金费率是票里写明的近 7 / 14 天。 */
+/** Periods a card offers by default (ids; the words come from labels.periods). 照 OKX 永续交易页「交易数据」各卡的周期按钮（2026-11-26 在 okx.com/trade-swap/btc-usdt-swap 读）。 */
 export const DEFAULT_PERIODS: { [K in DerivativesKind]: readonly string[] } = {
-  openInterestVolume: ['5m', '1h', '1d'],
+  openInterestVolume: ['5m', '15m', '1h', '4h', '1d'],
   fundingRate: ['7d', '14d'],
-  takerVolume: ['5m', '1h', '1d'],
-  longShortRatio: ['5m', '1h', '1d'],
+  takerVolume: ['5m', '15m', '1h', '4h', '1d'],
+  longShortRatio: ['5m', '15m', '1h', '4h', '1d'],
   topTraderRatio: ['5m', '1h', '1d'],
-  basis: ['5m', '1h', '1d'],
+  basis: ['1m', '5m', '1h', '4h', '1d'],
 }
 
 /** The period a card starts on when uncontrolled and none is given: the first of the periods it offers. */

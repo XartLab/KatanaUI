@@ -49,7 +49,7 @@ describe('DerivativesBoard', () => {
     const fund = out.slice(out.indexOf('data-kind="fundingRate"'), out.indexOf('data-kind="basis"'))
     expect(fund).toMatch(/aria-pressed="true"[^>]*>(?:<[^>]*>)*近 7 天/)
     const basis = out.slice(out.indexOf('data-kind="basis"'))
-    expect(basis).toMatch(/aria-pressed="true"[^>]*>(?:<[^>]*>)*1 天/)
+    expect(basis).toMatch(/aria-pressed="true"[^>]*>(?:<[^>]*>)*1 日/)
   })
 })
 

@@ -10,7 +10,7 @@ export type DerivativesLabels = {
   region: string
   /** Title and the hint behind the info button of each card. 每张卡的标题与「信息」按钮里的说明。 */
   cards: Record<DerivativesKind, { title: string; info: string }>
-  /** Words of the period buttons, by period id (`5m`, `1h`, `1d`, `7d`, `14d`); an id without a word is shown as is. */
+  /** Words of the period buttons, by period id (`1m`, `5m`, `15m`, `1h`, `4h`, `1d`, `7d`, `14d`); an id without a word is shown as is. */
   periods: Record<string, string>
   /** Accessible name of the period group of one card. */
   periodGroup: (title: string) => string
@@ -66,7 +66,16 @@ export const derivativesLabelsZh: DerivativesLabels = {
       info: '上面是合约价与指数价，下面是基差：合约价减指数价，正数是升水，负数是贴水。',
     },
   },
-  periods: { '5m': '5 分钟', '1h': '1 小时', '1d': '1 天', '7d': '近 7 天', '14d': '近 14 天' },
+  periods: {
+    '1m': '1 分钟',
+    '5m': '5 分钟',
+    '15m': '15 分钟',
+    '1h': '1 小时',
+    '4h': '4 小时',
+    '1d': '1 日',
+    '7d': '近 7 天',
+    '14d': '近 14 天',
+  },
   periodGroup: (title) => `${title}的周期`,
   infoButton: (title) => `${title}的说明`,
   series: {
