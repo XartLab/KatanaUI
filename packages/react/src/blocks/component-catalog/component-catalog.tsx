@@ -4,6 +4,8 @@
 // 已经在工作区里的打勾，当前品种用不了的置灰；卡片可以拖到工作区。实现原创。
 // OKX 没有、我们加的：搜索框（名字与别名）、「推荐」一组（宿主按当前品种与市场包标 recommended）、置灰的卡写明原因。
 // 只是目录本身：放进 Sheet、Popover 还是侧栏由宿主定；点卡片回调 onToggle，拖放的落点也是宿主的事。
+// variant="menu"（2026-11-26，#245）：OKX 面板页签栏「+」垂下来的紧凑清单（同日在用户的 Chrome 里看的）——每类一个可折叠的标题、每行名字加右边的「+」，
+// 已添加的与不可用的置灰、悬停或聚焦时说明原因；画法在 component-catalog-menu.tsx，分组用同一个 groupCatalog。抽屉样式仍是默认。
 import { Check, RotateCcw } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import { cn } from '../../lib/cn.ts'
@@ -11,10 +13,17 @@ import { focusRing } from '../../lib/focus.ts'
 import { Button } from '../../primitives/button.tsx'
 import { Input } from '../../primitives/input.tsx'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../primitives/tabs.tsx'
-import { groupCatalog, type CatalogCategory, type CatalogItem, type CatalogKind } from './component-catalog-model.ts'
+import { CatalogMenu } from './component-catalog-menu.tsx'
+import {
+  CATALOG_ITEM_MIME,
+  groupCatalog,
+  setCatalogDrag,
+  type CatalogCategory,
+  type CatalogItem,
+  type CatalogKind,
+} from './component-catalog-model.ts'
 
-/** The drag payload type set on dataTransfer when a catalog card is dragged. */
-export const CATALOG_ITEM_MIME = 'application/x-katana-component'
+export { CATALOG_ITEM_MIME }
 
 export type ComponentCatalogLabels = {
   title: string
@@ -87,8 +96,9 @@ function Glyph({ kind }: { kind: CatalogKind }) {
   )
 }
 
-/** Component catalog: search and category tabs over a grid of cards; click a card to add or remove it, or drag it out. */
+/** Component catalog: search and category tabs over a grid of cards (drawer), or a compact collapsible list (menu); click to add, or drag out. */
 export function ComponentCatalog({
+  variant = 'drawer',
   items,
   categories,
   thumbnails,
@@ -98,6 +108,11 @@ export function ComponentCatalog({
   labels,
   className,
 }: {
+  /**
+   * drawer (default): title, reset, search, category tabs and a grid of thumbnail cards, for a side drawer or sheet.
+   * menu: the compact list that hangs from a + button (title, hint, reset, search and category tabs are not drawn; every category is a collapsible group, each row a name and a +; rows already in use or unavailable are greyed and say why on hover or focus).
+   */
+  variant?: 'drawer' | 'menu'
   /** Everything that can be added, with its category, in-use and availability flags. */
   items: readonly CatalogItem[]
   /** The categories, in the order their groups appear. */
@@ -106,17 +121,28 @@ export function ComponentCatalog({
   thumbnails?: Readonly<Record<string, ReactNode>>
   /** Kind of the component the user is adding next to (the selected panel tab's kind); items that pair with it are recommended. */
   context?: string
-  /** Called when a card is clicked: `add` is true for a card not yet in the workspace, false to remove one that is. */
+  /** Called when a card is clicked: `add` is true for a card not yet in the workspace, false to remove one that is (the menu variant only adds: rows in use are greyed). */
   onToggle: (id: string, add: boolean) => void
   /** Called when the reset button is clicked; leave out to hide it. */
   onReset?: () => void
-  /** All visible text and accessible names. */
+  /** All visible text and accessible names. The menu variant reads only title (its accessible name), recommended, empty and inUse. */
   labels: ComponentCatalogLabels
   /** Extra class name on the catalog. */
   className?: string
 }) {
   const [category, setCategory] = useState('all')
   const [query, setQuery] = useState('')
+  if (variant === 'menu')
+    return (
+      <CatalogMenu
+        items={items}
+        categories={categories}
+        context={context}
+        onToggle={onToggle}
+        labels={labels}
+        className={className}
+      />
+    )
   const groups = groupCatalog(items, categories, {
     category: category === 'all' ? null : category,
     query,
@@ -176,11 +202,7 @@ export function ComponentCatalog({
                       aria-label={item.inUse ? `${item.name} · ${labels.inUse}` : item.name}
                       title={item.unavailable}
                       draggable={!blocked}
-                      onDragStart={(event) => {
-                        event.dataTransfer.effectAllowed = 'copy'
-                        event.dataTransfer.setData(CATALOG_ITEM_MIME, item.id)
-                        event.dataTransfer.setData('text/plain', item.id)
-                      }}
+                      onDragStart={(event) => setCatalogDrag(event, item.id)}
                       onClick={() => {
                         if (!blocked) onToggle(item.id, !item.inUse)
                       }}

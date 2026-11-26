@@ -5,6 +5,7 @@ import { page } from 'vite-plus/test/browser'
 import { AttributionBarsUsage } from '../gallery/usage/AttributionBarsUsage.tsx'
 import { ColumnSetTabsUsage } from '../gallery/usage/ColumnSetTabsUsage.tsx'
 import { ComponentCatalogUsage } from '../gallery/usage/ComponentCatalogUsage.tsx'
+import { ComponentCatalogMenuUsage } from '../gallery/usage/ComponentCatalogMenuUsage.tsx'
 import { ConsensusBlockUsage } from '../gallery/usage/ConsensusBlockUsage.tsx'
 import { DataGridUsage } from '../gallery/usage/DataGridUsage.tsx'
 import { DepthChartUsage } from '../gallery/usage/DepthChartUsage.tsx'
@@ -148,6 +149,7 @@ const items: Record<string, React.ReactNode> = {
   'position-calculator': <PositionCalculatorUsage />,
   'panel-tabs': <PanelTabsUsage />,
   'component-catalog': <ComponentCatalogUsage />,
+  'component-catalog-menu': <ComponentCatalogMenuUsage />,
   'strategy-launcher': <StrategyLauncherUsage />,
   'floating-window': <FloatingWindowUsage />,
   'regime-strip': <RegimeStripUsage />,
