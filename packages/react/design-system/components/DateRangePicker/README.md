@@ -8,7 +8,7 @@
 
 ### DateRangePicker
 
-值是 { start, end } 一对 YYYY-MM-DD（含两头），按哪个时区解读由调用方定。底座是 react-aria 的 DateField 与 RangeCalendar；浮层用我们的 Popover。
+值是 { start, end } 一对 YYYY-MM-DD（含两头），按哪个时区解读由调用方定。底座是 UI SDK 的 DateInput 与 Calendar（range 模式，双月）；浮层用我们的 Popover。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
@@ -18,7 +18,7 @@
 | `weekStart` | `'mon' \| 'sun'` | `'mon'` | 一周从哪天起；「本周」是它到今天。A 股与国际交易所都是周一。 |
 | `min / max` | `string` | — | 能选的最早、最晚日期。 |
 | `labels` | `DateRangeLabels` | — | 文字：start、end、pickRange、calendar、previousMonth、nextMonth、presets、preset（今天 / 本周 / 本月 / 年初至今）、custom；包里不带语言。 |
-| `locale` | `string` | — | 给 react-aria 的语言：中文界面 zh-CN，英文界面 en-CA。 |
+| `locale` | `string` | — | 给日期各段与日历的语言：中文界面 zh-CN，英文界面 en-CA。 |
 
 ## Usage
 

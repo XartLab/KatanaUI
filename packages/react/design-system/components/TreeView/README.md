@@ -8,7 +8,7 @@
 
 ### TreeView
 
-底座是 react-aria-components 的 Tree（角色 treegrid）：焦点、键盘、选中、展开都是它的。树数据用 items 传，一层层 children。
+底座是 UI SDK 的 Tree（角色 tree，行是嵌套的 treeitem）：焦点、键盘、选中、展开都是它的。树数据用 items 传，一层层 children。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
@@ -97,9 +97,9 @@ export function TreeViewUsage() {
 
 ```
 TreeView
-  Tree（react-aria）
-    TreeItem × n（递归）
-      行：箭头按钮、图标、字、数量
+  Tree（UI SDK）
+    TreeItem × n（递归，子项放进 TreeGroup）
+      行（TreeItemLabel）：箭头、图标、字、数量
 ```
 
 ## Keyboard

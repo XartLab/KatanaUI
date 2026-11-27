@@ -134,7 +134,7 @@ const readouts: GuidanceMap = {
     use: ['看原始消息、Agent 调用结果、连接调试输出。', '要在一大块 JSON 里查键名或值。'],
     avoid: ['要复制或高亮代码用 code-block。', '规整的行列用 data-grid。', '层级是业务目录时用 tree-view。'],
     a11y: [
-      '底座是 react-aria 的 Tree（treegrid），整棵树的名字取 label。',
+      '底座是 UI SDK 的 Tree（tree 角色），整棵树的名字取 label；行右端的箭头不是按钮，展开收起用方向键或点箭头。',
       '查找框有 aria-label，命中数在 role=status 里播报。',
     ],
   },

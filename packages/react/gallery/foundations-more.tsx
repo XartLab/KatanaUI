@@ -198,6 +198,38 @@ import '@katana-ui/react/ui.css'       // 组件样式、渲染层，最后引`}
 import { EquityCurve } from '@katana-ui/react/quant'`}
       />
       <p>也可以用 shadcn 注册表把单个件拷进项目：{code('npx shadcn add <站点>/r/<件名>.json')}。</p>
+      <h2>交互行为的底座</h2>
+      <p>
+        键盘、焦点、选中、读屏这层行为用 UI SDK（vercel-labs/ui，Apache-2.0），写在 dependencies，版本写死{' '}
+        {code('0.1.0-beta.17')}
+        ，出 1.0 再放开（#263，用户 2026-11-27 定：直接用它当行为层，先做能用，只做 React）。外观、token、对外 props
+        与类名都不变。
+      </p>
+      <Table
+        head={['件', '底座', '状态怎么写在 DOM 上']}
+        rows={[
+          [
+            code('Calendar / DateTimeInput / DateRangePicker / TradingDatePicker'),
+            'UI SDK 的 Calendar、DateInput、TimeInput',
+            '日格 data-selected、data-today、data-outside、data-unavailable、data-disabled，区间 data-range-start / data-range-end / data-preview；分段输入根与各段 data-invalid、data-empty',
+          ],
+          [
+            code('ListBox'),
+            'UI SDK 的 Listbox',
+            '项 data-selected、data-disabled；悬停与键盘焦点用 :hover、:focus-visible',
+          ],
+          [
+            code('TreeView / JsonViewer'),
+            'UI SDK 的 Tree',
+            '行 data-selected、data-expanded、data-level，层级变量 --tree-level（从 1 起）；不再是 treegrid，是嵌套的 tree / treeitem',
+          ],
+          [code('primitives/*'), 'Radix', '还没换（#263 第二步）'],
+        ]}
+      />
+      <p>
+        用 UI SDK 的 {code('@ui-sdk/core/testing')} 查键盘与 ARIA 模式（{code('checkPattern')}）：测试在
+        {code('browser/ui-sdk-behaviors.browser.test.tsx')}，新换的件补一条。
+      </p>
       <h2>文档站版式</h2>
       <Table
         head={['规则', '数值']}

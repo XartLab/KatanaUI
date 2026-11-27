@@ -2,7 +2,7 @@
 /* ListBox（patterns/list-box.tsx）：常驻页面的选项列表。项高 28（两行的项按内容长高）、内距 4 / 8、圆角 --radius-inner；
    悬停 selectable 的 hover 底，选中 selectable 的 selected 底、字提到 primary、右端出一个对勾（不只靠底色说选中）；
    键盘焦点在项内画 2px 焦点环（同 TreeView 的行）。bordered 时外面一圈 container 的边与 secondary 底、圆角 --radius-control。
-   RAC 在项上写 data-hovered / data-selected / data-focus-visible / data-disabled。 */
+   UI SDK 在项上写 data-selected / data-disabled / data-highlighted（虚拟焦点才有）；悬停与键盘焦点用 :hover / :focus-visible。 */
 .k-lb {
   display: flex;
   flex-direction: column;
@@ -19,7 +19,7 @@
   border-radius: var(--radius-control);
   background: var(--k-container-secondary-background);
 }
-.k-lb[data-focus-visible] {
+.k-lb:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
@@ -58,7 +58,7 @@
   cursor: pointer;
   user-select: none;
 }
-.k-lb-item[data-hovered] {
+.k-lb-item:hover:not([data-disabled]) {
   background: var(--k-selectable-background-hover);
   color: var(--k-content-primary-foreground);
 }
@@ -66,7 +66,7 @@
   background: var(--k-selectable-background-selected);
   color: var(--k-content-primary-foreground);
 }
-.k-lb-item[data-focus-visible] {
+.k-lb-item:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: -2px;
 }
@@ -112,7 +112,9 @@
   color: var(--k-content-body-foreground);
 }
 .k-lb-check {
+  display: inline-grid;
   flex: none;
+  place-items: center;
   opacity: 0;
 }
 .k-lb-item[data-selected] .k-lb-check {

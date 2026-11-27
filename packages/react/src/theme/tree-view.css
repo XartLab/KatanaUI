@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: MIT */
 /* TreeView：照设计稿 DataGrid 卡（2026-11-14 读）：行高 --row-base，等宽字（中英混排对得齐），数量是 tabular-nums；
-   悬停 --bg-400，选中 --bg-000 + 左 2px --ink-100（选中不改字重，免得换行宽）；缩进按层级 16px 一档（--k-tree-level 由组件按 aria-level 写）；
-   展开的箭头转 90 度（0.15s，同菜单）。RAC 在行上写 data-hovered / data-selected / data-focus-visible。 */
+   悬停 --bg-400，选中 --bg-000 + 左 2px --ink-100（选中不改字重，免得换行宽）；缩进按层级 16px 一档（--tree-level 由 UI SDK 写在行上，从 1 起）；
+   展开的箭头转 90 度（0.15s，同菜单）。UI SDK 在行（TreeItemLabel）上写 data-selected / data-expanded / data-level，在项上写 data-disabled；悬停与键盘焦点用 :hover / :focus-visible。 */
 .k-tree {
   display: flex;
   flex-direction: column;
@@ -23,20 +23,20 @@
   align-items: center;
   gap: 6px;
   height: var(--row-base);
-  padding: 0 8px 0 calc(4px + var(--k-tree-level, 0) * 16px);
+  padding: 0 8px 0 calc(4px + (var(--tree-level, 1) - 1) * 16px);
   border-bottom: var(--hairline);
   user-select: none;
 }
-.k-tree-item[data-hovered] .k-tree-row {
+.k-tree-item:not([data-disabled]) > .k-tree-row:hover {
   background: var(--k-surface-overlay-background);
   color: var(--k-content-primary-foreground);
 }
-.k-tree-item[data-selected] .k-tree-row {
+.k-tree-row[data-selected] {
   background: var(--k-surface-sunken-background);
   box-shadow: inset 2px 0 0 var(--k-content-primary-foreground);
   color: var(--k-content-primary-foreground);
 }
-.k-tree-item[data-focus-visible] .k-tree-row {
+.k-tree-item:focus-visible > .k-tree-row {
   outline: 2px solid var(--focus-ring);
   outline-offset: -2px;
 }

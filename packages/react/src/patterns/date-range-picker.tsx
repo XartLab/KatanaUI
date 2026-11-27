@@ -1,34 +1,22 @@
 // SPDX-License-Identifier: MIT
-import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react'
+import { DateInput, DateInputSegment } from '@ui-sdk/react/date-input'
+import { CalendarDays } from 'lucide-react'
 import { useState } from 'react'
-import {
-  Button as AriaButton,
-  CalendarCell,
-  CalendarGrid,
-  DateField,
-  DateInput,
-  DateSegment,
-  Heading,
-  I18nProvider,
-  RangeCalendar,
-  type DateSegmentProps,
-} from 'react-aria-components'
-import type { CalendarDate } from '@internationalized/date'
 import { cn } from '../lib/cn.ts'
 import { Popover, PopoverContent, PopoverTrigger } from '../primitives/popover.tsx'
+import { MonthCalendar, renderSegments, useCalendarFocus } from './date-parts.tsx'
 import {
   matchPreset,
   presetRange,
   RANGE_PRESETS,
-  toDay,
   type DateRange,
   type RangePreset,
   type WeekStart,
 } from './date-range-model.ts'
 
 // 功能参照 Arc Date range picker（uiarc.dev，2026-11-14 读：双月日历加预设），实现原创；样子沿用 DateTimeInput 的日历皮肤（theme/date-time.css 的 .k-cal*）加 theme/date-range.css。
-// 行为底座是 react-aria-components 的 DateField 与 RangeCalendar（键盘、读屏、日期运算都是它的）。没有用它的整件 DateRangePicker：
-// 整件自带 RAC 的 Popover，浮层材质、入场动效、静态预览（InlineOverlays）、焦点归还都是我们的 Popover 管，两个浮层体系并存会打架。
+// 行为底座是 UI SDK 的 DateInput 与 Calendar（mode="range"，双月；@ui-sdk/react，Apache-2.0，#263 从 react-aria 换来；键盘、读屏、日期运算都是它的）。没有用它的整件 DatePicker：
+// 它的输入是整个文本框、不是逐段打字，样子要变；浮层材质、入场动效、焦点归还也是我们的 Popover 管。
 // 值是字符串（YYYY-MM-DD 一对，起止都含），按哪个时区解读由调用方定；今天由调用方传，件里不读时钟。
 
 export type DateRangeLabels = {
@@ -61,21 +49,9 @@ export type DateRangePickerProps = {
   min?: string
   max?: string
   labels: DateRangeLabels
-  /** 给 react-aria 的语言（日期各段的顺序）：中文界面 zh-CN，英文界面 en-CA。 */
+  /** 给日期各段与日历的语言（顺序）：中文界面 zh-CN，英文界面 en-CA。 */
   locale: string
   className?: string
-}
-
-function Segments({ segment }: { segment: DateSegmentProps['segment'] }) {
-  if (segment.type === 'literal') {
-    const text = segment.text.replace('/', '-').replace(/[⁦-⁩]/g, '')
-    return text ? (
-      <span className="k-dt-sep" aria-hidden="true">
-        {text}
-      </span>
-    ) : null
-  }
-  return <DateSegment segment={segment} className="k-dt-seg" />
 }
 
 /** Date range field: two typed date fields, a two-month calendar and presets (today, this week, this month, year to date). */
@@ -94,17 +70,17 @@ export function DateRangePicker({
   const onValue = (range: DateRange) => (onValueChange ?? legacyOnValue)?.(range)
   const [open, setOpen] = useState(false)
   // 两个框是分开打字的：只填了一头、或起点晚于终点时，先存在这里，凑成合法区间才上报。
-  const [pending, setPending] = useState<{ start: CalendarDate | null; end: CalendarDate | null } | null>(null)
-  const start = pending ? pending.start : value ? toDay(value.start) : null
-  const end = pending ? pending.end : value ? toDay(value.end) : null
-  const minValue = toDay(min ?? '')
-  const maxValue = toDay(max ?? '')
+  const [pending, setPending] = useState<{ start: string; end: string } | null>(null)
+  const calendarFocus = useCalendarFocus()
+  const start = pending ? pending.start : (value?.start ?? '')
+  const end = pending ? pending.end : (value?.end ?? '')
   const active = matchPreset(value, today, weekStart)
 
-  const edit = (next: { start: CalendarDate | null; end: CalendarDate | null }) => {
-    if (next.start && next.end && next.start.compare(next.end) <= 0) {
+  // YYYY-MM-DD 字符串按字典序就是日期序。
+  const edit = (next: { start: string; end: string }) => {
+    if (next.start && next.end && next.start <= next.end) {
       setPending(null)
-      onValue({ start: next.start.toString(), end: next.end.toString() })
+      onValue({ start: next.start, end: next.end })
     } else setPending(next)
   }
   const choose = (range: DateRange) => {
@@ -114,101 +90,85 @@ export function DateRangePicker({
   }
 
   return (
-    <I18nProvider locale={locale}>
-      <span className={cn('k-dr', className)}>
-        <DateField
-          aria-label={labels.start}
-          className="k-dt-field"
-          value={start}
-          minValue={minValue}
-          maxValue={end ?? maxValue}
-          validationBehavior="aria"
-          shouldForceLeadingZeros
-          onChange={(day) => edit({ start: day, end })}
-        >
-          <DateInput className="k-dt-input">{(segment) => <Segments segment={segment} />}</DateInput>
-        </DateField>
-        <span className="k-dr-dash" aria-hidden="true">
-          –
-        </span>
-        <DateField
-          aria-label={labels.end}
-          className="k-dt-field"
-          value={end}
-          minValue={start ?? minValue}
-          maxValue={maxValue}
-          validationBehavior="aria"
-          shouldForceLeadingZeros
-          onChange={(day) => edit({ start, end: day })}
-        >
-          <DateInput className="k-dt-input">{(segment) => <Segments segment={segment} />}</DateInput>
-        </DateField>
-        <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger className="k-dt-pick" aria-label={labels.pickRange}>
-            <CalendarDays size={14} aria-hidden />
-          </PopoverTrigger>
-          <PopoverContent
-            variant="menu"
-            side="bottom"
-            align="start"
-            sideOffset={4}
-            className="k-dr-pop"
-            aria-label={labels.calendar}
-          >
-            <div className="k-dr-presets" role="group" aria-label={labels.presets}>
-              {RANGE_PRESETS.map((preset) => (
-                <button
-                  key={preset}
-                  type="button"
-                  className="k-dr-preset"
-                  aria-pressed={active === preset}
-                  onClick={() => {
-                    const range = presetRange(preset, today, weekStart)
-                    if (range) choose(range)
-                  }}
-                >
-                  {labels.preset[preset]}
-                </button>
-              ))}
-              {value && active === null && (
-                <span className="k-dr-preset" data-custom aria-current="true">
-                  {labels.custom}
-                </span>
-              )}
-            </div>
-            <RangeCalendar
-              className="k-cal k-rcal"
-              aria-label={labels.calendar}
-              value={start && end ? { start, end } : null}
-              minValue={minValue}
-              maxValue={maxValue}
-              defaultFocusedValue={start ?? undefined}
-              visibleDuration={{ months: 2 }}
-              pageBehavior="visible"
-              autoFocus
-              onChange={(range) => choose({ start: range.start.toString(), end: range.end.toString() })}
-            >
-              <header className="k-cal-head">
-                <AriaButton slot="previous" className="k-cal-nav" aria-label={labels.previousMonth}>
-                  <ChevronLeft size={14} aria-hidden />
-                </AriaButton>
-                <Heading className="k-cal-title" />
-                <AriaButton slot="next" className="k-cal-nav" aria-label={labels.nextMonth}>
-                  <ChevronRight size={14} aria-hidden />
-                </AriaButton>
-              </header>
-              <div className="k-rcal-months">
-                <CalendarGrid className="k-cal-grid">
-                  {(day) => <CalendarCell date={day} className="k-cal-cell" />}
-                </CalendarGrid>
-                <CalendarGrid className="k-cal-grid" offset={{ months: 1 }}>
-                  {(day) => <CalendarCell date={day} className="k-cal-cell" />}
-                </CalendarGrid>
-              </div>
-            </RangeCalendar>
-          </PopoverContent>
-        </Popover>
+    <span className={cn('k-dr', className)}>
+      <DateInput
+        aria-label={labels.start}
+        className="k-dt-field k-dt-input"
+        locale={locale}
+        value={start || null}
+        min={min || undefined}
+        max={end || max || undefined}
+        onValueChange={(day) => edit({ start: day ?? '', end })}
+      >
+        {({ segments }) => renderSegments(segments, DateInputSegment)}
+      </DateInput>
+      <span className="k-dr-dash" aria-hidden="true">
+        –
       </span>
-    </I18nProvider>
+      <DateInput
+        aria-label={labels.end}
+        className="k-dt-field k-dt-input"
+        locale={locale}
+        value={end || null}
+        min={start || min || undefined}
+        max={max || undefined}
+        onValueChange={(day) => edit({ start, end: day ?? '' })}
+      >
+        {({ segments }) => renderSegments(segments, DateInputSegment)}
+      </DateInput>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger className="k-dt-pick" aria-label={labels.pickRange}>
+          <CalendarDays size={14} aria-hidden />
+        </PopoverTrigger>
+        <PopoverContent
+          variant="menu"
+          side="bottom"
+          align="start"
+          sideOffset={4}
+          className="k-dr-pop"
+          aria-label={labels.calendar}
+          onOpenAutoFocus={calendarFocus.onOpenAutoFocus}
+        >
+          <div className="k-dr-presets" role="group" aria-label={labels.presets}>
+            {RANGE_PRESETS.map((preset) => (
+              <button
+                key={preset}
+                type="button"
+                className="k-dr-preset"
+                aria-pressed={active === preset}
+                onClick={() => {
+                  const range = presetRange(preset, today, weekStart)
+                  if (range) choose(range)
+                }}
+              >
+                {labels.preset[preset]}
+              </button>
+            ))}
+            {value && active === null && (
+              <span className="k-dr-preset" data-custom aria-current="true">
+                {labels.custom}
+              </span>
+            )}
+          </div>
+          <MonthCalendar
+            className="k-rcal"
+            mode="range"
+            months={2}
+            locale={locale}
+            labels={labels}
+            aria-label={labels.calendar}
+            controller={calendarFocus.controller}
+            value={start && end ? [start, end] : null}
+            defaultMonth={start ? start.slice(0, 7) : undefined}
+            min={min || undefined}
+            max={max || undefined}
+            weekStartsOn={weekStart === 'sun' ? 0 : 1}
+            onValueChange={(range) => {
+              if (Array.isArray(range) && range.length === 2) choose({ start: range[0]!, end: range[1]! })
+            }}
+          />
+        </PopoverContent>
+      </Popover>
+    </span>
   )
 }

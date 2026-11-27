@@ -1252,7 +1252,7 @@ export const PAGES: readonly DocPage[] = [
     props: [
       {
         part: 'DateRangePicker',
-        note: '值是 { start, end } 一对 YYYY-MM-DD（含两头），按哪个时区解读由调用方定。底座是 react-aria 的 DateField 与 RangeCalendar；浮层用我们的 Popover。',
+        note: '值是 { start, end } 一对 YYYY-MM-DD（含两头），按哪个时区解读由调用方定。底座是 UI SDK 的 DateInput 与 Calendar（range 模式，双月）；浮层用我们的 Popover。',
         rows: [
           { name: 'value', type: '{ start: string; end: string } | null', desc: '当前区间；null 是没选。' },
           {
@@ -1277,7 +1277,7 @@ export const PAGES: readonly DocPage[] = [
             type: 'DateRangeLabels',
             desc: '文字：start、end、pickRange、calendar、previousMonth、nextMonth、presets、preset（今天 / 本周 / 本月 / 年初至今）、custom；包里不带语言。',
           },
-          { name: 'locale', type: 'string', desc: '给 react-aria 的语言：中文界面 zh-CN，英文界面 en-CA。' },
+          { name: 'locale', type: 'string', desc: '给日期各段与日历的语言：中文界面 zh-CN，英文界面 en-CA。' },
         ],
       },
     ],
@@ -2552,7 +2552,7 @@ export const PAGES: readonly DocPage[] = [
     props: [
       {
         part: 'TreeView',
-        note: '底座是 react-aria-components 的 Tree（角色 treegrid）：焦点、键盘、选中、展开都是它的。树数据用 items 传，一层层 children。',
+        note: '底座是 UI SDK 的 Tree（角色 tree，行是嵌套的 treeitem）：焦点、键盘、选中、展开都是它的。树数据用 items 传，一层层 children。',
         rows: [
           {
             name: 'items',
@@ -2592,7 +2592,8 @@ export const PAGES: readonly DocPage[] = [
       '不要在包里放图标集：图标由调用方传 icon。',
       '不要拿它当导航菜单：菜单用 DropdownMenu 或工具条。',
     ],
-    composition: 'TreeView\n  Tree（react-aria）\n    TreeItem × n（递归）\n      行：箭头按钮、图标、字、数量',
+    composition:
+      'TreeView\n  Tree（UI SDK）\n    TreeItem × n（递归，子项放进 TreeGroup）\n      行（TreeItemLabel）：箭头、图标、字、数量',
     keys: [
       ['↑ ↓', '上下走一行'],
       ['→', '收起的行展开；已展开则进第一个子项'],
@@ -3899,7 +3900,7 @@ export const PAGES: readonly DocPage[] = [
     props: [
       {
         part: 'JsonViewer',
-        note: '底座是 react-aria-components 的 Tree（角色 treegrid）。value 换了，展开状态重来。不是 JSON 的值（undefined、日期、bigint、循环引用）不抛错：画成看得见的字。',
+        note: '底座是 UI SDK 的 Tree（角色 tree）。value 换了，展开状态重来。不是 JSON 的值（undefined、日期、bigint、循环引用）不抛错：画成看得见的字。',
         rows: [
           { name: 'value', type: 'unknown', desc: '要看的值，通常是 JSON.parse 的结果。' },
           { name: 'label', type: 'string', desc: '整棵树的读屏名。' },
@@ -3935,7 +3936,7 @@ export const PAGES: readonly DocPage[] = [
       '不要拿它显示业务表格：规整的行列用 DataGrid。',
     ],
     composition:
-      'JsonViewer\n  label > input[type=search] + span[role=status]\n  Tree（react-aria）\n    TreeItem × n（递归）：箭头、键名、概要或值',
+      'JsonViewer\n  label > input[type=search] + span[role=status]\n  Tree（UI SDK）\n    TreeItem × n（递归）：箭头、键名、概要或值',
     keys: [
       ['↑ ↓', '上下走一行'],
       ['→ / ←', '展开 / 收起，或进子级 / 回父级'],
@@ -11330,7 +11331,7 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 420,
     title: 'TradingDatePicker 交易日选择',
     summary:
-      '只能选交易日的日期选择：日期按钮点开日历（沿用 DateTimeInput 的日历皮肤，行为底座是 react-aria 的 Calendar），休市的日子灰着点不了；两侧的按钮直接跳到上一个 / 下一个交易日（跳过周末与长假）。交易日历由调用方传，可以是一组 YYYY-MM-DD（数组或 Set），也可以是判定函数；包里不带日历数据，也不读时钟。min / max 圈出能选的范围，前后按钮到边界禁用。',
+      '只能选交易日的日期选择：日期按钮点开日历（沿用 DateTimeInput 的日历皮肤，行为底座是 UI SDK 的 Calendar），休市的日子灰着点不了；两侧的按钮直接跳到上一个 / 下一个交易日（跳过周末与长假）。交易日历由调用方传，可以是一组 YYYY-MM-DD（数组或 Set），也可以是判定函数；包里不带日历数据，也不读时钟。min / max 圈出能选的范围，前后按钮到边界禁用。',
     exports: ['TradingDatePicker', 'tradingDayTest', 'shiftTradingDay', 'latestTradingDayOnOrBefore'],
     propParts: [
       { part: 'TradingDatePicker', note: '渲染一个 span；值是 YYYY-MM-DD 字符串，onValueChange 只会收到交易日。' },
@@ -11360,7 +11361,7 @@ export const PAGES: readonly DocPage[] = [
       '不要在 onValueChange 里再校验是不是交易日：休市的日子到不了回调。',
     ],
     composition:
-      'TradingDatePicker\n  上一个交易日按钮\n  日期按钮 → Popover\n    Calendar（react-aria，休市日 unavailable）\n  下一个交易日按钮',
+      'TradingDatePicker\n  上一个交易日按钮\n  日期按钮 → Popover\n    Calendar（UI SDK，休市日 unavailable）\n  下一个交易日按钮',
     keys: [
       ['← → ↑ ↓', '在日历里移动日子'],
       ['PageUp / PageDown', '上 / 下一个月'],
@@ -12137,12 +12138,12 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 300,
     title: 'Calendar 月历',
     summary:
-      '单独摆在页上的月历：选一天、翻月，非交易日用 unavailable 灰掉并加删除线。样子与 DateTimeInput 弹层里的日历同一套（.k-cal*），外面多一圈 container 的边与底；今天字提亮加下划线。行为底座是 react-aria 的 Calendar，日期一律 YYYY-MM-DD 字符串。',
+      '单独摆在页上的月历：选一天、翻月，非交易日用 unavailable 灰掉并加删除线。样子与 DateTimeInput 弹层里的日历同一套（.k-cal*），外面多一圈 container 的边与底；今天字提亮加下划线。行为底座是 UI SDK 的 Calendar，日期一律 YYYY-MM-DD 字符串。',
     exports: ['Calendar'],
     propParts: [
       {
         part: 'Calendar',
-        note: '月份名、星期名按 locale 由 react-aria 写；两个翻页钮的读屏名由 labels 给。value 传空字符串表示没选。',
+        note: '月份名、星期名按 locale 由 UI SDK 写；两个翻页钮的读屏名由 labels 给。value 传空字符串表示没选。',
       },
     ],
     states: [
@@ -12158,7 +12159,7 @@ export const PAGES: readonly DocPage[] = [
       '不要在件里写交易日历：哪天休市由调用方给 unavailable。',
       '不要只靠降色说不可选：删除线是件自带的，别用 className 去掉。',
     ],
-    composition: 'Calendar（I18nProvider + react-aria Calendar）\n  头部：上个月 | 月份标题 | 下个月\n  日格表（grid）',
+    composition: 'Calendar（UI SDK Calendar）\n  头部：上个月 | 月份标题 | 下个月\n  日格表（grid）',
     keys: [
       ['← → ↑ ↓', '按天、按周移动焦点'],
       ['PageUp / PageDown', '上一月 / 下一月'],
@@ -12173,7 +12174,7 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 330,
     title: 'ListBox 选项列表',
     summary:
-      '常驻页面的选项列表（listbox 角色）：单选或多选、可分组、每项可带图标、第二行说明与右端数值，选中的项右端出对勾。项高 28、圆角 --radius-inner，bordered 时外面一圈 container 的边与底；maxHeight 之后自己滚。行为底座是 react-aria 的 ListBox。',
+      '常驻页面的选项列表（listbox 角色）：单选或多选、可分组、每项可带图标、第二行说明与右端数值，选中的项右端出对勾。项高 28、圆角 --radius-inner，bordered 时外面一圈 container 的边与底；maxHeight 之后自己滚。行为底座是 UI SDK 的 Listbox。',
     exports: ['ListBox'],
     propParts: [
       {

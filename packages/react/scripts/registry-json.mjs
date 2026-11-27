@@ -120,6 +120,8 @@ const INTERNAL = {
   'scroll-dismiss': '非模态浮层的滚动即关：页面或装着锚点的容器把锚点滚走了就关（Popover 用）。',
   'hover-intent': '悬停意图：停一会儿才开、离开等一会儿再收、键盘聚焦立即开的钩子。',
   'code-highlight': 'CodeBlock 用的小型词法切分：注释、字符串、数字、关键字、函数、标点（纯函数，不加依赖）。',
+  'date-parts':
+    'Calendar、DateTimeInput、DateRangePicker、TradingDatePicker 共用的月历头与格、分段输入的段（UI SDK 上的薄封装）。',
   'matrix-orb-model': 'MatrixOrb 的纯数学：某状态下圆盘上一点在某一时刻的亮度。',
   'step-player-model': 'StepPlayer 的纯逻辑：一步放完后是前进、循环还是结束。',
   overlay: '浮层内容的 Portal 包装：平时挂到 body，包在 InlineOverlays 里时原地渲染（静态预览用）。',
@@ -128,7 +130,6 @@ const INTERNAL = {
   'menu-kind': '告诉菜单零件自己在哪一种菜单里的上下文。',
   'menu-parts': '菜单共用的容器、行、分隔线与勾选列样式。',
   'tone-text': 'ChangeText 与 PnlText 共用的底：方向到颜色与箭头。',
-  'date-time-model': 'DateTimeInput 的解析与格式化（纯函数）。',
   'number-field-model': 'NumberInput 的解析与取整（纯函数）。',
   'sparkline-model':
     'Sparkline 的几何（纯函数）：断点分段、刻度、设备像素对齐、单调曲线、基准切分、最高最低、标签放左放右、悬停取点。',
@@ -418,6 +419,8 @@ export async function buildRegistry() {
             pkg.dependencies[bare] ?? (bare.startsWith('@katana-ui/') ? pkg.peerDependencies[bare] : undefined)
           if (!version) throw new Error(`registry：${file} 引入 ${bare}，但 package.json 的 dependencies 里没有`)
           npm.add(`${bare}@${version}`)
+          // @ui-sdk/react 把 @ui-sdk/core 当 peer 依赖：别的项目装件时两个要一起装（它的安装说明也这么写）。
+          if (bare === '@ui-sdk/react') npm.add(`@ui-sdk/core@${pkg.dependencies['@ui-sdk/core']}`)
           // 类型包（DefinitelyTyped：@scope/name → @types/scope__name）在 devDependencies 里就跟着写进 item，
           // 否则别的项目装完件 tsc 找不到类型（#1890 treemap 的 d3-hierarchy）。
           const typesName = `@types/${bare.startsWith('@') ? bare.slice(1).replace('/', '__') : bare}`

@@ -32,7 +32,7 @@ Pill、SystemStatus、Calendar、ListBox、Link、Card、Panel 七页：可点�
 - **去掉条件。** `getByRole('button', { name: '去掉条件 P/E < 20' }).click()`。`getByTestId('pill-pe')` 不在页上；剩三颗。再 `getByRole('button', { name: '涨幅 > 3%', exact: true }).focus()` 后按 `Backspace`，`pill-chg` 也不在了。点「重置」，四颗回来。
 - **开关。** `getByTestId('pill-toggle').getByRole('button').click()`。`aria-pressed` 从 `true` 变 `false`。
 - **关消息。** `#/system-status`，`getByRole('button', { name: '关闭维护通知' }).click()`。`getByTestId('sysstat-info')` 不在页上，出现按钮「再显示维护通知」；点它，消息回来。
-- **选日子。** `#/calendar`，第一张 `section.getByRole('application').first()`，点 `getByRole('button', { name: /November 24, 2026|11月24日/ })`（名字按 locale 由 react-aria 写，zh-CN 下是中文日期，先 `aria` 存一份快照再定名字）。`[data-gallery-calendar]` 是 `2026-11-24`。
+- **选日子。** `#/calendar`，第一张 `section.getByRole('grid').first()`（UI SDK 的日格表是 `grid`，日子是 `gridcell`，不是按钮），点 `getByRole('gridcell', { name: /November 24, 2026|11月24日/ })`（名字按 locale 由 UI SDK 写，zh-CN 下是中文日期，先 `aria` 存一份快照再定名字；翻页钮仍是 `button`）。`[data-gallery-calendar]` 是 `2026-11-24`。
 - **点不了的日子。** 点 2026-11-26 那一格（`aria-disabled="true"`）：读数不变。
 - **单选列表。** `#/list-box`，`getByRole('listbox', { name: '选账户' }).getByRole('option', { name: /账户 B/ }).click()`。`[data-gallery-listbox]` 是 `b`；再点它一次仍是 `b`。
 - **多选列表。** `getByRole('listbox', { name: '布局' }).getByRole('option', { name: '复盘' }).click()`。`[data-gallery-listbox-multi]` 变成 `review`；再 `getByRole('option', { name: 'A 股盘面' }).click({ modifiers: ['Control'] })`，读数是 `review,cn`；双击「复盘」，`[data-gallery-listbox-open]` 是 `review`。

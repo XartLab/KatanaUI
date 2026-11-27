@@ -74,11 +74,11 @@ test('DateRangePicker：预设一键选区间、高亮当前预设，打字凑�
   await presets.getByRole('button', { name: '本月' }).click()
   await expect(out).toHaveText('2026-11-01 ~ 2026-11-14')
   await expect(presets).toHaveCount(0)
-  // 起点打成晚于终点（日打 20：先是合法的 02，再成 20）：20 不上报，框标红。
+  // 起点打成晚于终点（日打 20）：20 不上报（值停在上一个合法区间），框标红。UI SDK 的日段凑够两位才上报，中间的 02 不会冒出来。
   const start = area.getByRole('group', { name: '起点' }).first()
   await start.getByRole('spinbutton').last().click()
   await page.keyboard.type('20')
-  await expect(out).toHaveText('2026-11-02 ~ 2026-11-14')
+  await expect(out).toHaveText('2026-11-01 ~ 2026-11-14')
   await expect(area.locator('.k-dt-input[data-invalid]').first()).toBeVisible()
 })
 
