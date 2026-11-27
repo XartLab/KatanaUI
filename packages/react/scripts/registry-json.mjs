@@ -20,6 +20,11 @@ const TARGET_ROOT = '~/src/katana/ui'
  * 有页的件，说明读页数据（gallery/registry.ts 的 PAGES.summary），这里不写第二份。
  */
 const INTERNAL = {
+  'calendar-events':
+    '四个日历（Calendar、DateTimeInput、DateRangePicker、TradingDatePicker）共用的可选能力：有事件的格子下画点、悬停与聚焦读出当天的事、日历脚的一行洞察。',
+  'calendar-events-model': '日历事件点与洞察的纯函数：取某天的事件、格子上的点、把一天的事件读成一句话、日期标签。',
+  'file-import-model': 'FileImport 的纯逻辑：文件类型、状态语气、清单计数、粘贴的链接是否合法。',
+  'template-library-model': 'TemplateLibrary 的纯逻辑：按标题过滤整棵树、命中字的切分、按 id 找模板。',
   'tag-input-model':
     'TagInput 的纯逻辑：草稿与粘贴的拆分（逗号、分号、换行、制表符）、判重（不分大小写）、校验与上限，以及键盘在标签之间怎么走。',
   'delayed-flag':

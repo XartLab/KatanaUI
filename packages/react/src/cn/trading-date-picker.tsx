@@ -1,16 +1,10 @@
 // SPDX-License-Identifier: MIT
 import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState } from 'react'
-import {
-  Button as AriaButton,
-  Calendar,
-  CalendarCell,
-  CalendarGrid,
-  Heading,
-  I18nProvider,
-} from 'react-aria-components'
+import { Button as AriaButton, Calendar, CalendarGrid, Heading, I18nProvider } from 'react-aria-components'
 import { cn } from '../lib/cn.ts'
 import { Popover, PopoverContent, PopoverTrigger } from '../primitives/popover.tsx'
+import { useCalendarEvents, type CalendarEventProps } from '../patterns/calendar-events.tsx'
 import { toDay } from '../patterns/date-range-model.ts'
 import { cnLabelsZh, type TradingDatePickerLabels } from './labels.ts'
 import { shiftTradingDay, tradingDayTest, type TradingCalendar } from './trading-date-model.ts'
@@ -19,7 +13,7 @@ import { shiftTradingDay, tradingDayTest, type TradingCalendar } from './trading
 // 交易日历由调用方传（一组 YYYY-MM-DD 或判定函数），包里不带日历数据，也不读时钟。日历外观沿用 DateTimeInput 的 .k-cal（行为底座是 react-aria 的 Calendar：键盘、读屏都是它的）。
 // 值是 YYYY-MM-DD 字符串。不带打字框：打字会进「半截日期」状态，选日交给日历与前后键，键盘与读屏都能走通。
 
-export type TradingDatePickerProps = {
+export type TradingDatePickerProps = CalendarEventProps & {
   /**
    * The selected trading day as YYYY-MM-DD; null means nothing picked.
    * 选中的交易日（YYYY-MM-DD）；null 是还没选。
@@ -68,8 +62,11 @@ export function TradingDatePicker({
   labels = cnLabelsZh.tradingDate,
   locale = 'zh-CN',
   className,
+  events,
+  insight,
 }: TradingDatePickerProps) {
   const [open, setOpen] = useState(false)
+  const view = useCalendarEvents({ events, insight, locale, selected: value })
   const isTrading = tradingDayTest(calendar)
   const day = value === null ? null : toDay(value)
   const minValue = toDay(min ?? '')
@@ -127,9 +124,8 @@ export function TradingDatePicker({
                   <ChevronRight size={14} aria-hidden />
                 </AriaButton>
               </header>
-              <CalendarGrid className="k-cal-grid">
-                {(date) => <CalendarCell date={date} className="k-cal-cell" />}
-              </CalendarGrid>
+              <CalendarGrid className="k-cal-grid">{(date) => view.cell(date)}</CalendarGrid>
+              {view.foot}
             </Calendar>
           </PopoverContent>
         </Popover>

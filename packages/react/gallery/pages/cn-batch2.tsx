@@ -19,6 +19,7 @@ import {
   type Seat,
 } from '../../src/cn/index.ts'
 import { Row } from './parts.tsx'
+import { TradingEventsRow } from './research-calendar.tsx'
 
 // A 股件包第 2 批（#110）的文档页演示。所有数据都是示例（页上写明）：席位、股票、价格、金额都是编的，不是行情。
 
@@ -157,6 +158,7 @@ export function TradingDatePickerDemo() {
         />
         <span data-testid="trading-date-picked">已选：{date ?? '—'}</span>
       </Row>
+      <TradingEventsRow />
     </>
   )
 }

@@ -3,7 +3,6 @@ import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState } from 'react'
 import {
   Button as AriaButton,
-  CalendarCell,
   CalendarGrid,
   DateField,
   DateInput,
@@ -16,6 +15,7 @@ import {
 import type { CalendarDate } from '@internationalized/date'
 import { cn } from '../lib/cn.ts'
 import { Popover, PopoverContent, PopoverTrigger } from '../primitives/popover.tsx'
+import { useCalendarEvents, type CalendarEventProps } from './calendar-events.tsx'
 import {
   matchPreset,
   presetRange,
@@ -46,7 +46,7 @@ export type DateRangeLabels = {
   custom: string
 }
 
-export type DateRangePickerProps = {
+export type DateRangePickerProps = CalendarEventProps & {
   /** The current range (inclusive YYYY-MM-DD pair); null means nothing picked. */
   value: DateRange | null
   /** Called with a valid range once both ends are filled and start ≤ end (typing, calendar or a preset). */
@@ -90,7 +90,10 @@ export function DateRangePicker({
   labels,
   locale,
   className,
+  events,
+  insight,
 }: DateRangePickerProps) {
+  const view = useCalendarEvents({ events, insight, locale, selected: value?.start })
   const onValue = (range: DateRange) => (onValueChange ?? legacyOnValue)?.(range)
   const [open, setOpen] = useState(false)
   // 两个框是分开打字的：只填了一头、或起点晚于终点时，先存在这里，凑成合法区间才上报。
@@ -198,13 +201,12 @@ export function DateRangePicker({
                 </AriaButton>
               </header>
               <div className="k-rcal-months">
-                <CalendarGrid className="k-cal-grid">
-                  {(day) => <CalendarCell date={day} className="k-cal-cell" />}
-                </CalendarGrid>
+                <CalendarGrid className="k-cal-grid">{(day) => view.cell(day)}</CalendarGrid>
                 <CalendarGrid className="k-cal-grid" offset={{ months: 1 }}>
-                  {(day) => <CalendarCell date={day} className="k-cal-cell" />}
+                  {(day) => view.cell(day)}
                 </CalendarGrid>
               </div>
+              {view.foot}
             </RangeCalendar>
           </PopoverContent>
         </Popover>

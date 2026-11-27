@@ -17,6 +17,8 @@
 | `today` | `string` | — | 今天（YYYY-MM-DD），预设从它算。由调用方按显示时区算好传进来，件里不读时钟。 |
 | `weekStart` | `'mon' \| 'sun'` | `'mon'` | 一周从哪天起；「本周」是它到今天。A 股与国际交易所都是周一。 |
 | `min / max` | `string` | — | 能选的最早、最晚日期。 |
+| `events` | `Record<string, CalendarDayEvent[]> \| (day: string) => CalendarDayEvent[]` | — | 可选（#226）：每天的事件（{ label, tone? }）；有事件的格子画小点，悬停与聚焦读出。不传就没有。 |
+| `insight` | `{ text: string; icon?: ReactNode; tone?: Severity }` | — | 可选（#226）：日历脚上一行「图标加一句话」。 |
 | `labels` | `DateRangeLabels` | — | 文字：start、end、pickRange、calendar、previousMonth、nextMonth、presets、preset（今天 / 本周 / 本月 / 年初至今）、custom；包里不带语言。 |
 | `locale` | `string` | — | 给 react-aria 的语言：中文界面 zh-CN，英文界面 en-CA。 |
 
@@ -70,6 +72,7 @@ export function DateRangePickerUsage() {
 - 预设：口径是截至今天（本周 = 周起始日到今天，本月 = 1 号到今天，年初至今 = 1 月 1 日到今天）；当前区间正好是某个预设时它高亮。
 - 区间不在预设里：预设列末尾显示「自定义」。
 - 日历：双月；点两下选起止，起止之间的日子是淡底；选完自动收起。
+- 事件点与洞察（可选，#226）：传 events（按 YYYY-MM-DD 的表或查询函数）后，有事件的格子下画 4px 的小点（最多 3 个，按语气着色，选中格上改成选中前景）；一天超过 3 件事时只画 2 个点，第 3 个位置换成「+」；悬停或键盘聚焦在这格上，日历脚的读数行（固定一行高，放不下的截断，悬停的 title 给全文）写出当天的事，没有悬停时读选中日（区间日历读起点）；实心底的格子（单月选中格、区间起止两头）上点换成选中前景，区间中段保留语气色。传 insight 后脚上多一行「图标加一句话」。两样都不传，DOM 与样子与原来一致。
 
 ## Don't
 
