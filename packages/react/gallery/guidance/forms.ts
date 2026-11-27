@@ -266,7 +266,7 @@ const forms: GuidanceMap = {
     use: ['回放起点、报告日期、订单有效期。', '需要精确到分钟，又想直接打字的场合。'],
     avoid: ['选起止两个日期用 DateRangePicker。', '只要时长（如 2 小时 30 分）用 DurationPicker。'],
     a11y: [
-      '基于 react-aria 的 DateField：每一段是独立的可聚焦段，读屏读出段名与值。',
+      '基于 UI SDK 的 DateInput：每一段是独立的可聚焦段，读屏读出段名与值。',
       '日期、时间、日历按钮、日历各有读屏名，由 labels 传入，文案不写死在件里。',
       '日期不合法时按 aria 校验标红，错误随控件读出。',
     ],
@@ -276,9 +276,9 @@ const forms: GuidanceMap = {
     use: ['回放、台账、绩效报告选起止日期。', '常用区间（本周、本月、年初至今）要一键选。'],
     avoid: ['选单个日期用 DateTimeInput。', '要选未来区间（事件日历）时预设不适用。'],
     a11y: [
-      '起点、终点各是一个 react-aria 的分段日期框，读屏名分别取 labels.start、labels.end。',
+      '起点、终点各是一个 UI SDK 的分段日期框，读屏名分别取 labels.start、labels.end。',
       '预设列是 role=group，每项 aria-pressed；「自定义」带 aria-current。',
-      '日历是 react-aria 的 RangeCalendar，翻月按钮有读屏名。',
+      '日历是 UI SDK 的 Calendar（range 模式），翻月按钮有读屏名。',
       '终点早于起点时按 aria 校验标红。',
     ],
   },
