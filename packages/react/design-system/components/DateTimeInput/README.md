@@ -12,6 +12,8 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
+| `events` | `CalendarEventSource` | — | Events by day (a YYYY-MM-DD table or a lookup function): days with events get dots, hover or focus reads them out. |
+| `insight` | `CalendarInsight` | — | One line under the calendar: an icon and a sentence, for example "Avoided the 11-27 half day". |
 | `label` * | `string` | — | Field name used to build the accessible names: the date is read as "<label> date", the time as "<label> time". |
 | `date` * | `string` | — | The date as YYYY-MM-DD. |
 | `onDate` * | `(value: string) => void` | — | Called with the new date. |
@@ -63,6 +65,7 @@ export function DateTimeInputUsage() {
 
 - 默认、聚焦、错误（日期或时间不合法）。
 - 日期框右边的日历按钮打开日历。
+- 事件点与洞察（可选，#226）：传 events（按 YYYY-MM-DD 的表或查询函数）后，有事件的格子下画 4px 的小点（最多 3 个，按语气着色，选中格上改成选中前景）；一天超过 3 件事时只画 2 个点，第 3 个位置换成「+」；悬停或键盘聚焦在这格上，日历脚的读数行（固定一行高，放不下的截断，悬停的 title 给全文）写出当天的事，没有悬停时读选中日（区间日历读起点）；实心底的格子（单月选中格、区间起止两头）上点换成选中前景，区间中段保留语气色。传 insight 后脚上多一行「图标加一句话」。两样都不传，DOM 与样子与原来一致。
 
 ## Don't
 

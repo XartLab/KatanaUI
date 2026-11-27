@@ -10,7 +10,9 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `onFilesSelected` * | `(files: File[]) => void` | — | Called with the whole list of chosen files after each change. |
+| `onFilesSelected` | `(files: File[]) => void` | — | Called with the whole list of chosen files after each change (not called when `list` is false: there is no list to report). |
+| `onFilesAdded` | `(files: File[]) => void` | — | Called with only the files that were just added (after the size check), once per pick or drop. |
+| `list` | `boolean` | `true` | Show the component's own list of chosen files (default true); false when the caller keeps the list, as FileImport does. |
 | `labels` * | `FileUploadLabels` | — | All visible and spoken text (required). |
 | `accept` | `string` | — | Comma-separated types for the picker, e.g. |
 | `multiple` | `boolean` | `true` | Allow more than one file. |
@@ -57,7 +59,7 @@ export function AnimatedFileUploadUsage() {
 
 ## Don't
 
-- 不要在这里做上传进度：它只收文件，上传由调用方做。
+- 不要在这里做上传进度：它只收文件，上传由调用方做。要带进度、失败重试的多文件清单用 FileImport（它把这里的 list 关掉、只用 onFilesAdded）。
 - 不要把 accept 当安全校验：它只是选择器的提示，要在服务端再验。
 
 ## Composition
