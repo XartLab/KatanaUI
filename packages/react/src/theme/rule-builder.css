@@ -37,7 +37,7 @@
   margin: 0;
   padding: 8px 10px;
   border: var(--hairline);
-  border-radius: 8px;
+  border-radius: var(--radius-overlay);
   background: var(--k-container-secondary-background);
   color: var(--k-content-primary-foreground);
   font: var(--text-body) var(--font-sans);
@@ -57,7 +57,7 @@
 .k-rb-status {
   padding: 2px 4px;
   border: 0;
-  border-radius: 4px;
+  border-radius: var(--radius-md);
   background: transparent;
   font: var(--text-caption) var(--font-sans-small);
   white-space: nowrap;
@@ -121,7 +121,7 @@ button.k-rb-status:focus-visible {
 .k-rb-group:not([data-root]) {
   padding: 8px 10px 10px;
   border: 1px solid var(--k-separable-secondary-borderColor);
-  border-radius: 10px;
+  border-radius: var(--radius-overlay);
   background: var(--k-container-primary-background);
 }
 .k-rb-group[data-invalid] {
@@ -200,7 +200,7 @@ button.k-rb-status:focus-visible {
   height: 22px;
   padding: 0 8px;
   border: 1px solid var(--k-rb-line);
-  border-radius: 11px;
+  border-radius: var(--radius-pill);
   background: var(--k-container-primary-background);
   color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
@@ -229,7 +229,7 @@ button.k-rb-status:focus-visible {
   min-height: var(--k-rb-row-h);
   padding: 4px 6px;
   border: 1px solid var(--k-separable-secondary-borderColor);
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   background: var(--k-container-secondary-background);
 }
 .k-rb-row[data-invalid] {
@@ -255,7 +255,7 @@ button.k-rb-status:focus-visible {
   height: 28px;
   padding: 0;
   border: 0;
-  border-radius: 4px;
+  border-radius: var(--radius-md);
   background: transparent;
   color: var(--k-content-tertiary-foreground);
 }
@@ -357,7 +357,7 @@ button.k-rb-status:focus-visible {
   min-height: 30px;
   padding: 3px 4px;
   border: 1px solid var(--k-editable-borderColor);
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   background: var(--k-editable-background);
 }
 .k-rb-chips[data-invalid] {
@@ -392,7 +392,7 @@ button.k-rb-status:focus-visible {
 .k-rb-chip-x {
   width: 16px;
   height: 16px;
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
 }
 .k-rb-chip-x:hover,
 .k-rb-chip-add:hover {
@@ -441,7 +441,7 @@ button.k-rb-status:focus-visible {
   margin: 0;
   padding: 0 8px 0 6px;
   border: 1px solid var(--k-status-neutral-borderColor);
-  border-radius: 11px;
+  border-radius: var(--radius-pill);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-rb-branch svg {
@@ -477,6 +477,6 @@ button.k-rb-status:focus-visible {
 }
 @media (prefers-reduced-motion: reduce) {
   .k-rb-mode {
-    transition: none;
+    transition-duration: 0s;
   }
 }

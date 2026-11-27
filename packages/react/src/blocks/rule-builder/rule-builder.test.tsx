@@ -212,9 +212,11 @@ describe('RuleBuilder 的结构', () => {
       },
     }
     const out = html(guarded)
-    expect(out).toContain(
-      'aria-disabled="true" aria-label="不能删 组 · 1 条 · 且：含锁定条件" title="不能删 组 · 1 条 · 且：含锁定条件"',
-    )
+    // 属性顺序不算数（Button 自己写 aria-disabled，位置在 aria-label 前面），三个属性都在同一个钮上才算。
+    const blocked = out.match(/<button[^>]*data-blocked=""[^>]*>/)?.[0] ?? ''
+    expect(blocked).toContain('aria-disabled="true"')
+    expect(blocked).toContain('aria-label="不能删 组 · 1 条 · 且：含锁定条件"')
+    expect(blocked).toContain('title="不能删 组 · 1 条 · 且：含锁定条件"')
     expect(out.match(/data-blocked=""/g)).toHaveLength(1)
     // 没有锁定条件的 liq 组：照常。
     expect(out).toContain('aria-label="删除：组 · 2 条 · 或"')
