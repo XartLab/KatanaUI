@@ -199,6 +199,56 @@ const quotes: GuidanceMap = {
     avoid: ['只想显示评级文字用 technical-rating 或 rating-text。', '连续数值进度用 gauge-bar。'],
     a11y: ['role=img，读屏名为「label: 档位名」。', '弧与指针对读屏隐藏，档位词与统计数是普通文字。'],
   },
+  'rating-panel': {
+    aliases: [
+      'Technical analysis widget',
+      'Technicals gauges',
+      'Rating summary',
+      'Oscillators / Summary / Moving averages',
+    ],
+    use: [
+      '侧栏、报价头下面要一眼看三组评级（摆动指标、汇总、均线）的地方；要明细表与枢轴点用 technical-rating。',
+      '周期由调用方给（1m、5m、15m、1h、4h、1D、1W、1M 这类），切周期后调用方换一组新的分数与个数传进来。',
+      '汇总默认放中间、宽 1.35 倍；顺序照 TradingView：左摆动指标、中汇总、右均线。',
+      '读数（分数）只在悬停或聚焦时出现，盖在仪表名那一行上，不挤动版面；平时只看档位词与个数。',
+      '容器窄于 320px 时汇总独占一行、两个小仪表并排在下，侧栏放得下。',
+    ],
+    avoid: [
+      '只有一个分数用 rating-gauge。',
+      '只写评级文字用 rating-text。',
+      '不要拿 TradingView 蓝或橙色给仪表上色：两端是涨跌色，中段中性灰。',
+    ],
+    a11y: [
+      '每个仪表是 role=meter、tabindex=0：读屏名取 label，aria-valuetext 是「档位, 分数; 卖出 n, 中性 n, 买入 n」整句。',
+      '浮出的读数胶囊 aria-hidden，内容与 aria-valuetext 相同，不重复读。',
+      '周期切换是分段控件（ToggleGroup），读屏名取 labels.timeframe，方向键在周期间移动。',
+      '偏卖偏买不只靠颜色：档位词与卖出 / 买入个数都是文字。',
+    ],
+  },
+  'symbol-note': {
+    aliases: ['Symbol note', 'Notes', 'Sticky note', 'Annotation', 'Memo'],
+    use: [
+      '自选行、报价表行、报价头上标「这只品种我写过备注」；有备注才出图标，图标 18px、图形 13px。',
+      '悬停 200ms 出全文，移开 150ms 收起；指针可以移进浮层看长文（WCAG 1.4.13 可悬停）。',
+      '点图标钉住；钉住后点「编辑」改，Ctrl / ⌘ + Enter 或「保存」交出去掉首尾空白的文字，调用方自己存；存空就是删。',
+      '没有备注、又给了 onValueChange 时出淡灰加号，点开直接进编辑；行加 k-row-host 后加号只在行悬停或行内有焦点时出现。',
+      '浮层用 popover="manual"：悬停预览不会把别处钉着、正在编辑的备注关掉；点件外、Tab 走出件、按 Esc 由件自己收。',
+      '浮层宽 280px、最高 320px（超出自己滚），贴在图标右侧 6px、顶边对齐，放不下就翻到左侧或往上（CSS 锚点定位）；不放在图标下方：图标排成一列时（放在定宽的代码列后）不盖住下面几行的图标，指针能顺着一列往下走。不支持锚点定位的浏览器按图标位置摆一次。',
+      '浮层里的点击与按键不冒泡到宿主行：点图标不会选中行，在编辑框里打空格、方向键不会触发行的快捷键。',
+    ],
+    avoid: [
+      '不要用它放提醒或告警：图标不上信号色，也不会主动弹出；告警用 toast 或 status-icon。',
+      '一两个字的说明用 tooltip，不要做成备注。',
+      '要整页记笔记用 textarea 或编辑器，不要把长文塞进行内浮层。',
+    ],
+    a11y: [
+      '图标是 button：读屏名取 labels.note（没有备注时取 labels.add），带 aria-haspopup=dialog、aria-expanded 与指向浮层的 aria-controls。',
+      '浮层 role=dialog（非模态），读屏名取 labels.note；它紧跟在图标后面，Tab 下一步就进浮层，焦点进来即钉住。',
+      '打开不抢焦点：悬停与聚焦预览都不移动焦点（WCAG 3.2.1）；点「编辑」焦点进编辑框、光标在末尾，保存或取消后焦点回「编辑」，关上时焦点在浮层里就回到图标。',
+      'Esc：编辑时只放弃草稿；不在编辑时收起浮层（WCAG 1.4.13 可关闭）。',
+      '键盘 Tab 到图标（focus-visible）也出预览，鼠标点击不算。',
+    ],
+  },
   'row-actions': {
     aliases: ['Row actions', 'Hover toolbar', 'Quick actions', 'Context actions'],
     use: ['带品种的表格行、热力格上的开图、加自选、告警等操作。', '同一份动作既给悬停按钮也给右键菜单。'],
