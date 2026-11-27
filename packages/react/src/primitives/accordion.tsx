@@ -25,8 +25,11 @@ type AccordionProps = AccordionBase &
     | {
         /** One item open at a time. */
         type: 'single'
+        /** The open item's value (controlled). */
         value?: string
+        /** The open item's value at first (uncontrolled). */
         defaultValue?: string
+        /** Called with the open item's value; an empty string once it closes. */
         onValueChange?: (value: string) => void
         /** Lets the open item close itself. */
         collapsible?: boolean
@@ -34,8 +37,11 @@ type AccordionProps = AccordionBase &
     | {
         /** Any number of items open. */
         type: 'multiple'
+        /** The open items' values (controlled). */
         value?: string[]
+        /** The open items' values at first (uncontrolled). */
         defaultValue?: string[]
+        /** Called with the open items' values. */
         onValueChange?: (value: string[]) => void
         collapsible?: never
       }
@@ -73,7 +79,10 @@ function AccordionTrigger({
   className,
   children,
   ...props
-}: Omit<ComponentProps<typeof AccordionButton>, 'children'> & { children?: ReactNode }) {
+}: Omit<ComponentProps<typeof AccordionButton>, 'children'> & {
+  /** The heading's content. */
+  children?: ReactNode
+}) {
   return (
     <AccordionHeader className="m-0 flex">
       <AccordionButton
@@ -98,7 +107,10 @@ function AccordionContent({
   className,
   children,
   ...props
-}: Omit<ComponentProps<typeof AccordionPanel>, 'children'> & { children?: ReactNode }) {
+}: Omit<ComponentProps<typeof AccordionPanel>, 'children'> & {
+  /** The panel's content. */
+  children?: ReactNode
+}) {
   return (
     <AccordionPanel render={slotName('accordion-content')} className="k-text-body overflow-hidden" {...props}>
       <div className={cn('pt-0 pb-3', className)}>{children}</div>

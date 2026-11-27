@@ -19,7 +19,7 @@ function RadioGroup({
   defaultValue?: string
   /** Called with the chosen value. */
   onValueChange?: (value: string) => void
-  /** 布局方向：vertical 竖排（默认），horizontal 横排；同时写进 aria-orientation。 */
+  /** Layout direction: vertical (default) or horizontal; also written to aria-orientation. */
   orientation?: 'horizontal' | 'vertical'
 }) {
   return (

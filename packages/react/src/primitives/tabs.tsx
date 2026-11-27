@@ -67,7 +67,10 @@ function TabsList({
   children,
   ...props
 }: Omit<ComponentProps<typeof TabsListRoot>, 'children'> &
-  VariantProps<typeof tabsListVariants> & { children?: ReactNode }) {
+  VariantProps<typeof tabsListVariants> & {
+    /** The tab triggers. */
+    children?: ReactNode
+  }) {
   const list = useRef<HTMLDivElement>(null)
   // 当前页签的位置与大小：量出来给底块用。UI SDK 换页签时改的是页签上的 data-selected，所以盯着这个属性；列表变宽变窄也重量。
   const [pill, setPill] = useState<Pill | null>(null)

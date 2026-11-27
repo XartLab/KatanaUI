@@ -21,7 +21,10 @@ function CollapsibleTrigger({
   className,
   children,
   ...props
-}: Omit<ComponentProps<typeof CollapsibleButton>, 'children'> & { children?: ReactNode }) {
+}: Omit<ComponentProps<typeof CollapsibleButton>, 'children'> & {
+  /** The heading's content. */
+  children?: ReactNode
+}) {
   return (
     <CollapsibleButton
       data-slot="collapsible-trigger"
@@ -47,7 +50,10 @@ function CollapsibleContent({
   className,
   children,
   ...props
-}: Omit<ComponentProps<typeof CollapsiblePanel>, 'children'> & { children?: ReactNode }) {
+}: Omit<ComponentProps<typeof CollapsiblePanel>, 'children'> & {
+  /** The panel's content. */
+  children?: ReactNode
+}) {
   return (
     <CollapsiblePanel render={slotName('collapsible-content')} className="k-text-body overflow-hidden" {...props}>
       <div className={cn('pt-0 pb-3', className)}>{children}</div>
