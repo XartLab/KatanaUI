@@ -67,8 +67,8 @@ describe('ToggleGroup fullWidth / split', () => {
     const html = group({ split: true, fullWidth: true })
     expect(html).toContain('data-split="true"')
     expect(html).not.toContain('--k-selectable-groupBorderColor')
-    expect(html).toContain('data-[state=on]:bg-(--pnl-up)')
-    expect(html).toContain('data-[state=on]:bg-(--pnl-down)')
+    expect(html).toContain('data-pressed:bg-(--pnl-up)')
+    expect(html).toContain('data-pressed:bg-(--pnl-down)')
     expect(html).toContain('aria-pressed="true"')
     expect(html).toContain('aria-pressed="false"')
     // split 没有滑块。
