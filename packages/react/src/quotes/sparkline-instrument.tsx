@@ -14,6 +14,7 @@ import {
   type KeyboardEvent,
   type PointerEvent,
 } from 'react'
+import { fillVar } from '../lib/fill.ts'
 import { useLineExtend, type LineFollower, type LinePoint } from '../lib/live-line.ts'
 import { fontFor, measureText } from '../lib/text-measure.ts'
 import {
@@ -371,9 +372,10 @@ export function SparkInstrument({
                   className="k-spark-ins-bar"
                   x={projX0 + 1}
                   y={y - 0.5}
+                  width={Math.max(0, projW - 1)}
                   height={1}
-                  // 宽度写在 style 里：CSS 的 width 才能过渡（新点进来时柱子平滑变化）。
-                  style={{ width: Math.max(0, v * (projW - 1)) }}
+                  // 长度是 --fill（0 到 1），CSS 用 scale 画：才能过渡（新点进来时柱子平滑变化）又不重排。
+                  style={fillVar(Math.max(0, v))}
                 />
               )
             })}

@@ -10,7 +10,7 @@
   min-width: 0;
   padding: 8px 10px;
   border: var(--hairline);
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   background: var(--k-container-secondary-background);
   color: var(--k-content-body-foreground);
   font: var(--text-data) var(--font-sans);
@@ -58,7 +58,7 @@
   color: var(--k-content-secondary-foreground);
 }
 .k-srec-source {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-mono);
 }
 .k-srec-signal {
@@ -104,7 +104,7 @@
   color: var(--k-status-ok-foreground);
 }
 
-.k-dt {
+.k-dtree {
   container-type: inline-size;
   display: flex;
   flex-direction: column;
@@ -113,17 +113,17 @@
   color: var(--k-content-body-foreground);
   font: var(--text-data) var(--font-sans);
 }
-.k-dt-head {
+.k-dtree-head {
   display: flex;
   align-items: center;
   gap: var(--space-3);
 }
-.k-dt-title {
+.k-dtree-title {
   margin: 0;
   color: var(--k-content-primary-foreground);
   font: var(--text-data) var(--font-sans);
 }
-.k-dt-nav {
+.k-dtree-nav {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -131,22 +131,22 @@
   color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-num-small);
 }
-.k-dt-body {
+.k-dtree-body {
   display: grid;
   grid-template-columns: minmax(160px, 1fr) minmax(0, 2.4fr);
   gap: var(--space-4);
 }
-.k-dt-question p {
+.k-dtree-question p {
   margin: 0 0 4px;
 }
-.k-dt-ask {
+.k-dtree-ask {
   color: var(--k-content-primary-foreground);
 }
-.k-dt-context {
+.k-dtree-context {
   color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
-.k-dt-agent {
+.k-dtree-agent {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
@@ -154,17 +154,17 @@
   color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
-.k-dt-agent small {
-  color: var(--k-content-tertiary-foreground);
+.k-dtree-agent small {
+  color: var(--k-content-secondary-foreground);
   font-family: var(--font-mono);
 }
-.k-dt-risk[data-risk='high'] {
+.k-dtree-risk[data-risk='high'] {
   color: var(--k-status-danger-foreground) !important;
 }
-.k-dt-risk[data-risk='medium'] {
+.k-dtree-risk[data-risk='medium'] {
   color: var(--k-status-warn-foreground) !important;
 }
-.k-dt-branches {
+.k-dtree-branches {
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -173,14 +173,14 @@
   border-left: 1px solid var(--k-separable-primary-borderColor);
   list-style: none;
 }
-.k-dt-branch {
+.k-dtree-branch {
   position: relative;
   display: grid;
   grid-template-columns: minmax(150px, auto) minmax(0, 1fr);
   align-items: start;
   gap: 2px var(--space-3);
 }
-.k-dt-branch::before {
+.k-dtree-branch::before {
   content: '';
   position: absolute;
   top: 13px;
@@ -189,22 +189,22 @@
   height: 1px;
   background: var(--k-separable-primary-borderColor);
 }
-.k-dt-branch[data-pick]::before {
+.k-dtree-branch[data-pick]::before {
   background: var(--accent);
 }
-.k-dt-choose {
+.k-dtree-choose {
   justify-content: flex-start;
 }
-.k-dt-choose kbd {
-  color: var(--k-content-tertiary-foreground);
+.k-dtree-choose kbd {
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-num-small);
 }
-.k-dt-pick {
+.k-dtree-pick {
   grid-column: 1;
   color: var(--accent);
   font: var(--text-caption) var(--font-sans-small);
 }
-.k-dt-effects {
+.k-dtree-effects {
   grid-column: 2;
   grid-row: 1 / span 2;
   display: flex;
@@ -216,22 +216,22 @@
   color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
-.k-dt-flagged {
+.k-dtree-flagged {
   position: relative;
 }
-.k-dt-flagged [data-flag] {
+.k-dtree-flagged [data-flag] {
   border-bottom: 1px dashed var(--k-status-warn-foreground);
   color: var(--k-content-primary-foreground);
 }
-.k-dt-flagged [data-flag]::before {
+.k-dtree-flagged [data-flag]::before {
   content: '!';
   margin-right: 4px;
   color: var(--k-status-warn-foreground);
 }
-.k-dt-flagged [data-flag]:focus-visible {
+.k-dtree-flagged [data-flag]:focus-visible {
   outline: 1px solid var(--focus-ring);
 }
-.k-dt-note {
+.k-dtree-note {
   position: absolute;
   z-index: 1;
   top: 100%;
@@ -242,63 +242,63 @@
   margin-top: 2px;
   padding: 4px 8px;
   border: var(--hairline);
-  border-radius: 4px;
+  border-radius: var(--radius-md);
   background: var(--k-container-primary-background);
   color: var(--k-content-body-foreground);
 }
-.k-dt-flagged:hover .k-dt-note,
-.k-dt-flagged:focus-within .k-dt-note {
+.k-dtree-flagged:hover .k-dtree-note,
+.k-dtree-flagged:focus-within .k-dtree-note {
   display: block;
 }
-.k-dt-other {
+.k-dtree-other {
   grid-column: 1 / -1;
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 4px 6px;
 }
-.k-dt-other label {
+.k-dtree-other label {
   grid-column: 1 / -1;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
-.k-dt-other textarea {
+.k-dtree-other textarea {
   min-width: 0;
   padding: 4px 8px;
   border: var(--hairline);
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   background: var(--k-container-primary-background);
   color: inherit;
   font: inherit;
   resize: vertical;
 }
-.k-dt-other textarea:focus-visible {
+.k-dtree-other textarea:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: -1px;
 }
-.k-dt-reply {
+.k-dtree-reply {
   grid-column: 1 / -1;
   margin: 0;
   padding: 4px 8px;
   border-left: 2px solid var(--accent);
   color: var(--k-content-secondary-foreground);
 }
-.k-dt-empty,
-.k-dt-live {
+.k-dtree-empty,
+.k-dtree-live {
   margin: 0;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
-.k-dt-live {
+.k-dtree-live {
   min-height: 1lh;
 }
 @container (max-width: 640px) {
-  .k-dt-body {
+  .k-dtree-body {
     grid-template-columns: 1fr;
   }
-  .k-dt-branch {
+  .k-dtree-branch {
     grid-template-columns: 1fr;
   }
-  .k-dt-effects {
+  .k-dtree-effects {
     grid-column: 1;
     grid-row: auto;
   }

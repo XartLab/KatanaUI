@@ -681,6 +681,24 @@ export function DataGrid<Row extends object>({
     // oxlint-disable-next-line react/exhaustive-deps
   }, [])
 
+  // 只读的表没有能聚焦的格；真的放不下、能滚的时候，键盘得能停在滚动区里（axe scrollable-region-focusable），放得下就不进 Tab 序列。
+  // 停在第一个 rowgroup 上，不在滚动区自己身上：滚动区是 table 与 rowgroup 之间的无语义 div，能聚焦就成了 table 不许有的子元素（aria-required-children）。
+  useEffect(() => {
+    const node = scroller.current
+    if (interactive || !node || typeof ResizeObserver === 'undefined') return
+    const sync = () => {
+      const stop = node.querySelector<HTMLElement>('[role="rowgroup"]')
+      if (!stop) return
+      const scrolls = node.scrollWidth > node.clientWidth || node.scrollHeight > node.clientHeight
+      if (scrolls) stop.tabIndex = 0
+      else stop.removeAttribute('tabindex')
+    }
+    const observer = new ResizeObserver(sync)
+    observer.observe(node)
+    if (node.firstElementChild) observer.observe(node.firstElementChild)
+    return () => observer.disconnect()
+  }, [interactive])
+
   // 第一次有行时不用滚；之后只在键盘所在的行变了才跟着，行情每秒重画不能把用户滚开的表拉回来。
   useEffect(() => {
     if (cursor !== null) virtualizer.scrollToIndex(itemIndexOf(cursor), { align: 'auto' })
@@ -723,7 +741,8 @@ export function DataGrid<Row extends object>({
       panelMenu !== undefined ||
       rowActions !== undefined ||
       onLayoutChange !== undefined)
-  const tabular = rowTree || (renderSubRow && interactive) ? 'treegrid' : interactive ? 'grid' : 'table'
+  // 分节（rowSection）的标题行带 aria-expanded，只有 treegrid 的行支持它（axe aria-conditional-attr），所以有分节也按 treegrid。
+  const tabular = rowTree || ((rowSection || renderSubRow) && interactive) ? 'treegrid' : interactive ? 'grid' : 'table'
   const cellRole = interactive ? 'gridcell' : 'cell'
 
   const body = (

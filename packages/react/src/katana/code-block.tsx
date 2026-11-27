@@ -228,7 +228,7 @@ export function CodeBlock({
                 <span
                   aria-hidden="true"
                   data-slot="code-block-gutter"
-                  className="mr-3 flex-none text-right text-ink-4 select-none"
+                  className="mr-3 flex-none text-right text-ink-3 select-none"
                   style={{ width: `${gutterWidth(lines.length)}ch` }}
                 >
                   {row + 1}

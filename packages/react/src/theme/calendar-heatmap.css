@@ -266,7 +266,7 @@ button.k-heat-cell[data-active='true'] {
 .k-heat-legend i {
   width: 12px;
   height: 12px;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   background: var(--k-cell, var(--k-surface-raised-background));
 }
 .k-heat-legend i[data-tone='pos1'] {

@@ -1,6 +1,16 @@
 // SPDX-License-Identifier: MIT
 // ComponentCatalog 的纯函数：按类别与搜索词筛、把「推荐」提到最前、其余按类别分组。
 
+/** The drag payload type set on dataTransfer when a catalog card or menu row is dragged. */
+export const CATALOG_ITEM_MIME = 'application/x-katana-component'
+
+/** Puts a catalog item's id on a drag event (card in the drawer, row in the menu), so a host drop zone can read it. */
+export function setCatalogDrag(event: { dataTransfer: DataTransfer }, id: string): void {
+  event.dataTransfer.effectAllowed = 'copy'
+  event.dataTransfer.setData(CATALOG_ITEM_MIME, id)
+  event.dataTransfer.setData('text/plain', id)
+}
+
 export type CatalogKind = 'chart' | 'table' | 'list' | 'form' | 'gauge' | 'text'
 
 export type CatalogItem = {

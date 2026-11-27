@@ -94,6 +94,7 @@ button.k-theme-row:focus-visible {
 .k-theme-time {
   color: var(--ink-300);
   font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
 }
 .k-theme-member-name {
   min-width: 0;
