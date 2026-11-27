@@ -39,6 +39,19 @@ export {
   type ThemeHeatPos,
   type ThemeHeatRow,
 } from './theme-heat-matrix.tsx'
+// 矩阵热力（#260）：行 × 列按值着色、格内写数、悬停出值与原因、行列可排序；ThemeHeatMatrix 的一般形。
+export {
+  MatrixHeat,
+  defaultMatrixLabels,
+  type MatrixHeatCell,
+  type MatrixHeatColumn,
+  type MatrixHeatLabels,
+  type MatrixHeatProps,
+  type MatrixHeatRow,
+  type MatrixHeatScale,
+  type MatrixHeatSort,
+} from './matrix-heat.tsx'
+export { matrixShade, nextMatrixSort, sortColumnsByRow, sortRowsByColumn } from './matrix-heat-model.ts'
 export {
   MarketHeatmap,
   type HeatmapColorBy,
