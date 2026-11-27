@@ -1,6 +1,15 @@
 // SPDX-License-Identifier: MIT
 import { Info } from 'lucide-react'
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogBody,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
   Button,
   ContextMenu,
   ContextMenuCheckboxItem,
@@ -97,6 +106,25 @@ export function DialogOpen() {
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  )
+}
+
+export function AlertDialogOpen() {
+  return (
+    <AlertDialog open>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>平掉 BTCUSDT 多单</AlertDialogTitle>
+        </AlertDialogHeader>
+        <AlertDialogBody>
+          <AlertDialogDescription>按市价卖出 0.250 张，成交后不能撤回。</AlertDialogDescription>
+        </AlertDialogBody>
+        <AlertDialogFooter>
+          <AlertDialogCancel>取消</AlertDialogCancel>
+          <AlertDialogAction variant="danger">平仓</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   )
 }
 

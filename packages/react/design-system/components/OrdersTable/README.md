@@ -169,7 +169,7 @@ export function OrdersTableUsage() {
 ## States
 
 - 改价：点铅笔，价格格换成输入框并全选；Enter 提交（价格没变只关框），Esc 或失焦取消，非法输入标红。
-- 撤单中：状态标签变警告色，撤单按钮置灰，没有铅笔。
+- 撤单中：状态标签变警告色，撤单按钮进行中（Button pending：满 300ms 出转圈、再按无效、字与宽不变，不再置灰），没有铅笔。
 - 没传 onCancel / onAmend / onCancelAll 时对应控件不画；空表写 labels.empty。
 
 ## Don't

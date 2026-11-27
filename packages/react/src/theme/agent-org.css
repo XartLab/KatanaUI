@@ -94,7 +94,7 @@
   padding: 4px 10px;
   overflow: hidden;
   border: 1px solid var(--k-separable-secondary-borderColor);
-  border-radius: 8px;
+  border-radius: var(--radius-overlay);
   background: var(--k-container-secondary-background);
   cursor: pointer;
   transition:
@@ -108,8 +108,12 @@
   outline: 1px solid var(--focus-ring);
   outline-offset: 1px;
 }
+/* 排队与停下的卡变淡不用透明度：0.55 把卡上的次要字压到 2.4:1（axe，#190）。改成边换虚线（同通向它的线）、名字降到次要色（卡底上 ≥5.1:1）。 */
 .k-org-item[data-muted] > .k-org-card {
-  opacity: 0.55;
+  border-style: dashed;
+}
+.k-org-item[data-muted] > .k-org-card .k-at-name {
+  color: var(--k-content-secondary-foreground);
 }
 .k-org-item[data-status='waiting'] > .k-org-card {
   border-color: var(--k-status-warn-foreground);
@@ -143,7 +147,7 @@
 }
 .k-at-model {
   flex: none;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-mono);
 }
 .k-at-status {
@@ -171,7 +175,7 @@
   place-items: center;
   width: 14px;
   height: 14px;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   cursor: pointer;
 }
 .k-at-fold svg {
@@ -193,7 +197,7 @@
   height: 16px;
   padding: 0 2px;
   border: 1px solid var(--k-container-secondary-background);
-  border-radius: 4px;
+  border-radius: var(--radius-md);
   background: var(--k-container-tertiary-background);
   color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
@@ -212,7 +216,7 @@
 }
 .k-at-nums {
   gap: var(--space-3);
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-num-small);
 }
 .k-at-pop {
@@ -249,7 +253,7 @@
   white-space: nowrap;
 }
 .k-at-steps small {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
 }
 .k-at-steps [data-part='status'] {
   margin-left: auto;
@@ -352,7 +356,7 @@
   height: 86px;
   padding: 8px 10px;
   border: 1px solid var(--k-separable-secondary-borderColor);
-  border-radius: 8px;
+  border-radius: var(--radius-overlay);
   background: var(--k-container-secondary-background);
   color: inherit;
   font: inherit;
@@ -370,6 +374,10 @@
 .k-fleet-main[aria-expanded='true'] {
   border-color: var(--focus-ring);
   background: var(--k-selectable-background-selected);
+}
+/* 打开的那张卡是 selected 底，次要字（ink-300）压在上面只有 4.2:1（console，axe #190），提到 body。 */
+.k-fleet-main[aria-expanded='true'] :is(.k-at-model, .k-at-task, .k-at-nums, .k-fleet-phrase) {
+  color: var(--k-content-body-foreground);
 }
 .k-fleet-main[data-status='queued'],
 .k-fleet-main[data-status='stopped'] {
@@ -426,12 +434,12 @@
   min-width: 0;
   padding: 8px 10px 10px;
   border: var(--hairline);
-  border-radius: 8px;
+  border-radius: var(--radius-overlay);
 }
 .k-fleet-panel-title,
 .k-fleet-empty {
   margin: 0;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 @container (max-width: 640px) {

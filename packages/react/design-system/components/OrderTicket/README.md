@@ -159,7 +159,7 @@ export function OrderTicketUsage() {
 ```
 OrderTicket
   ToggleGroup（开仓 / 平仓）
-  Select（保证金模式）· 杠杆框
+  ToggleGroup sm（保证金模式）· 杠杆框
   Tabs · TabsList line（限价 / 市价）
   买栏 · 卖栏（各一份）
     价格框 · Button（最优价）

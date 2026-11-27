@@ -109,6 +109,7 @@
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .k-fr-value {
   flex: none;

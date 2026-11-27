@@ -45,7 +45,13 @@ describe('回落链的纯逻辑', () => {
 describe('回落链的渲染', () => {
   it('有序列表；答上之前的级点亮；响应写哪一级答上', () => {
     const html = renderToStaticMarkup(
-      <FallbackChain attempts={CHAIN} title="取数" request="000001.SZ 日 K" formatMs={(ms) => `${ms} ms`} labels={LABELS} />,
+      <FallbackChain
+        attempts={CHAIN}
+        title="取数"
+        request="000001.SZ 日 K"
+        formatMs={(ms) => `${ms} ms`}
+        labels={LABELS}
+      />,
     )
     expect(html).toContain('<ol')
     expect(html).toMatch(/data-id="qt"[^>]*data-lit=""/)

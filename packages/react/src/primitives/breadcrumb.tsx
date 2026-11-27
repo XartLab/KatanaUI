@@ -48,7 +48,7 @@ export function Breadcrumb({ items, label, separator, className }: BreadcrumbPro
               {index > 0 ? (
                 <span
                   aria-hidden="true"
-                  className="inline-flex text-(color:--k-content-tertiary-foreground) [&>svg]:size-[13px]"
+                  className="inline-flex text-(color:--k-content-secondary-foreground) [&>svg]:size-[13px]"
                 >
                   {separator ?? <ChevronRight />}
                 </span>
