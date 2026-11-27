@@ -223,12 +223,46 @@ import { EquityCurve } from '@katana-ui/react/quant'`}
             'UI SDK 的 Tree',
             '行 data-selected、data-expanded、data-level，层级变量 --tree-level（从 1 起）；不再是 treegrid，是嵌套的 tree / treeitem',
           ],
-          [code('primitives/*'), 'Radix', '还没换（#263 第二步）'],
+          [
+            code('Checkbox / Switch / MorphToggle'),
+            'UI SDK 的 Checkbox、Switch',
+            '开关与指示 data-checked、data-indeterminate；回车不再拨动开关，只认空格',
+          ],
+          [
+            code('RadioGroup'),
+            'UI SDK 的 Radio',
+            '选中 data-checked；对外仍是 value / onValueChange(string) / orientation',
+          ],
+          [
+            code('Toggle / ChipGroup'),
+            'UI SDK 的 Toggle、ToggleGroup',
+            '按下 data-pressed；禁用项在组里用 aria-disabled，仍可方向键到达',
+          ],
+          [
+            code('Progress / Separator / Label / Avatar'),
+            'UI SDK 同名件',
+            '进度条宽由它按百分比写；不确定态 data-indeterminate',
+          ],
+          [
+            code('Collapsible / Accordion'),
+            'UI SDK 的 Collapsible、Accordion',
+            '展开 data-open；高度过渡读 --collapsible-panel-height / --accordion-panel-height，收起过程是 data-ending-style；Accordion 的方向键不再在标题间移动，用 Tab',
+          ],
+          [code('Tabs'), 'UI SDK 的 Tabs', '选中 data-selected；对外仍是 activationMode、forceMount'],
+          [code('ScrollArea'), 'UI SDK 的 ScrollArea', '滚动条显示读 data-visible，不卸载，用 opacity 过渡'],
+          [
+            code(
+              'Dialog / AlertDialog / Sheet / Popover / HoverCard / Tooltip / 各类菜单 / Select / NavigationMenu / Command / OtpField / Slider / ToggleGroup',
+            ),
+            'Radix 或 cmdk，暂留',
+            '有 UI SDK 对应件，但换了会改对外 props（asChild、onOpenAutoFocus、onEscapeKeyDown 等 Radix 专有的口子）、data-state 与 --radix-* 变量，见 PR 说明；没有逐件列入的先不动',
+          ],
         ]}
       />
       <p>
         用 UI SDK 的 {code('@ui-sdk/core/testing')} 查键盘与 ARIA 模式（{code('checkPattern')}）：测试在
-        {code('browser/ui-sdk-behaviors.browser.test.tsx')}，新换的件补一条。
+        {code('browser/ui-sdk-behaviors.browser.test.tsx')}，新换的件补一条；primitives 的在{' '}
+        {code('browser/ui-sdk-primitives.browser.test.tsx')}。
       </p>
       <h2>文档站版式</h2>
       <Table

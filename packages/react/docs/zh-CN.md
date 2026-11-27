@@ -2,7 +2,7 @@
 
 > 对外的英文说明在 [README.md](../README.md)。本文是内部说明，写给开发这个包的人。源头仓库是 XartLab/KatanaUI（2026-11-14 起，#2；以前是 KATANAview 的 `packages/ui`，文中「决策记录」「#数字」未注明仓库的指 KATANAview）。
 
-KatanaConsole 自建的组件框架（决策记录 0049（KATANAview 的 docs/architecture/adr/0049-self-built-ui-framework.md））：Radix 与 UI SDK（`@ui-sdk/core` + `@ui-sdk/react`，#263）做行为底座（日期、列表、树已换成 UI SDK，primitives 仍是 Radix），shadcn 的代码做起步，Tailwind v4 写样式，颜色、字体、间距、动效全部取自 `tokens.json` 生成的 token。
+KatanaConsole 自建的组件框架（决策记录 0049（KATANAview 的 docs/architecture/adr/0049-self-built-ui-framework.md））：Radix 与 UI SDK（`@ui-sdk/core` + `@ui-sdk/react`，#263）做行为底座（日期、列表、树，以及 primitives 里的 Checkbox、Switch、RadioGroup、Toggle、Progress、Separator、Label、Avatar、Collapsible、Accordion、Tabs、ScrollArea、ChipGroup 已换成 UI SDK；浮层、菜单、Select、Slider、ToggleGroup 等仍是 Radix，见文档站「基础 → 交互行为的底座」），shadcn 的代码做起步，Tailwind v4 写样式，颜色、字体、间距、动效全部取自 `tokens.json` 生成的 token。
 私有包（还没发 npm），许可证 **MIT**（用户 2026-11-14 定，#1876），好复用到别的量化项目，包括不是 AGPL 的项目；KATANAview 应用与它的 `@katanaview/*` 包仍是 AGPL-3.0。`src/primitives/` 里的文件是 shadcn/ui 的衍生（MIT，文件头写着出处），我们自己写的件在 `src/katana/`（也是 MIT）。
 不依赖任何应用代码，所以 MIT 的包里不会混进 AGPL 的代码（单独成仓库后，物理上就引不到）。包里每个源文件头写 `SPDX-License-Identifier: MIT`。现在没有脚本自动查（KATANAview 时的检查脚本没搬过来）：新文件照现有文件写头，提交前用 `grep -rLE 'SPDX-License-Identifier: MIT' src --include='*.ts' --include='*.tsx' --include='*.css'` 找漏写的，再 `grep -rn AGPL src` 确认没混进 AGPL。
 

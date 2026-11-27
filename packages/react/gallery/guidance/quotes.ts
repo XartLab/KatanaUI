@@ -221,7 +221,7 @@ const quotes: GuidanceMap = {
     ],
     avoid: ['要排序、筛选、很多行用 data-grid 或 watchlist。', '只有一组时不用页签，直接用 quote-card 的一排。'],
     a11y: [
-      '分组页签底座是 Radix Tabs（role=tablist），内容是 role=tabpanel。',
+      '分组页签底座是 UI SDK Tabs（role=tablist），内容是 role=tabpanel。',
       '表头用 th，可点的行可聚焦。',
       '迷你图读屏名由调用方传。',
     ],
