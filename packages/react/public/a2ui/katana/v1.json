@@ -18720,6 +18720,838 @@
       ],
       "unevaluatedProperties": false
     },
+    "KatanaStatementTable": {
+      "type": "object",
+      "properties": {
+        "component": {
+          "const": "KatanaStatementTable"
+        },
+        "items": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Stable id of the line item; the key in values."
+                  },
+                  "label": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Name of the line item."
+                  },
+                  "parent": {
+                    "type": "string",
+                    "description": "Id of the parent line item; omit for a top-level item."
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "line",
+                      "subtotal",
+                      "total"
+                    ],
+                    "description": "'subtotal' is bold, 'total' is bold with a rule above."
+                  }
+                },
+                "required": [
+                  "id",
+                  "label"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 300
+            },
+            {
+              "$ref": "common_types.json#/$defs/DataBinding"
+            }
+          ],
+          "description": "The line items in display order, or {\"@path\": \"/items\"}. A missing parent makes the item top-level."
+        },
+        "periods": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Key of the period in values."
+                  },
+                  "label": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Column head of the period."
+                  }
+                },
+                "required": [
+                  "id",
+                  "label"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 80
+            },
+            {
+              "$ref": "common_types.json#/$defs/DataBinding"
+            }
+          ],
+          "description": "The periods from oldest to newest, or {\"@path\": \"/periods\"}."
+        },
+        "values": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "additionalProperties": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "value": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        },
+                        "revision": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "note": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "value"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "$ref": "common_types.json#/$defs/DataBinding"
+            }
+          ],
+          "description": "values[itemId][periodId]: a number, null, or {value, revision, note}; revision above 1 marks a restated cell."
+        },
+        "periodsPerYear": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12,
+          "description": "Columns to look back for year-over-year: 4 for quarters, 1 for years."
+        },
+        "valueFormat": {
+          "type": "object",
+          "properties": {
+            "style": {
+              "type": "string",
+              "enum": [
+                "number",
+                "percent",
+                "money",
+                "compact"
+              ],
+              "description": "'number' is plain with thousands separators; 'money' is the same with a unit suffix; 'percent' treats the value as a percentage already (1.5 means 1.50%); 'compact' abbreviates to K, M or B."
+            },
+            "digits": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 8,
+              "description": "Decimal places. Defaults to 2."
+            },
+            "unit": {
+              "type": "string",
+              "maxLength": 12,
+              "description": "Unit written after the number, for example \"USDT\". Ignored for percent."
+            },
+            "signed": {
+              "type": "boolean",
+              "description": "Put + in front of positive values."
+            }
+          },
+          "required": [
+            "style"
+          ],
+          "additionalProperties": false,
+          "description": "How a value is written."
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "value",
+            "yoy",
+            "qoq"
+          ],
+          "description": "Which numbers to show first."
+        },
+        "labels": {
+          "type": "object",
+          "properties": {
+            "table": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Accessible name of the table."
+            },
+            "item": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Head of the line-item column."
+            },
+            "modeGroup": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Accessible name of the value / YoY / QoQ switch."
+            },
+            "value": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Word for raw values."
+            },
+            "yoy": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Word for year-over-year."
+            },
+            "qoq": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Word for quarter-over-quarter."
+            },
+            "collapse": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Name of the collapse button; {item} is the line item."
+            },
+            "expand": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Name of the expand button; {item} is the line item."
+            },
+            "revised": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Hint on a restated cell; {revision} and {note} are replaced."
+            },
+            "empty": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Text when there are no line items."
+            }
+          },
+          "required": [
+            "table",
+            "item",
+            "modeGroup",
+            "value",
+            "yoy",
+            "qoq",
+            "collapse",
+            "expand",
+            "revised",
+            "empty"
+          ],
+          "additionalProperties": false,
+          "description": "All visible words; the table carries none of its own."
+        },
+        "source": {
+          "type": "string",
+          "description": "Source line under the table."
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 0.000001,
+          "description": "Relative share of the free space inside a Row or Column, like CSS flex-grow. Only valid for a direct child of a Row or Column."
+        }
+      },
+      "required": [
+        "component",
+        "items",
+        "periods",
+        "values",
+        "labels"
+      ],
+      "unevaluatedProperties": false
+    },
+    "KatanaCompsTable": {
+      "type": "object",
+      "properties": {
+        "component": {
+          "const": "KatanaCompsTable"
+        },
+        "rows": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "symbol": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Ticker or code."
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Company name."
+                  },
+                  "subject": {
+                    "type": "boolean",
+                    "description": "True for the company being analysed: pinned on top, never sorted."
+                  },
+                  "values": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "description": "Metric id → value; null or missing is written as —."
+                  }
+                },
+                "required": [
+                  "id",
+                  "symbol",
+                  "values"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 200
+            },
+            {
+              "$ref": "common_types.json#/$defs/DataBinding"
+            }
+          ],
+          "description": "One row per company, or {\"@path\": \"/peers\"}."
+        },
+        "metrics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Column head."
+              },
+              "sub": {
+                "type": "string",
+                "description": "Small second line of the head, for example TTM."
+              },
+              "group": {
+                "type": "string",
+                "description": "Id of the group tab this column belongs to."
+              },
+              "better": {
+                "type": "string",
+                "enum": [
+                  "higher",
+                  "lower"
+                ],
+                "description": "Which direction is better; omit to show numbers without color."
+              },
+              "format": {
+                "type": "object",
+                "properties": {
+                  "style": {
+                    "type": "string",
+                    "enum": [
+                      "number",
+                      "percent",
+                      "money",
+                      "compact"
+                    ],
+                    "description": "'number' is plain with thousands separators; 'money' is the same with a unit suffix; 'percent' treats the value as a percentage already (1.5 means 1.50%); 'compact' abbreviates to K, M or B."
+                  },
+                  "digits": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 8,
+                    "description": "Decimal places. Defaults to 2."
+                  },
+                  "unit": {
+                    "type": "string",
+                    "maxLength": 12,
+                    "description": "Unit written after the number, for example \"USDT\". Ignored for percent."
+                  },
+                  "signed": {
+                    "type": "boolean",
+                    "description": "Put + in front of positive values."
+                  }
+                },
+                "required": [
+                  "style"
+                ],
+                "additionalProperties": false,
+                "description": "How the metric is written."
+              }
+            },
+            "required": [
+              "id",
+              "label"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 40,
+          "description": "The metric columns in display order."
+        },
+        "groups": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Tab label."
+              }
+            },
+            "required": [
+              "id",
+              "label"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 8,
+          "description": "Group tabs above the table; the first one is selected at start."
+        },
+        "labels": {
+          "type": "object",
+          "properties": {
+            "table": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Accessible name of the table."
+            },
+            "symbol": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Head of the company column."
+            },
+            "groups": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Accessible name of the group tabs."
+            },
+            "median": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Name of the median row."
+            },
+            "mean": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Name of the mean row."
+            },
+            "subject": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Mark written on the subject company row."
+            },
+            "empty": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Text when there are no rows."
+            }
+          },
+          "required": [
+            "table",
+            "symbol",
+            "groups",
+            "median",
+            "mean",
+            "subject",
+            "empty"
+          ],
+          "additionalProperties": false,
+          "description": "All visible words; the table carries none of its own."
+        },
+        "source": {
+          "type": "string",
+          "description": "Source line under the table."
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 0.000001,
+          "description": "Relative share of the free space inside a Row or Column, like CSS flex-grow. Only valid for a direct child of a Row or Column."
+        }
+      },
+      "required": [
+        "component",
+        "rows",
+        "metrics",
+        "labels"
+      ],
+      "unevaluatedProperties": false
+    },
+    "KatanaValuationBand": {
+      "type": "object",
+      "properties": {
+        "component": {
+          "const": "KatanaValuationBand"
+        },
+        "prices": {
+          "type": "array",
+          "items": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "maxItems": 5000,
+          "description": "Prices, one per x position."
+        },
+        "multiples": {
+          "type": "array",
+          "items": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "maxItems": 5000,
+          "description": "The valuation multiple (PE or PB) on the same x positions; negative values are left out."
+        },
+        "quantiles": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "minItems": 1,
+          "maxItems": 9,
+          "description": "Quantile levels from low to high, 0..1. Defaults to 0.1, 0.25, 0.5, 0.75, 0.9."
+        },
+        "xLabels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 5000,
+          "description": "What each x position is called (its date)."
+        },
+        "priceFormat": {
+          "type": "object",
+          "properties": {
+            "style": {
+              "type": "string",
+              "enum": [
+                "number",
+                "percent",
+                "money",
+                "compact"
+              ],
+              "description": "'number' is plain with thousands separators; 'money' is the same with a unit suffix; 'percent' treats the value as a percentage already (1.5 means 1.50%); 'compact' abbreviates to K, M or B."
+            },
+            "digits": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 8,
+              "description": "Decimal places. Defaults to 2."
+            },
+            "unit": {
+              "type": "string",
+              "maxLength": 12,
+              "description": "Unit written after the number, for example \"USDT\". Ignored for percent."
+            },
+            "signed": {
+              "type": "boolean",
+              "description": "Put + in front of positive values."
+            }
+          },
+          "required": [
+            "style"
+          ],
+          "additionalProperties": false,
+          "description": "How a price is written."
+        },
+        "multipleFormat": {
+          "type": "object",
+          "properties": {
+            "style": {
+              "type": "string",
+              "enum": [
+                "number",
+                "percent",
+                "money",
+                "compact"
+              ],
+              "description": "'number' is plain with thousands separators; 'money' is the same with a unit suffix; 'percent' treats the value as a percentage already (1.5 means 1.50%); 'compact' abbreviates to K, M or B."
+            },
+            "digits": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 8,
+              "description": "Decimal places. Defaults to 2."
+            },
+            "unit": {
+              "type": "string",
+              "maxLength": 12,
+              "description": "Unit written after the number, for example \"USDT\". Ignored for percent."
+            },
+            "signed": {
+              "type": "boolean",
+              "description": "Put + in front of positive values."
+            }
+          },
+          "required": [
+            "style"
+          ],
+          "additionalProperties": false,
+          "description": "How a multiple is written."
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the chart."
+        },
+        "labels": {
+          "type": "object",
+          "properties": {
+            "chart": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Accessible name of the chart."
+            },
+            "actions": {
+              "type": "object",
+              "properties": {
+                "group": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Accessible name of the group of three buttons at the top right of the chart."
+                },
+                "table": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Name of the button that switches to the table view."
+                },
+                "exportCsv": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Name of the export button."
+                },
+                "fullscreen": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Name of the full screen button."
+                }
+              },
+              "required": [
+                "group",
+                "table",
+                "exportCsv",
+                "fullscreen"
+              ],
+              "additionalProperties": false,
+              "description": "Names of the three chart buttons: table view, export and full screen."
+            },
+            "table": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Accessible name of the table view."
+            },
+            "x": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Head of the first table column."
+            },
+            "price": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Name of the price line."
+            },
+            "multiple": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Name of the multiple, for example PE."
+            },
+            "band": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Name of one band; {q} is the percentile number and {level} the multiple."
+            },
+            "percentile": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Reading of the current percentile; {p} is the percentile number."
+            },
+            "empty": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Text when no usable multiple exists."
+            }
+          },
+          "required": [
+            "chart",
+            "actions",
+            "table",
+            "x",
+            "price",
+            "multiple",
+            "band",
+            "percentile",
+            "empty"
+          ],
+          "additionalProperties": false,
+          "description": "All visible words of the chart; it carries none of its own."
+        },
+        "source": {
+          "type": "string",
+          "description": "One line saying where the numbers come from and when."
+        },
+        "onExport": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "event": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "The name of the action to be dispatched to the agent."
+                    },
+                    "userMessage": {
+                      "$ref": "common_types.json#/$defs/DynamicString",
+                      "description": "Represents a string"
+                    },
+                    "context": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "$ref": "common_types.json#/$defs/DynamicValue",
+                        "description": "A value that can be a literal, a path, or a function call returning any type."
+                      },
+                      "description": "A JSON object containing the key-value pairs for the action context. Values can be literals or paths. Use literal values unless the value must be dynamically bound to the data model. Do NOT use paths for static IDs."
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": false,
+                  "description": "The event to dispatch to the agent."
+                }
+              },
+              "required": [
+                "event"
+              ],
+              "additionalProperties": false,
+              "description": "Triggers an agent-side event."
+            },
+            {
+              "type": "object",
+              "properties": {
+                "functionCall": {
+                  "$ref": "common_types.json#/$defs/FunctionCall",
+                  "description": "Invokes a named function, combining common function properties with the catalog function definition."
+                }
+              },
+              "required": [
+                "functionCall"
+              ],
+              "additionalProperties": false,
+              "description": "Executes a renderer or agent-side function."
+            }
+          ],
+          "description": "Dispatched when the user presses export. metadata.extensions.katanaChart carries {label}. Without it no export button is drawn. The host receives the action and decides what to do; the component itself does nothing else."
+        },
+        "onFullscreen": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "event": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "The name of the action to be dispatched to the agent."
+                    },
+                    "userMessage": {
+                      "$ref": "common_types.json#/$defs/DynamicString",
+                      "description": "Represents a string"
+                    },
+                    "context": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "$ref": "common_types.json#/$defs/DynamicValue",
+                        "description": "A value that can be a literal, a path, or a function call returning any type."
+                      },
+                      "description": "A JSON object containing the key-value pairs for the action context. Values can be literals or paths. Use literal values unless the value must be dynamically bound to the data model. Do NOT use paths for static IDs."
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": false,
+                  "description": "The event to dispatch to the agent."
+                }
+              },
+              "required": [
+                "event"
+              ],
+              "additionalProperties": false,
+              "description": "Triggers an agent-side event."
+            },
+            {
+              "type": "object",
+              "properties": {
+                "functionCall": {
+                  "$ref": "common_types.json#/$defs/FunctionCall",
+                  "description": "Invokes a named function, combining common function properties with the catalog function definition."
+                }
+              },
+              "required": [
+                "functionCall"
+              ],
+              "additionalProperties": false,
+              "description": "Executes a renderer or agent-side function."
+            }
+          ],
+          "description": "Dispatched when the user presses full screen. metadata.extensions.katanaChart carries {label}. Without it no full screen button is drawn. The host receives the action and decides what to do; the component itself does nothing else."
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 0.000001,
+          "description": "Relative share of the free space inside a Row or Column, like CSS flex-grow. Only valid for a direct child of a Row or Column."
+        }
+      },
+      "required": [
+        "component",
+        "prices",
+        "multiples",
+        "xLabels",
+        "labels"
+      ],
+      "unevaluatedProperties": false
+    },
     "KatanaFlowGauges": {
       "type": "object",
       "properties": {
@@ -19981,6 +20813,15 @@
         },
         {
           "$ref": "#/components/KatanaPeerCards"
+        },
+        {
+          "$ref": "#/components/KatanaStatementTable"
+        },
+        {
+          "$ref": "#/components/KatanaCompsTable"
+        },
+        {
+          "$ref": "#/components/KatanaValuationBand"
         },
         {
           "$ref": "#/components/KatanaFlowGauges"

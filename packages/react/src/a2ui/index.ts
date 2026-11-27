@@ -63,5 +63,8 @@ export { KatanaSparkTile, KatanaSparkTileApi } from './components/katana-spark-t
 export { KatanaKeyStats, KatanaKeyStatsApi } from './components/katana-key-stats.tsx'
 export { KatanaPerformanceStrip, KatanaPerformanceStripApi } from './components/katana-performance-strip.tsx'
 export { KatanaPeerCards, KatanaPeerCardsApi } from './components/katana-peer-cards.tsx'
+export { KatanaStatementTable, KatanaStatementTableApi } from './components/katana-statement-table.tsx'
+export { KatanaCompsTable, KatanaCompsTableApi } from './components/katana-comps-table.tsx'
+export { KatanaValuationBand, KatanaValuationBandApi } from './components/katana-valuation-band.tsx'
 export { KatanaFlowGauges, KatanaFlowGaugesApi } from './components/katana-flow-gauges.tsx'
 export { KatanaRegimeStrip, KatanaRegimeStripApi } from './components/katana-regime-strip.tsx'

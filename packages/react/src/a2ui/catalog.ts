@@ -87,6 +87,9 @@ import { KatanaSparkTile } from './components/katana-spark-tile.tsx'
 import { KatanaKeyStats } from './components/katana-key-stats.tsx'
 import { KatanaPerformanceStrip } from './components/katana-performance-strip.tsx'
 import { KatanaPeerCards } from './components/katana-peer-cards.tsx'
+import { KatanaStatementTable } from './components/katana-statement-table.tsx'
+import { KatanaCompsTable } from './components/katana-comps-table.tsx'
+import { KatanaValuationBand } from './components/katana-valuation-band.tsx'
 import { KatanaFlowGauges } from './components/katana-flow-gauges.tsx'
 import { KatanaRegimeStrip } from './components/katana-regime-strip.tsx'
 
@@ -193,6 +196,9 @@ export const KATANA_COMPONENTS: readonly ReactCatalogComponent[] = [
   KatanaKeyStats,
   KatanaPerformanceStrip,
   KatanaPeerCards,
+  KatanaStatementTable,
+  KatanaCompsTable,
+  KatanaValuationBand,
   KatanaFlowGauges,
   KatanaRegimeStrip,
 ]
