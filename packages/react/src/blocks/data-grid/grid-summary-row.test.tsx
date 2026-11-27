@@ -85,3 +85,15 @@ describe('DataGrid summary', () => {
     expect(html).not.toContain('data-summary="hidden"') // 看得见的列都没配聚合：不画
   })
 })
+
+describe('summaryCells：cnAmount 列（#260）', () => {
+  it('合计金额照 cnAmount 写万 / 亿 / 万亿，不是一长串数字', () => {
+    const cols: GridColumn<{ amount: number }>[] = [{ id: 'amount', type: 'cnAmount', value: (row) => row.amount }]
+    const cells = summaryCells(cols, [{ amount: 6e11 }, { amount: 5e11 }], {
+      id: 't',
+      label: 'Total',
+      columns: { amount: 'sum' },
+    })
+    expect(cells.get('amount')!.cell.text).toBe('1.10万亿')
+  })
+})

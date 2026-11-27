@@ -36,6 +36,17 @@ export {
   type SummaryAggregate,
   type SummaryColumn,
 } from './data-grid/grid-summary-row.tsx'
+// 分组表（#260）：DataGrid 加分组——组头可收起、带汇总，组按汇总数排序，没分进组的放尾部「其他」。
+export { GroupedTable, type GroupedTableProps } from './data-grid/grouped-table.tsx'
+export {
+  buildGroups,
+  countPassed,
+  flattenGroups,
+  type Group,
+  type GroupedItem,
+  type GroupInfo,
+  type GroupOptions,
+} from './data-grid/grouped-model.ts'
 export {
   ColumnPicker,
   type ColumnPickerLabels,

@@ -69,7 +69,7 @@ const numberOf = <Row,>(column: GridColumn<Row>, row: Row, env: CellEnv): number
 }
 
 /** 汇总值用哪种类型写字：数值类照原类型；别的类型（文字、品种……）与计数按 number 写。 */
-const NUMERIC: ReadonlySet<ColumnType> = new Set(['number', 'price', 'quantity', 'pnl', 'change'])
+const NUMERIC: ReadonlySet<ColumnType> = new Set(['number', 'price', 'quantity', 'pnl', 'change', 'cnAmount'])
 
 /** 一行汇总里各列的格子（纯函数，单测直接调）：没配聚合的列是 null。 */
 export function summaryCells<Row>(
