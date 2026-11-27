@@ -3,14 +3,30 @@
 // 拷进来以后归我们改：尺寸、颜色、动效按我们的 token 重写（决策记录 0049）。
 import { cva, type VariantProps } from 'class-variance-authority'
 import { XIcon } from 'lucide-react'
-import { Dialog as SheetPrimitive } from 'radix-ui'
-import type { ComponentProps } from 'react'
+import {
+  Dialog as SheetRoot,
+  DialogBackdrop,
+  DialogClose as SheetCloseButton,
+  DialogContent as SheetPanel,
+  DialogDescription as SheetText,
+  DialogTitle as SheetHeading,
+  DialogTrigger as SheetButton,
+} from '@ui-sdk/react/dialog'
+import { useContext, type ComponentProps, type ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
-import { useOpenerFocus } from '../lib/opener-focus.ts'
-import { OverlayPortal } from '../lib/overlay.tsx'
+import { useInlineOverlays } from '../lib/overlay.tsx'
+import {
+  childrenOf,
+  HandlersContext,
+  partRender,
+  useCompatRoot,
+  useFocusCompat,
+  useRegisterHandlers,
+  type CompatContent,
+} from '../lib/radix-compat.tsx'
 import { Button } from './button.tsx'
 
-// 抽屉：贴着窗口一边滑出来的面板，行为同对话框（Radix Dialog：Esc 关、焦点锁在里面、背板点一下关、关了焦点回打开前拿着它的元素）。
+// 抽屉：贴着窗口一边滑出来的面板，行为同对话框（UI SDK 的 Dialog，#263 从 Radix 换来：Esc 关、焦点锁在里面、背板点一下关、关了焦点回打开前拿着它的元素）。
 // 皮肤跟对话框同一块材质（9% 白边、surface-3、同一组阴影）；左右两边宽 360（窄屏留 12 边），上下两边最高半屏。
 // 入场走 gentle 弹簧从那一边滑进来，退场 120ms 直线滑出（theme/motion.css，按 data-side）。要有标题（SheetTitle，读屏靠它报名字），不想显示就加 sr-only。
 const sheetVariants = cva(
@@ -22,36 +38,72 @@ const sheetVariants = cva(
     variants: {
       /** Which edge the sheet sticks to; it slides in from that edge. */
       side: {
-        right: 'inset-y-0 right-0 w-[min(360px,calc(100vw-24px))] rounded-l-[var(--radius-dialog)] border-r-0',
-        left: 'inset-y-0 left-0 w-[min(360px,calc(100vw-24px))] rounded-r-[var(--radius-dialog)] border-l-0',
-        top: 'inset-x-0 top-0 max-h-[50dvh] rounded-b-[var(--radius-dialog)] border-t-0',
-        bottom: 'inset-x-0 bottom-0 max-h-[50dvh] rounded-t-[var(--radius-dialog)] border-b-0',
+        right: 'top-0 bottom-0 right-0 w-[min(360px,calc(100vw-24px))] rounded-l-[var(--radius-dialog)] border-r-0',
+        left: 'top-0 bottom-0 left-0 w-[min(360px,calc(100vw-24px))] rounded-r-[var(--radius-dialog)] border-l-0',
+        top: 'right-0 left-0 top-0 max-h-[50dvh] rounded-b-[var(--radius-dialog)] border-t-0',
+        bottom: 'right-0 left-0 bottom-0 max-h-[50dvh] rounded-t-[var(--radius-dialog)] border-b-0',
       },
     },
     defaultVariants: { side: 'right' },
   },
 )
 
-function Sheet({ ...props }: ComponentProps<typeof SheetPrimitive.Root>) {
-  return <SheetPrimitive.Root data-slot="sheet" {...props} />
-}
-
-function SheetTrigger({ ...props }: ComponentProps<typeof SheetPrimitive.Trigger>) {
-  return <SheetPrimitive.Trigger data-slot="sheet-trigger" {...props} />
-}
-
-function SheetClose({ ...props }: ComponentProps<typeof SheetPrimitive.Close>) {
-  return <SheetPrimitive.Close data-slot="sheet-close" {...props} />
-}
-
-function SheetPortal({ ...props }: ComponentProps<typeof SheetPrimitive.Portal>) {
-  return <SheetPrimitive.Portal data-slot="sheet-portal" {...props} />
-}
-
-function SheetOverlay({ className, ...props }: ComponentProps<typeof SheetPrimitive.Overlay>) {
+function Sheet({
+  onOpenChange,
+  ...props
+}: Omit<ComponentProps<typeof SheetRoot>, 'onOpenChange'> & {
+  /** Called when the sheet opens or closes. */
+  onOpenChange?: (open: boolean) => void
+}) {
+  const root = useCompatRoot(onOpenChange)
   return (
-    <SheetPrimitive.Overlay
-      data-slot="sheet-overlay"
+    <HandlersContext value={root.handlers}>
+      <SheetRoot onOpenChange={root.onOpenChange} {...props} />
+    </HandlersContext>
+  )
+}
+
+function SheetTrigger({
+  asChild,
+  children,
+  ...props
+}: Omit<ComponentProps<typeof SheetButton>, 'render' | 'children'> & {
+  /** Merge the trigger's props onto its only child. */
+  asChild?: boolean
+  children?: ReactNode
+}) {
+  return (
+    <SheetButton render={partRender('sheet-trigger', 'button', asChild, children)} {...props}>
+      {childrenOf(asChild, children)}
+    </SheetButton>
+  )
+}
+
+function SheetClose({
+  asChild,
+  children,
+  ...props
+}: Omit<ComponentProps<typeof SheetCloseButton>, 'render' | 'children'> & {
+  /** Merge the close button's props onto its only child. */
+  asChild?: boolean
+  children?: ReactNode
+}) {
+  return (
+    <SheetCloseButton render={partRender('sheet-close', 'button', asChild, children)} {...props}>
+      {childrenOf(asChild, children)}
+    </SheetCloseButton>
+  )
+}
+
+/** 以前 Radix 的 Portal；UI SDK 的浮层在顶层，不需要它，留着是为了对外的导出不变。 */
+function SheetPortal({ children }: { children?: ReactNode }) {
+  return children
+}
+
+function SheetOverlay({ className, ...props }: Omit<ComponentProps<typeof DialogBackdrop>, 'render'>) {
+  return (
+    <DialogBackdrop
+      render={partRender('sheet-overlay', 'div')}
       className={cn('k-dlg-backdrop fixed inset-0 z-40 bg-black/45', className)}
       {...props}
     />
@@ -64,34 +116,57 @@ function SheetContent({
   children,
   side = 'right',
   closeLabel,
+  onOpenAutoFocus,
+  onCloseAutoFocus,
+  onEscapeKeyDown,
+  onPointerDownOutside,
+  onFocusOutside,
+  onInteractOutside,
+  forceMount,
+  asChild,
   ...props
-}: ComponentProps<typeof SheetPrimitive.Content> &
+}: Omit<
+  ComponentProps<typeof SheetPanel>,
+  'render' | 'children' | 'initialFocus' | 'finalFocus' | 'keepMounted' | 'inline'
+> &
+  CompatContent &
   VariantProps<typeof sheetVariants> & {
+    children?: ReactNode
     /** When given, draws a close button at the top right and uses this as its accessible name. */
     closeLabel?: string
   }) {
-  const focus = useOpenerFocus(props)
+  useRegisterHandlers(useContext(HandlersContext), {
+    onEscapeKeyDown,
+    onPointerDownOutside,
+    onFocusOutside,
+    onInteractOutside,
+  })
+  const { attach, initialFocus, finalFocus } = useFocusCompat({ onOpenAutoFocus, onCloseAutoFocus })
+  const inline = useInlineOverlays()
   return (
-    <OverlayPortal portal={SheetPrimitive.Portal}>
+    <>
       <SheetOverlay />
-      <SheetPrimitive.Content
-        data-slot="sheet-content"
+      <SheetPanel
+        ref={attach}
         data-side={side}
+        initialFocus={initialFocus}
+        finalFocus={finalFocus}
+        keepMounted={forceMount}
+        inline={inline || undefined}
+        render={partRender('sheet-content', 'dialog', asChild, children)}
         className={cn(sheetVariants({ side }), className)}
         {...props}
-        onOpenAutoFocus={focus.onOpenAutoFocus}
-        onCloseAutoFocus={focus.onCloseAutoFocus}
       >
-        {children}
+        {childrenOf(asChild, children)}
         {closeLabel ? (
-          <SheetPrimitive.Close asChild>
+          <SheetClose asChild>
             <Button variant="ghost" size="icon" aria-label={closeLabel} className="absolute top-[11px] right-3">
               <XIcon />
             </Button>
-          </SheetPrimitive.Close>
+          </SheetClose>
         ) : null}
-      </SheetPrimitive.Content>
-    </OverlayPortal>
+      </SheetPanel>
+    </>
   )
 }
 
@@ -131,20 +206,20 @@ function SheetFooter({ className, ...props }: ComponentProps<'div'>) {
   )
 }
 
-function SheetTitle({ className, ...props }: ComponentProps<typeof SheetPrimitive.Title>) {
+function SheetTitle({ className, ...props }: Omit<ComponentProps<typeof SheetHeading>, 'render'>) {
   return (
-    <SheetPrimitive.Title
-      data-slot="sheet-title"
+    <SheetHeading
+      render={partRender('sheet-title', 'h2')}
       className={cn('k-text-title m-0 leading-none text-(color:--k-content-primary-foreground)', className)}
       {...props}
     />
   )
 }
 
-function SheetDescription({ className, ...props }: ComponentProps<typeof SheetPrimitive.Description>) {
+function SheetDescription({ className, ...props }: Omit<ComponentProps<typeof SheetText>, 'render'>) {
   return (
-    <SheetPrimitive.Description
-      data-slot="sheet-description"
+    <SheetText
+      render={partRender('sheet-description', 'p')}
       className={cn('k-text-data m-0 text-(color:--k-content-secondary-foreground)', className)}
       {...props}
     />
