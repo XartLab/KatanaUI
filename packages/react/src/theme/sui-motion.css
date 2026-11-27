@@ -152,14 +152,12 @@
 
 /* ── 并入已有件的动效（对齐 SmoothUI，不改任何 API）──
    页签内容：切换时淡入（SmoothUI tabs 的 animated 面板：opacity 0 到 1）。
-   首次渲染不播：UI SDK 的 data-activation-direction 初始是 none，把时长写成 0s，跟原来的 Radix 一样（Radix 首屏把 animationDuration 写成 0s）。
-   不能写成「首屏没有动画」：Radix 的 0s 动画带 both 填充，面板文字照旧在同一种合成方式里画，组件截图与整页回归的基线（CI 出的）才不变；
-   也不能首屏播 150ms：放完的动画仍占着 opacity，文字成了灰度抗锯齿（CI 的 tabs、策略报告、行情表等 8 张组件截图变）。 */
-[data-slot='tabs-content'][data-selected] {
-  animation: kc-fade-in 150ms var(--ease-hover) both;
-}
-[data-slot='tabs-content'][data-selected][data-activation-direction='none'] {
-  animation-duration: 0s;
+   首次渲染不播（UI SDK 的 data-activation-direction 初始是 none；原来的 Radix 首屏写 0s 时长）；放完不留填充：
+   带 both 填充的动画放完仍占着 opacity，面板文字成了灰度抗锯齿，而 CI 的组件截图基线是 LCD 抗锯齿。
+   CI 实测：首屏 150ms 加 both、首屏 0s 加 both 两种写法，组件截图都有 tabs、策略报告、行情表等变化；去掉填充后组件截图只剩 main 原有的 tag-combobox，
+   整页回归的变化页从 100 降到 11（run 46059053158 对 run 46053212771）。 */
+[data-slot='tabs-content'][data-selected]:not([data-activation-direction='none']) {
+  animation: kc-fade-in 150ms var(--ease-hover);
 }
 
 /* 对话框：头、身、脚依次从下面轻升进来（SmoothUI dialog 的 stagger：4px / 8px、错开一拍）。
