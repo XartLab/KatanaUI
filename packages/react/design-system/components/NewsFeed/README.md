@@ -12,7 +12,7 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `items` | `NewsItem[]` | — | { id, time（毫秒）, channel, source, title, summary?, symbols?: {code, name?}[], important?, href? }。传入顺序不用排，件按时间新的在前；新出现的 id 算「新消息」。 |
+| `items` | `NewsItem[]` | — | { id, time（毫秒）, channel, source, title, summary?, symbols?: {code, name?}[], important?, href?, tags?: { label, tone? }[], sourcesCount?, alsoFrom?: string[] }。传入顺序不用排，件按时间新的在前（给了 groupBy 就保持传入的顺序）；新出现的 id 算「新消息」（分页时比已显示最新一条还旧的是翻页来的，直接接在底部）。 |
 | `channels` | `{ value: string; label: string }[]` | — | 频道分段；「全部」由件加在最前，字是 labels.all。 |
 | `sources` | `{ value: string; label: string }[]` | — | 来源多选芯片；一个都不选 = 全部来源。 |
 | `now` | `number` | — | 当前毫秒时间：相对时间按它算，调用方定时更新（件不在渲染里取时间）。 |
@@ -29,6 +29,13 @@
 | `itemActions` | `(item) => RowAction[]` | — | 每条的快捷操作：悬停出前几颗图标按钮，右键出同一份菜单；读屏名在 labels.itemActions（旧名 itemActionsLabel）。 |
 | `onSelect` | `(item) => void` | — | 选中一条：给了，标题是按钮；没给而条目有 href，标题是新窗口链接（旧名 onOpen 留一个版本）。 |
 | `onChannelChange / onSourcesChange / onPausedChange` | `callback` | — | 筛选或暂停变了通知调用方（可选）。 |
+| `filtering` | `'internal' \| 'external'` | `'internal'` | internal：件用自己的过滤条筛 items（老行为，一点没变）。external：件不筛，只画传进来的 items，过滤条只把用户的选择报给 onFilterChange，由调用方（服务端分页）按条件取回条目；新条目整批换进来时回到顶部，不算「新消息」。 |
+| `filter / onFilterChange` | `NewsFilter / (filter: NewsFilter) => void` | — | 过滤条的值 { channel, sources, query, categories?, facets? }：给了就是受控（两种 filtering 都一样），不给件自己存。onFilterChange 总是回整份、字段给全；external 时搜索框每敲一个字都回调，防抖由调用方做。 |
+| `NewsItem.tags` | `{ label: string; tone?: "neutral" \| "info" \| "warn" }[]` | — | 画在标题后面的标签，纯文本，默认 neutral。只有三档语气，没有 up / down：涨跌色给新闻标签用，读起来就是价格判断（方向只写字：利好 / 利空 / 中性 / 未标）。虚拟列表的行高把标签的宽算进去。 |
+| `NewsItem.sourcesCount / NewsItem.alsoFrom / labels.sourceCount / labels.alsoFrom` | `number / string[] / (n) => string / (names) => string` | — | sourcesCount 大于 1 才在标题后写 labels.sourceCount(n)（默认英文「n sources」）；alsoFrom 给了，这段字可聚焦，悬停或聚焦出提示 labels.alsoFrom(names)（默认「Also from A, B」）。注意 labels.sources 是来源芯片组的读屏名，不是来源数。 |
+| `onEndReached / endState / labels.end` | `() => void / 'more' \| 'loading' \| 'end' \| { error: ReactNode; retry: () => void } / { loadingMore?, endReached?, retry? }` | — | 滚到底加载：底部那一行进了视野（离底 400px 内，待定）且 endState 是 more（或没给）就调 onEndReached；调用方取页时把 endState 设成 loading，取到了设回 more 或 end，失败设成 { error, retry }。loading 写转圈与 labels.end.loadingMore，end 写 endReached，error 写原因与重试钮；文字默认英文。都不给就没有这一行。用 IntersectionObserver 盯底部的哨兵，不挂 scroll 监听。 |
+| `groupBy` | `(item) => { key: string; label: ReactNode; count?: number }` | — | 连续同组键的一段前面出一个小标题（role=heading，aria-level 3，高 24px），count 写在旁边，由调用方给（件里可能只有这组的一部分）。组序由调用方排好，所以给了 groupBy 件不按时间排序；组键隔开又回来就再出一个小标题。小标题不占 aria-posinset。 |
+| `chrome` | `'full' \| 'bare'` | `'full'` | bare 只画列表（加「n 条新消息」与读屏播报）：没有标题行、频道、搜索、排法、暂停与过滤区，给侧栏用；行本身照旧（来源、标签、品种都在）。 |
 
 ## Usage
 
@@ -185,6 +192,31 @@ export function NewsFeedUsage() {
           </PanelFrameBody>
         </PanelFrame>
       </div>
+      <div style={{ height: 300 }} data-testid="news-tagged">
+        <NewsFeed
+          items={NEWS_ITEMS.slice(0, 4).map((item, index) => ({
+            ...item,
+            tags: [
+              { label: index % 2 ? '政策' : '公告' },
+              { label: ['利好', '中性', '利空', '未标'][index]!, tone: index === 3 ? 'warn' : 'info' },
+            ],
+            sourcesCount: index === 0 ? 3 : undefined,
+            alsoFrom: index === 0 ? ['演示快讯', '演示财经'] : undefined,
+          }))}
+          channels={[]}
+          sources={NEWS_SOURCES}
+          now={NEWS_NOW}
+          labels={{
+            ...NEWS_LABELS,
+            sourceCount: (n) => `${n} 源`,
+            alsoFrom: (names) => `另见：${names.join('、')}`,
+            end: { endReached: '没有更多了' },
+          }}
+          chrome="bare"
+          groupBy={(item) => ({ key: item.channel, label: item.channel === 'flash' ? '快讯' : '要闻' })}
+          endState="end"
+        />
+      </div>
       <div style={{ height: 420 }} data-testid="news-cards">
         <NewsFeed
           items={NEWS_ITEMS}
@@ -208,12 +240,15 @@ export function NewsFeedUsage() {
 - 滚离顶部或已暂停：顶上出「n 条新消息」（只数符合当前筛选的），点了才插入并回到顶部。
 - 时间是相对的（3 分钟前），悬停出绝对时间；重要条目有琥珀小方块，读屏名「重要」。
 - 筛选没有命中：写 labels.empty。
+- 底部（endState）：more 是看不见的哨兵，loading 转圈，end 写「到底了」（列表空着时不写），error 写原因和重试。
 
 ## Don't
 
 - 不要在件里取当前时间：传 now。
 - 不要用橙色标重要：橙色留给数据，重要标记是琥珀。
-- 不要一次传几万条：不做虚拟滚动，分段加载由调用方管。
+- 不要拿涨跌色画标签：tone 只有 neutral / info / warn。
+- 不要在 external 时再自己筛一遍：条件交给服务端，件里不再筛。
+- 取页期间不要把 endState 留在 more：同一页会被要两次，要设成 loading。
 
 ## Composition
 
