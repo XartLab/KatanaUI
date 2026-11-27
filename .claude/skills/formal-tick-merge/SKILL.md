@@ -53,7 +53,7 @@ pnpm exec vp test run src/blocks/order-book/order-book-model.property.test.ts sr
 - `packages/react/src/blocks/order-book/order-book-model.property.test.ts`（性质 1–4）
 - `packages/react/src/lib/scaled-decimal.property.test.ts`（引理）
 
-**最后同步到的提交：`3163940`**（`feat(blocks): 订单簿、深度图、成交明细三件 (#104)`）。性质是对照这个提交里上面几个文件写的、在这个提交上证明过能失败的。
+**最后同步到的提交：`9404176`**（`feat(blocks): 订单簿、深度图、成交明细三件 (#104) (#140)`，main 上的合并提交；正文与下面的性质表在它的父线上 `3163940` 上写的，两个提交里这几个文件内容一字不差，`git diff 3163940 9404176 -- <上表三个文件>` 是空的）。
 
 ## 什么时候该重跑
 
@@ -88,6 +88,8 @@ git log --oneline 3163940..HEAD -- packages/react/src/blocks/order-book/order-bo
 | 去掉排序 `.toSorted(...)` | `mergeLevels` | 4（另 1、2、3） |
 | 同档第二笔另起一行（键加 0.5） | `mergeLevels` | 4（另 1、2、3） |
 | `toUnits` 的 `Math.round` 改成 `Math.trunc` | `scaled-decimal.ts` | 引理（另 1、2、3） |
+
+2026-11-23 在 `9404176`（main 上的合并提交）上又重做了一次「证明能失败」：只改坏第一行那一处（买盘 `Math.floor` → `Math.round`），4 条性质全红（性质 1 的反例是 `priceDecimals 1`、卖盘 `0.1` 一个最小位，`seed 884598623`），`git checkout --` 改回后 6 条全绿。
 
 占比压在 .5 上的输入很少（小簿里约 1%），所以性质 3 跑 10 倍用例（默认 3000），生成器里一半的簿只有 1..20 个最小位的小量、每侧最多 8 档。改生成器时别丢了这一点，否则去掉补差可能测不红。
 
