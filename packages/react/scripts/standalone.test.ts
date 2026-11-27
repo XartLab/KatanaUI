@@ -33,7 +33,8 @@ function escapes(file: string, text: string): string[] {
 }
 
 describe('包能单独拿出来（#1881）', () => {
-  it('包里没有出包的相对路径', () => {
+  // 整包逐文件读一遍，自建机忙时超过默认 5 秒（#190，2026-11-24 run 45319988571 / 45371922684）。
+  it('包里没有出包的相对路径', { timeout: 30_000 }, () => {
     const bad = [...files(root)].flatMap((file) =>
       escapes(file, readFileSync(file, 'utf8')).map((path) => `${relative(root, file)}: ${path}`),
     )

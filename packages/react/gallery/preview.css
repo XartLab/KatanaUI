@@ -243,7 +243,10 @@
   color: var(--ink-300);
   font: var(--text-caption) var(--font-mono);
 }
+/* 框上标的「容器 260」是里面件拿到的宽：钉成 content-box。#73 起预览放进了文档页签（Tabs，data-slot="tabs"），
+   theme.css 给 data-slot 件的后代补了 border-box，框的内边距与边被算进 260，Grid「两列」只剩 242 宽、掉成一列。 */
 .gal-frame {
+  box-sizing: content-box;
   max-width: 100%;
   padding: var(--space-2);
   overflow: auto;

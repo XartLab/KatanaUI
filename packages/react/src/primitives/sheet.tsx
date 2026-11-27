@@ -22,10 +22,10 @@ const sheetVariants = cva(
     variants: {
       /** Which edge the sheet sticks to; it slides in from that edge. */
       side: {
-        right: 'inset-y-0 right-0 w-[min(360px,calc(100vw-24px))] rounded-l-[14px] border-r-0',
-        left: 'inset-y-0 left-0 w-[min(360px,calc(100vw-24px))] rounded-r-[14px] border-l-0',
-        top: 'inset-x-0 top-0 max-h-[50dvh] rounded-b-[14px] border-t-0',
-        bottom: 'inset-x-0 bottom-0 max-h-[50dvh] rounded-t-[14px] border-b-0',
+        right: 'inset-y-0 right-0 w-[min(360px,calc(100vw-24px))] rounded-l-[var(--radius-dialog)] border-r-0',
+        left: 'inset-y-0 left-0 w-[min(360px,calc(100vw-24px))] rounded-r-[var(--radius-dialog)] border-l-0',
+        top: 'inset-x-0 top-0 max-h-[50dvh] rounded-b-[var(--radius-dialog)] border-t-0',
+        bottom: 'inset-x-0 bottom-0 max-h-[50dvh] rounded-t-[var(--radius-dialog)] border-b-0',
       },
     },
     defaultVariants: { side: 'right' },

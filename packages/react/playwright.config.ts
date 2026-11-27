@@ -15,8 +15,12 @@ export default defineConfig({
   testIgnore: process.env.E2E_HAPPO ? undefined : ['**/ui-gallery-happo.spec.ts'],
   fullyParallel: true,
   reporter: process.env.CI ? [['list'], ['github']] : [['list']],
-  // 并行数写死，不随机器核数变（KATANAview 的 CI 同样写 8，出处：它的 playwright.config.ts）。
-  workers: process.env.CI ? 8 : undefined,
+  // 并行数写死，不随机器核数变。原来照 KATANAview 写 8；#190 换到自建机（WSL，16 核 8 GB）后 8 个并行把按时间点量动画的断言
+  // 挤到重跑一次都过不了（2026-11-24 run 45316916034：一片 4 分钟、6 条重跑后仍红），降到 4。
+  workers: process.env.CI ? 4 : undefined,
+  // CI 上失败的用例重跑一次（#190，2026-11-24）：自建机忙时，按时间点量动画、闪色、过场的断言每轮随机红几条，
+  // 两次跑红的用例完全不同。重跑后才过的记成 flaky，报告里看得到；本机不重跑。
+  retries: process.env.CI ? 1 : 0,
   use: {
     baseURL: `http://127.0.0.1:${port}`,
     viewport: { width: 680, height: 360 },

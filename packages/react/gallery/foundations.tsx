@@ -7,9 +7,11 @@ import type { ReactNode } from 'react'
 import tokens from '../src/tokens-json'
 import { Button } from '../src/index'
 import { DECISION_PAGES } from './decisions'
-import { HEAT, MORE_PAGES as BASE_PAGES } from './foundations-more'
+import { phrased } from './phrased'
+import { TYPESETTING_PAGES } from './typesetting-page'
+import { HEAT, MORE_PAGES as BASE_PAGES, RadiusRules } from './foundations-more'
 
-const MORE_PAGES = { ...BASE_PAGES, ...DECISION_PAGES }
+const MORE_PAGES = { ...BASE_PAGES, ...DECISION_PAGES, ...TYPESETTING_PAGES }
 
 type Valued = string | Record<string, string>
 type Token = {
@@ -45,6 +47,7 @@ export const FOUNDATION_PAGES = [
   { id: 'styling', title: '样式引入', section: 'start' },
   { id: 'color', title: '颜色', section: 'foundations' },
   { id: 'typography', title: '字体与文字档', section: 'foundations' },
+  { id: 'typesetting', title: '中英排版开关', section: 'foundations' },
   { id: 'spacing', title: '间距', section: 'foundations' },
   { id: 'size', title: '尺寸', section: 'foundations' },
   { id: 'density', title: '密度', section: 'foundations' },
@@ -346,6 +349,7 @@ export function FoundationPage({ id }: { id: FoundationId }) {
               rows={T.radius.tokens}
               preview={(t) => <span className="gal-fd-box" style={{ borderRadius: `var(--${t.name})` }} />}
             />
+            <RadiusRules />
           </>
         )
       case 'shadow':
@@ -380,7 +384,7 @@ export function FoundationPage({ id }: { id: FoundationId }) {
   })()
   return (
     <article className="gal-fd">
-      <h1>{title}</h1>
+      <h1 {...phrased(title)} />
       {body}
     </article>
   )

@@ -19,6 +19,8 @@ const feedback: GuidanceMap = {
       '等 React.lazy / use()：pending 这个属性不写，Loading 就是 Suspense 边界；按属性在不在判，pending={undefined} 仍是等数据（当没在等），不会切模式。',
       '文档、测试、截图要看某一段：给 phase（loading / slow / timeout）。',
       '撑满面板主体给 fill，骨架行数按高度量；表头已知就传 header。',
+      '骨架出了至少留 500ms（LOADING_MIN_SHOWN_MS）：510ms 到的数据，骨架留到 1000ms 才换成内容；500ms 内到的不出骨架。只管 pending 模式，Suspense 模式的骨架是 React 自己摘的，没有最短停留。出处：kubai Vibe Design Tips 017。',
+      '一个按钮等一次请求（0.3 到 3 秒）不用 Loading，用 Button 的 pending：满 300ms 才出转圈、出了至少留 500ms、字与宽度不变、期间再按无效（见 button 页）。',
     ],
     avoid: [
       '知道进度时用 progress。',
@@ -37,7 +39,7 @@ const feedback: GuidanceMap = {
     use: [
       '卡片、文章、建议队列这类形状复杂的加载占位，内容到了位置不动。',
       '示例数据排出的版面要和真数据同样的行数与控件。',
-      '前 500ms 整块不可见、只占位（连卡片的边框底色也不露），之后才出骨架条；快的请求不闪。',
+      '前 500ms 整块不可见、只占位（连卡片的边框底色也不露），之后才出骨架条；快的请求不闪。骨架条出了至少留 minShown（默认 500ms），数据早到也等满再揭示（kubai Vibe Design Tips 017）。',
     ],
     avoid: ['表格用按行高的 skeleton，图表自己画占位。', '知道进度时用 progress。'],
     a11y: [
@@ -48,10 +50,21 @@ const feedback: GuidanceMap = {
   },
   toast: {
     aliases: ['Snackbar', 'Notification', 'Banner', 'Flash message'],
-    use: ['操作完成、告警触发这类会自己消失的反馈。', '多条提示排在窗口一角。'],
-    avoid: ['要用户处理的事用 dialog 或 alert。', '一直在页面里的说明用 alert。'],
+    use: [
+      '操作完成这类会自己消失的反馈。',
+      '多条提示排在窗口一角。',
+      '能撤销的操作（删画线、删自选、撤单后恢复）先做、再弹一条带「撤销」的 toast（ToastAction）；撤销后把同一条改成「已恢复」，约 1.5 秒后收。动作 toast 至少停 5 秒，指针或焦点在上面时暂停（计时在应用的 toast-queue，包里不计时）；可加 ToastCountdown：16px 的空心环随剩余比例变短，不写秒数。出处：kubai Vibe Design Tips 016。',
+    ],
+    avoid: [
+      '要用户处理的事用 dialog 或 alert。',
+      '一直在页面里的说明用 alert。',
+      '不能撤销的事先确认（DeleteButton / AlertDialog），不要事后 toast。',
+      '价格告警这类系统消息是通知，不是 toast（不是人刚做的事）：应进铃下的列表（NotificationBell），toast 只是到达提示。',
+    ],
     a11y: [
-      'ToastViewport 是 role=region，aria-live=assertive，新增的条目立刻被读。',
+      'ToastViewport 是 role=region，aria-live=polite：新增的条目读屏等空了再读，不打断；它一直在页面里，往里插的条目才会被读（只靠动态插进来的 role=status 节点，读屏不一定读）。',
+      'warn、danger 那一条自带 role=alert（插入即打断播报）；neutral、ok 不带，走视口。',
+      'Toast 不抢焦点；「撤销」是普通按钮，Tab 能到，Enter 或空格触发。倒计时环是装饰，aria-hidden，不报剩余秒数。',
       '关闭钮与「全部关掉」的读屏名由调用方传。',
       '语气（tone）只是色条与图标的颜色，标题里也要写明；说明文字用 ink-2，各主题都过 4.5:1。',
     ],
@@ -72,7 +85,7 @@ const feedback: GuidanceMap = {
       '一次只会有一条、也不需要撤销的用单条 Toast（调用方自己管条目表）。',
     ],
     a11y: [
-      '区域是 ToastViewport（role=region、aria-live=assertive），名字 labels.region 由调用方传；aria-relevant 是 "additions text"：结果态换内容只是文本节点的改动，只写 additions 读屏器不会读「已恢复」。不要靠换 key 重挂来触发朗读，那会丢焦点。',
+      '区域是 ToastViewport（role=region、aria-live=polite；warn / danger 的条自己带 role=alert），名字 labels.region 由调用方传；aria-relevant 是 "additions text"：结果态换内容只是文本节点的改动，只写 additions 读屏器不会读「已恢复」。不要靠换 key 重挂来触发朗读，那会丢焦点。',
       '展开不靠指针：Tab 进叠层（:focus-visible）就展开，能 Tab 到每条的动作钮与关闭钮；动作钮读屏名就是钮上的字，关闭钮是 labels.close。',
       '键盘焦点在条里时计时暂停；关掉有焦点的一条，焦点移到相邻一条的关闭钮，关掉最后一条（或被 max 裁掉）就还给进叠层前拿着焦点的元素（照 lib/opener-focus 的思路）；点动作钮后焦点落到同一条的关闭钮，不丢。Esc 关掉焦点所在的一条。',
       'prefers-reduced-motion：不缩放、不滑、不接拖动手势，收拢只留最前面一条，只有淡入淡出。',
@@ -100,7 +113,7 @@ const feedback: GuidanceMap = {
     ],
     a11y: [
       '相机钮是普通 button，读屏名与悬停提示是 labels.copyImage；复制时不禁用钮（禁用会丢焦点、挡住重试）。',
-      '结果经 ToastViewport（aria-live=assertive）读出；每次是新插入的节点，同一句也会再读（modern-web-guidance copy-button）。',
+      '结果经 ToastViewport（aria-live=polite）读出，下载与失败两条自带 role=alert；每次是新插入的节点，同一句也会再读（modern-web-guidance copy-button）。',
       '语气不只靠颜色：标题就是结果，原因写在说明里。',
     ],
   },

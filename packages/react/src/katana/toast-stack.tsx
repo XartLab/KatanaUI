@@ -46,7 +46,7 @@ import {
 //   滑动关：横向拖过条宽约 40% 或甩出速度够，往那边滑出并关，不够弹回；关掉一条，其余走弹簧补位；
 //   撤销就地变状态：条目带一个动作钮，点了这一条原地换成 result（默认 ok 语气），过一会儿自己消失，不另弹一条。
 // 条目表受控（items + onItemsChange）或不受控（defaultItems，加上 ref 的 push）都行；定时、暂停、最多条数由这一层管。
-// 读屏与键盘（modern-web-guidance 的 persistent-toast-notifications）：区域是 role=region、aria-live=assertive，名字由调用方传；
+// 读屏与键盘（modern-web-guidance 的 persistent-toast-notifications）：区域是 role=region、aria-live=polite（#251 批 A 起 ToastViewport 就是 polite；warn / danger 的条自己带 role=alert），名字由调用方传；
 //   关闭钮与动作钮都是普通 button，Tab 进叠层就展开；焦点在某一条上时那条的计时暂停；关掉有焦点的一条，焦点移到相邻的一条；
 //   点动作钮后焦点落到同一条的关闭钮，不丢到 body 上；关掉最后一条（或被 max 裁掉）有焦点的条时，焦点还给进叠层前拿着焦点的元素（照 lib/opener-focus 的思路）。
 //   结果态换内容时标题只是文本节点的改动，所以区域是 aria-relevant="additions text"（不靠换 key 重挂，那会丢焦点）。
@@ -158,8 +158,8 @@ const usePageHidden = () =>
     () => false,
   )
 
-/** 动作钮：Toast 里的小按钮（sm 档），读屏名就是钮上的字。 */
-function ToastAction({ className, ...props }: ComponentProps<typeof Button>) {
+/** 动作钮：叠放里的小按钮（sm 档），读屏名就是钮上的字。不对外导出；toast.tsx 的 ToastAction 是另一个（ghost、强调色字）。 */
+function StackActionButton({ className, ...props }: ComponentProps<typeof Button>) {
   return (
     <Button
       type="button"
@@ -281,7 +281,9 @@ function ToastStackEntry({ item, index, slot, toward, reduced, labels, onHeight,
               <ToastTitle>{item.title}</ToastTitle>
               {item.description === undefined ? null : <ToastDescription>{item.description}</ToastDescription>}
             </ToastText>
-            {item.action ? <ToastAction onClick={() => onAction(item.id)}>{item.action.label}</ToastAction> : null}
+            {item.action ? (
+              <StackActionButton onClick={() => onAction(item.id)}>{item.action.label}</StackActionButton>
+            ) : null}
             <ToastClose label={labels.close} className="self-center" onClick={() => onDismiss(item.id)} />
           </ToastContent>
         </Toast>
@@ -596,5 +598,3 @@ export function ToastStack({
     </ToastViewport>
   )
 }
-
-export { ToastAction }

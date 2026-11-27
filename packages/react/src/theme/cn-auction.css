@@ -29,6 +29,7 @@
 .k-auction-price {
   color: var(--auction-line);
   font: 600 18px/22px var(--font-sans);
+  font-variant-numeric: tabular-nums;
 }
 .k-auction-change {
   color: var(--auction-line);

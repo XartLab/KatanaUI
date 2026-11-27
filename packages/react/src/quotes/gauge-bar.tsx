@@ -3,6 +3,7 @@
 // 从应用的分析视图 GaugeView 提来（#1884，调用方零改动；原来照 TradingView 的进度条与长桥的「情绪」，#443）。
 // 认分量（#115）：hero 的数用 display 档；compact 只留一行「名字 数 档位词」，不画进度条、图例与说明。
 import type { ReactNode } from 'react'
+import { fillVar } from '../lib/fill.ts'
 import { useEmphasis } from '../layout/emphasis.tsx'
 
 export type GaugeBarClasses = Partial<
@@ -95,10 +96,7 @@ export function GaugeBar({
                 )
               })
             : share !== null && (
-                <span
-                  className={join('k-gauge-fill', classes.fill)}
-                  style={{ width: `${Math.min(1, Math.max(0, share)) * 100}%` }}
-                />
+                <span className={join('k-gauge-fill', classes.fill)} style={fillVar(Math.min(1, Math.max(0, share)))} />
               )}
         </div>
       )}

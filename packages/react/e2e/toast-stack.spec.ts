@@ -244,7 +244,7 @@ const press = async (page: Page, name: string) => {
 test('ToastStack：区域是 aria-relevant="additions text"，结果态换文字也会被读', async ({ page }) => {
   await open(page, 'toast-stack')
   await expect(region(page)).toHaveAttribute('aria-relevant', 'additions text')
-  await expect(region(page)).toHaveAttribute('aria-live', 'assertive')
+  await expect(region(page)).toHaveAttribute('aria-live', 'polite')
 })
 
 test('ToastStack：关掉叠层里最后一条有焦点的提示，焦点回到进叠层前的元素', async ({ page }) => {

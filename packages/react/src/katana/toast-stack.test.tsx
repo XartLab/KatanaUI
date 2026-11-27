@@ -14,7 +14,7 @@ describe('ToastStack 结构', () => {
   const html = renderToStaticMarkup(<ToastStack items={items} labels={labels} />)
   test('区域是 role=region 的 live region，名字由调用方传', () => {
     expect(html).toContain('role="region"')
-    expect(html).toContain('aria-live="assertive"')
+    expect(html).toContain('aria-live="polite"')
     expect(html).toContain('aria-label="Notifications"')
   })
   test('每条有关闭钮，有 action 的多一个动作钮，名字都由调用方传', () => {

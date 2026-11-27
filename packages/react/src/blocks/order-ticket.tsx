@@ -332,7 +332,7 @@ function TicketSide({
             thumbLabels={[labels.percent]}
             onValueChange={([value]) => applyPercent(value ?? 0)}
           />
-          <div className="k-text-caption mt-1 flex justify-between text-ink-4 tabular-nums">
+          <div className="k-text-caption mt-1 flex justify-between text-ink-3 tabular-nums">
             {PERCENT_STOPS.map((stop) => (
               <button
                 key={stop}
@@ -370,7 +370,7 @@ function TicketSide({
           <div className="flex items-center justify-between gap-2">
             <label className="k-text-body flex cursor-pointer items-center gap-2 text-ink-2">
               <Checkbox
-                aria-controls={exitsId}
+                aria-controls={exitsShown ? exitsId : undefined}
                 checked={exitsShown}
                 disabled={mode === 'risk'}
                 onCheckedChange={(checked) => setExitsOpen(checked === true)}
@@ -683,25 +683,26 @@ export function OrderTicket({
 
       {maxLeverage ? (
         <div className="flex items-center gap-1">
+          {/* 两项、短、互斥：分段，两项一直看得见（kubai Vibe Design Tips 020）；改错代价大，不藏在下拉后面。 */}
           {marginModes && marginMode ? (
-            <Select
+            <ToggleGroup
+              size="sm"
+              fullWidth
+              data-slot="ticket-margin-mode"
+              aria-label={labels.marginMode}
+              className="min-w-0 flex-1"
               value={marginMode}
               onValueChange={(value) => {
                 setMarginMode(value as MarginMode)
                 onMarginModeChange?.(value as MarginMode)
               }}
             >
-              <SelectTrigger aria-label={labels.marginMode} className="min-w-0 flex-1">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {marginModes.map((value) => (
-                  <SelectItem key={value} value={value}>
-                    {labels.marginModes[value]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              {marginModes.map((value) => (
+                <ToggleGroupItem key={value} value={value}>
+                  {labels.marginModes[value]}
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
           ) : null}
           <div className="min-w-0 flex-1">
             <TicketField
