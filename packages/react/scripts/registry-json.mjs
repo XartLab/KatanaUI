@@ -342,6 +342,8 @@ function collectItems() {
       'agent-tree',
       'agent-fleet',
       'agent-crew',
+      // KatanaUI #223：规则构建器（组件、行内格子、模型与文案类型合成一项）。
+      'rule-builder',
       // #245 模块 2：策略入口。
       'strategy-launcher',
       'floating-window',

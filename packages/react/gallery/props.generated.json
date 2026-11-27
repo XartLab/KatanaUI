@@ -48147,6 +48147,943 @@
         }
       ]
     },
+    "Rule": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": [
+        {
+          "name": "when",
+          "type": "RuleGroup",
+          "required": true,
+          "description": "The condition tree; its root group is always there."
+        },
+        {
+          "name": "ifTrue",
+          "type": "readonly RuleAction[]",
+          "required": true,
+          "description": "Actions when the conditions hold; may be empty unless schema.requireActions says so."
+        },
+        {
+          "name": "ifFalse",
+          "type": "readonly RuleAction[]",
+          "required": true,
+          "description": "Actions when they do not."
+        }
+      ]
+    },
+    "RuleAction": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "kind",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "params",
+          "type": "Readonly<Record<string, string | number>>",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "RuleActionDef": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": [
+        {
+          "name": "kind",
+          "type": "string",
+          "required": true,
+          "description": "Stable key stored in the JSON."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Text shown on the action select and in the readback."
+        },
+        {
+          "name": "params",
+          "type": "readonly RuleActionParam[]",
+          "required": false,
+          "description": "The parameters in the order they are shown; each is required unless it says optional."
+        },
+        {
+          "name": "draft",
+          "type": "boolean",
+          "required": false,
+          "description": "The action only produces a draft for a person to confirm (an order draft); the row carries a draft mark."
+        }
+      ]
+    },
+    "RuleActionParam": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": "Stable key of the parameter in RuleAction.params."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the parameter control."
+        },
+        {
+          "name": "input",
+          "type": "'option' | 'text' | 'number'",
+          "required": true,
+          "description": "option: pick one of options; text: free text; number: a number."
+        },
+        {
+          "name": "options",
+          "type": "readonly RuleOption[]",
+          "required": false,
+          "description": "Choices when input is option."
+        },
+        {
+          "name": "connector",
+          "type": "string",
+          "required": false,
+          "description": "Word shown between the action and the parameter, such as \"to\"."
+        },
+        {
+          "name": "unit",
+          "type": "string",
+          "required": false,
+          "description": "Unit of a number parameter."
+        },
+        {
+          "name": "min",
+          "type": "number",
+          "required": false,
+          "description": "Smallest number of a number parameter."
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "description": "Largest number of a number parameter."
+        },
+        {
+          "name": "optional",
+          "type": "boolean",
+          "required": false,
+          "description": "The parameter may stay empty."
+        }
+      ]
+    },
+    "RuleBuilder": {
+      "kind": "component",
+      "source": "src/blocks/rule-builder/rule-builder.tsx",
+      "props": [
+        {
+          "name": "schema",
+          "type": "RuleSchema",
+          "required": true,
+          "description": "Fields, operators per field type and actions."
+        },
+        {
+          "name": "value",
+          "type": "Rule",
+          "required": false,
+          "description": "The rule, controlled."
+        },
+        {
+          "name": "defaultValue",
+          "type": "Rule",
+          "required": false,
+          "description": "The rule at first, uncontrolled."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(rule: Rule) => void",
+          "required": false,
+          "description": "Called with the whole new rule after every edit, move, add, remove, undo and redo."
+        },
+        {
+          "name": "templates",
+          "type": "RuleTextTemplates",
+          "required": true,
+          "description": "Templates of the one-line readback."
+        },
+        {
+          "name": "labels",
+          "type": "RuleBuilderLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "showIssues",
+          "type": "'touched' | 'all'",
+          "required": false,
+          "default": "'touched'",
+          "description": "When problems show on rows: touched (the default) shows a row's problems once it was edited; all shows every problem."
+        },
+        {
+          "name": "headingLevel",
+          "type": "2 | 3 | 4 | 5",
+          "required": false,
+          "default": "4",
+          "description": "Level of the WHEN and THEN headings (the if-true and if-false chips are one level lower); default 4."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "RuleBuilderLabels": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-labels.ts",
+      "props": [
+        {
+          "name": "when",
+          "type": "string",
+          "required": true,
+          "description": "Heading of the conditions part, such as WHEN."
+        },
+        {
+          "name": "actions",
+          "type": "string",
+          "required": true,
+          "description": "Heading of the actions part, such as THEN."
+        },
+        {
+          "name": "ifTrue",
+          "type": "string",
+          "required": true,
+          "description": "Chip over the actions that run when the conditions hold, such as \"If true\"."
+        },
+        {
+          "name": "ifFalse",
+          "type": "string",
+          "required": true,
+          "description": "Chip over the actions that run when they do not."
+        },
+        {
+          "name": "readback",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the one-line readback of the rule (the name of the group that holds the sentence)."
+        },
+        {
+          "name": "mode",
+          "type": "Record<RuleMode, string>",
+          "required": true,
+          "description": "Visible word of each combine mode, such as And and Or."
+        },
+        {
+          "name": "switchMode",
+          "type": "(current: string, next: string) => string",
+          "required": true,
+          "description": "Accessible name of the combine button, such as (current, next) => `Combine with ${current}; switch to ${next}`."
+        },
+        {
+          "name": "group",
+          "type": "(conditions: number, mode: string) => string",
+          "required": true,
+          "description": "Title and accessible name of a nested group, such as (n, mode) => `Group · ${n} conditions · ${mode}`; mode is the visible word of its combine mode (And or Or)."
+        },
+        {
+          "name": "rootGroup",
+          "type": "(conditions: number, mode: string) => string",
+          "required": true,
+          "description": "Accessible name of the top group of conditions, such as (n, mode) => `Conditions · ${n} · ${mode}`."
+        },
+        {
+          "name": "addCondition",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "addGroup",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "addAction",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "field",
+          "type": "string",
+          "required": true,
+          "description": "Accessible names of the controls of a row."
+        },
+        {
+          "name": "operator",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "min",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "max",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "action",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "rangeTo",
+          "type": "string",
+          "required": true,
+          "description": "Visible word between the two bounds of a range, such as \"to\"."
+        },
+        {
+          "name": "refToggle",
+          "type": "string",
+          "required": true,
+          "description": "Name of the button that swaps a number for another field (pressed when it is a field)."
+        },
+        {
+          "name": "refField",
+          "type": "string",
+          "required": true,
+          "description": "Name of the select of the other field."
+        },
+        {
+          "name": "refPlaceholder",
+          "type": "string",
+          "required": true,
+          "description": "Placeholder of the select of the other field."
+        },
+        {
+          "name": "valuePlaceholder",
+          "type": "string",
+          "required": true,
+          "description": "Placeholder of an enum value select."
+        },
+        {
+          "name": "addValue",
+          "type": "string",
+          "required": true,
+          "description": "Text and name of the add button of a multi-value."
+        },
+        {
+          "name": "searchValue",
+          "type": "string",
+          "required": true,
+          "description": "Placeholder and name of the search box of the multi-value list."
+        },
+        {
+          "name": "noValue",
+          "type": "string",
+          "required": true,
+          "description": "Shown when the search finds nothing."
+        },
+        {
+          "name": "removeValue",
+          "type": "(label: string) => string",
+          "required": true,
+          "description": "Name of the remove button of a chip, such as (label) => `Remove ${label}`."
+        },
+        {
+          "name": "valueCleared",
+          "type": "string",
+          "required": true,
+          "description": "Live line after changing the field cleared the value because the new field has another type or unit, such as \"Value cleared: the new field has another unit\"."
+        },
+        {
+          "name": "locked",
+          "type": "string",
+          "required": true,
+          "description": "Name of the lock icon of a locked condition."
+        },
+        {
+          "name": "draft",
+          "type": "string",
+          "required": true,
+          "description": "Mark on an action that only produces a draft."
+        },
+        {
+          "name": "handle",
+          "type": "(summary: string) => string",
+          "required": true,
+          "description": "Name of the drag handle, such as (summary) => `Move: ${summary}`; the hint is read with it."
+        },
+        {
+          "name": "remove",
+          "type": "(summary: string) => string",
+          "required": true,
+          "description": "Name of the delete button of a row."
+        },
+        {
+          "name": "removeBlocked",
+          "type": "(summary: string) => string",
+          "required": true,
+          "description": "Name of the delete button of a group that holds a locked condition (it cannot be deleted); say why, such as (summary) => `Cannot delete ${summary}: it holds a locked condition`."
+        },
+        {
+          "name": "hint",
+          "type": "string",
+          "required": true,
+          "description": "Read with the handle: the keys that move and remove a row."
+        },
+        {
+          "name": "undo",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "redo",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "issueCount",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": "Status line when the rule has problems, such as (n) => `${n} issues`."
+        },
+        {
+          "name": "issueAction",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": "Name of the status button when the rule has problems: it shows every problem and moves focus to the first, such as (n) => `${n} issues: show all and go to the first`."
+        },
+        {
+          "name": "valid",
+          "type": "string",
+          "required": true,
+          "description": "Status line when it has none."
+        },
+        {
+          "name": "issue",
+          "type": "(issue: RuleIssue) => string",
+          "required": true,
+          "description": "Why a row is wrong, in words."
+        },
+        {
+          "name": "added",
+          "type": "(summary: string) => string",
+          "required": true,
+          "description": "Live lines."
+        },
+        {
+          "name": "removed",
+          "type": "(summary: string) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "moved",
+          "type": "(summary: string, position: number, total: number) => string",
+          "required": true,
+          "description": "After a move: the row, its new position (from 1) and how many rows the list has."
+        },
+        {
+          "name": "modeChanged",
+          "type": "(mode: string) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "undone",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "redone",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "dragCancelled",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "RuleBuilderProps": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-builder.tsx",
+      "props": [
+        {
+          "name": "schema",
+          "type": "RuleSchema",
+          "required": true,
+          "description": "Fields, operators per field type and actions."
+        },
+        {
+          "name": "value",
+          "type": "Rule",
+          "required": false,
+          "description": "The rule, controlled."
+        },
+        {
+          "name": "defaultValue",
+          "type": "Rule",
+          "required": false,
+          "description": "The rule at first, uncontrolled."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(rule: Rule) => void",
+          "required": false,
+          "description": "Called with the whole new rule after every edit, move, add, remove, undo and redo."
+        },
+        {
+          "name": "templates",
+          "type": "RuleTextTemplates",
+          "required": true,
+          "description": "Templates of the one-line readback."
+        },
+        {
+          "name": "labels",
+          "type": "RuleBuilderLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "showIssues",
+          "type": "'touched' | 'all'",
+          "required": false,
+          "description": "When problems show on rows: touched (the default) shows a row's problems once it was edited; all shows every problem."
+        },
+        {
+          "name": "headingLevel",
+          "type": "2 | 3 | 4 | 5",
+          "required": false,
+          "description": "Level of the WHEN and THEN headings (the if-true and if-false chips are one level lower); default 4."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "RuleCondition": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": [
+        {
+          "name": "type",
+          "type": "'condition'",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "field",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "op",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "value",
+          "type": "RuleValue",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "locked",
+          "type": "boolean",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "RuleField": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": "Stable key stored in the JSON."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Text shown on the field select."
+        },
+        {
+          "name": "group",
+          "type": "string",
+          "required": false,
+          "description": "Group heading in the field select."
+        },
+        {
+          "name": "type",
+          "type": "RuleFieldType",
+          "required": true,
+          "description": "number, enum or text; decides the operators."
+        },
+        {
+          "name": "unit",
+          "type": "string",
+          "required": false,
+          "description": "Unit written after a number, such as % or 100M."
+        },
+        {
+          "name": "min",
+          "type": "number",
+          "required": false,
+          "description": "Smallest number allowed."
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "description": "Largest number allowed."
+        },
+        {
+          "name": "step",
+          "type": "number",
+          "required": false,
+          "description": "Step of the number box's arrow keys."
+        },
+        {
+          "name": "options",
+          "type": "readonly RuleOption[]",
+          "required": false,
+          "description": "Choices of an enum field."
+        }
+      ]
+    },
+    "RuleFieldType": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": []
+    },
+    "RuleGroup": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": [
+        {
+          "name": "type",
+          "type": "'group'",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "mode",
+          "type": "RuleMode",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "children",
+          "type": "readonly RuleNode[]",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "RuleInput": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": []
+    },
+    "RuleIssue": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "code",
+          "type": "RuleIssueCode",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "part",
+          "type": "RuleIssuePart",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "key",
+          "type": "string",
+          "required": false,
+          "description": "Key of the action parameter, for part param."
+        },
+        {
+          "name": "min",
+          "type": "number",
+          "required": false,
+          "description": "The field's smallest number, for out-of-range."
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "description": "The field's largest number, for out-of-range."
+        }
+      ]
+    },
+    "RuleIssueCode": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": []
+    },
+    "RuleIssuePart": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": []
+    },
+    "RuleMode": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": []
+    },
+    "RuleNode": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": []
+    },
+    "RuleOperator": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Stable key stored in the JSON."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Text shown on the operator select and in the readback."
+        },
+        {
+          "name": "input",
+          "type": "RuleInput",
+          "required": true,
+          "description": "number: one number; range: min and max; option: one choice; list: several choices; text: free text."
+        },
+        {
+          "name": "allowRef",
+          "type": "boolean",
+          "required": false,
+          "description": "A number input may switch to another number field (close crosses above MA20)."
+        }
+      ]
+    },
+    "RuleOption": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "RuleSchema": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": [
+        {
+          "name": "fields",
+          "type": "readonly RuleField[]",
+          "required": true,
+          "description": "The fields a condition can test."
+        },
+        {
+          "name": "operators",
+          "type": "Readonly<Record<RuleFieldType, readonly RuleOperator[]>>",
+          "required": true,
+          "description": "Operators offered for each field type."
+        },
+        {
+          "name": "actions",
+          "type": "readonly RuleActionDef[]",
+          "required": false,
+          "description": "Action kinds; without them the builder has no THEN part."
+        },
+        {
+          "name": "requireActions",
+          "type": "boolean",
+          "required": false,
+          "description": "The if-true list must hold at least one action; default false (a screening rule may have only WHEN)."
+        },
+        {
+          "name": "maxDepth",
+          "type": "number",
+          "required": false,
+          "description": "Deepest nesting of groups, the root counts as 1; default 3."
+        }
+      ]
+    },
+    "RuleTextTemplates": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": [
+        {
+          "name": "when",
+          "type": "(body: string) => string",
+          "required": true,
+          "description": "Wraps the whole condition text, such as (body) => `When ${body}`."
+        },
+        {
+          "name": "and",
+          "type": "string",
+          "required": true,
+          "description": "Between two conditions of an and group."
+        },
+        {
+          "name": "or",
+          "type": "string",
+          "required": true,
+          "description": "Between two conditions of an or group."
+        },
+        {
+          "name": "group",
+          "type": "(inner: string) => string",
+          "required": true,
+          "description": "Wraps a nested group with more than one member, such as (inner) => `(${inner})`."
+        },
+        {
+          "name": "condition",
+          "type": "(field: string, operator: string, value: string) => string",
+          "required": true,
+          "description": "One condition from its field, operator and value text."
+        },
+        {
+          "name": "number",
+          "type": "(value: number, unit: string | undefined) => string",
+          "required": true,
+          "description": "A number with its unit."
+        },
+        {
+          "name": "range",
+          "type": "(min: string, max: string) => string",
+          "required": true,
+          "description": "A range from its two number texts."
+        },
+        {
+          "name": "list",
+          "type": "(labels: readonly string[]) => string",
+          "required": true,
+          "description": "A list of choices, such as (labels) => labels.join(' / ')."
+        },
+        {
+          "name": "blank",
+          "type": "string",
+          "required": true,
+          "description": "Stands for a value that is not filled in yet."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Stands for a rule with no conditions."
+        },
+        {
+          "name": "ifTrue",
+          "type": "(actions: string) => string",
+          "required": true,
+          "description": "Wraps the actions that run when the conditions hold, such as (actions) => `then ${actions}`."
+        },
+        {
+          "name": "ifFalse",
+          "type": "(actions: string) => string",
+          "required": true,
+          "description": "Wraps the actions that run when they do not, such as (actions) => `otherwise ${actions}`."
+        },
+        {
+          "name": "action",
+          "type": "(label: string, params: readonly RuleTextParam[]) => string",
+          "required": true,
+          "description": "One action from its label and its parameters (text and connector word each, in the order they are shown)."
+        },
+        {
+          "name": "actionJoin",
+          "type": "string",
+          "required": true,
+          "description": "Between two actions."
+        },
+        {
+          "name": "join",
+          "type": "string",
+          "required": true,
+          "description": "Between the condition part and the action parts."
+        }
+      ]
+    },
+    "RuleValue": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": []
+    },
     "RulerSlider": {
       "kind": "component",
       "source": "src/katana/ruler-slider.tsx",
@@ -69646,6 +70583,150 @@
         }
       ]
     },
+    "ruleToText": {
+      "kind": "function",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": [
+        {
+          "name": "when",
+          "type": "RuleGroup",
+          "required": true,
+          "description": "The condition tree; its root group is always there."
+        },
+        {
+          "name": "ifTrue",
+          "type": "readonly RuleAction[]",
+          "required": true,
+          "description": "Actions when the conditions hold; may be empty unless schema.requireActions says so."
+        },
+        {
+          "name": "ifFalse",
+          "type": "readonly RuleAction[]",
+          "required": true,
+          "description": "Actions when they do not."
+        },
+        {
+          "name": "fields",
+          "type": "readonly RuleField[]",
+          "required": true,
+          "description": "The fields a condition can test."
+        },
+        {
+          "name": "operators",
+          "type": "Readonly<Record<RuleFieldType, readonly RuleOperator[]>>",
+          "required": true,
+          "description": "Operators offered for each field type."
+        },
+        {
+          "name": "actions",
+          "type": "readonly RuleActionDef[]",
+          "required": false,
+          "description": "Action kinds; without them the builder has no THEN part."
+        },
+        {
+          "name": "requireActions",
+          "type": "boolean",
+          "required": false,
+          "description": "The if-true list must hold at least one action; default false (a screening rule may have only WHEN)."
+        },
+        {
+          "name": "maxDepth",
+          "type": "number",
+          "required": false,
+          "description": "Deepest nesting of groups, the root counts as 1; default 3."
+        },
+        {
+          "name": "when",
+          "type": "(body: string) => string",
+          "required": true,
+          "description": "Wraps the whole condition text, such as (body) => `When ${body}`."
+        },
+        {
+          "name": "and",
+          "type": "string",
+          "required": true,
+          "description": "Between two conditions of an and group."
+        },
+        {
+          "name": "or",
+          "type": "string",
+          "required": true,
+          "description": "Between two conditions of an or group."
+        },
+        {
+          "name": "group",
+          "type": "(inner: string) => string",
+          "required": true,
+          "description": "Wraps a nested group with more than one member, such as (inner) => `(${inner})`."
+        },
+        {
+          "name": "condition",
+          "type": "(field: string, operator: string, value: string) => string",
+          "required": true,
+          "description": "One condition from its field, operator and value text."
+        },
+        {
+          "name": "number",
+          "type": "(value: number, unit: string | undefined) => string",
+          "required": true,
+          "description": "A number with its unit."
+        },
+        {
+          "name": "range",
+          "type": "(min: string, max: string) => string",
+          "required": true,
+          "description": "A range from its two number texts."
+        },
+        {
+          "name": "list",
+          "type": "(labels: readonly string[]) => string",
+          "required": true,
+          "description": "A list of choices, such as (labels) => labels.join(' / ')."
+        },
+        {
+          "name": "blank",
+          "type": "string",
+          "required": true,
+          "description": "Stands for a value that is not filled in yet."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Stands for a rule with no conditions."
+        },
+        {
+          "name": "ifTrue",
+          "type": "(actions: string) => string",
+          "required": true,
+          "description": "Wraps the actions that run when the conditions hold, such as (actions) => `then ${actions}`."
+        },
+        {
+          "name": "ifFalse",
+          "type": "(actions: string) => string",
+          "required": true,
+          "description": "Wraps the actions that run when they do not, such as (actions) => `otherwise ${actions}`."
+        },
+        {
+          "name": "action",
+          "type": "(label: string, params: readonly RuleTextParam[]) => string",
+          "required": true,
+          "description": "One action from its label and its parameters (text and connector word each, in the order they are shown)."
+        },
+        {
+          "name": "actionJoin",
+          "type": "string",
+          "required": true,
+          "description": "Between two actions."
+        },
+        {
+          "name": "join",
+          "type": "string",
+          "required": true,
+          "description": "Between the condition part and the action parts."
+        }
+      ]
+    },
     "runningCounts": {
       "kind": "function",
       "source": "src/ai/running-now.tsx",
@@ -71346,6 +72427,60 @@
       "kind": "function",
       "source": "src/cn/mini-k-model.ts",
       "props": []
+    },
+    "validateRule": {
+      "kind": "function",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": [
+        {
+          "name": "when",
+          "type": "RuleGroup",
+          "required": true,
+          "description": "The condition tree; its root group is always there."
+        },
+        {
+          "name": "ifTrue",
+          "type": "readonly RuleAction[]",
+          "required": true,
+          "description": "Actions when the conditions hold; may be empty unless schema.requireActions says so."
+        },
+        {
+          "name": "ifFalse",
+          "type": "readonly RuleAction[]",
+          "required": true,
+          "description": "Actions when they do not."
+        },
+        {
+          "name": "fields",
+          "type": "readonly RuleField[]",
+          "required": true,
+          "description": "The fields a condition can test."
+        },
+        {
+          "name": "operators",
+          "type": "Readonly<Record<RuleFieldType, readonly RuleOperator[]>>",
+          "required": true,
+          "description": "Operators offered for each field type."
+        },
+        {
+          "name": "actions",
+          "type": "readonly RuleActionDef[]",
+          "required": false,
+          "description": "Action kinds; without them the builder has no THEN part."
+        },
+        {
+          "name": "requireActions",
+          "type": "boolean",
+          "required": false,
+          "description": "The if-true list must hold at least one action; default false (a screening rule may have only WHEN)."
+        },
+        {
+          "name": "maxDepth",
+          "type": "number",
+          "required": false,
+          "description": "Deepest nesting of groups, the root counts as 1; default 3."
+        }
+      ]
     },
     "valueRange": {
       "kind": "function",
