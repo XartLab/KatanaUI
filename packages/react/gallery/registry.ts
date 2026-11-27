@@ -1881,6 +1881,7 @@ export const PAGES: readonly DocPage[] = [
     states: [
       '有数据：每档一列，柱色跟档的色调（up / down / muted / accent），柱顶是家数。',
       '某档没有数（count 为 null）：不画柱，柱顶写「—」。',
+      '窄柱（#260）：档名最多两行，不再单行省略成「-...」；字符串区间（「-5~-3」）在区间符后断开，一行放得下就一行；给 lines 总是上下叠；完整名在悬停（title）里。',
       '汇总：给了 totals 才有，按 up / muted / down 的次序，没写名字的项不出现。',
       '没有数据（空数组或全是 null）：只写 empty 的字，不画样本。',
     ],
