@@ -162,8 +162,3 @@
   color: var(--k-selectable-bold-foreground-selected);
   font-weight: 600;
 }
-/* 空段的占位是 <input> 的 placeholder：中文占位字在输入框里比在原来的 <span> 里低 1px，上提回来（与原段的字对齐）。 */
-.k-dt-seg:placeholder-shown {
-  position: relative;
-  top: -1px;
-}
