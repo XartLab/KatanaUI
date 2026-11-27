@@ -3,6 +3,7 @@
 import { Radio, RadioGroup as RadioGroupRoot, RadioIndicator } from '@ui-sdk/react/radio'
 import type { ComponentProps } from 'react'
 import { cn } from '../lib/cn.ts'
+import { slotName } from '../lib/slot-name.ts'
 import { focusRing } from '../lib/focus.ts'
 
 /** 单选组：竖排（默认）或横排；方向键在选项间移动并选中（UI SDK 的 roving focus）。 */
@@ -39,7 +40,7 @@ function RadioGroup({
 function RadioGroupItem({ className, ...props }: ComponentProps<typeof Radio>) {
   return (
     <Radio
-      data-slot="radio-group-item"
+      render={slotName('radio-group-item', 'button')}
       className={cn(
         'peer inline-flex size-[14px] shrink-0 cursor-pointer items-center justify-center rounded-full border border-(color:--k-separable-bold-borderColor) bg-(--k-surface-sunken-background) p-0',
         'shadow-[var(--recess)] transition-colors duration-150',
@@ -52,7 +53,7 @@ function RadioGroupItem({ className, ...props }: ComponentProps<typeof Radio>) {
       {...props}
     >
       <RadioIndicator
-        data-slot="radio-group-indicator"
+        render={slotName('radio-group-indicator', 'span')}
         className="block size-[6px] rounded-full bg-(--k-selectable-bold-foreground-selected)"
       />
     </Radio>
