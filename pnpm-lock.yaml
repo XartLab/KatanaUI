@@ -366,8 +366,8 @@ importers:
         specifier: 4.10.2
         version: 4.10.2
       happo:
-        specifier: 7.2.3
-        version: 7.2.3(typescript@7.0.2)
+        specifier: 7.8.0
+        version: 7.8.0(typescript@7.0.2)
       pixelgate-cli:
         specifier: 0.2.0
         version: 0.2.0(patch_hash=8206728dfb938cb436f2161733df5e080c4b0db71c55232a0d8f08fcb4680e86)(@playwright/test@1.56.1)(@voidzero-dev/vite-plus-core@1.4.0(@types/node@22.20.5)(jiti@2.7.0)(typescript@7.0.2))(playwright-core@1.56.1)(playwright@1.56.1)(vitest@5.0.5)
@@ -2814,8 +2814,8 @@ packages:
   graceful-fs@4.2.12:
     resolution: {integrity: sha512-iuyGF2E4oafQfPsRrG2wtY2ILupMhvtdrhzrxB+0VcjsPpSPttpfYdjnGFGsTi5MaJFjI1jOKHPQ6UTbTj9TAw==}
 
-  happo@7.2.3:
-    resolution: {integrity: sha512-AfM0ykAoU0fLkMZyjF+KOzMmWbsc5kdcsiV/sfoU+RKVqgwJNvE+zEbgjdNESDrvasP3V3J0VrEJs7BQJ93LrA==}
+  happo@7.8.0:
+    resolution: {integrity: sha512-6vS40is91N9UrRwKMUT78nvK01GBH410usW5S4aAcUiD2RO2AbqpKVK9wm+mpFMcdsZUYPlgBI8YAWpgRFVUAA==}
     engines: {node: ^22.18.0 || >=24.0.0}
     hasBin: true
 
@@ -6073,7 +6073,7 @@ snapshots:
 
   graceful-fs@4.2.12: {}
 
-  happo@7.2.3(typescript@7.0.2):
+  happo@7.8.0(typescript@7.0.2):
     dependencies:
       base64-stream: 1.0.0
       empathic: 2.1.0

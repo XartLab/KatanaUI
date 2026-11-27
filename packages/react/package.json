@@ -153,7 +153,7 @@
     "ajv": "8.20.0",
     "budoux": "0.10.4",
     "fast-check": "4.10.2",
-    "happo": "7.2.3",
+    "happo": "7.8.0",
     "pixelgate-cli": "0.2.0",
     "playwright": "1.56.1",
     "react": "19.3.1",
