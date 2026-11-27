@@ -30,6 +30,7 @@ const preview = spawn(
   { stdio: 'ignore', detached: true },
 )
 const stopPreview = () => {
+  if (preview.pid === undefined) return
   try {
     process.kill(-preview.pid)
   } catch {}
