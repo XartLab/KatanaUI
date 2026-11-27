@@ -236,7 +236,7 @@ import { EquityCurve } from '@katana-ui/react/quant'`}
           [
             code('Toggle / ChipGroup'),
             'UI SDK 的 Toggle、ToggleGroup',
-            '按下 data-pressed；禁用项在组里用 aria-disabled，仍可方向键到达',
+            '按下 data-pressed；禁用项在组里用 aria-disabled，仍可方向键到达；ChipGroup 多选的值按芯片的排列顺序给，不按点击先后',
           ],
           [
             code('Progress / Separator / Label / Avatar'),
@@ -248,7 +248,11 @@ import { EquityCurve } from '@katana-ui/react/quant'`}
             'UI SDK 的 Collapsible、Accordion',
             '展开 data-open；高度过渡读 --collapsible-panel-height / --accordion-panel-height，收起过程是 data-ending-style；Accordion 的方向键不再在标题间移动，用 Tab',
           ],
-          [code('Tabs'), 'UI SDK 的 Tabs', '选中 data-selected；对外仍是 activationMode、forceMount'],
+          [
+            code('Tabs'),
+            'UI SDK 的 Tabs',
+            '选中 data-selected；对外仍是 activationMode、forceMount；面板的淡入只在换页签时播，首次渲染不播；Tabs / TabsList / TabsTrigger / Label 仍可用 data-slot 改 slot 名',
+          ],
           [code('ScrollArea'), 'UI SDK 的 ScrollArea', '滚动条显示读 data-visible，不卸载，用 opacity 过渡'],
           [
             code(

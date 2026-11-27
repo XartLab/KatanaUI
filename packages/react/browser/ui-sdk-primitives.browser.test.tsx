@@ -356,3 +356,96 @@ describe('ScrollArea', () => {
     expect(q('[data-slot="scroll-area-scrollbar"]').getAttribute('aria-hidden')).toBe('true')
   })
 })
+
+// UI SDK 的部件自带 data-slot，写在我们传的 props 之后会盖掉我们的名字；样式、e2e 与 KATANAview 的选择器认的是原来的名字（#263，src/lib/slot-name.ts）。
+// 每个换了的件挂出来，原来的 slot 名一个都不能少。
+describe('data-slot 名字还在', () => {
+  test('每个换了的件的 slot 名都写回了', async () => {
+    await mount(
+      <div>
+        <Accordion type="single" collapsible defaultValue="a">
+          <AccordionItem value="a">
+            <AccordionTrigger>标题</AccordionTrigger>
+            <AccordionContent>内容</AccordionContent>
+          </AccordionItem>
+        </Accordion>
+        <Avatar alt="张三" fallback="张" />
+        <Checkbox aria-label="勾选" defaultChecked />
+        <Collapsible defaultOpen>
+          <CollapsibleTrigger>开合</CollapsibleTrigger>
+          <CollapsibleContent>内容</CollapsibleContent>
+        </Collapsible>
+        <Label>标签</Label>
+        <MorphToggle aria-label="实盘" />
+        <Progress aria-label="导入" value={60} />
+        <RadioGroup aria-label="周期" defaultValue="1m">
+          <RadioGroupItem value="1m" aria-label="1 分钟" />
+        </RadioGroup>
+        <ScrollArea style={{ height: 40, width: 100 }}>
+          {Array.from({ length: 10 }, (_, i) => (
+            <div key={i}>{`Row ${i + 1}`}</div>
+          ))}
+        </ScrollArea>
+        <Separator />
+        <Switch aria-label="开关" />
+        <Tabs defaultValue="a">
+          <TabsList>
+            <TabsTrigger value="a">甲</TabsTrigger>
+          </TabsList>
+          <TabsContent value="a">甲的内容</TabsContent>
+        </Tabs>
+        <Toggle aria-label="按下">按下</Toggle>
+      </div>,
+    )
+    const slots = [
+      'accordion',
+      'accordion-item',
+      'accordion-trigger',
+      'accordion-content',
+      'avatar',
+      'checkbox',
+      'collapsible',
+      'collapsible-trigger',
+      'collapsible-content',
+      'label',
+      'morph-toggle',
+      'morph-toggle-thumb',
+      'progress',
+      'progress-indicator',
+      'radio-group',
+      'radio-group-item',
+      'scroll-area',
+      'scroll-area-viewport',
+      'separator',
+      'switch',
+      'switch-thumb',
+      'tabs',
+      'tabs-list',
+      'tabs-trigger',
+      'tabs-content',
+      'toggle',
+    ]
+    const missing = slots.filter((name) => !document.querySelector(`[data-slot="${name}"]`))
+    expect(missing).toEqual([])
+  })
+
+  test('调用方写的 data-slot 盖得住默认名（Tabs、TabsList、TabsTrigger、Label）', async () => {
+    await mount(
+      <div>
+        <Tabs defaultValue="a" data-slot="my-tabs">
+          <TabsList data-slot="my-list">
+            <TabsTrigger value="a" data-slot="my-tab">
+              甲
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="a">甲的内容</TabsContent>
+        </Tabs>
+        <Label data-slot="my-label">标签</Label>
+      </div>,
+    )
+    for (const name of ['my-tabs', 'my-list', 'my-tab', 'my-label']) {
+      expect(document.querySelector(`[data-slot="${name}"]`), name).not.toBeNull()
+    }
+    expect(document.querySelector('[data-slot="tabs-trigger"]')).toBeNull()
+  })
+})

@@ -3696,7 +3696,7 @@ for (const theme of THEMES) {
       )
       const indeterminate = area.getByTestId('progress-indeterminate')
       await expect(indeterminate).not.toHaveAttribute('aria-valuenow', /.*/)
-      await expect(indeterminate).toHaveAttribute('data-state', 'indeterminate')
+      await expect(indeterminate).toHaveAttribute('data-indeterminate', '')
       await expect(indeterminate.locator('[data-slot=progress-indicator]')).toHaveCSS(
         'animation-name',
         'kc-progress-slide',
@@ -3867,9 +3867,12 @@ for (const theme of THEMES) {
       const box = area.getByTestId('scroll-area')
       const viewport = box.locator('[data-slot=scroll-area-viewport]')
       const bar = box.locator('[data-slot=scroll-area-scrollbar][data-orientation=vertical]')
-      await expect(bar).toHaveCount(0)
+      // UI SDK 的滚动条不卸载：不可见时在页上、opacity 0、没有 data-visible；指到才 data-visible 并淡入到 1。
+      await expect(bar).not.toHaveAttribute('data-visible')
+      await expect(bar).toHaveCSS('opacity', '0')
       await box.hover()
-      await expect(bar).toBeVisible()
+      await expect(bar).toHaveAttribute('data-visible', '')
+      await expect(bar).toHaveCSS('opacity', '1')
       expect(Math.round((await bar.boundingBox())!.width)).toBe(4)
       await page.mouse.wheel(0, 200)
       await expect.poll(() => viewport.evaluate((el) => el.scrollTop)).toBeGreaterThan(0)
@@ -5207,7 +5210,7 @@ for (const theme of THEMES) {
       await open(page, theme, 'quote-table')
       const table = page.locator('[data-gallery-qtable]')
       await expect(table.getByRole('tab')).toHaveCount(3)
-      await expect(table.getByRole('tab', { name: '示例一组' })).toHaveAttribute('data-state', 'active')
+      await expect(table.getByRole('tab', { name: '示例一组' })).toHaveAttribute('aria-selected', 'true')
       const rows = table.locator('tbody tr')
       await expect(rows).toHaveCount(3)
       const rights = await table
@@ -5656,7 +5659,7 @@ for (const theme of THEMES) {
     await expect(frame.locator('[data-slot="equity-curve"]')).toBeVisible()
     expect((await frame.locator('[data-slot="equity-curve"]').boundingBox())!.height).toBeGreaterThan(180)
     // 页签行与小标。
-    await expect(frame.getByRole('tab', { name: '概览' })).toHaveAttribute('data-state', 'active')
+    await expect(frame.getByRole('tab', { name: '概览' })).toHaveAttribute('aria-selected', 'true')
     await expect(frame.locator('.k-sr-badge')).toHaveText('演示数据')
     // 多空切换：交易次数变，读数跟着。
     const all = Number(await frame.locator('.k-sr-kpi[data-metric="tradeCount"] .k-sr-kpi-value').innerText())
@@ -8976,8 +8979,9 @@ test('SUI-B Collapsible：点标题展开收起，内容高度从 0 长出来', 
   await expect(content).toBeHidden()
   await trigger.click()
   await expect(content).toBeVisible()
-  // 入场用的是 height 动画（kc-collapsible-down）。
-  expect(await content.evaluate((el) => getComputedStyle(el).animationName)).toBe('kc-collapsible-down')
+  // 展开收起是 height 过渡（UI SDK 量出 --collapsible-panel-height，data-starting-style / data-ending-style 是起点与收起中；#263 从 keyframes 换来）。
+  await expect(content).toHaveCSS('transition-property', 'height')
+  await expect(content).toHaveCSS('transition-duration', /^(?!0s)/)
   // 高度在动画里从 0 长出来，CI 忙时刚点完可能才长到一半：等它长够。
   await expect.poll(async () => (await content.boundingBox())?.height ?? 0).toBeGreaterThan(20)
 })
@@ -9260,7 +9264,11 @@ test('SUI-B TiltCard：指针在卡上移动时卡转动，离开后回正', asy
 test('SUI-B 并入已有件：页签内容淡入、对话框头身脚依次进场、滚动条悬停变宽', async ({ page }) => {
   await open(page, THEMES[0], 'tabs')
   const panel = section(page, 'tabs').locator('[data-slot="tabs-content"][data-selected]').first()
-  expect(await panel.evaluate((el) => getComputedStyle(el).animationName)).toBe('kc-fade-in')
+  // 首次渲染不播淡入；点另一个页签换内容才播。
+  expect(await panel.evaluate((el) => getComputedStyle(el).animationName)).toBe('none')
+  await section(page, 'tabs').getByRole('tab', { name: '成交额榜', exact: true }).click()
+  await expect(panel).toContainText('成交额榜的内容')
+  await expect(panel).toHaveCSS('animation-name', 'kc-fade-in')
   await open(page, THEMES[0], 'dialog')
   await section(page, 'dialog').getByRole('button').first().click()
   const head = page.locator('[data-slot="dialog-content"] > [data-slot="dialog-header"]').first()
