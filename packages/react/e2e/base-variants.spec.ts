@@ -119,7 +119,7 @@ test('下单面板改用基础件之后：开平切换整宽、买卖切换填�
   const type = ticket.locator('[data-slot="ticket-type"]')
   await expect(type).toHaveAttribute('data-variant', 'line')
   await type.getByRole('tab', { name: 'Market' }).click()
-  await expect(type.getByRole('tab', { name: 'Market' })).toHaveAttribute('data-state', 'active')
+  await expect(type.getByRole('tab', { name: 'Market' })).toHaveAttribute('data-selected', '')
   // 数字框：标签、值、单位同在一个外框里。
   const field = ticket.locator('[data-slot="input-box"]').first()
   await expect(field.locator('input')).toHaveCSS('text-align', 'right')

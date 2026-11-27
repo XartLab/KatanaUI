@@ -754,7 +754,7 @@ for (const theme of THEMES) {
       expect(mid.lift, `入场中途还差一点上移（translate: ${mid.translate}）`).toBeGreaterThan(0)
       expect(mid.lift).toBeLessThan(4)
       await expect(menu).toHaveCSS('animation-name', 'kc-pop-in')
-      // 起点在触发处那一侧（Radix 的 --radix-popper-transform-origin），不是元素中心。
+      // 起点在触发处那一侧（UI SDK 的 --transform-origin），不是元素中心。
       expect(await menu.evaluate((el) => getComputedStyle(el).transformOrigin)).not.toBe('50% 50%')
       await settled(page)
       await expect(menu).toHaveCSS('opacity', '1')
@@ -3696,7 +3696,7 @@ for (const theme of THEMES) {
       )
       const indeterminate = area.getByTestId('progress-indeterminate')
       await expect(indeterminate).not.toHaveAttribute('aria-valuenow', /.*/)
-      await expect(indeterminate).toHaveAttribute('data-state', 'indeterminate')
+      await expect(indeterminate).toHaveAttribute('data-indeterminate', '')
       await expect(indeterminate.locator('[data-slot=progress-indicator]')).toHaveCSS(
         'animation-name',
         'kc-progress-slide',
