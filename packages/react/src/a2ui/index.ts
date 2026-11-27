@@ -69,5 +69,6 @@ export { KatanaValuationBand, KatanaValuationBandApi } from './components/katana
 export { KatanaCompanyProfile, KatanaCompanyProfileApi } from './components/katana-company-profile.tsx'
 export { KatanaKpiChart, KatanaKpiChartApi } from './components/katana-kpi-chart.tsx'
 export { KatanaSeasonalChart, KatanaSeasonalChartApi } from './components/katana-seasonal-chart.tsx'
+export { KatanaDocReader, KatanaDocReaderApi } from './components/katana-doc-reader.tsx'
 export { KatanaFlowGauges, KatanaFlowGaugesApi } from './components/katana-flow-gauges.tsx'
 export { KatanaRegimeStrip, KatanaRegimeStripApi } from './components/katana-regime-strip.tsx'

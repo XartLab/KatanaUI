@@ -16961,6 +16961,254 @@
         }
       ]
     },
+    "DocBlock": {
+      "kind": "type",
+      "source": "src/blocks/doc-reader/doc-reader-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "kind",
+          "type": "'heading' | 'paragraph'",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "text",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "level",
+          "type": "number",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "DocOutlineItem": {
+      "kind": "type",
+      "source": "src/blocks/doc-reader/doc-reader-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "text",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "level",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "DocReader": {
+      "kind": "component",
+      "source": "src/blocks/doc-reader/doc-reader.tsx",
+      "props": [
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "meta",
+          "type": "string",
+          "required": false,
+          "description": "标题下一行（「2026-04-28 · 年度报告 · 128 页」），调用方写好。"
+        },
+        {
+          "name": "blocks",
+          "type": "readonly DocBlock[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "labels",
+          "type": "DocReaderLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "activeId",
+          "type": "string",
+          "required": false,
+          "description": "滚到这一块并标出来。"
+        },
+        {
+          "name": "onCite",
+          "type": "(block: DocBlock) => void",
+          "required": false,
+          "description": "点了「引用」：拿到这一块。不给就不画引用钮。"
+        },
+        {
+          "name": "hideOutline",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "不画目录（窄格子里）。"
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "default": "560",
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "DocReaderLabels": {
+      "kind": "type",
+      "source": "src/blocks/doc-reader/doc-reader.tsx",
+      "props": [
+        {
+          "name": "reader",
+          "type": "string",
+          "required": true,
+          "description": "整个阅读器的读屏名。"
+        },
+        {
+          "name": "outline",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "search",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "matches",
+          "type": "(current: number, total: number) => string",
+          "required": true,
+          "description": "命中计数（「3 / 12」）。"
+        },
+        {
+          "name": "noMatch",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "previous",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "next",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "cite",
+          "type": "string",
+          "required": true,
+          "description": "引用钮的读屏名与提示（「引用这一段」）。"
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "DocReaderProps": {
+      "kind": "type",
+      "source": "src/blocks/doc-reader/doc-reader.tsx",
+      "props": [
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "meta",
+          "type": "string",
+          "required": false,
+          "description": "标题下一行（「2026-04-28 · 年度报告 · 128 页」），调用方写好。"
+        },
+        {
+          "name": "blocks",
+          "type": "readonly DocBlock[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "labels",
+          "type": "DocReaderLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "activeId",
+          "type": "string",
+          "required": false,
+          "description": "滚到这一块并标出来。"
+        },
+        {
+          "name": "onCite",
+          "type": "(block: DocBlock) => void",
+          "required": false,
+          "description": "点了「引用」：拿到这一块。不给就不画引用钮。"
+        },
+        {
+          "name": "hideOutline",
+          "type": "boolean",
+          "required": false,
+          "description": "不画目录（窄格子里）。"
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
     "Dock": {
       "kind": "component",
       "source": "src/patterns/dock.tsx",

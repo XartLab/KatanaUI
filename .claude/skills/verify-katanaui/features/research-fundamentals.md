@@ -1,4 +1,4 @@
-# 投研三件：财务报表表、同业对比表、估值带
+# 投研件：财务报表表、同业对比表、估值带、文档阅读器
 
 用户在财务报表表里折叠科目、切原值 / 同比 / 环比，看更正过的格；在同业对比表里切指标组、按列排序时本公司不动；在估值带上扫读价格与各档位价位、打开表格视图。
 
@@ -11,10 +11,13 @@
 - `cp-subject` 按 PE 列排序（升、降）：第一行始终是 ALFA（写「本公司」）。
 - `vb-scrub` 在估值带上按 → 扫读：LCD 读数列出价格、PE 与五档价位。
 - `vb-table` 点「表格视图」：图换成表，表头是日期、价格、PE 与五档。
+- `doc-find` 在文档阅读器查找框输入「资本开支」：计数「1 / 3」，Enter 到下一个，当前块左侧竖线。
+- `doc-toc` 点目录「第三节 重大合同」：正文滚到那一节。
+- `doc-cite` 悬停一段点引用钮：演示下方写「已引用：kref:doc/demo#<块 id>」。
 
 ## How to get to it (user POV)
 
-- 文档站左侧目录「量化」下的「StatementTable 财务报表表」（`#/statement-table`）、「CompsTable 同业对比表」（`#/comps-table`）、「ValuationBand 估值带」（`#/valuation-band`）。
+- 文档站左侧目录「量化」下的「StatementTable 财务报表表」（`#/statement-table`）、「CompsTable 同业对比表」（`#/comps-table`）、「ValuationBand 估值带」（`#/valuation-band`）；「积木」下的「DocReader 文档阅读器」（`#/doc-reader`，收到 `[data-gallery-doc="main"]`）。
 - 每页一个演示，收到 `[data-gallery-statement="main"]`、`[data-gallery-comps="main"]`、`[data-gallery-band="main"]`。
 
 ## Driving it with kui.mjs

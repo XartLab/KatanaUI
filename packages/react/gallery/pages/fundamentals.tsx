@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { CompsTableUsage } from '../usage/CompsTableUsage.tsx'
+import { DocReaderUsage } from '../usage/DocReaderUsage.tsx'
 import { StatementTableUsage } from '../usage/StatementTableUsage.tsx'
 import { ValuationBandUsage } from '../usage/ValuationBandUsage.tsx'
 import { Row } from './parts.tsx'
@@ -44,6 +45,20 @@ export function ValuationBandDemo() {
       </p>
       <Row name="价格叠 PE 分位带">
         <ValuationBandUsage />
+      </Row>
+    </>
+  )
+}
+
+export function DocReaderDemo() {
+  return (
+    <>
+      <p className="gal-note">
+        演示数据：一份虚构公司的半年报摘录。左边目录点了滚到那一节；上边查找「资本开支」看命中数，Enter
+        下一个、Shift+Enter 上一个；悬停一段点右侧引用钮，宿主拿到这一块（这里写出它会拼成的 kref:）。
+      </p>
+      <Row name="目录、查找、按段引用">
+        <DocReaderUsage />
       </Row>
     </>
   )

@@ -93,6 +93,7 @@ import { KatanaValuationBand } from './components/katana-valuation-band.tsx'
 import { KatanaCompanyProfile } from './components/katana-company-profile.tsx'
 import { KatanaKpiChart } from './components/katana-kpi-chart.tsx'
 import { KatanaSeasonalChart } from './components/katana-seasonal-chart.tsx'
+import { KatanaDocReader } from './components/katana-doc-reader.tsx'
 import { KatanaFlowGauges } from './components/katana-flow-gauges.tsx'
 import { KatanaRegimeStrip } from './components/katana-regime-strip.tsx'
 
@@ -205,6 +206,7 @@ export const KATANA_COMPONENTS: readonly ReactCatalogComponent[] = [
   KatanaCompanyProfile,
   KatanaKpiChart,
   KatanaSeasonalChart,
+  KatanaDocReader,
   KatanaFlowGauges,
   KatanaRegimeStrip,
 ]

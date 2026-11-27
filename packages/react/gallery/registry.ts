@@ -5123,6 +5123,51 @@ export const PAGES: readonly DocPage[] = [
     keys: [['Tab', '在操作与品种胶囊间移动']],
   },
   {
+    id: 'doc-reader',
+    group: 'blocks',
+    cardHeight: 520,
+    title: 'DocReader 文档阅读器',
+    summary:
+      '读长文（公告、年报、招股书，KATANAview #2395）：左边目录（标题块抽出来，点了滚到那一节），上边查找（命中数、上一个 / 下一个、命中字高亮），正文一块一块排，悬停或聚焦一段右侧出引用钮，点了把这一块交给宿主（宿主拼 kref: 给智能体）。activeId 给了就滚到那一块并标出来。件不取数、不解析 PDF：宿主把原文抽成块交进来。块用 content-visibility 省排版，不做虚拟滚动（查找与锚点要全部块在 DOM 里）。功能参照 PDF 阅读器的目录与查找。',
+    exports: ['DocReader'],
+    props: [
+      {
+        part: 'DocReader',
+        note: '文字全由 props 传。',
+        rows: [
+          { name: 'title / meta', type: 'string', desc: '标题与下一行元信息。' },
+          {
+            name: 'blocks',
+            type: 'DocBlock[]',
+            desc: "{ id, kind: 'heading' | 'paragraph', text, level }；id 稳定，宿主拿它拼引用。",
+          },
+          { name: 'activeId', type: 'string', desc: '滚到这一块并标出来（从引用点回来时用）。' },
+          { name: 'onCite', type: '(block) => void', desc: '引用钮；不给不画。' },
+          { name: 'hideOutline', type: 'boolean', default: 'false', desc: '窄格子里不画目录。' },
+          { name: 'height', type: 'number', default: '560', desc: '整块高度。' },
+          {
+            name: 'labels',
+            type: 'DocReaderLabels',
+            desc: '读屏名、目录、查找、命中计数、上一个 / 下一个、引用、空态。',
+          },
+        ],
+      },
+    ],
+    states: [
+      '默认：目录加正文。',
+      '查找：命中字高亮，当前命中块左侧竖线，计数「3 / 12」；没找到写一行字。',
+      '引用：悬停或聚焦一段右侧出钮。',
+      '没有块：空态。',
+    ],
+    donts: ['不要在件里解析 PDF 或取数。', '不要用虚拟滚动：查找与锚点要全部块在 DOM 里。'],
+    composition: 'DocReader\n  头（标题 · 元信息 · 查找条）\n  目录 | 正文（块 · 引用钮）\n  来源行',
+    keys: [
+      ['Enter / Shift+Enter', '在查找框里：下一个 / 上一个命中'],
+      ['Esc', '在查找框里：清空'],
+      ['Tab', '目录项、正文、引用钮'],
+    ],
+  },
+  {
     id: 'news-feed',
     group: 'blocks',
     cardHeight: 560,

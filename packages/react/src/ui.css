@@ -27,6 +27,7 @@
 @import './theme/json-viewer.css';
 @import './theme/event-timeline.css';
 @import './theme/news-feed.css';
+@import './theme/doc-reader.css';
 @import './theme/strategy-report.css';
 @import './theme/param-scatter.css';
 @import './theme/flow-sankey.css';

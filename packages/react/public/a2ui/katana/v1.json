@@ -19940,6 +19940,216 @@
       ],
       "unevaluatedProperties": false
     },
+    "KatanaDocReader": {
+      "type": "object",
+      "properties": {
+        "component": {
+          "const": "KatanaDocReader"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Title of the document."
+        },
+        "meta": {
+          "type": "string",
+          "description": "One line under the title (date, kind, pages)."
+        },
+        "blocks": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Stable id of the block; the host builds the citation from it."
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "heading",
+                      "paragraph"
+                    ]
+                  },
+                  "text": {
+                    "type": "string",
+                    "maxLength": 20000
+                  },
+                  "level": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 4,
+                    "description": "Heading level, 1 is the top."
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "text"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 5000
+            },
+            {
+              "$ref": "common_types.json#/$defs/DataBinding"
+            }
+          ],
+          "description": "Headings and paragraphs in order, or {\"@path\": \"/doc\"}."
+        },
+        "activeId": {
+          "type": "string",
+          "description": "Block to scroll to and mark."
+        },
+        "hideOutline": {
+          "type": "boolean",
+          "description": "Hide the outline in narrow cells."
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 160,
+          "maximum": 2000,
+          "description": "Height in px."
+        },
+        "labels": {
+          "type": "object",
+          "properties": {
+            "reader": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Accessible name of the reader."
+            },
+            "outline": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Accessible name of the outline."
+            },
+            "search": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Label and placeholder of the find box."
+            },
+            "matches": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Match count; {current} and {total} are replaced."
+            },
+            "noMatch": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Text when nothing is found."
+            },
+            "previous": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Name of the previous-match button."
+            },
+            "next": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Name of the next-match button."
+            },
+            "cite": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Name of the cite button."
+            },
+            "empty": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Text when there are no blocks."
+            }
+          },
+          "required": [
+            "reader",
+            "outline",
+            "search",
+            "matches",
+            "noMatch",
+            "previous",
+            "next",
+            "cite",
+            "empty"
+          ],
+          "additionalProperties": false,
+          "description": "All visible words of the reader."
+        },
+        "source": {
+          "type": "string",
+          "description": "Source line."
+        },
+        "onCite": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "event": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "The name of the action to be dispatched to the agent."
+                    },
+                    "userMessage": {
+                      "$ref": "common_types.json#/$defs/DynamicString",
+                      "description": "Represents a string"
+                    },
+                    "context": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "$ref": "common_types.json#/$defs/DynamicValue",
+                        "description": "A value that can be a literal, a path, or a function call returning any type."
+                      },
+                      "description": "A JSON object containing the key-value pairs for the action context. Values can be literals or paths. Use literal values unless the value must be dynamically bound to the data model. Do NOT use paths for static IDs."
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": false,
+                  "description": "The event to dispatch to the agent."
+                }
+              },
+              "required": [
+                "event"
+              ],
+              "additionalProperties": false,
+              "description": "Triggers an agent-side event."
+            },
+            {
+              "type": "object",
+              "properties": {
+                "functionCall": {
+                  "$ref": "common_types.json#/$defs/FunctionCall",
+                  "description": "Invokes a named function, combining common function properties with the catalog function definition."
+                }
+              },
+              "required": [
+                "functionCall"
+              ],
+              "additionalProperties": false,
+              "description": "Executes a renderer or agent-side function."
+            }
+          ],
+          "description": "Dispatched when the user cites a paragraph. metadata.extensions.katanaDoc.id carries the block id. The host receives the action and decides what to do; the component itself does nothing else."
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 0.000001,
+          "description": "Relative share of the free space inside a Row or Column, like CSS flex-grow. Only valid for a direct child of a Row or Column."
+        }
+      },
+      "required": [
+        "component",
+        "title",
+        "blocks",
+        "labels"
+      ],
+      "unevaluatedProperties": false
+    },
     "KatanaFlowGauges": {
       "type": "object",
       "properties": {
@@ -21219,6 +21429,9 @@
         },
         {
           "$ref": "#/components/KatanaSeasonalChart"
+        },
+        {
+          "$ref": "#/components/KatanaDocReader"
         },
         {
           "$ref": "#/components/KatanaFlowGauges"

@@ -17,6 +17,7 @@ import { FlowGaugesUsage } from '../gallery/usage/FlowGaugesUsage.tsx'
 import { HypothesisLedgerUsage } from '../gallery/usage/HypothesisLedgerUsage.tsx'
 import { MeterUsage } from '../gallery/usage/MeterUsage.tsx'
 import { NewsFeedUsage } from '../gallery/usage/NewsFeedUsage.tsx'
+import { DocReaderUsage } from '../gallery/usage/DocReaderUsage.tsx'
 import { NewsReaderUsage } from '../gallery/usage/NewsReaderUsage.tsx'
 import { OrderBookUsage } from '../gallery/usage/OrderBookUsage.tsx'
 import { OrderTicketUsage } from '../gallery/usage/OrderTicketUsage.tsx'
@@ -142,6 +143,7 @@ const items: Record<string, React.ReactNode> = {
   'hypothesis-ledger': <HypothesisLedgerUsage />,
   meter: <MeterUsage />,
   'news-feed': <NewsFeedUsage />,
+  'doc-reader': <DocReaderUsage />,
   'news-reader': <NewsReaderUsage />,
   'order-book': <OrderBookUsage />,
   'order-ticket': <OrderTicketUsage />,

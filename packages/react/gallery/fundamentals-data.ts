@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 // 投研三件（KATANAview #2395）的演示数据：虚构公司、固定种子合成，不是任何真实公司的财报或行情。文档站页、usage 与组件截图共用。
+import type { DocBlock } from '../src/blocks/doc-reader/doc-reader-model.ts'
 import type { CompsMetric, CompsRow } from '../src/quant/comps-table.tsx'
 import type { StatementItem, StatementPeriod, StatementValues } from '../src/quant/statement-model.ts'
 import { seeded } from './research-data.ts'
@@ -166,3 +167,39 @@ export const DEMO_BAND = (() => {
   }
   return { prices, pe, dates }
 })()
+
+// —— 文档阅读器：一份虚构公司的年报摘录（标题 + 段落）；宿主从 PDF 抽块交进来，演示里直接写块 ——
+
+export const DEMO_DOC_BLOCKS: DocBlock[] = [
+  { id: 's1', kind: 'heading', level: 1, text: '第一节 重要提示' },
+  {
+    id: 'p1',
+    kind: 'paragraph',
+    text: '本报告所载财务数据未经审计。董事会及全体董事保证本报告内容的真实、准确、完整。',
+  },
+  { id: 's2', kind: 'heading', level: 1, text: '第二节 经营情况讨论与分析' },
+  { id: 's2a', kind: 'heading', level: 2, text: '一、报告期内主要经营情况' },
+  {
+    id: 'p2',
+    kind: 'paragraph',
+    text: '报告期内公司实现营业收入 268.4 亿元，同比增长 18.6%；归属于母公司股东的净利润 32.1 亿元，同比增长 21.3%。',
+  },
+  { id: 'p3', kind: 'paragraph', text: '算力相关产品收入占比由上年的 22% 提升至 35%，传统产品收入同比下降 6.2%。' },
+  { id: 's2b', kind: 'heading', level: 2, text: '二、资本开支计划' },
+  {
+    id: 'p4',
+    kind: 'paragraph',
+    text: '公司计划在未来两年投入资本开支约 60 亿元，主要用于新建产线与研发中心；其中 2027 年资本开支约 35 亿元。',
+  },
+  {
+    id: 'p5',
+    kind: 'paragraph',
+    text: '资本开支的资金来源为自有资金与银行借款，公司将根据市场需求变化调整资本开支节奏。',
+  },
+  { id: 's3', kind: 'heading', level: 1, text: '第三节 重大合同' },
+  {
+    id: 'p6',
+    kind: 'paragraph',
+    text: '报告期内公司与客户 A 签订设备采购合同，合同金额 12.6 亿元，预计 2027 年第二季度交付。',
+  },
+]

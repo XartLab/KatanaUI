@@ -821,6 +821,15 @@ const EXAMPLES: Record<string, Record<string, unknown>> = {
       empty: 'No years',
     },
   },
+  KatanaDocReader: {
+    title: 'Annual report',
+    blocks: [
+      { id: 'h', kind: 'heading', level: 1, text: 'Overview' },
+      { id: 'p', kind: 'paragraph', text: 'Revenue grew.' },
+    ],
+    labels: wordsOf('KatanaDocReader'),
+    onCite: { event: { name: 'doc.cite' } },
+  },
   KatanaFlowGauges: {
     gauges: [
       { kind: 'pressure', id: 'g1', title: 'Market pressure 1m', value: 62, valueText: '+62' },

@@ -269,6 +269,11 @@
           "target": "~/src/katana/ui/theme/distribution-bars.css"
         },
         {
+          "path": "src/theme/doc-reader.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/doc-reader.css"
+        },
+        {
           "path": "src/theme/empty-state.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/empty-state.css"
@@ -9070,6 +9075,30 @@
           "path": "src/blocks/news-feed/use-news-virtual.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/news-feed/use-news-virtual.ts"
+        }
+      ]
+    },
+    {
+      "name": "doc-reader",
+      "type": "registry:component",
+      "title": "Doc Reader",
+      "description": "读长文（公告、年报、招股书，KATANAview #2395）：左边目录（标题块抽出来，点了滚到那一节），上边查找（命中数、上一个 / 下一个、命中字高亮），正文一块一块排，悬停或聚焦一段右侧出引用钮，点了把这一块交给宿主（宿主拼 kref: 给智能体）。activeId 给了就滚到那一块并标出来。件不取数、不解析 PDF：宿主把原文抽成块交进来。块用 content-visibility 省排版，不做虚拟滚动（查找与锚点要全部块在 DOM 里）。功能参照 PDF 阅读器的目录与查找。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/doc-reader/doc-reader-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/doc-reader/doc-reader-model.ts"
+        },
+        {
+          "path": "src/blocks/doc-reader/doc-reader.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/doc-reader/doc-reader.tsx"
         }
       ]
     },

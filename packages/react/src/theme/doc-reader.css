@@ -1,0 +1,176 @@
+/* SPDX-License-Identifier: MIT */
+/* DocReader 文档阅读器（KATANAview #2395）：上边标题与查找条，左边目录，右边正文。正文一列，行长收在 72ch 内；命中字用 mark，当前命中块左侧一条竖线。
+   块用 content-visibility: auto 让几千段的长文只排看得见的部分（查找与锚点仍在 DOM 里）。颜色只用语义 token。 */
+.k-doc {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-doc-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px var(--space-4);
+  padding-bottom: 8px;
+  border-bottom: var(--hairline);
+}
+.k-doc-title {
+  margin: 0;
+  font-weight: 600;
+}
+.k-doc-meta {
+  margin: 2px 0 0;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-doc-find {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  padding: 0 4px 0 8px;
+  border: var(--hairline);
+  border-radius: var(--radius-md);
+  color: var(--k-content-secondary-foreground);
+}
+.k-doc-find:focus-within {
+  outline: 1px solid var(--focus-ring);
+}
+.k-doc-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.k-doc-input {
+  width: 160px;
+  border: 0;
+  background: transparent;
+  color: var(--k-content-primary-foreground);
+  font: inherit;
+  outline: none;
+}
+.k-doc-count {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-num-sm) var(--font-num-small);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.k-doc-step,
+.k-doc-toc,
+.k-doc-cite {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.k-doc-step {
+  display: inline-flex;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+}
+.k-doc-step:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.k-doc-main {
+  display: flex;
+  flex: 1;
+  gap: var(--space-4);
+  min-height: 0;
+}
+.k-doc-outline {
+  flex: none;
+  width: 200px;
+  overflow: auto;
+  border-right: var(--hairline);
+}
+.k-doc-outline ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-doc-toc {
+  display: block;
+  width: 100%;
+  padding: 4px 8px;
+  overflow: hidden;
+  color: var(--k-content-body-foreground);
+  text-align: start;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-doc-toc:hover,
+.k-doc-toc:focus-visible {
+  color: var(--k-content-primary-foreground);
+}
+.k-doc-body {
+  flex: 1;
+  min-width: 0;
+  overflow: auto;
+  outline: none;
+}
+.k-doc-body:focus-visible {
+  outline: 1px solid var(--focus-ring);
+}
+.k-doc-block {
+  position: relative;
+  max-width: 72ch;
+  padding: 2px 32px 2px 10px;
+  border-left: 2px solid transparent;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 40px;
+}
+.k-doc-block[data-current='true'],
+.k-doc-block[data-active='true'] {
+  border-left-color: var(--k-content-primary-foreground);
+}
+.k-doc-h {
+  margin: 12px 0 4px;
+  font-weight: 600;
+}
+.k-doc-p {
+  margin: 0 0 8px;
+  color: var(--k-content-body-foreground);
+  line-height: 1.7;
+}
+.k-doc-hit {
+  border-radius: 2px;
+  background: var(--k-heat-3);
+  color: var(--k-content-primary-foreground);
+}
+.k-doc-cite {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: inline-flex;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  color: var(--k-content-secondary-foreground);
+  opacity: 0;
+  transition: opacity var(--dur-snappy) var(--ease-snappy);
+}
+.k-doc-block:hover .k-doc-cite,
+.k-doc-cite:focus-visible {
+  opacity: 1;
+}
+.k-doc-cite:focus-visible {
+  outline: 1px solid var(--focus-ring);
+}
+.k-doc-empty {
+  margin: 0;
+  padding: var(--space-6);
+  color: var(--k-content-secondary-foreground);
+  text-align: center;
+}
+.k-doc-source {
+  margin: 0;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}

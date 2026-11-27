@@ -134,7 +134,7 @@ import {
   UnderwaterChartDemo,
   WalkForwardMatrixDemo,
 } from './pages/research-report.tsx'
-import { CompsTableDemo, StatementTableDemo, ValuationBandDemo } from './pages/fundamentals.tsx'
+import { CompsTableDemo, DocReaderDemo, StatementTableDemo, ValuationBandDemo } from './pages/fundamentals.tsx'
 import { WhiteboardDemo } from './pages/whiteboard.tsx'
 import {
   DataGridDemo,
@@ -506,6 +506,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'estimate-badge': EstimateBadgeDemo,
   'event-timeline': EventTimelineDemo,
   'news-feed': NewsFeedDemo,
+  'doc-reader': DocReaderDemo,
   'filter-bar': ScreenerDemo,
   'rendering-settings': RenderingSettingsDemo,
   'side-nav': SideNavUsage,
