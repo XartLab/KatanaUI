@@ -11,7 +11,7 @@ function InputGroup({ className, ...props }: ComponentProps<'div'>) {
       role="group"
       data-slot="input-group"
       className={cn(
-        'box-border flex h-[30px] w-full min-w-0 items-center overflow-hidden rounded-[6px] border border-(color:--k-editable-borderColor) bg-(--k-editable-background)',
+        'box-border flex h-[30px] w-full min-w-0 items-center overflow-hidden rounded-[var(--radius-control)] border border-(color:--k-editable-borderColor) bg-(--k-editable-background)',
         'transition-[border-color] duration-[120ms] has-[[data-slot=input]:focus]:border-(color:--k-editable-borderColor-active)',
         'has-[[data-slot=input]:focus-visible]:outline-(length:--k-focused-outlineWidth) has-[[data-slot=input]:focus-visible]:-outline-offset-2 has-[[data-slot=input]:focus-visible]:outline-(color:--k-focused-outlineColor)',
         'has-[[data-slot=input][aria-invalid=true]]:border-(color:--k-status-danger-foreground) has-[[data-slot=input]:disabled]:cursor-not-allowed has-[[data-slot=input]:disabled]:opacity-45',

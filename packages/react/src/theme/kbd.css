@@ -15,7 +15,7 @@
   padding: 0 var(--space-1);
   background: var(--alpha-white-5);
   border: 1px solid var(--alpha-white-10);
-  border-radius: 4px;
+  border-radius: var(--radius-md);
   color: var(--k-content-body-foreground);
   font: var(--text-caption) var(--font-sans-small);
   font-weight: 500;

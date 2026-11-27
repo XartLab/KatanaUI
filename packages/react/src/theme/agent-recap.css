@@ -39,7 +39,7 @@
 .k-rc-strip-axis {
   display: flex;
   justify-content: space-between;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-num-small);
 }
 .k-rc-lanes {
@@ -80,7 +80,7 @@
   height: 116px;
   padding: 6px 8px;
   border: var(--hairline);
-  border-radius: 4px;
+  border-radius: var(--radius-md);
   background: var(--k-container-secondary-background);
 }
 .k-rc-card-top {
@@ -89,7 +89,7 @@
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-rc-card-top time {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font-family: var(--font-num-small);
 }
 .k-rc-tag {
@@ -132,7 +132,7 @@
 .k-rc-empty,
 .k-rc-more {
   margin: 0;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-rc-live {
@@ -155,7 +155,7 @@
   min-width: 0;
   padding: 8px 10px;
   border: var(--hairline);
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   background: var(--k-container-secondary-background);
   color: var(--k-content-body-foreground);
   font: var(--text-data) var(--font-sans);
@@ -173,7 +173,7 @@
   padding: 4px 0;
   border: 0;
   background: none;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
   cursor: pointer;
 }
@@ -200,6 +200,7 @@
   margin-left: auto;
   color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
 }
 .k-away-list {
   display: flex;
@@ -247,7 +248,7 @@
   color: var(--k-content-primary-foreground);
 }
 .k-away-detail {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-away-foot {

@@ -17,8 +17,36 @@ import { AiTaskListUsage } from '../gallery/usage/AiTaskListUsage.tsx'
 import { AiToolCallUsage } from '../gallery/usage/AiToolCallUsage.tsx'
 import { MarkdownUsage } from '../gallery/usage/MarkdownUsage.tsx'
 import { mount } from './render.tsx'
+import { settled } from './settle.ts'
 
 const settle = () => new Promise((r) => setTimeout(r, 700))
+
+// 固定等 700ms 在自建机忙时不够，展开弹簧截在半路（#190，2026-11-24 run 45319988571 的 ai-reasoning）。
+// 再等有限时长的动画走完，然后等画框尺寸连续 5 帧不变（最多 3 秒）。
+const frame = () => new Promise((r) => requestAnimationFrame(r))
+const steady = async () => {
+  await Promise.all(
+    document
+      .getAnimations()
+      .filter((animation) => animation.effect?.getComputedTiming().endTime !== Infinity)
+      .map((animation) => animation.finished.catch(() => undefined)),
+  )
+  const node = document.querySelector<HTMLElement>('[data-testid="frame"]')
+  if (!node) return
+  const size = () => {
+    const box = node.getBoundingClientRect()
+    return `${box.width}x${box.height}`
+  }
+  let last = size()
+  let same = 0
+  const deadline = performance.now() + 3000
+  while (same < 5 && performance.now() < deadline) {
+    await frame()
+    const next = size()
+    same = next === last ? same + 1 : 0
+    last = next
+  }
+}
 
 beforeAll(async () => {
   await page.viewport(900, 900)
@@ -29,6 +57,8 @@ for (const theme of ['graphite', 'console'] as const) {
     await mount(<div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: 480 }}>{node}</div>, theme)
     act?.()
     await settle()
+    await steady()
+    await settled()
     await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-${name}`)
   }
   describe(theme, () => {

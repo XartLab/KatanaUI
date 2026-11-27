@@ -107,6 +107,10 @@
   font-family: var(--font-num);
   font-variant-numeric: tabular-nums;
 }
+/* 选中项是 selected 底，说明与右端数字的 ink-300 压在上面只有 4.1:1（console，axe #190），提到 body。 */
+.k-lb-item[data-selected] :is(.k-lb-desc, .k-lb-trailing) {
+  color: var(--k-content-body-foreground);
+}
 .k-lb-check {
   flex: none;
   opacity: 0;

@@ -354,7 +354,17 @@
     "Overlays": {
       "kind": "基础件",
       "status": "已做",
-      "at": ["Dialog", "Sheet", "Popover", "Tooltip", "HoverCard", "DropdownMenu", "ContextMenu", "Toast"]
+      "at": [
+        "Dialog",
+        "AlertDialog",
+        "Sheet",
+        "Popover",
+        "Tooltip",
+        "HoverCard",
+        "DropdownMenu",
+        "ContextMenu",
+        "Toast"
+      ]
     },
     "PanelFrame": {
       "kind": "积木",

@@ -18,14 +18,16 @@ export function CodeName({ children, className }: { children: ReactNode; classNa
 }
 
 /**
- * A number followed by its unit in small secondary text (10px w500); a space sits between them so copied text reads "4.53 T USD".
+ * A number followed by its unit in small secondary text (10px w500); a no-break space (U+00A0) sits between them so the unit never wraps onto its own line and copied text reads "4.53 T USD" (#250, kubai 007).
  * Without a unit the number is returned as is.
  */
 export function UnitValue({ children, unit, className }: { children: ReactNode; unit?: string; className?: string }) {
   if (!unit) return children
   return (
     <span className={cn('k-num-value', className)}>
-      {children} <span className="k-num-unit">{unit}</span>
+      {children}
+      {'\u00a0'}
+      <span className="k-num-unit">{unit}</span>
     </span>
   )
 }

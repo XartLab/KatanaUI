@@ -10,6 +10,7 @@
  * 引导动作只回调 onSteer（人的决定），状态由调用方的数据改。键盘照读的次序（前序）走卡。卡片树的排法与 AgentTree 同一套（theme/agent-org.css）。包里不带语言。
  */
 import { useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
+import { fillVar } from '../../lib/fill.ts'
 import { cn } from '../../lib/cn.ts'
 import { Button } from '../../primitives/button.tsx'
 import {
@@ -253,7 +254,7 @@ export function AgentCrew({
           {ctx !== undefined && (
             <span className="k-crew-ctx" data-level={crewContextLevel(ctx)} data-slot="crew-context">
               <span className="k-crew-ctx-bar" aria-hidden="true">
-                <b style={{ width: `${(ctx * 100).toFixed(1)}%` }} />
+                <b style={fillVar(ctx)} />
               </span>
               <small>
                 {limit === null ? `${Math.round(ctx * 100)}%` : `${formatTokens(ctx * limit)} / ${formatTokens(limit)}`}

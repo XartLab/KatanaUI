@@ -24,7 +24,7 @@ const account: GuidanceMap = {
     a11y: [
       '改价输入框的读屏名带品种；非法输入有文字提示。',
       '买卖、状态都是文字。',
-      '撤单中的单按钮置灰（aria-disabled）。',
+      '撤单中的单，撤单钮是进行中（Button pending）：aria-busy、aria-disabled，再按无效，键盘仍能到，不再置灰。',
     ],
   },
   'account-equity': {
@@ -41,6 +41,24 @@ const account: GuidanceMap = {
     use: ['永续合约的当前费率、预测费率与下次结算倒计时。', '回放或测试时传 now 固定时钟。'],
     avoid: ['不要在件里读结算时间表，nextSettlement 由调用方传。', '历史柱按这段历史归一，不当绝对值比较。'],
     a11y: ['费率正负靠符号与文字，不只靠颜色。', '倒计时不做 aria-live 播报，避免每秒打扰。'],
+  },
+  'derivatives-board': {
+    aliases: ['Trading data', 'Derivatives data', 'Market stats', '交易数据', '衍生品数据'],
+    use: [
+      '永续合约详情页的「交易数据」：持仓量、资金费率、主动买卖、多空比、大户多空、基差一屏看。',
+      '一张卡一个周期：onPeriodChange(kind, period) 里换那张卡的数据，别的卡不动。',
+      '只要其中几张：kinds 选画哪几张与次序；单张放进自己的面板用 DerivativesCard。',
+    ],
+    avoid: [
+      '默认周期照 OKX：持仓量、主动买卖、多空比 5 分钟 / 15 分钟 / 1 小时 / 4 小时 / 1 日，精英多空 5 分钟 / 1 小时 / 1 日，基差 1 分钟 / 5 分钟 / 1 小时 / 4 小时 / 1 日，资金费率近 7 / 14 天；数据源不支持的档用 periods 去掉。',
+      '单品种的价格走势用图表包；这里只放衍生品的统计序列。',
+    ],
+    a11y: [
+      '每张卡是 article，标题是 h3；信息钮的读屏名写「某某的说明」，说明在悬停或焦点出的提示里。',
+      '周期按钮组是 role=group，读屏名写「某某的周期」，选中项 aria-pressed。',
+      '图是一个 role=group 的停靠点，读屏名写卡名与最新值；← → 扫读时一个 aria-live 区读出时间与各序列的值。',
+      '序列靠图例的字与悬停窗的字区分，涨跌不只靠颜色；空态是 role=status。',
+    ],
   },
   'options-chain': {
     aliases: ['Option chain', 'T-quote', 'T 型报价', '期权链'],

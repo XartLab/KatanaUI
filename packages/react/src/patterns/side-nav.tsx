@@ -2,7 +2,7 @@
 // 侧栏导航（2026-11-17，用户：「为什么我们的没法跟 Rare UI 左侧栏一样」）：照 rareui.com 组件站左栏的结构与手感（同日在用户 Chrome 里实测），实现原创。
 // - 分组：小号大写组名，组内一列链接；没选中的字淡（ink-300），悬停变亮，当前项最亮。
 // - 轨迹：每组左边一条 1px 虚线从组顶走到「当前项」的中线，再用一个 6px 半径的弯钩拐进那一项；悬停另一项时，同样的轨迹以淡色画到悬停项。
-//   轨迹的 top / height 走 200ms 过渡，切换当前项时会「滑」过去（不跟系统的减少动态效果，产品底线）。
+//   轨迹的位置（--k-trail-h）走 translate 的 200ms 过渡，切换当前项时会「滑」过去（不跟系统的减少动态效果，产品底线）。
 // - 搜索：顶上一个过滤框，Mod+K（Mac 是 ⌘K，别处 Ctrl+K）聚焦；只按标题与关键词过滤，没有命中的组整组隐藏。
 //   快捷键经 useHotkeys 登记在注册表里（#87 第 2 条）：只认这一个组合（Ctrl+Shift+K 不拦），快捷键总览里列得出来；
 //   页上别的地方要用 Mod+K（命令面板）时，在更近的注册表或非 global 作用域里登记，就盖过它。
@@ -55,8 +55,8 @@ type Trail = { height: number } | null
 function TrailMark({ kind, mark }: { kind: 'hover' | 'active'; mark: (node: HTMLSpanElement | null) => void }) {
   return (
     <span ref={mark} className="k-sidenav-trail" data-kind={kind} style={{ opacity: 0 }} aria-hidden="true">
-      <span className="k-sidenav-line" style={{ height: 0 }} />
-      <svg className="k-sidenav-hook" width="12" height="7" viewBox="0 0 12 7" fill="none" style={{ top: -6 }}>
+      <span className="k-sidenav-line" />
+      <svg className="k-sidenav-hook" width="12" height="7" viewBox="0 0 12 7" fill="none">
         <path d="M0.5 0a6 6 0 0 0 6 6H12" stroke="currentColor" strokeDasharray="2 2" />
       </svg>
     </span>
@@ -65,12 +65,10 @@ function TrailMark({ kind, mark }: { kind: 'hover' | 'active'; mark: (node: HTML
 
 function paint(mark: HTMLSpanElement | null, trail: Trail) {
   if (!mark) return
-  const line = mark.firstElementChild as HTMLElement | null
-  const hook = mark.lastElementChild as SVGElement | null
   mark.style.opacity = trail ? '1' : '0'
   if (!trail) return
-  if (line) line.style.height = `${trail.height}px`
-  if (hook) hook.style.top = `${trail.height}px`
+  // 线与钩都读轨迹容器上的 --k-trail-h（px），用 translate 移动，不对 height / top 做过渡。
+  mark.style.setProperty('--k-trail-h', `${trail.height}px`)
 }
 
 function Group({ group, current }: { group: SideNavGroup; current?: string }) {

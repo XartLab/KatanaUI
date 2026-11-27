@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 // 深度图的纯函数：把两侧的档位算成累计量阶梯、定义域、悬停读数。累计量与价格比较一律走整数（共用 lib/scaled-decimal.ts）。
+import { signed } from '../../lib/num.ts'
 import { fromUnits, toUnits } from '../../lib/scaled-decimal.ts'
 import { mergeLevels, type BookLevel, type BookPrecision, type BookRow } from '../order-book/order-book-model.ts'
 
@@ -111,6 +112,14 @@ export type DepthReading = {
   total: number
   /** 离中间价的百分数，带符号（买盘为负、卖盘为正）。 */
   offsetPct: number
+}
+
+export function formatDepthOffset(value: number): string {
+  const magnitude = Math.abs(value)
+  const rounded = magnitude.toFixed(2)
+  // 恰好半个最小显示单位也按零展示。
+  if (rounded === '0.00' || magnitude === 0.005) return '0.00%'
+  return signed(value, () => `${rounded}%`)
 }
 
 /** 横轴某个价位上的读数；没有中间价时是 null。价位落在买卖价差里（两侧最优价之间）累计量是 0。 */
