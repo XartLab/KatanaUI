@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { OrderTicket, type OrderTicketLabels } from './order-ticket.tsx'
+import { OrderTicket, resolveExitPrice, type OrderTicketLabels } from './order-ticket.tsx'
+import { exitPnl } from './sizing-model.ts'
 
 // #176：受控价格与锁住态的结构；2026-11-27 起版式照 OKX（一份表单、两个钮、两栏读数）。打字、点最优价回调 onPriceChange、点订单簿回填，在文档站的真浏览器里验（模式页「下单到确认」）。
 
@@ -192,5 +193,30 @@ describe('OrderTicket 锁住态', () => {
       expect(attr(tag, 'aria-describedby')).toBeUndefined()
     }
     expect(html).not.toContain('data-slot="ticket-locked"')
+  })
+})
+
+describe('resolveExitPrice', () => {
+  const spec = { contractValue: 0.01, lotSize: 0.01, tickSize: 0.1 }
+  const fees = { open: 0.0005, close: 0.0005 }
+  const base = { entry: 60000, leverage: 10, contracts: 10, spec, fees }
+  it('涨跌幅：多头止盈在上、止损在下，空头反过来', () => {
+    expect(resolveExitPrice({ ...base, kind: 'tp', side: 'buy', value: 2, unit: 'change' })).toBeCloseTo(61200, 6)
+    expect(resolveExitPrice({ ...base, kind: 'sl', side: 'buy', value: 1, unit: 'change' })).toBeCloseTo(59400, 6)
+    expect(resolveExitPrice({ ...base, kind: 'tp', side: 'sell', value: 2, unit: 'change' })).toBeCloseTo(58800, 6)
+    expect(resolveExitPrice({ ...base, kind: 'sl', side: 'sell', value: 1, unit: 'change' })).toBeCloseTo(60600, 6)
+  })
+  it('收益率按杠杆折成涨跌幅', () => {
+    expect(resolveExitPrice({ ...base, kind: 'tp', side: 'buy', value: 20, unit: 'roe' })).toBeCloseTo(61200, 6)
+  })
+  it('盈亏额：换出的价格平仓正好是这么多（含两边手续费）', () => {
+    const price = resolveExitPrice({ ...base, kind: 'tp', side: 'buy', value: 100, unit: 'pnl' })
+    expect(exitPnl('buy', 60000, price, 10, spec, fees)).toBeCloseTo(100, 0)
+    const stop = resolveExitPrice({ ...base, kind: 'sl', side: 'sell', value: 50, unit: 'pnl' })
+    expect(exitPnl('sell', 60000, stop, 10, spec, fees)).toBeCloseTo(-50, 0)
+  })
+  it('没张数时盈亏额换不出；价格原样', () => {
+    expect(resolveExitPrice({ ...base, contracts: 0, kind: 'tp', side: 'buy', value: 100, unit: 'pnl' })).toBeNaN()
+    expect(resolveExitPrice({ ...base, kind: 'tp', side: 'buy', value: 61234.5, unit: 'price' })).toBe(61234.5)
   })
 })

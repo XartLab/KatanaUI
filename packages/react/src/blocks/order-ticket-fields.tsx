@@ -44,6 +44,8 @@ export function BoxInput({
   slot,
   stepper,
   trailing,
+  prefix,
+  suffix,
 }: {
   id: string
   /** 读屏名；框上面的可见标签自己用 htmlFor 指向 id，所以这里只在标签不是 label 元素时给。 */
@@ -56,6 +58,10 @@ export function BoxInput({
   slot?: string
   stepper?: { up: string; down: string; onStep: (direction: 1 | -1) => void }
   trailing?: ReactNode
+  /** 框内左边的短标签（止盈 / 止损），次级字色，不占框外的行。 */
+  prefix?: ReactNode
+  /** 框内右边的单位或单位选择（USDT、%）。 */
+  suffix?: ReactNode
 }) {
   return (
     <div className="flex items-center gap-2">
@@ -68,6 +74,7 @@ export function BoxInput({
           disabled && 'opacity-45',
         )}
       >
+        {prefix ? <span className="k-text-data mr-2 shrink-0 text-ink-3">{prefix}</span> : null}
         <input
           id={id}
           data-slot={slot}
@@ -82,6 +89,9 @@ export function BoxInput({
           onChange={(event) => onValueChange(event.target.value)}
           className="h-full min-w-0 flex-1 border-0 text-[14px] bg-transparent p-0 tabular-nums text-ink outline-0 placeholder:text-ink-3 disabled:cursor-not-allowed"
         />
+        {suffix ? (
+          <span className="k-text-data ml-2 mr-[10px] flex shrink-0 items-center text-ink-3">{suffix}</span>
+        ) : null}
         {stepper ? (
           <span className="flex h-full w-6 shrink-0 flex-col border-l border-(color:--k-separable-bold-borderColor)">
             {([1, -1] as const).map((direction) => (

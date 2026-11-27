@@ -19,9 +19,9 @@ import { Fragment, useId, useState } from 'react'
 import { cn } from '../lib/cn.ts'
 import { focusRing } from '../lib/focus.ts'
 import { Button } from '../primitives/button.tsx'
-import { Checkbox } from '../primitives/checkbox.tsx'
 import { Popover, PopoverContent, PopoverTrigger } from '../primitives/popover.tsx'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../primitives/select.tsx'
+import { Switch } from '../primitives/switch.tsx'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../primitives/tabs.tsx'
 import { ToggleGroup, ToggleGroupItem } from '../primitives/toggle-group.tsx'
 import { BoxButton, BoxInput, BoxLabel, InfoLine, PercentSlider, dashedLabel } from './order-ticket-fields.tsx'
@@ -70,6 +70,14 @@ export type OrderTicketMarket = { last: number; bid?: number; ask?: number; maxB
 /** 出场模板（ATAS 的 Exit Strategy）：止盈、止损各是离入场价的百分比（0.02 是 2%），选了就按这一栏的方向填进两个框。 */
 export type ExitTemplate = { id: string; name: string; takeProfit?: number; stopLoss?: number }
 
+/**
+ * 止盈止损框里填的是什么：触发价，或离入场价的涨跌幅（%）、收益率（%，按杠杆）、盈亏额（计价币，含两边手续费）。
+ * 后三种对多、空各算出一个触发价，所以一份输入对两个方向都成立。口径照交易所的「高级」止盈止损（CoinEx 帮助中心「合约止盈止损」，2026-11-27 读；OKX 同类入口要登录，待核对）。
+ */
+export type ExitUnit = 'price' | 'change' | 'roe' | 'pnl'
+/** 触发价看哪一个：最新成交价、标记价格、指数价格（OKX 下单接口的 tpTriggerPxType / slTriggerPxType）。 */
+export type TriggerPriceType = 'last' | 'mark' | 'index'
+
 export type OrderDraft = {
   side: OrderSide
   type: OrderType
@@ -82,6 +90,8 @@ export type OrderDraft = {
   reduceOnly: boolean
   takeProfit?: number
   stopLoss?: number
+  /** Which price triggers the take-profit and stop-loss; undefined when the venue offers no choice. */
+  triggerPrice?: TriggerPriceType
   sizing: SizingResult
 }
 
@@ -114,6 +124,15 @@ export type OrderTicketLabels = {
   noTemplate: string
   takeProfit: string
   stopLoss: string
+  /** Units the TP / SL boxes can be typed in (price is always on); leave out to keep price only. */
+  exitUnits?: Partial<Record<ExitUnit, string>>
+  /** Accessible name of the unit switch. */
+  exitUnit?: string
+  /** Label of the trigger price selector and its options; leave out to hide it. */
+  triggerPrice?: string
+  triggerPrices?: Record<TriggerPriceType, string>
+  /** Short names of the two sides in the TP / SL readout (long, short). */
+  exitSides?: Record<OrderSide, string>
   custody: Record<StopCustody, string>
   size: string
   notional: string
@@ -153,6 +172,51 @@ const clamp = (value: number, min: number, max: number) => Math.min(max, Math.ma
 
 /** 一个方向算出来的东西：成交价、算好的仓位、能开多少、问题、能不能下。 */
 type SideFigures = ReturnType<typeof figuresFor>
+
+/**
+ * 止盈止损框里的数换成这个方向的触发价（按价格最小变动取整）：
+ * 涨跌幅 = 入场价 ×（1 ± 幅度），收益率 = 涨跌幅 ÷ 杠杆，盈亏额解 exitPnl = ±金额（含开平两边手续费）。
+ * 多头止盈在上、止损在下，空头反过来。填不出（没数、没入场价、盈亏额时没张数）就是 NaN。
+ */
+export function resolveExitPrice({
+  kind,
+  side,
+  value,
+  unit,
+  entry,
+  leverage,
+  contracts,
+  spec,
+  fees,
+}: {
+  kind: 'tp' | 'sl'
+  side: OrderSide
+  value: number
+  unit: ExitUnit
+  entry: number
+  leverage: number
+  contracts: number
+  spec: InstrumentSpec & { tickSize: number }
+  fees: FeeRates
+}): number {
+  if (!Number.isFinite(value) || value <= 0) return Number.NaN
+  if (unit === 'price') return value
+  if (!(entry > 0)) return Number.NaN
+  const sign = side === 'buy' ? 1 : -1
+  const away = kind === 'tp' ? 1 : -1
+  let price: number
+  if (unit === 'change' || unit === 'roe') {
+    const move = value / 100 / (unit === 'roe' ? Math.max(leverage, 1) : 1)
+    price = entry * (1 + sign * away * move)
+  } else {
+    const quantity = contracts * spec.contractValue
+    if (!(quantity > 0)) return Number.NaN
+    const target = away * value
+    price = (target + sign * entry * quantity + entry * quantity * fees.open) / (quantity * (sign - fees.close))
+  }
+  if (!(price > 0)) return Number.NaN
+  return Math.round(price / spec.tickSize) * spec.tickSize
+}
 
 function figuresFor(
   side: OrderSide,
@@ -227,6 +291,7 @@ export function OrderTicket({
   defaultExits,
   includeCloseFee = true,
   exitTemplates,
+  triggerPriceTypes,
   stopCustody = 'venue',
   price,
   defaultPrice,
@@ -272,6 +337,8 @@ export function OrderTicket({
   exitTemplates?: readonly ExitTemplate[]
   /** Where stops live: held by the venue, or triggered locally. */
   stopCustody?: StopCustody
+  /** Trigger prices the venue accepts for TP / SL, first is the default; leave out to hide the selector. */
+  triggerPriceTypes?: readonly TriggerPriceType[]
   /**
    * Limit price text (controlled), such as a level clicked in an order book. The ticket has one price box now: `buy` wins, then `sell`.
    * 受控价格：现在只有一个价格框，取 buy，没有就取 sell。
@@ -328,6 +395,8 @@ export function OrderTicket({
   const [takeProfitText, setTakeProfitText] = useState(initialExits?.takeProfit ?? '')
   const [stopLossText, setStopLossText] = useState(initialExits?.stopLoss ?? '')
   const [templateId, setTemplateId] = useState('')
+  const [exitUnit, setExitUnit] = useState<ExitUnit>('price')
+  const [triggerPrice, setTriggerPrice] = useState<TriggerPriceType | undefined>(triggerPriceTypes?.[0])
   const ids = useId()
   const format = ticketFormat(locale, instrument.tickSize, instrument.lotSize)
   const percentFormat = new Intl.NumberFormat(locale, { style: 'percent', maximumFractionDigits: 3 })
@@ -350,13 +419,36 @@ export function OrderTicket({
     includeCloseFee,
     sizingMode,
     amount,
-    takeProfit: exitsShown ? parseAmount(takeProfitText) : Number.NaN,
-    stopLoss: exitsShown ? parseAmount(stopLossText) : Number.NaN,
+    takeProfit: Number.NaN,
+    stopLoss: Number.NaN,
     closing,
   }
+  // 按风险的填法要先有止损价才算得出张数，盈亏额又要先有张数，两头互等：这时盈亏额不给选，按价格读。
+  const unitOptions = (['price', 'change', 'roe', 'pnl'] as const).filter(
+    (unit) =>
+      unit === 'price' ||
+      (labels.exitUnits?.[unit] && !(unit === 'pnl' && mode === 'risk') && !(unit === 'roe' && !levered)),
+  )
+  const unit: ExitUnit = unitOptions.includes(exitUnit) ? exitUnit : 'price'
+  // 先不带止盈止损算一遍拿入场价与张数（盈亏额换算要用），再按单位给两个方向各换出触发价。
+  const bare: Record<OrderSide, SideFigures> = { buy: figuresFor('buy', input), sell: figuresFor('sell', input) }
+  const exitPriceOf = (kind: 'tp' | 'sl', side: OrderSide) =>
+    exitsShown
+      ? resolveExitPrice({
+          kind,
+          side,
+          value: parseAmount(kind === 'tp' ? takeProfitText : stopLossText),
+          unit,
+          entry: bare[side].price,
+          leverage: levered ? leverage : 1,
+          contracts: bare[side].sizing.contracts,
+          spec: instrument,
+          fees: account.fees,
+        })
+      : Number.NaN
   const figures: Record<OrderSide, SideFigures> = {
-    buy: figuresFor('buy', input),
-    sell: figuresFor('sell', input),
+    buy: figuresFor('buy', { ...input, takeProfit: exitPriceOf('tp', 'buy'), stopLoss: exitPriceOf('sl', 'buy') }),
+    sell: figuresFor('sell', { ...input, takeProfit: exitPriceOf('tp', 'sell'), stopLoss: exitPriceOf('sl', 'sell') }),
   }
   const sides = ['buy', 'sell'] as const
 
@@ -381,6 +473,8 @@ export function OrderTicket({
     const template = exitTemplates?.find((item) => item.id === id)
     const entry = figures[defaultSide].price
     if (!template || !(entry > 0)) return
+    // 模板填的是价格：单位切回价格，免得把价格当百分比读。
+    setExitUnit('price')
     const sign = defaultSide === 'buy' ? 1 : -1
     setTakeProfitText(template.takeProfit ? toTick(entry * (1 + sign * template.takeProfit), instrument.tickSize) : '')
     setStopLossText(template.stopLoss ? toTick(entry * (1 - sign * template.stopLoss), instrument.tickSize) : '')
@@ -416,6 +510,7 @@ export function OrderTicket({
   const amountId = `${ids}-amount`
   const takeProfitId = `${ids}-tp`
   const stopLossId = `${ids}-sl`
+  const exitsSwitchId = `${ids}-exits-switch`
 
   return (
     <div
@@ -670,72 +765,139 @@ export function OrderTicket({
       </Tabs>
 
       {closing ? null : (
-        <div className="mt-[14px] flex flex-col gap-[12px] border-t border-(color:--k-separable-bold-borderColor) pt-[14px]">
-          <div className="flex h-5 items-center justify-between gap-2">
-            <label className="k-text-data flex cursor-pointer items-center gap-2 font-normal text-ink">
-              <Checkbox
+        // 止盈止损（用户 2026-11-27：方的勾选框丑、排版要重新设计）：标题行右边是拨动开关；展开后一排单位分段、
+        // 止盈与止损各一个框（标签在框内左边，单位在框内右边，不占框外的行），框下一行按方向写换出来的触发价，最底下触发价类型与托管方式。
+        <div className="mt-[14px] flex flex-col gap-[10px] border-t border-(color:--k-separable-bold-borderColor) pt-[10px]">
+          <div className="flex h-7 items-center justify-between gap-2">
+            <label htmlFor={exitsSwitchId} className="k-text-data cursor-pointer font-semibold text-ink">
+              {labels.exits}
+            </label>
+            <div className="flex items-center gap-1">
+              {exitsShown && exitTemplates?.length ? (
+                <Select value={templateId} onValueChange={applyTemplate}>
+                  <SelectTrigger
+                    aria-label={labels.exitTemplate}
+                    className="k-text-data h-6 w-auto min-w-0 gap-1 rounded-none border-0 bg-transparent px-1 font-normal text-ink-3"
+                  >
+                    <SelectValue placeholder={labels.exitTemplate} />
+                  </SelectTrigger>
+                  <SelectContent align="end">
+                    {exitTemplates.map((template) => (
+                      <SelectItem key={template.id} value={template.id}>
+                        {template.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : null}
+              <Switch
+                id={exitsSwitchId}
+                data-slot="ticket-exits-switch"
                 aria-controls={exitsShown ? exitsId : undefined}
                 checked={exitsShown}
                 disabled={mode === 'risk'}
                 onCheckedChange={(checked) => setExitsOpen(checked === true)}
               />
-              <span className={dashedLabel}>{labels.exits}</span>
-            </label>
-            {exitsShown ? (
-              <span
-                data-slot="ticket-custody"
-                data-custody={stopCustody}
-                className={cn(
-                  'k-text-data',
-                  stopCustody === 'venue' ? 'text-ink-3' : 'text-(color:--k-status-warn-foreground)',
-                )}
-              >
-                {labels.custody[stopCustody]}
-              </span>
-            ) : null}
+            </div>
           </div>
           {exitsShown ? (
-            <div id={exitsId} className="flex flex-col gap-[12px]">
-              <div className="flex flex-col gap-[6px]">
-                <div className="flex items-center justify-between">
-                  <BoxLabel htmlFor={takeProfitId}>{`${labels.takeProfit} (${quote})`}</BoxLabel>
-                  {exitTemplates?.length ? (
-                    <Select value={templateId} onValueChange={applyTemplate}>
-                      <SelectTrigger
-                        aria-label={labels.exitTemplate}
-                        className="k-text-data h-4 w-auto min-w-0 gap-1 rounded-none border-0 bg-transparent px-0 font-normal text-ink-2"
+            <div id={exitsId} className="flex flex-col gap-[10px]">
+              {unitOptions.length > 1 ? (
+                <ToggleGroup
+                  data-slot="ticket-exit-unit"
+                  aria-label={labels.exitUnit ?? labels.exits}
+                  fullWidth
+                  value={unit}
+                  onValueChange={(value) => {
+                    if (!value) return
+                    setExitUnit(value as ExitUnit)
+                    setTakeProfitText('')
+                    setStopLossText('')
+                  }}
+                  className="box-border h-7 gap-0 rounded-[var(--radius-control)] border-0 bg-(--ticket-group) p-[3px]"
+                >
+                  {unitOptions.map((value) => (
+                    <ToggleGroupItem
+                      key={value}
+                      value={value}
+                      className="k-text-data h-full rounded-[var(--radius-inner)] font-normal text-ink-3 data-[state=on]:bg-(--ticket-field-hover) data-[state=on]:font-medium data-[state=on]:text-ink"
+                    >
+                      {value === 'price' ? (labels.exitUnits?.price ?? quote) : labels.exitUnits?.[value]}
+                    </ToggleGroupItem>
+                  ))}
+                </ToggleGroup>
+              ) : null}
+              {(['tp', 'sl'] as const).map((kind) => {
+                const id = kind === 'tp' ? takeProfitId : stopLossId
+                const text = kind === 'tp' ? takeProfitText : stopLossText
+                // 框下只写换出来的触发价（按价格填时不写，框里就是）；预计盈亏在下面的明细里有，这里不重复（同屏同一个数只出现一次）。
+                const estimates = sides.map((side) => ({ side, price: exitPriceOf(kind, side) }))
+                const shown = unit !== 'price' && text !== '' && estimates.some((item) => item.price > 0)
+                return (
+                  <div key={kind} className="flex flex-col gap-[4px]">
+                    <BoxInput
+                      id={id}
+                      label={kind === 'tp' ? labels.takeProfit : labels.stopLoss}
+                      slot={kind === 'tp' ? 'ticket-take-profit' : 'ticket-stop-loss'}
+                      prefix={kind === 'tp' ? labels.takeProfit : labels.stopLoss}
+                      suffix={unit === 'price' || unit === 'pnl' ? quote : '%'}
+                      invalid={
+                        kind === 'sl' &&
+                        sides.every((side) => {
+                          const issue = figures[side].issue
+                          return issue === 'no-stop' || issue === 'stop-wrong-side'
+                        })
+                      }
+                      value={text}
+                      onValueChange={kind === 'tp' ? setTakeProfitText : setStopLossText}
+                    />
+                    {shown ? (
+                      <div
+                        data-slot={`ticket-${kind}-readout`}
+                        className="k-text-caption grid grid-cols-2 gap-2 tabular-nums text-ink-3"
                       >
-                        <SelectValue placeholder={labels.exitTemplate} />
-                      </SelectTrigger>
-                      <SelectContent align="end">
-                        {exitTemplates.map((template) => (
-                          <SelectItem key={template.id} value={template.id}>
-                            {template.name}
-                          </SelectItem>
+                        {estimates.map(({ side, price: exitPrice }) => (
+                          <span key={side} className={cn('truncate', side === 'sell' && 'text-right')}>
+                            {labels.exitSides?.[side] ?? labels[side]} {exitPrice > 0 ? format.price(exitPrice) : dash}
+                          </span>
                         ))}
-                      </SelectContent>
-                    </Select>
-                  ) : null}
-                </div>
-                <BoxInput
-                  id={takeProfitId}
-                  slot="ticket-take-profit"
-                  value={takeProfitText}
-                  onValueChange={setTakeProfitText}
-                />
-              </div>
-              <div className="flex flex-col gap-[6px]">
-                <BoxLabel htmlFor={stopLossId}>{`${labels.stopLoss} (${quote})`}</BoxLabel>
-                <BoxInput
-                  id={stopLossId}
-                  slot="ticket-stop-loss"
-                  invalid={sides.every((side) => {
-                    const issue = figures[side].issue
-                    return issue === 'no-stop' || issue === 'stop-wrong-side'
-                  })}
-                  value={stopLossText}
-                  onValueChange={setStopLossText}
-                />
+                      </div>
+                    ) : null}
+                  </div>
+                )
+              })}
+              <div className="flex h-5 items-center justify-between gap-2">
+                {triggerPriceTypes?.length && labels.triggerPrice && labels.triggerPrices && triggerPrice ? (
+                  <Select value={triggerPrice} onValueChange={(value) => setTriggerPrice(value as TriggerPriceType)}>
+                    <SelectTrigger
+                      aria-label={labels.triggerPrice}
+                      data-slot="ticket-trigger-price"
+                      className="k-text-data h-5 w-auto min-w-0 gap-1 rounded-none border-0 bg-transparent px-0 font-normal text-ink-3"
+                    >
+                      <span>{labels.triggerPrice}</span>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent align="start">
+                      {triggerPriceTypes.map((value) => (
+                        <SelectItem key={value} value={value}>
+                          {labels.triggerPrices?.[value]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <span />
+                )}
+                <span
+                  data-slot="ticket-custody"
+                  data-custody={stopCustody}
+                  className={cn(
+                    'k-text-data',
+                    stopCustody === 'venue' ? 'text-ink-3' : 'text-(color:--k-status-warn-foreground)',
+                  )}
+                >
+                  {labels.custody[stopCustody]}
+                </span>
               </div>
             </div>
           ) : null}
@@ -780,6 +942,8 @@ export function OrderTicket({
                 reduceOnly: closing,
                 takeProfit: figures[side].sizing.takeProfit?.price,
                 stopLoss: figures[side].sizing.stopLoss?.price,
+                triggerPrice:
+                  figures[side].sizing.takeProfit || figures[side].sizing.stopLoss ? triggerPrice : undefined,
                 sizing: figures[side].sizing,
               })
             }}

@@ -99,6 +99,11 @@ const TICKET_LABELS: OrderTicketLabels = {
   takeProfit: '止盈价',
   stopLoss: '止损价',
   custody: { venue: '交易所托管', local: '本机触发' },
+  exitUnits: { price: '价格', change: '涨跌幅', roe: '收益率', pnl: '盈亏额' },
+  exitUnit: '止盈止损的填法',
+  triggerPrice: '触发价',
+  triggerPrices: { last: '最新价', mark: '标记价格', index: '指数价格' },
+  exitSides: { buy: '多', sell: '空' },
   size: '张数',
   notional: '订单价值',
   margin: '保证金',
@@ -306,6 +311,7 @@ function Demo() {
               locked={locked}
               lockedReason={LOCKED_REASON}
               stopCustody={custody}
+              triggerPriceTypes={['last', 'mark', 'index']}
               labels={TICKET_LABELS}
               locale="zh-CN"
               onSubmit={(draft) => (oneClick ? send(draft) : setPending(draft))}

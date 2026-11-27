@@ -27,6 +27,11 @@ export const ORDER_TICKET_LABELS: OrderTicketLabels = {
   takeProfit: 'Take profit',
   stopLoss: 'Stop loss',
   custody: { venue: 'Held by exchange', local: 'Local trigger' },
+  exitUnits: { change: 'Change %', roe: 'ROE %', pnl: 'PnL' },
+  exitUnit: 'TP / SL unit',
+  triggerPrice: 'Trigger',
+  triggerPrices: { last: 'Last', mark: 'Mark', index: 'Index' },
+  exitSides: { buy: 'Long', sell: 'Short' },
   size: 'Size',
   notional: 'Notional',
   margin: 'Margin',
@@ -81,6 +86,7 @@ export function OrderTicketUsage() {
         hedged
         defaultAmount="10"
         defaultExits={{ buy: { takeProfit: '61200', stopLoss: '59700' } }}
+        triggerPriceTypes={['last', 'mark', 'index']}
         exitTemplates={[
           { id: 'scalp', name: 'Scalp · TP 1% / SL 0.5%', takeProfit: 0.01, stopLoss: 0.005 },
           { id: 'swing', name: 'Swing · TP 6% / SL 2%', takeProfit: 0.06, stopLoss: 0.02 },
