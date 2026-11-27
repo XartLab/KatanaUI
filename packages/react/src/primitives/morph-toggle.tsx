@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 // 改自 SmoothUI morph-toggle（https://github.com/educlopez/smoothui ，MIT，© 2024 Eduardo Calvo）：圆钮滑过去时形状跟着变（方 ↔ 圆），或钮里换图标；
 // 行为底座换成 Radix Switch（role=switch、表单的 name / value、键盘），弹簧用我们的 snappy。
+import { Switch as SwitchRoot } from '@ui-sdk/react/switch'
 import { AnimatePresence, motion } from 'motion/react'
-import { Switch as SwitchPrimitive } from 'radix-ui'
 import { useState, type ComponentProps, type ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
 import { focusRing } from '../lib/focus.ts'
@@ -32,7 +32,9 @@ function MorphToggle({
   defaultChecked = false,
   onCheckedChange,
   ...props
-}: Omit<ComponentProps<typeof SwitchPrimitive.Root>, 'children'> & {
+}: Omit<ComponentProps<typeof SwitchRoot>, 'children' | 'onCheckedChange'> & {
+  /** Called with the new state when the user flips it. */
+  onCheckedChange?: (checked: boolean) => void
   /** Thumb motion: morph changes the thumb shape while it slides, icon swaps the icons inside it, plain only slides. */
   variant?: 'plain' | 'morph' | 'icon'
   /** md (default) matches Switch; lg is bigger so an icon fits in the thumb. `'default'` is the deprecated name of md. */
@@ -48,7 +50,7 @@ function MorphToggle({
   // 弹簧：moving 的位置与圆角用同一条 snappy；0 到 1 的量（缩放、透明度）用 unit() 收紧停止阈值。
   const spring = unit(snappy)
   return (
-    <SwitchPrimitive.Root
+    <SwitchRoot
       data-slot="morph-toggle"
       data-variant={variant}
       checked={checked}
@@ -71,7 +73,7 @@ function MorphToggle({
         className={cn(
           'pointer-events-none relative rounded-full bg-(--k-selectable-track-background) shadow-[inset_0_0_0_1px_var(--k-selectable-track-borderColor)]',
           'transition-[background-color,box-shadow] duration-150 group-enabled:group-hover:bg-(--k-selectable-track-background-hover)',
-          'group-data-[state=checked]:bg-(--k-selectable-bold-background-selected) group-data-[state=checked]:shadow-none group-data-[state=checked]:group-enabled:group-hover:bg-(--k-selectable-bold-background-selectedHover)',
+          'group-data-checked:bg-(--k-selectable-bold-background-selected) group-data-checked:shadow-none group-data-checked:group-enabled:group-hover:bg-(--k-selectable-bold-background-selectedHover)',
           dims.track,
         )}
       >
@@ -111,7 +113,7 @@ function MorphToggle({
           ) : null}
         </motion.span>
       </span>
-    </SwitchPrimitive.Root>
+    </SwitchRoot>
   )
 }
 
