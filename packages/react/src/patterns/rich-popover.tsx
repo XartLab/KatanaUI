@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
 // 改自 SmoothUI rich-popover（https://github.com/educlopez/smoothui ，MIT，© 2024 Eduardo Calvo）
 import { ExternalLink } from 'lucide-react'
-import { Popover as PopoverPrimitive } from 'radix-ui'
+import { Popover, PopoverArrow, PopoverContent, PopoverTrigger } from '@ui-sdk/react/popover'
 import type { ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
-import { OverlayPortal } from '../lib/overlay.tsx'
+import { useInlineOverlays } from '../lib/overlay.tsx'
+import { partRender } from '../lib/radix-compat.tsx'
 import { Button } from '../primitives/button.tsx'
 
 // 富提示：点触发器弹出的一张小卡，有标题（可带外链）、一段说明、一枚元信息小标和一个主动作，带指向触发器的小尖角。
@@ -54,12 +55,14 @@ export function RichPopover({
   align = 'center',
   className,
 }: RichPopoverProps) {
+  const inline = useInlineOverlays()
   return (
-    <PopoverPrimitive.Root>
-      <PopoverPrimitive.Trigger asChild>{trigger}</PopoverPrimitive.Trigger>
-      <OverlayPortal portal={PopoverPrimitive.Portal}>
-        <PopoverPrimitive.Content
-          data-slot="rich-popover-content"
+    <Popover>
+      <PopoverTrigger render={partRender('popover-trigger', 'button', true, trigger)} />
+      {
+        <PopoverContent
+          inline={inline || undefined}
+          render={partRender('rich-popover-content', 'div')}
           side={side}
           align={align}
           sideOffset={8}
@@ -99,9 +102,9 @@ export function RichPopover({
               ) : null}
             </div>
           ) : null}
-          <PopoverPrimitive.Arrow className="fill-surface-4" />
-        </PopoverPrimitive.Content>
-      </OverlayPortal>
-    </PopoverPrimitive.Root>
+          <PopoverArrow className="size-2.5 bg-surface-4 [clip-path:polygon(0_0,100%_0,50%_100%)] data-[side=bottom]:rotate-180 data-[side=left]:-rotate-90 data-[side=right]:rotate-90" />
+        </PopoverContent>
+      }
+    </Popover>
   )
 }
