@@ -152,10 +152,14 @@
 
 /* ── 并入已有件的动效（对齐 SmoothUI，不改任何 API）──
    页签内容：切换时淡入（SmoothUI tabs 的 animated 面板：opacity 0 到 1）。
-   首次渲染不播（UI SDK 的 data-activation-direction 初始是 none，原来的 Radix 也是首屏把动画时长写成 0s）；放完不留填充，
-   否则放完的动画仍占着 opacity，页签里的文字一直是合成层的灰度抗锯齿（CI 的组件截图里 tabs、策略报告、行情表的面板文字都变了）。 */
-[data-slot='tabs-content'][data-selected]:not([data-activation-direction='none']) {
-  animation: kc-fade-in 150ms var(--ease-hover);
+   首次渲染不播：UI SDK 的 data-activation-direction 初始是 none，把时长写成 0s，跟原来的 Radix 一样（Radix 首屏把 animationDuration 写成 0s）。
+   不能写成「首屏没有动画」：Radix 的 0s 动画带 both 填充，面板文字照旧在同一种合成方式里画，组件截图与整页回归的基线（CI 出的）才不变；
+   也不能首屏播 150ms：放完的动画仍占着 opacity，文字成了灰度抗锯齿（CI 的 tabs、策略报告、行情表等 8 张组件截图变）。 */
+[data-slot='tabs-content'][data-selected] {
+  animation: kc-fade-in 150ms var(--ease-hover) both;
+}
+[data-slot='tabs-content'][data-selected][data-activation-direction='none'] {
+  animation-duration: 0s;
 }
 
 /* 对话框：头、身、脚依次从下面轻升进来（SmoothUI dialog 的 stagger：4px / 8px、错开一拍）。

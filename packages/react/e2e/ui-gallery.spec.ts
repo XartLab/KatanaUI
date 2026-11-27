@@ -9264,11 +9264,12 @@ test('SUI-B TiltCard：指针在卡上移动时卡转动，离开后回正', asy
 test('SUI-B 并入已有件：页签内容淡入、对话框头身脚依次进场、滚动条悬停变宽', async ({ page }) => {
   await open(page, THEMES[0], 'tabs')
   const panel = section(page, 'tabs').locator('[data-slot="tabs-content"][data-selected]').first()
-  // 首次渲染不播淡入；点另一个页签换内容才播。
-  expect(await panel.evaluate((el) => getComputedStyle(el).animationName)).toBe('none')
+  // 首次渲染不播淡入（时长 0s，同原来的 Radix）；点另一个页签换内容才播 150ms。
+  await expect(panel).toHaveCSS('animation-name', 'kc-fade-in')
+  await expect(panel).toHaveCSS('animation-duration', '0s')
   await section(page, 'tabs').getByRole('tab', { name: '成交额榜', exact: true }).click()
   await expect(panel).toContainText('成交额榜的内容')
-  await expect(panel).toHaveCSS('animation-name', 'kc-fade-in')
+  await expect(panel).toHaveCSS('animation-duration', '0.15s')
   await open(page, THEMES[0], 'dialog')
   await section(page, 'dialog').getByRole('button').first().click()
   const head = page.locator('[data-slot="dialog-content"] > [data-slot="dialog-header"]').first()
