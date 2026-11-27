@@ -53,6 +53,7 @@
   overflow: hidden;
   vertical-align: middle;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .k-seat-name .k-cn-chip {
   margin-left: var(--space-1);

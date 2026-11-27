@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: MIT
 // 渲染设置（2026-11-17）：应用「设置 → 渲染」那一页的件，每一项一行：名称、一句说明、控件，照原生程序的渲染设置页（如 Tern、Windows Terminal）的写法。
 // 值落在根节点上（theme/rendering.css 读）：data-text-smoothing、data-pixel-snap、data-numerals、data-cjk-adjust、data-font-<角色> 与 --k-weight-adjust、--k-text-scale、字体变量（font-catalog.ts）。
+// 即时生效的单项设置用 Switch（kubai Vibe Design Tips 020：一件事的开与关不要做成两个选项）；互斥的多选一（文字平滑）用分段。
 // 件本身不存值：调用方拿 onValueChange 的值自己存（本地设置文件、localStorage 都行），启动时用 applyRendering 写回根节点。
 
 import type { ReactNode } from 'react'
 import { Button } from '../primitives/button.tsx'
 import { Slider } from '../primitives/slider.tsx'
+import { Switch } from '../primitives/switch.tsx'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../primitives/select.tsx'
 import { ToggleGroup, ToggleGroupItem } from '../primitives/toggle-group.tsx'
 import { DEFAULT_FONTS, fontsFor, fontVariables, type FontChoice, type FontRole } from './font-catalog.ts'
@@ -91,8 +93,10 @@ export type RenderingSettingsLabels = {
   zeroHint: string
   cjk: string
   cjkHint: string
-  on: string
-  off: string
+  /** No longer used: a one-item setting is a Switch, not an on / off segment. Kept for one release. @deprecated */
+  on?: string
+  /** No longer used: see `on`. @deprecated */
+  off?: string
   reset: string
   fonts: string
   fontRoles: Record<FontRole, { title: string; hint: string }>
@@ -146,30 +150,6 @@ function Row({ title, hint, children }: { title: string; hint: string; children:
   )
 }
 
-function Switch({
-  value,
-  onChange,
-  labels,
-  name,
-}: {
-  value: boolean
-  onChange: (next: boolean) => void
-  labels: RenderingSettingsLabels
-  name: string
-}) {
-  return (
-    <ToggleGroup
-      size="sm"
-      value={value ? 'on' : 'off'}
-      onValueChange={(next) => next && onChange(next === 'on')}
-      aria-label={name}
-    >
-      <ToggleGroupItem value="off">{labels.off}</ToggleGroupItem>
-      <ToggleGroupItem value="on">{labels.on}</ToggleGroupItem>
-    </ToggleGroup>
-  )
-}
-
 export type RenderingSettingsProps = {
   /** The current settings (controlled). */
   value: RenderingSettingsValue
@@ -208,10 +188,9 @@ export function RenderingSettings({
       </Row>
       <Row title={labels.pixelSnap} hint={labels.pixelSnapHint}>
         <Switch
-          name={labels.pixelSnap}
-          value={value.pixelSnap}
-          onChange={(pixelSnap) => patch({ pixelSnap })}
-          labels={labels}
+          aria-label={labels.pixelSnap}
+          checked={value.pixelSnap}
+          onCheckedChange={(pixelSnap) => patch({ pixelSnap })}
         />
       </Row>
       <Row title={labels.weight} hint={labels.weightHint}>
@@ -244,18 +223,16 @@ export function RenderingSettings({
       </Row>
       <Row title={labels.zero} hint={labels.zeroHint}>
         <Switch
-          name={labels.zero}
-          value={value.slashedZero}
-          onChange={(slashedZero) => patch({ slashedZero })}
-          labels={labels}
+          aria-label={labels.zero}
+          checked={value.slashedZero}
+          onCheckedChange={(slashedZero) => patch({ slashedZero })}
         />
       </Row>
       <Row title={labels.cjk} hint={labels.cjkHint}>
         <Switch
-          name={labels.cjk}
-          value={value.cjkAdjust}
-          onChange={(cjkAdjust) => patch({ cjkAdjust })}
-          labels={labels}
+          aria-label={labels.cjk}
+          checked={value.cjkAdjust}
+          onCheckedChange={(cjkAdjust) => patch({ cjkAdjust })}
         />
       </Row>
       <div className="k-render-section">{labels.fonts}</div>

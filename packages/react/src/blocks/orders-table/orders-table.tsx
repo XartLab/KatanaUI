@@ -19,7 +19,6 @@ import type { SortSpec } from '../data-grid/model.ts'
 import {
   amendDecision,
   canAmend,
-  canCancel,
   cancellable,
   fillRatio,
   isCanceling,
@@ -286,7 +285,8 @@ const COLUMNS: readonly GridColumn<Line>[] = [
         <Button
           size="sm"
           data-action="cancel"
-          disabled={!canCancel(line.order)}
+          // 撤单已发出（canceling）：按钮进行中，不灰（kubai 017，#251）：满 300ms 出转圈，再按无效，字与宽不变。
+          pending={isCanceling(line.order)}
           aria-label={line.ctx.labels.cancelFor(line.order)}
           onClick={() => line.ctx.onCancel?.(line.order)}
         >

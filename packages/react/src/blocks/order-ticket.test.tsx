@@ -107,6 +107,24 @@ describe('OrderTicket 受控价格', () => {
   })
 })
 
+describe('OrderTicket 保证金模式', () => {
+  it('两项是分段：一直都看得见，当前项 aria-pressed，不是下拉（kubai 020，#251）', () => {
+    const html = render({ marginModes: ['isolated', 'cross'] })
+    const group = /<div\b[^>]*data-slot="ticket-margin-mode"[^>]*>([\s\S]*?)<\/div>/.exec(html)
+    expect(group).not.toBeNull()
+    expect(group![0]).toContain('aria-label="Margin mode"')
+    const buttons = [...group![1]!.matchAll(/<button\b[^>]*>[\s\S]*?<\/button>/g)].map((match) => match[0])
+    expect(buttons.map((tag) => /(Cross|Isolated)/.exec(tag)?.[1])).toEqual(['Isolated', 'Cross'])
+    expect(buttons.map((tag) => /aria-pressed="([^"]*)"/.exec(tag)?.[1])).toEqual(['true', 'false'])
+    // 保证金模式没有下拉触发器（计量方式 Size by 仍是下拉，是例外）。
+    expect(html).not.toMatch(/<button\b[^>]*role="combobox"[^>]*aria-label="Margin mode"/)
+  })
+
+  it('不给 marginModes：没有这一组', () => {
+    expect(render()).not.toContain('data-slot="ticket-margin-mode"')
+  })
+})
+
 describe('OrderTicket 锁住态', () => {
   it('没锁：下单钮可点，没有原因行', () => {
     const html = render({ lockedReason: 'Trading lock is on' })

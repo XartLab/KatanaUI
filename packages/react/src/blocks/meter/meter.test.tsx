@@ -22,7 +22,7 @@ describe('Meter', () => {
     expect(html).toContain('role="meter"')
     expect(html).toContain('aria-valuenow="72.4"')
     expect(html).toContain('data-tone="ok"')
-    expect(html).toContain('width:72.4%')
+    expect(html).toContain('--fill:0.724')
   })
 
   it('neutral 自成一档（#178）：data-tone 写 neutral 不并进 off，CSS 用中性墨色填充、数照常；off 仍是停用', () => {
@@ -88,7 +88,7 @@ describe('Meter', () => {
     expect(breach).toContain('data-tone="danger"')
     expect(breach).toContain('aria-valuemax="125"')
     expect(breach).toContain('class="k-meter-limit is-hard" style="left:80%"')
-    expect(breach).toContain('width:100%')
+    expect(breach).toContain('--fill:1')
   })
 
   it('没给线就没有限额：不写 data-state、tone 照传；gauge 不画线也不换 tone', () => {

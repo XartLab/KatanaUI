@@ -1,0 +1,88 @@
+/* SPDX-License-Identifier: MIT */
+/* 策略入口 StrategyLauncher（#245，对 OKX 永续页的「工具」组件）。一列入口卡：图标块 32、名字 13px w500、标签 12px 次要色、右箭头；悬停整张卡提亮。颜色只读 characteristics。 */
+.k-launcher {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 8px;
+}
+.k-launcher-notice {
+  padding-right: 40px;
+}
+/* 关闭钮浮在提示条右上角，不占文字的列宽。 */
+.k-launcher-dismiss {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+}
+.k-launcher-list {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  flex-direction: column;
+  gap: 8px;
+  list-style: none;
+}
+.k-launcher-entry {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--k-container-subtle-borderColor);
+  border-radius: var(--radius-control);
+  background: var(--k-container-secondary-background);
+  color: var(--k-content-primary-foreground);
+  cursor: pointer;
+  text-align: left;
+  transition: background-color var(--dur-snappy) var(--ease-snappy);
+}
+.k-launcher-entry:hover {
+  background: var(--k-actionable-subtle-background-hover);
+}
+.k-launcher-icon {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  flex: none;
+  place-items: center;
+  border-radius: var(--radius-control);
+  background: var(--k-container-subtle-background);
+  color: var(--k-content-primary-foreground);
+}
+.k-launcher-icon svg {
+  width: 18px;
+  height: 18px;
+}
+.k-launcher-body {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+}
+.k-launcher-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font: var(--text-body) var(--font-sans);
+  font-weight: 500;
+}
+.k-launcher-tags {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans);
+}
+.k-launcher-tags[data-style='chips'] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.k-launcher-chevron {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  color: var(--k-content-secondary-foreground);
+}
+.k-launcher-entry:hover .k-launcher-chevron {
+  color: var(--k-content-primary-foreground);
+}

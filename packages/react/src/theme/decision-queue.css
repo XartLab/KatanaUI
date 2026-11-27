@@ -41,7 +41,7 @@
   padding: 10px 12px;
   background: var(--k-container-tertiary-background);
   border: 1px solid var(--alpha-white-8);
-  border-radius: 8px;
+  border-radius: var(--radius-overlay);
 }
 .k-dq-meta {
   display: flex;
@@ -109,7 +109,7 @@
   width: 48px;
   height: 4px;
   background: var(--alpha-white-8);
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   overflow: hidden;
 }
 .k-dq-conf-bar i {
