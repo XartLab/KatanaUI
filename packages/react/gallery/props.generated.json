@@ -10451,6 +10451,18 @@
           "required": false,
           "default": "false",
           "description": "Selected: draws a check mark on the left and sets data-checked."
+        },
+        {
+          "name": "prefix",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Node before the text (avatar, icon, flag)."
+        },
+        {
+          "name": "description",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Second line under the text (a role, an exchange)."
         }
       ]
     },
@@ -34276,6 +34288,35 @@
         }
       ]
     },
+    "NewsEndLabels": {
+      "kind": "type",
+      "source": "src/blocks/news-feed/news-end.tsx",
+      "props": [
+        {
+          "name": "loadingMore",
+          "type": "string",
+          "required": false,
+          "description": "Default 'Loading more…'."
+        },
+        {
+          "name": "endReached",
+          "type": "string",
+          "required": false,
+          "description": "Default 'No more items'."
+        },
+        {
+          "name": "retry",
+          "type": "string",
+          "required": false,
+          "description": "Default 'Retry'."
+        }
+      ]
+    },
+    "NewsEndState": {
+      "kind": "type",
+      "source": "src/blocks/news-feed/news-end.tsx",
+      "props": []
+    },
     "NewsFacet": {
       "kind": "type",
       "source": "src/blocks/news-feed/news-feed-model.ts",
@@ -34490,6 +34531,50 @@
           "description": ""
         },
         {
+          "name": "filtering",
+          "type": "'internal' | 'external'",
+          "required": false,
+          "default": "'internal'",
+          "description": "Who filters."
+        },
+        {
+          "name": "filter",
+          "type": "NewsFilter",
+          "required": false,
+          "description": "Filter bar value."
+        },
+        {
+          "name": "onFilterChange",
+          "type": "(filter: NewsFilter) => void",
+          "required": false,
+          "description": "The filter bar changed: always the whole filter, every field filled in."
+        },
+        {
+          "name": "onEndReached",
+          "type": "() => void",
+          "required": false,
+          "description": "The bottom of the list came into view while `endState` is 'more' (or not given): load the next page and set `endState` to 'loading' until it has arrived."
+        },
+        {
+          "name": "endState",
+          "type": "NewsEndState",
+          "required": false,
+          "description": "The row under the list: 'more' (a sentinel, nothing visible), 'loading', 'end' (no more) or `{ error, retry }`."
+        },
+        {
+          "name": "groupBy",
+          "type": "(item: NewsItem) => NewsGroup",
+          "required": false,
+          "description": "Group headings: the heading of each run of consecutive items with the same `key`."
+        },
+        {
+          "name": "chrome",
+          "type": "'full' | 'bare'",
+          "required": false,
+          "default": "'full'",
+          "description": "'bare' draws only the list (no heading row, channels, search, layout, filters), for a sidebar."
+        },
+        {
           "name": "className",
           "type": "string",
           "required": false,
@@ -34650,6 +34735,24 @@
           "type": "string",
           "required": false,
           "description": "每条快捷操作的读屏名与右键菜单名（itemActions 给了才用）。"
+        },
+        {
+          "name": "sourceCount",
+          "type": "(n: number) => string",
+          "required": false,
+          "description": "「2 sources」：条目的 sourcesCount 大于 1 时写在标题后；不传写英文 `${n} sources`。"
+        },
+        {
+          "name": "alsoFrom",
+          "type": "(names: readonly string[]) => string",
+          "required": false,
+          "description": "来源数的悬停说明，传入 alsoFrom 的名字：「Also from A, B」；不传写英文。"
+        },
+        {
+          "name": "end",
+          "type": "NewsEndLabels",
+          "required": false,
+          "description": "底部那一行的文字（endState 用）：加载中、到底了、重试；不传写英文。"
         }
       ]
     },
@@ -34826,10 +34929,112 @@
           "description": ""
         },
         {
+          "name": "filtering",
+          "type": "'internal' | 'external'",
+          "required": false,
+          "description": "Who filters."
+        },
+        {
+          "name": "filter",
+          "type": "NewsFilter",
+          "required": false,
+          "description": "Filter bar value."
+        },
+        {
+          "name": "onFilterChange",
+          "type": "(filter: NewsFilter) => void",
+          "required": false,
+          "description": "The filter bar changed: always the whole filter, every field filled in."
+        },
+        {
+          "name": "onEndReached",
+          "type": "() => void",
+          "required": false,
+          "description": "The bottom of the list came into view while `endState` is 'more' (or not given): load the next page and set `endState` to 'loading' until it has arrived."
+        },
+        {
+          "name": "endState",
+          "type": "NewsEndState",
+          "required": false,
+          "description": "The row under the list: 'more' (a sentinel, nothing visible), 'loading', 'end' (no more) or `{ error, retry }`."
+        },
+        {
+          "name": "groupBy",
+          "type": "(item: NewsItem) => NewsGroup",
+          "required": false,
+          "description": "Group headings: the heading of each run of consecutive items with the same `key`."
+        },
+        {
+          "name": "chrome",
+          "type": "'full' | 'bare'",
+          "required": false,
+          "description": "'bare' draws only the list (no heading row, channels, search, layout, filters), for a sidebar."
+        },
+        {
           "name": "className",
           "type": "string",
           "required": false,
           "description": ""
+        }
+      ]
+    },
+    "NewsFilter": {
+      "kind": "type",
+      "source": "src/blocks/news-feed/news-feed-model.ts",
+      "props": [
+        {
+          "name": "channel",
+          "type": "string",
+          "required": true,
+          "description": "空字符串：全部频道。"
+        },
+        {
+          "name": "sources",
+          "type": "readonly string[]",
+          "required": true,
+          "description": "空数组：全部来源。"
+        },
+        {
+          "name": "query",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "categories",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "选中的类别 value：空数组或不给是全部类别；多选是「或」。"
+        },
+        {
+          "name": "facets",
+          "type": "Readonly<Record<string, readonly string[]>>",
+          "required": false,
+          "description": "分面选中的取值：键是分面 key；没有这个键或空数组 = 这个分面不筛；多个取值是「或」，分面之间是「且」。"
+        }
+      ]
+    },
+    "NewsGroup": {
+      "kind": "type",
+      "source": "src/blocks/news-feed/news-feed-model.ts",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "count",
+          "type": "number",
+          "required": false,
+          "description": "Shown beside the label; the caller counts (the feed may hold only part of the group)."
         }
       ]
     },
@@ -34908,6 +35113,24 @@
           "type": "Readonly<Record<string, readonly string[]>>",
           "required": false,
           "description": "组合过滤用的分面取值：键是 NewsFacet.key，值是这条新闻在这个分面上的取值（可多个）。"
+        },
+        {
+          "name": "tags",
+          "type": "readonly NewsTag[]",
+          "required": false,
+          "description": "Tags drawn after the headline, in order."
+        },
+        {
+          "name": "sourcesCount",
+          "type": "number",
+          "required": false,
+          "description": "How many outlets reported this item (merged duplicates)."
+        },
+        {
+          "name": "alsoFrom",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Names of the other outlets, shown as a hover description on the source count."
         }
       ]
     },
@@ -35250,6 +35473,29 @@
           "description": ""
         }
       ]
+    },
+    "NewsTag": {
+      "kind": "type",
+      "source": "src/blocks/news-feed/news-feed-model.ts",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "tone",
+          "type": "NewsTagTone",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "NewsTagTone": {
+      "kind": "type",
+      "source": "src/blocks/news-feed/news-feed-model.ts",
+      "props": []
     },
     "NotificationBell": {
       "kind": "component",
@@ -58518,6 +58764,272 @@
           "required": false,
           "default": "false",
           "description": "Draw a 1px edge in the text color on a transparent fill instead of a tinted fill."
+        }
+      ]
+    },
+    "TagCombobox": {
+      "kind": "component",
+      "source": "src/patterns/tag-combobox.tsx",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the field."
+        },
+        {
+          "name": "options",
+          "type": "readonly TagComboboxOption[]",
+          "required": true,
+          "description": "Rows, in the order shown."
+        },
+        {
+          "name": "value",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Ids of the selected options (controlled)."
+        },
+        {
+          "name": "defaultValue",
+          "type": "readonly string[]",
+          "required": false,
+          "default": "[]",
+          "description": "Starting ids (uncontrolled)."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(value: string[]) => void",
+          "required": false,
+          "description": "Called with the new list of ids after one option is picked or removed."
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false,
+          "description": "Hint shown while there are no tags and nothing is typed."
+        },
+        {
+          "name": "labels",
+          "type": "TagComboboxLabels",
+          "required": true,
+          "description": "Texts: remove and empty are required."
+        },
+        {
+          "name": "defaultOpen",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "The list starts open (uncontrolled)."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(open: boolean) => void",
+          "required": false,
+          "description": "Called when the list opens or closes."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Grey out the field and its tags."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "description": "Id of the text box, for a visible label's htmlFor."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the field."
+        },
+        {
+          "name": "contentClassName",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the popup list."
+        },
+        {
+          "name": "ref",
+          "type": "Ref<HTMLInputElement>",
+          "required": false,
+          "description": "Ref to the text input, for focusing it from outside."
+        }
+      ]
+    },
+    "TagComboboxLabels": {
+      "kind": "type",
+      "source": "src/patterns/tag-combobox.tsx",
+      "props": [
+        {
+          "name": "remove",
+          "type": "(label: string) => string",
+          "required": true,
+          "description": "Accessible name of the remove button on a tag, for example (label) => `Remove ${label}`."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Shown (and announced) when nothing matches what is typed."
+        },
+        {
+          "name": "list",
+          "type": "string",
+          "required": false,
+          "description": "Accessible name of the list."
+        },
+        {
+          "name": "toggle",
+          "type": "string",
+          "required": false,
+          "description": "Accessible name of the arrow button at the right end; leave it out to draw no button."
+        },
+        {
+          "name": "added",
+          "type": "(label: string) => string",
+          "required": false,
+          "description": "Announced after an option is picked."
+        },
+        {
+          "name": "removed",
+          "type": "(label: string) => string",
+          "required": false,
+          "description": "Announced after a tag is removed."
+        },
+        {
+          "name": "picked",
+          "type": "(label: string) => string",
+          "required": false,
+          "description": "Announced when Backspace or an arrow key selects a tag, for example \"Aisha selected, Backspace removes it\"."
+        }
+      ]
+    },
+    "TagComboboxOption": {
+      "kind": "type",
+      "source": "src/patterns/tag-combobox.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable id reported in value."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Main text of the row and the tag."
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "required": false,
+          "description": "Second line of the row, for example a role."
+        },
+        {
+          "name": "prefix",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Node before the text in the row and in the tag (avatar, icon)."
+        },
+        {
+          "name": "keywords",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Extra words that match without showing."
+        }
+      ]
+    },
+    "TagComboboxProps": {
+      "kind": "type",
+      "source": "src/patterns/tag-combobox.tsx",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the field."
+        },
+        {
+          "name": "options",
+          "type": "readonly TagComboboxOption[]",
+          "required": true,
+          "description": "Rows, in the order shown."
+        },
+        {
+          "name": "value",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Ids of the selected options (controlled)."
+        },
+        {
+          "name": "defaultValue",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Starting ids (uncontrolled)."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(value: string[]) => void",
+          "required": false,
+          "description": "Called with the new list of ids after one option is picked or removed."
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false,
+          "description": "Hint shown while there are no tags and nothing is typed."
+        },
+        {
+          "name": "labels",
+          "type": "TagComboboxLabels",
+          "required": true,
+          "description": "Texts: remove and empty are required."
+        },
+        {
+          "name": "defaultOpen",
+          "type": "boolean",
+          "required": false,
+          "description": "The list starts open (uncontrolled)."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(open: boolean) => void",
+          "required": false,
+          "description": "Called when the list opens or closes."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Grey out the field and its tags."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "description": "Id of the text box, for a visible label's htmlFor."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the field."
+        },
+        {
+          "name": "contentClassName",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the popup list."
+        },
+        {
+          "name": "ref",
+          "type": "Ref<HTMLInputElement>",
+          "required": false,
+          "description": "Ref to the text input, for focusing it from outside."
         }
       ]
     },

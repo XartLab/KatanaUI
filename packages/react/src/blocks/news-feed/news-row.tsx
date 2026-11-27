@@ -6,6 +6,7 @@
 import type { CSSProperties } from 'react'
 import { cn } from '../../lib/cn.ts'
 import { SymbolMark } from '../../quotes/symbol-mark.tsx'
+import { Tooltip, TooltipContent, TooltipTrigger } from '../../primitives/tooltip.tsx'
 import { RowActions, type RowAction } from '../../quotes/row-actions.tsx'
 import type { NewsItem, NewsSymbol } from './news-feed-model.ts'
 
@@ -16,6 +17,9 @@ export type NewsRowLabels = {
   important: string
   read?: (minutes: number) => string
 }
+
+/** 一条的来源数与悬停说明已经按文案排好的文字（NewsFeed 按 labels 算好传进来）。 */
+export type NewsRowSources = { text: string; also?: string }
 
 export type NewsRowPosition = { 'aria-setsize': number; 'aria-posinset': number; style: CSSProperties }
 
@@ -34,6 +38,8 @@ type NewsRowProps = {
   actionsLabel: string
   /** 分量 compact（#115）：只留「时间 标题」，不画来源、阅读时长、快捷操作与品种。 */
   compact?: boolean
+  /** 来源数（sourcesCount 大于 1 才有）。 */
+  sources?: NewsRowSources
   onSelect?: (item: NewsItem) => void
   onSymbolSelect?: (symbol: NewsSymbol, item: NewsItem) => void
 }
@@ -51,9 +57,12 @@ export function NewsRow({
   actions,
   actionsLabel,
   compact = false,
+  sources,
   onSelect,
   onSymbolSelect,
 }: NewsRowProps) {
+  const tags = compact ? undefined : item.tags
+  const hasExtras = !compact && ((tags && tags.length > 0) || sources !== undefined)
   return (
     <li
       {...position}
@@ -75,8 +84,19 @@ export function NewsRow({
           <span className="k-news-flag" role="img" aria-label={labels.important} title={labels.important} />
         )}
       </div>
-      <div className="k-news-body">
+      <div className="k-news-body" data-extras={hasExtras ? '' : undefined}>
         <NewsTitle item={item} onSelect={onSelect} />
+        {hasExtras && (
+          <div className="k-news-extras">
+            {tags?.map((tag, index) => (
+              // 同一条里标签文字可以重复（两枚都叫「公告」不合理，但调用方给什么就画什么），所以键带位置。
+              <span key={`${index}:${tag.label}`} className="k-news-tag" data-tone={tag.tone ?? 'neutral'}>
+                {tag.label}
+              </span>
+            ))}
+            {sources && <NewsSources {...sources} />}
+          </div>
+        )}
         {item.summary && layout === 'card' && <p className="k-news-summary">{item.summary}</p>}
       </div>
       {!compact && actions && <RowActions items={actions} label={actionsLabel} />}
@@ -116,4 +136,19 @@ function NewsTitle({ item, onSelect }: { item: NewsItem; onSelect?: (item: NewsI
       </a>
     )
   return <span className="k-news-title">{item.title}</span>
+}
+
+/** 来源数：有「另外几家」就是可聚焦的字，悬停或聚焦时用提示（Tooltip）列出名字；没有就是一段字。 */
+function NewsSources({ text, also }: NewsRowSources) {
+  if (!also) return <span className="k-news-sources">{text}</span>
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span className="k-news-sources" tabIndex={0} data-also="">
+          {text}
+        </span>
+      </TooltipTrigger>
+      <TooltipContent>{also}</TooltipContent>
+    </Tooltip>
+  )
 }

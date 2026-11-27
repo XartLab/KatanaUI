@@ -22,6 +22,8 @@ const TARGET_ROOT = '~/src/katana/ui'
 const INTERNAL = {
   'tag-input-model':
     'TagInput 的纯逻辑：草稿与粘贴的拆分（逗号、分号、换行、制表符）、判重（不分大小写）、校验与上限，以及键盘在标签之间怎么走。',
+  'tag-combobox-model':
+    'TagCombobox 的纯逻辑：过滤与命中位置（大小写、重音不分，几个词都要命中）、高亮项怎么走、键盘在标签、输入框与列表之间怎么走。',
   'delayed-flag':
     '「晚出、出了就留够」的旗子：等了 delay 才出、出了至少留 min（Button 的 pending 与 Loading 的骨架共用），以及图标停在整圈上的 useSpinWholeTurns。',
   'scaled-decimal':

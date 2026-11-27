@@ -97,9 +97,19 @@ const FRAMES: readonly [string, string, string][] = [
   ['1w', '周线', 'w1'],
 ]
 
+// 演示用的交易所：只是举例，不连行情。
+const VENUES: readonly [string, string, string, string][] = [
+  ['sh', '上海证券交易所', '沪市 · A 股', 'SH'],
+  ['sz', '深圳证券交易所', '深市 · A 股', 'SZ'],
+  ['hk', '香港交易所', '港股 · 主板', 'HK'],
+  ['us', '纳斯达克', '美股 · 科技为主', 'US'],
+]
+
 export function ComboboxDemo() {
   const [value, setValue] = useState('1h')
   const [open, setOpen] = useState(false)
+  const [venue, setVenue] = useState('hk')
+  const [richOpen, setRichOpen] = useState(false)
   const [many, setMany] = useState<string[]>(['5m'])
   const shown = FRAMES.find(([id]) => id === value)?.[1]
   return (
@@ -131,6 +141,35 @@ export function ComboboxDemo() {
           </ComboboxContent>
         </Combobox>
         <output data-testid="combobox-value">{value}</output>
+      </Row>
+      <Row name="带前缀与说明（单选，选了收起）">
+        <Combobox open={richOpen} onOpenChange={setRichOpen}>
+          <ComboboxTrigger aria-label="交易所" style={{ width: 200 }}>
+            <span>{VENUES.find(([id]) => id === venue)?.[1] ?? '选交易所'}</span>
+          </ComboboxTrigger>
+          <ComboboxContent label="搜交易所">
+            <ComboboxInput placeholder="搜交易所…" />
+            <ComboboxList>
+              <ComboboxEmpty>没有匹配的交易所</ComboboxEmpty>
+              {VENUES.map(([id, name, note, code]) => (
+                <ComboboxItem
+                  key={id}
+                  value={id}
+                  keywords={[note, code]}
+                  selected={id === venue}
+                  prefix={<span className="k-text-micro text-(color:--k-content-secondary-foreground)">{code}</span>}
+                  description={note}
+                  onSelect={() => {
+                    setVenue(id)
+                    setRichOpen(false)
+                  }}
+                >
+                  {name}
+                </ComboboxItem>
+              ))}
+            </ComboboxList>
+          </ComboboxContent>
+        </Combobox>
       </Row>
       <Row name="多选（不收）">
         <Combobox>
