@@ -1,0 +1,129 @@
+/* SPDX-License-Identifier: MIT */
+/* IntradaySeries 盘中分钟线（#260）：图画在 viewBox 里，值轴文字、十字线、悬停窗是叠上去的 HTML；左轴字在绘图区左边的留白，右轴在右边（有右轴才留）。
+   序列色是 --k-isr-color（series-1..7，行内写入）；昨日同时段是同色虚线、淡一档；午休缝是一条浅色斜纹窄带，不画涨跌色（线是名字，不是涨跌）。 */
+.k-isr {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+  color: var(--k-content-body-foreground);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-isr-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  margin: 0;
+  padding: 0;
+  color: var(--k-content-secondary-foreground);
+  list-style: none;
+}
+.k-isr-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.k-isr-key {
+  display: inline-block;
+  flex: none;
+  background: var(--k-isr-color);
+}
+.k-isr-key[data-shape='line'] {
+  width: 12px;
+  height: 2px;
+}
+.k-isr-key[data-shape='bar'] {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-sm);
+}
+.k-isr-key[data-shape='dash'] {
+  width: 12px;
+  height: 0;
+  border-top: 2px dashed var(--k-isr-color);
+  background: none;
+  opacity: 0.6;
+}
+.k-isr-prev-key {
+  display: inline-flex;
+  align-items: center;
+}
+.k-isr-latest {
+  color: var(--k-content-primary-foreground);
+  font-weight: 600;
+}
+.k-isr-plot {
+  position: relative;
+  margin-left: 48px;
+  touch-action: pan-y;
+}
+.k-isr-plot[data-right] {
+  margin-right: 48px;
+}
+.k-isr-plot:focus-visible {
+  outline: 1px solid var(--k-focused-outlineColor);
+  outline-offset: 2px;
+}
+.k-isr-plot > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.k-isr-line {
+  fill: none;
+  stroke: var(--k-isr-color);
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+.k-isr-line[data-dashed] {
+  opacity: 0.6;
+  stroke-dasharray: 4 3;
+  stroke-width: 1.25;
+}
+.k-isr-bars rect {
+  fill: var(--k-isr-color);
+  opacity: 0.55;
+}
+.k-isr-seam {
+  fill: var(--k-container-tertiary-background);
+}
+.k-isr-rtick {
+  position: absolute;
+  left: 100%;
+  padding-left: 8px;
+  translate: 0 round(nearest, -50%, 1px);
+  color: var(--k-chart-axis-foreground);
+  font: var(--text-num-sm) var(--font-num-small);
+  pointer-events: none;
+  white-space: nowrap;
+}
+.k-isr-xaxis {
+  position: relative;
+  height: 14px;
+  margin-left: 48px;
+  color: var(--k-chart-axis-foreground);
+  font: var(--text-num-sm) var(--font-num-small);
+  white-space: nowrap;
+}
+.k-isr-xaxis > span {
+  position: absolute;
+  translate: -50% 0;
+}
+.k-isr-xaxis > span:first-child {
+  translate: 0 0;
+}
+.k-isr-xaxis > span:last-child {
+  translate: -100% 0;
+}
+.k-isr-plot[data-right] + .k-isr-xaxis {
+  margin-right: 48px;
+}
+.k-isr-empty {
+  display: grid;
+  place-items: center;
+  margin: 0;
+  color: var(--k-content-secondary-foreground);
+}

@@ -174,3 +174,19 @@ export { auctionBarShares, auctionPending, auctionRatio, type AuctionBarShares }
 export { AuctionBarCell, type AuctionBarCellProps } from './auction-bar-cell.tsx'
 export { thresholdGap, thresholdState, type ThresholdGapState } from './threshold-gap-model.ts'
 export { ThresholdGap, type ThresholdGapProps } from './threshold-gap.tsx'
+export {
+  INTRADAY_SEAM,
+  intradayPoints,
+  intradayRuns,
+  intradayTicks,
+  intradayX,
+  type IntradayPlotPoint,
+} from './intraday-series-model.ts'
+export {
+  IntradaySeries,
+  defaultIntradayLabels,
+  type IntradayPoint,
+  type IntradaySeriesItem,
+  type IntradaySeriesLabels,
+  type IntradaySeriesProps,
+} from './intraday-series.tsx'
