@@ -134,6 +134,7 @@ import {
   UnderwaterChartDemo,
   WalkForwardMatrixDemo,
 } from './pages/research-report.tsx'
+import { CompsTableDemo, StatementTableDemo, ValuationBandDemo } from './pages/fundamentals.tsx'
 import { WhiteboardDemo } from './pages/whiteboard.tsx'
 import {
   DataGridDemo,
@@ -522,6 +523,9 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'mae-mfe-scatter': MaeMfeScatterDemo,
   'underwater-chart': UnderwaterChartDemo,
   'period-returns-table': PeriodReturnsTableDemo,
+  'statement-table': StatementTableDemo,
+  'comps-table': CompsTableDemo,
+  'valuation-band': ValuationBandDemo,
   'param-surface-heatmap': ParamSurfaceHeatmapDemo,
   'walk-forward-matrix': WalkForwardMatrixDemo,
   'robustness-gate': RobustnessGateDemo,

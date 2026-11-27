@@ -82,6 +82,9 @@
 @import './theme/underwater-chart.css';
 @import './theme/mae-mfe-scatter.css';
 @import './theme/period-returns-table.css';
+@import './theme/statement-table.css';
+@import './theme/comps-table.css';
+@import './theme/valuation-band.css';
 @import './theme/param-surface-heatmap.css';
 @import './theme/walk-forward-matrix.css';
 @import './theme/robustness-gate.css';

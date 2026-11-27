@@ -1,0 +1,46 @@
+/* SPDX-License-Identifier: MIT */
+/* CompsTable 同业对比表（KATANAview #2395）。表格是 DataGrid 的皮肤（底色用它的 heat）；这里只加公司格（代码、简称、本公司标记）与本公司行的强调。
+   本公司行不换底色（底色留给 heat），用字重与左侧一条 2px 竖线标出；标记是文字，不只靠样式。颜色只读语义 token。 */
+.k-cp {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  min-width: 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-cp-symbol {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+}
+.k-cp-code {
+  font-weight: 600;
+}
+.k-cp-name {
+  overflow: hidden;
+  color: var(--k-content-secondary-foreground);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-cp-subject {
+  flex: none;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-cp-grid .k-grid-row.is-subject {
+  box-shadow: inset 2px 0 0 var(--k-content-primary-foreground);
+}
+.k-cp-empty {
+  margin: 0;
+  padding: var(--space-6);
+  color: var(--k-content-secondary-foreground);
+  text-align: center;
+}
+.k-cp-source {
+  margin: 0;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}

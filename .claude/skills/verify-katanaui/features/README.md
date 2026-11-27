@@ -50,6 +50,7 @@
 | [FloatingWindow 悬浮窗](floating-window.md) | `drive floating-window` | 开页内浮层、拖与方向键移动、Esc 关、状态不丢；真 PiP 路径手点验收 |
 | [ComponentCatalog menu 样式](component-catalog.md) | `drive component-catalog` | 分组折叠、点行添加、灰行点不动、悬停与聚焦出原因、推荐一组 |
 | [对照 Salt 补的七件](salt-gaps.md) | 还没有流程（手走） | Pill 改与删、SystemStatus 关闭、Calendar 选日与不可选日、ListBox 单选与多选、Link / Card / Panel 的样子 |
+| [投研三件：财务报表表、同业对比表、估值带](research-fundamentals.md) | 还没有流程（手走） | 折叠科目、原值 / 同比 / 环比、更正标记；指标组页签、本公司置顶；估值带扫读与表格视图 |
 
 ## 待补
 

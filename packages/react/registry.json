@@ -199,6 +199,11 @@
           "target": "~/src/katana/ui/theme/company-profile.css"
         },
         {
+          "path": "src/theme/comps-table.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/comps-table.css"
+        },
+        {
           "path": "src/theme/connected-scatter.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/connected-scatter.css"
@@ -749,6 +754,11 @@
           "target": "~/src/katana/ui/theme/splitter.css"
         },
         {
+          "path": "src/theme/statement-table.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/statement-table.css"
+        },
+        {
           "path": "src/theme/status-bar.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/status-bar.css"
@@ -872,6 +882,11 @@
           "path": "src/theme/uptime-bars.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/uptime-bars.css"
+        },
+        {
+          "path": "src/theme/valuation-band.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/valuation-band.css"
         },
         {
           "path": "src/theme/view-switcher.css",
@@ -6947,6 +6962,39 @@
       ]
     },
     {
+      "name": "comps-model",
+      "type": "registry:component",
+      "title": "Comps Model",
+      "description": "CompsTable 的纯逻辑：中位数、按 better 方向算相对中位数的好坏与着色量程、本公司置顶的排序。",
+      "files": [
+        {
+          "path": "src/quant/comps-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/comps-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "comps-table",
+      "type": "registry:component",
+      "title": "Comps Table",
+      "description": "一行一家公司、一列一个指标的同业对比（KATANAview #2395）：本公司置顶、左侧一条竖线并写「本公司」，排序时不动；表尾中位数、均值两行（对全部行算原数）；每格按相对中位数好多少着强度底色，方向由指标的 better 定（PE 越低越好），没写方向的只写数不着色。指标分组用表上方的列集页签切换（估值 / 增长 / 盈利）。表本身是 DataGrid，页签是 ColumnSetTabs。功能参照 Koyfin Comps 与 Bloomberg RV。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/column-set-tabs",
+        "@katana/comps-model",
+        "@katana/data-grid",
+        "@katana/grid-summary-row"
+      ],
+      "files": [
+        {
+          "path": "src/quant/comps-table.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/comps-table.tsx"
+        }
+      ]
+    },
+    {
       "name": "connected-scatter",
       "type": "registry:component",
       "title": "Connected Scatter",
@@ -7827,6 +7875,42 @@
       ]
     },
     {
+      "name": "statement-model",
+      "type": "registry:component",
+      "title": "Statement Model",
+      "description": "StatementTable 的纯逻辑：科目树按先序排可见行（收起的父科目不带子孙，缺父或成环的当顶层）、同比环比的变化率（分母取绝对值）。",
+      "files": [
+        {
+          "path": "src/quant/statement-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/statement-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "statement-table",
+      "type": "registry:component",
+      "title": "Statement Table",
+      "description": "三张报表的科目 × 期间表（KATANAview #2395）：科目成树，层级靠缩进与字重（小计加粗、合计上方一条细线），父科目能折叠；期间从早到晚做列，容器放不下时先收起最早的几期、最新一期最后收；工具条切原值 / 同比 / 环比，给了频率就再切季 / 年 / TTM（数据由调用方换，件不聚合）。更正过的格右上一个中性小点，悬停写第几版。表本身是 DataGrid：科目列粘左，复制与导出是原数。功能参照 TradingView 品种页 Financials 与 Koyfin FA。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/data-grid",
+        "@katana/quant-format",
+        "@katana/statement-model",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/quant/statement-table.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/statement-table.tsx"
+        }
+      ]
+    },
+    {
       "name": "theme-heat-matrix",
       "type": "registry:component",
       "title": "Theme Heat Matrix",
@@ -7887,6 +7971,39 @@
           "path": "src/quant/underwater-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/underwater-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "valuation-band-model",
+      "type": "registry:component",
+      "title": "Valuation Band Model",
+      "description": "ValuationBand 的纯逻辑：正倍数的历史分位（线性插值）、按分位倍数折回价格的带线、当前倍数的分位。",
+      "files": [
+        {
+          "path": "src/quant/valuation-band-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/valuation-band-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "valuation-band",
+      "type": "registry:component",
+      "title": "Valuation Band",
+      "description": "价格线叠估值分位带（PE / PB Band，KATANAview #2395）：每条带 = 当期每股盈利 × 历史分位倍数（默认 10 / 25 / 50 / 75 / 90），最外两档之间一层很淡的面不盖住价格线；带线是中性灰浓度，越近中位越亮，价格线 2px 主墨色；右上读出当前分位与当前倍数。负倍数（亏损期）不进分布，那一段带线断开。坐标、十字线、LCD 读数与表格视图同 QuantileLayers。参照理杏仁、Wind 的 PE Band（只取画法）。",
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/cn",
+        "@katana/series-geometry",
+        "@katana/use-scrubber",
+        "@katana/valuation-band-model"
+      ],
+      "files": [
+        {
+          "path": "src/quant/valuation-band.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/valuation-band.tsx"
         }
       ]
     },

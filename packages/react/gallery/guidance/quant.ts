@@ -222,6 +222,36 @@ const quant: GuidanceMap = {
       '颜色是辅助：涨跌也写正负号（由 formatPercent 定）。',
     ],
   },
+  'statement-table': {
+    aliases: ['Financial statements', 'Income statement', 'Fundamentals table', 'FA'],
+    use: ['看一家公司三张报表的科目在各期的值与变化率。', '查某一期的数有没有更正过。'],
+    avoid: ['几家公司横向比用 comps-table。', '只看一两个指标的走势用 series-explorer 或 sparkline。'],
+    a11y: [
+      '表按 treegrid 读：行带 aria-level，父科目行带 aria-expanded；科目格是 rowheader。',
+      '折叠钮是 button，读屏名写「收起 / 展开 + 科目名」。',
+      '更正标记有读屏名（第几版），不只靠一个小点。',
+    ],
+  },
+  'comps-table': {
+    aliases: ['Comparable companies', 'Comps', 'Peer comparison', 'Relative valuation', 'RV'],
+    use: ['把一家公司放进同业里比估值、增长、盈利。', '看本公司在哪几个指标上明显高于或低于同业中位数。'],
+    avoid: ['一家公司多期比较用 statement-table。', '只想看同业的价格涨跌用 peer-cards。'],
+    a11y: [
+      '本公司行写「本公司」文字，不只靠竖线。',
+      '底色是辅助：每格仍写原数；表尾中位数、均值是独立的行。',
+      '列集页签是 tablist，键盘可走。',
+    ],
+  },
+  'valuation-band': {
+    aliases: ['PE band', 'PB band', 'Valuation band', 'Historical multiple band'],
+    use: ['看当前价格在历史估值区间里的位置。', '看历史上价格在哪个估值档位附近反转。'],
+    avoid: ['估值倍数本身的走势用 series-explorer。', '多家公司比当前估值用 comps-table。'],
+    a11y: [
+      '图是 slider，← → 扫读，读数里写价格、倍数与各带价位。',
+      '当前分位写成文字（「当前分位 P63」），不只靠位置。',
+      '图右上有「表格视图」。',
+    ],
+  },
   'param-surface-heatmap': {
     aliases: ['Optimization heatmap', 'Parameter surface', '2D parameter sweep', 'Strategy optimization report'],
     use: ['看两个参数下目标值的形状：平台还是孤峰。', '参数多于两个时选两轴、固定其余。'],

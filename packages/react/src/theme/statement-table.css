@@ -1,0 +1,96 @@
+/* SPDX-License-Identifier: MIT */
+/* StatementTable 财务报表表（KATANAview #2395）。表格是 DataGrid 的皮肤；这里只加科目缩进与折叠钮、小计 / 合计的字重与细线、更正小点。
+   层级靠缩进与字重，不加框；数字等宽右对齐（DataGrid 给）。颜色只读语义 token。 */
+.k-st {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  min-width: 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-st-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px var(--space-4);
+}
+.k-st-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+.k-st-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-st-toggle,
+.k-st-toggle-space {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+}
+.k-st-toggle {
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--k-content-secondary-foreground);
+  cursor: pointer;
+}
+.k-st-toggle > svg {
+  transition: transform var(--dur-snappy) var(--ease-snappy);
+}
+.k-st-toggle[aria-expanded='true'] > svg {
+  transform: rotate(90deg);
+}
+.k-st-toggle:focus-visible {
+  outline: 1px solid var(--focus-ring);
+}
+.k-st-row.is-line[data-level='1'] .k-st-label {
+  color: var(--k-content-body-foreground);
+}
+.k-st-row.is-subtotal {
+  font-weight: 600;
+}
+.k-st-row.is-total {
+  border-top: var(--hairline);
+  font-weight: 600;
+}
+.k-st-num {
+  position: relative;
+  font-variant-numeric: tabular-nums;
+}
+.k-st-num[data-tone='up'] {
+  color: var(--pnl-up);
+}
+.k-st-num[data-tone='down'] {
+  color: var(--pnl-down);
+}
+/* 更正过的格：右上一个 4px 小点（中性墨色，不用警示色：更正是事实，不是错误），悬停的 title 写第几版与说明。 */
+.k-st-revised {
+  position: absolute;
+  top: -2px;
+  right: -6px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--k-content-secondary-foreground);
+}
+.k-st-empty {
+  margin: 0;
+  padding: var(--space-6);
+  color: var(--k-content-secondary-foreground);
+  text-align: center;
+}
+.k-st-source {
+  margin: 0;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
