@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-import { useState } from 'react'
+import { useLayoutEffect, useState } from 'react'
 import { GroupedTable, countPassed, type GridColumn, type GridColumnLayout } from '../../src/blocks/index.ts'
 import { IntradaySeries, formatCnAmount } from '../../src/cn/index.ts'
 import { ToggleGroup, ToggleGroupItem } from '../../src/index.ts'
@@ -15,12 +15,26 @@ import { minuteSeries, tradingClocks } from '../usage/intraday-demo-data.ts'
 
 // A 股件包第 3 批（KatanaUI #260）的文档页演示。所有数据都是示例（页上写明）：股票、金额、晋级率、估值都是编的闭式公式，不是行情。文字由这里传（包里没有语言）。
 
+/** 涨跌色只在根上换（tokens.css 的 :root[data-updown='cn']）：这一页挂着时根上是 data-updown="cn"（A 股红涨绿跌），离开还原。 */
+function useCnUpdown() {
+  useLayoutEffect(() => {
+    const root = document.documentElement
+    const before = root.dataset.updown
+    root.dataset.updown = 'cn'
+    return () => {
+      if (before === undefined) delete root.dataset.updown
+      else root.dataset.updown = before
+    }
+  }, [])
+}
+
 // —— IntradaySeries ——
 const CLOCKS = tradingClocks()
 const AUCTION_CLOCKS = tradingClocks(true)
 const MISSING = ['10:12', '10:13', '10:14']
 
 export function IntradaySeriesDemo() {
+  useCnUpdown()
   const [view, setView] = useState('all')
   const all = [
     {
@@ -150,6 +164,7 @@ const STOCK_LAYOUT: GridColumnLayout[] = [
 type GroupMode = 'boards' | 'theme'
 
 export function GroupedTableDemo() {
+  useCnUpdown()
   const [mode, setMode] = useState<GroupMode>('boards')
   const [sort, setSort] = useState<{ id: string; desc: boolean } | null>(null)
   const [last, setLast] = useState('还没收起过')
@@ -253,6 +268,7 @@ const THEME_ROWS: MatrixHeatRow[] = THEME_NAMES.map((label, r) => ({
 }))
 
 export function MatrixHeatDemo() {
+  useCnUpdown()
   const [sort, setSort] = useState<MatrixHeatSort | null>(null)
   const [picked, setPicked] = useState('还没点过格子')
   return (
@@ -288,7 +304,7 @@ export function MatrixHeatDemo() {
         发散色阶（scale="diverging"）：题材 × 交易日的平均涨幅，正数涨色、负数跌色（红涨还是绿涨由根上的 data-updown
         定）、零不着色；下面这张根上设了 data-updown="cn"（红涨绿跌）。
       </p>
-      <div data-testid="matrix-heat-diverging" data-updown="cn">
+      <div data-testid="matrix-heat-diverging">
         <MatrixHeat
           scale="diverging"
           columns={DAYS}
@@ -329,6 +345,7 @@ const PB = weekly(260, (i) =>
 )
 
 export function ValuationBandDemo() {
+  useCnUpdown()
   return (
     <div className="gal-stack" style={{ width: '100%', maxWidth: 820 }}>
       <p className="gal-note">

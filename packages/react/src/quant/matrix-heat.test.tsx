@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+import { readFileSync } from 'node:fs'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
 import { MatrixHeat, type MatrixHeatColumn, type MatrixHeatRow } from './matrix-heat.tsx'
@@ -127,5 +128,40 @@ describe('MatrixHeat', () => {
     const html = renderToStaticMarkup(<MatrixHeat columns={[]} rows={[]} labels={{ none: 'Nothing' }} />)
     expect(html).toContain('data-empty="true"')
     expect(html).toContain('Nothing')
+  })
+})
+
+// 发散色阶的涨跌色只读 --pnl-up / --pnl-down，红涨还是绿涨由根上的 data-updown 换（tokens.css）：件里不写死绿 / 红。
+describe('MatrixHeat 发散色阶跟 data-updown（#260）', () => {
+  const css = readFileSync(new URL('../theme/matrix-heat.css', import.meta.url), 'utf8')
+  const tokens = readFileSync(new URL('../../../tokens/src/tokens.css', import.meta.url), 'utf8')
+
+  it('正数格标 data-tone="up"，样式把 up 接到 --pnl-up、down 接到 --pnl-down，没有写死的色值或 signal 色', () => {
+    const html = renderToStaticMarkup(
+      <MatrixHeat
+        scale="diverging"
+        columns={[{ id: 'a', label: 'A' }]}
+        rows={[
+          { id: 'x', label: 'X', cells: [{ value: 3 }] },
+          { id: 'y', label: 'Y', cells: [{ value: -3 }] },
+        ]}
+      />,
+    )
+    expect(html).toMatch(/data-row-index="0"[^>]*data-tone="up"/)
+    expect(html).toMatch(/data-row-index="1"[^>]*data-tone="down"/)
+    const rules = css.split('}').filter((rule) => /data-tone='(up|down)'/.test(rule))
+    expect(rules.length).toBeGreaterThan(0)
+    for (const rule of rules) {
+      const side = /data-tone='(up|down)'/.exec(rule)![1]
+      expect(rule, `${side} 的规则`).toContain(`var(--pnl-${side})`)
+      expect(rule).not.toMatch(/#[0-9a-f]{3,8}\b|\brgba?\(|signal-/i)
+    }
+  })
+
+  it('tokens.css 在根上 data-updown="cn" 时把 --pnl-up 换成红、--pnl-down 换成绿；默认相反', () => {
+    const cn = /:root\[data-updown='cn'\]\s*\{([^}]*)\}/.exec(tokens)![1]!
+    expect(cn).toMatch(/--pnl-up:\s*var\(--signal-red\)/)
+    expect(cn).toMatch(/--pnl-down:\s*var\(--signal-green\)/)
+    expect(/:root\s*\{[^}]*--pnl-up:\s*var\(--signal-green\)/.test(tokens)).toBe(true)
   })
 })
