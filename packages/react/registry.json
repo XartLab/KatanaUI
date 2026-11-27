@@ -8921,9 +8921,15 @@
         "@katana/symbol-mark",
         "@katana/text-measure",
         "@katana/toggle-group",
+        "@katana/tooltip",
         "@katana/view-switcher"
       ],
       "files": [
+        {
+          "path": "src/blocks/news-feed/news-end.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/news-feed/news-end.tsx"
+        },
         {
           "path": "src/blocks/news-feed/news-facets.tsx",
           "type": "registry:component",
