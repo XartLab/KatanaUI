@@ -44,6 +44,7 @@
 | [Toast 弹出提示](toast.md) | 还没有流程（手走） | 视口 polite、warn / danger 单条 alert、弹出与叠放、带倒计时环与「撤销」的动作 toast |
 | [加载状态：Loading 最短停留与 Button 进行中](loading.md) | 还没有流程（手走） | 骨架出了至少留 500ms、500ms 内到的不出骨架；按钮 300ms 后出转圈、至少留 500ms、宽度不变、进行中再按无效、刷新钮转整圈 |
 | [Tabs 页签](tabs.md) | `drive tabs` | 点页签换内容、底块跟随、方向键切换、禁用页签 |
+| [联动组与选组件](link-group.md) | `drive link-group` | 同组同步、选组菜单（打勾与每组品种）、进有品种的组、进空组带着品种走、不联动、键盘选组与 Esc、自选联动、十字线联动 |
 | [MarketBrowser 市场浏览器](market-browser.md) | `drive market-browser` | 点列头排序（升 / 降 / 取消）、搜索与无结果提示、星标进自选且不选品种、点行与 Enter 选品种 |
 | [StrategyLauncher 策略入口](strategy-launcher.md) | `drive strategy-launcher` | 点卡、Enter / 空格打开、键盘逐张走、关风险提示 |
 | [FloatingWindow 悬浮窗](floating-window.md) | `drive floating-window` | 开页内浮层、拖与方向键移动、Esc 关、状态不丢；真 PiP 路径手点验收 |
@@ -66,3 +67,4 @@
 | 日期 | 提交 | 走了哪些 | 结果 | 记录 |
 | --- | --- | --- | --- | --- |
 | 2026-11-23 | `c9634db` | 四条全走 | 全部 PASS | XartLab/KatanaUI#143 |
+| 2026-11-23 | `c3eb2c28` | `link-group`（Graphite，十一步；合并前的工作树另走过一次 Console） | PASS；把选组件进组时的 joinLinkGroup 注释掉，第 06 步 FAIL（迷你图进空的组 C 后不再是 DDD） | XartLab/KatanaUI#162 |
