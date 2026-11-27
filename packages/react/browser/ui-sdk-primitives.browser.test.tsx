@@ -150,7 +150,7 @@ describe('Progress / Separator / Avatar', () => {
     expect(b?.hasAttribute('aria-valuenow')).toBe(false)
     expect(b?.querySelector('[data-slot="progress-indicator"]')?.hasAttribute('data-indeterminate')).toBe(true)
     const fill = a!.querySelector<HTMLElement>('[data-slot="progress-indicator"]')!
-    expect(Math.round(fill.getBoundingClientRect().width / a!.getBoundingClientRect().width * 100)).toBe(60)
+    expect(Math.round((fill.getBoundingClientRect().width / a!.getBoundingClientRect().width) * 100)).toBe(60)
   })
 
   test('Separator：默认只是装饰（role=none），decorative={false} 才是 separator 并带方向', async () => {
