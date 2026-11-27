@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { cn } from '../lib/cn.ts'
-import { BOARD_LIMIT_PERCENT } from './badge-model.ts'
+import { BOARD_LIMIT_PERCENT, boardText } from './badge-model.ts'
 import { cnLabelsZh, type BoardKind, type BoardMarkLabels } from './labels.ts'
 
 // 板块标记（#110）：主板 / 创业板 / 科创板 / 北交所 / ST。默认只标有特殊涨跌幅限制的写「20cm」「30cm」「ST」（卡片上够用），主板不画；
@@ -34,15 +34,9 @@ export function BoardMark({ kind, display = 'cm', labels = cnLabelsZh.board, cla
       </span>
     )
   }
-  const percent = BOARD_LIMIT_PERCENT[kind]
-  const wide = percent > 10
-  const limitText = labels.limit(percent)
-  let text: string
-  if (kind === 'st') text = labels.kind.st
-  else if (display === 'name') text = labels.kind[kind]
-  else if (display === 'both') text = `${labels.kind[kind]} ${limitText}`
-  else if (!wide) return null
-  else text = limitText
+  const text = boardText(kind, labels, display)
+  if (text === '') return null
+  const limitText = labels.limit(BOARD_LIMIT_PERCENT[kind])
   return (
     <span
       className={cn('k-cn-chip k-cn-board', className)}

@@ -12,7 +12,8 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `state` | `LedState` | `'off'` | on glows orange; ok, warn and danger are green, amber and red. |
+| `tone` | `SeverityExt` | — | Tone of the light: neutral and off are unlit, accent glows in the accent color, ok, warn and danger in the status colors. |
+| `state` | `LedState` | — | Old name kept for one release. |
 | `group` | `LinkGroup \| null` | — | Link group: panels in the same group follow the same symbol; the group color overrides state. |
 | `hollow` | `boolean` | — | Hollow: transparent fill with a 1px border, no glow. |
 | `bare` | `boolean` | — | Set when no text next to the light names the state: the off state draws a 3:1 ring instead of a barely visible dark dot. |
@@ -32,8 +33,8 @@ import { Led } from '@katana-ui/react'
 export function LedUsage() {
   return (
     <>
-      <Led state="ok" label="Connected" />
-      <Led state="danger" label="Disconnected" />
+      <Led tone="ok" label="Connected" />
+      <Led tone="danger" label="Disconnected" />
     </>
   )
 }
@@ -41,8 +42,9 @@ export function LedUsage() {
 
 ## States
 
-- 熄灭（默认）、on、ok、warn、danger；联动组按组色。
+- tone（SeverityExt）：off / neutral 熄灭（默认），accent 亮强调色，ok、warn、danger 亮状态色；联动组按组色。旧的 state（on 等于 accent）留一个版本。
 - 空心、小号两种形态；无文字的灯必须带读屏名。
+- 状态变了在灯外闪一圈：变坏（warn、danger）用警示闪，变好用涨色闪。
 
 ## Don't
 

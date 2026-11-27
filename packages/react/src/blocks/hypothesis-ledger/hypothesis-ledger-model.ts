@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+import type { SeverityExt } from '../../lib/severity.ts'
 
 /** 传导层：框架里「谁创造资金 → 谁先取得购买力 → 通道 → 用途 → 收入与利润 → 收益权 → 定价」落在哪一环。 */
 export type HypothesisLayer =
@@ -25,12 +26,20 @@ export const HYPOTHESIS_LAYERS: readonly HypothesisLayer[] = [
 /** pending 待验证；supported 有支持；refuted 被否定；expired 过了检验期限还没结论（由 effectiveStatus 自动算，不靠调用方去改）。 */
 export type HypothesisStatus = 'pending' | 'supported' | 'refuted' | 'expired'
 
+const STATUS_SEVERITY: Record<HypothesisStatus, SeverityExt> = {
+  pending: 'accent',
+  supported: 'ok',
+  refuted: 'danger',
+  expired: 'warn',
+}
+
+/** 假设状态的语气：待验证是点亮的强调色，支持绿，证伪红，过期琥珀（灯用 ledOf 取）。 */
+export const hypothesisSeverity = (status: HypothesisStatus): SeverityExt => STATUS_SEVERITY[status]
+
 export const HYPOTHESIS_STATUSES: readonly HypothesisStatus[] = ['pending', 'supported', 'refuted', 'expired']
 
 /** 证据类型：把学者观点、已发生的政策与资金变化、数据、财报分开，不混成一团。 */
 export type EvidenceKind = 'scholar' | 'policy' | 'data' | 'filing'
-
-export const EVIDENCE_KINDS: readonly EvidenceKind[] = ['scholar', 'policy', 'data', 'filing']
 
 export type HypothesisEvidence = {
   id: string

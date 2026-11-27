@@ -1,6 +1,6 @@
 # SymbolMark
 
-品种名前的小圆标（学 TradingView 列表里企业 / 币种标志）：有图显示圆形裁切的图片，加载失败退回字母；没有图就是字母圆标，底 bg-400、字 ink-200，不按代码随机上色。尺寸默认 18（行高 28 的一行）。
+品种名前的小圆标（学 TradingView 列表里企业 / 币种标志）：有图显示圆形裁切的图片，加载失败退回字母；没有图就是字母圆标，底 bg-400、字 ink-200，不按代码随机上色。尺寸两档：sm 18（行高 28 的一行，默认）、md 28（卡片）；热力图格子这类要别的直径的仍可传数。字号跟直径走（28 以上 16，其余 12），在 css 里按 data-size 取字号 token，不内联。
 
 ## Provide
 
@@ -8,14 +8,16 @@
 
 ### SymbolMark
 
-图片从哪来由调用方给；件里不带任何企业或币种的标志（商标）。读屏名用 name，没有就用 code。
+图片从哪来由调用方给：直接给 src，或在外面包 LogoProvider（@katana-ui/logos，#94）配来源；件里不带任何企业或币种的标志（商标）。读屏名用 name，没有就用 symbol。旧名 code 照认一个版本（@deprecated）。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `code` | `string` | — | 品种代码；字母圆标取其中的拉丁字母前 2 个。 |
+| `symbol` | `string` | — | 品种代码；字母圆标取其中的拉丁字母前 2 个（旧名 code）。 |
 | `name` | `string` | — | 名称：读屏名；代码里没有字母（600519、00700）时取名称首字。 |
-| `src` | `string` | — | 图片地址；不给或加载失败就画字母。 |
-| `size` | `number` | `18` | 直径（像素）。 |
+| `src` | `string` | — | 图片地址；加载失败画字母。不给时问外层的 LogoProvider（@katana-ui/logos/react），没有 Provider 或都失败画字母。 |
+| `venue` | `string` | — | 场所（XSHG、XNAS、BINANCE）：代码里没带场所时交给 LogoProvider。 |
+| `assetClass` | `'crypto' \| 'stock' \| 'fund' \| 'index' \| 'forex' \| 'future' \| 'unknown'` | — | 类别：交给 LogoProvider；币标只配 crypto（BTCUSDT、BTC-PERP 这类写法会自动认出）。 |
+| `size` | `'sm' \| 'md' \| number` | `'sm'` | sm 18px（列表行）、md 28px（卡片）；数是自定直径（像素）。 |
 
 ### symbolMarkLetters
 
@@ -38,15 +40,15 @@ const SAMPLE_MARK_SRC = `data:image/svg+xml;utf8,${encodeURIComponent(
 export function SymbolMarkUsage() {
   return (
     <>
-      <SymbolMark code="AAPL" name="Apple" />
-      <SymbolMark code="600519" name="贵州茅台" />
-      <SymbolMark code="00700" name="腾讯控股" />
-      <SymbolMark code="BTCUSDT" name="Bitcoin" />
+      <SymbolMark symbol="AAPL" name="Apple" />
+      <SymbolMark symbol="600519" name="贵州茅台" />
+      <SymbolMark symbol="00700" name="腾讯控股" />
+      <SymbolMark symbol="BTCUSDT" name="Bitcoin" />
 
-      <SymbolMark code="BTC" name="Bitcoin" src={SAMPLE_MARK_SRC} />
-      <SymbolMark code="BTC" name="Bitcoin" src={SAMPLE_MARK_SRC} size={28} />
+      <SymbolMark symbol="BTC" name="Bitcoin" src={SAMPLE_MARK_SRC} />
+      <SymbolMark symbol="BTC" name="Bitcoin" src={SAMPLE_MARK_SRC} size="md" />
 
-      <SymbolMark code="ETH" name="Ethereum" src="data:image/png;base64,broken" />
+      <SymbolMark symbol="ETH" name="Ethereum" src="data:image/png;base64,broken" />
     </>
   )
 }
@@ -54,17 +56,23 @@ export function SymbolMarkUsage() {
 
 ## States
 
-- 字母圆标；有图；图加载失败退回字母。
+- 字母圆标：底 surface-overlay（bg-400）、字 content-body（ink-200），中性，不按代码上色。
+- 有图：圆形裁切、铺满；图加载失败退回字母，换了 src 会重新尝试。
+- 代码里没有拉丁字母（600519、00700）：取名称首字，再没有取代码首字符。
+- sm（18）字号 12，md（28）及以上字号 16；data-size 标出档位。
+- 包在 LogoProvider 里、没给 src：按来源顺序逐个试候选（加载失败记进失败缓存、换下一个），全失败退回字母；载入中先画字母。
 
 ## Don't
 
 - 不要按代码随机上色：颜色留给数据。
 - 不要在件里内置真实公司或币种的标志。
+- 不要拿它当按钮：它是 role=img 的徽标，可点的是它所在的行或卡。
 
 ## Composition
 
 ```
-SymbolMark
-  span[role=img][aria-label]
-    img（有图且没失败）| span 字母
+LogoProvider（可选，@katana-ui/logos/react）
+  SymbolMark
+    span[role=img][aria-label][data-size]
+      img（src 或 Provider 的候选，没失败）| span 字母
 ```

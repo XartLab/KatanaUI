@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: MIT */
-/* 原样搬自 src/ui/ui.css（#1860，2026-11-14）：类名与规则都没改，应用里的件（src/ui/*.tsx）是这里的件外面包的一层。 */
+/* 搬自 src/ui/ui.css（#1860，2026-11-14）。G3 起字色读 --k-content-*；6% / 12% 白底与白边是调色层刻度，characteristics 里没有同值的用途变量，先留着（回报里列出）。 */
 
 .k-keys {
   display: inline-flex;
-  gap: 4px;
+  gap: var(--space-1);
 }
 /* 快捷键方块：照 OpenMarket tb-panels__key。20 高 · 圆角 4 · 6% 白底 12% 白边 · 10.5px 500 */
 .k-kbd {
@@ -12,12 +12,12 @@
   justify-content: center;
   min-width: 20px;
   height: 20px;
-  padding: 0 4px;
+  padding: 0 var(--space-1);
   background: var(--alpha-white-5);
   border: 1px solid var(--alpha-white-10);
-  border-radius: 4px;
-  color: var(--ink-200);
-  font: var(--text-caption) var(--font-sans);
+  border-radius: var(--radius-md);
+  color: var(--k-content-body-foreground);
+  font: var(--text-caption) var(--font-sans-small);
   font-weight: 500;
   line-height: 1;
 }

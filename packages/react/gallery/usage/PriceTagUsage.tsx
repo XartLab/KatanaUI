@@ -1,6 +1,14 @@
 // SPDX-License-Identifier: MIT
-import { PriceTag } from '../../src/index'
+import { formatPrice } from '../../src/quant'
+import { PriceTag } from '../../src/quotes'
 
 export function PriceTagUsage() {
-  return <PriceTag name="BTCUSDT" price="106,977.4" change="+1.20%" tone="up" />
+  return (
+    <PriceTag
+      name="BTCUSDT"
+      last={106977.4}
+      changePct={1.2}
+      formatPrice={(value) => formatPrice(value, { tick: 0.1 })}
+    />
+  )
 }

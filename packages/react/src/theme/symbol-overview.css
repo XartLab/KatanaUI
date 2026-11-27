@@ -1,418 +1,152 @@
 /* SPDX-License-Identifier: MIT */
-/* 品种概览（#53，对齐 TradingView 品种页，主会话 2026-11-15 实测，只取布局）：业绩条、同业卡、关键数据、区间条的三角标与比较条、自选列表。
-   颜色只用涨跌语义色（--pnl-up / --pnl-down）与中性灰；选中是灰底，不用 TV 的蓝，徽标不用紫。 */
+/* 多品种走势卡 SymbolOverview（#147，KATANAview #1884：对 TradingView 的 Symbol Overview 小组件）。颜色只用 token：线色取 series-*（由 assignSeries 分配，写在行内），
+   网格、轴、十字线、零线、读数复用 chart-kit.css；页签选中用中性灰底，不用 TradingView 蓝。动效只用三条弹簧的 CSS 形式（--dur-* / --ease-*）。 */
 
-/* —— 业绩条 —— */
-.k-perf {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(max-content, 1fr);
+.k-symov {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  padding: 10px 12px 12px;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-symov-tabs {
+  display: flex;
   gap: 2px;
   overflow-x: auto;
   scrollbar-width: none;
-  font: var(--text-data) var(--font-sans);
-  font-variant-numeric: tabular-nums;
 }
-.k-perf-cell {
+.k-symov-tab {
   display: flex;
+  flex: 1 0 auto;
   flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 10px 8px;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: var(--ink-100);
-  cursor: pointer;
-  transition: background var(--dur-snappy) var(--ease-snappy);
-}
-.k-perf-cell:hover {
-  background: var(--alpha-white-3);
-}
-.k-perf-cell[aria-pressed='true'] {
-  background: var(--alpha-white-7);
-}
-.k-perf-cell:focus-visible {
-  outline: 2px solid var(--ink-200);
-  outline-offset: -2px;
-}
-.k-perf-label {
-  color: var(--ink-300);
-  font: 400 12px/16px var(--font-sans);
-  white-space: nowrap;
-}
-.k-perf-value {
-  font: 600 14px/20px var(--font-sans);
-}
-.k-perf-cell[data-tone='up'] .k-perf-value {
-  color: var(--pnl-up);
-}
-.k-perf-cell[data-tone='down'] .k-perf-value {
-  color: var(--pnl-down);
-}
-
-/* —— 同业卡 —— */
-.k-peers {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 0;
-  font: var(--text-data) var(--font-sans);
-}
-.k-peers-bar {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 4px;
-}
-.k-peers-compare {
-  margin-right: 4px;
-  padding: 4px 10px;
-  border: 1px solid var(--alpha-white-9);
-  border-radius: 9999px;
-  background: transparent;
-  color: var(--ink-100);
-  font: 500 12px/16px var(--font-sans);
-  cursor: pointer;
-}
-.k-peers-compare:hover {
-  background: var(--alpha-white-5);
-}
-.k-peers-arrow {
-  width: 24px;
-  height: 24px;
-  border: 0;
-  border-radius: 50%;
-  background: var(--alpha-white-5);
-  color: var(--ink-100);
-  font: 500 16px/22px var(--font-sans);
-  cursor: pointer;
-}
-.k-peers-arrow:disabled {
-  opacity: 0.35;
-  cursor: default;
-}
-.k-peers-rail {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  scroll-snap-type: x proximity;
-}
-.k-peers-card {
-  position: relative;
-  flex: 0 0 168px;
-  scroll-snap-align: start;
-}
-.k-peers-main {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-template-areas:
-    'logo code'
-    'logo name'
-    'price price'
-    'change change';
-  column-gap: 8px;
-  align-items: center;
-  width: 100%;
-  min-width: 0;
-  padding: 10px 36px 10px 10px;
-  border: 1px solid var(--alpha-white-7);
-  border-radius: 10px;
-  background: var(--alpha-white-2);
-  color: var(--ink-100);
+  gap: 2px;
+  min-width: 108px;
+  padding: 6px 10px;
+  border-radius: var(--radius-inner);
+  color: var(--k-content-body-foreground);
   text-align: left;
   cursor: pointer;
+  transition: background-color var(--dur-snappy) var(--ease-snappy);
 }
-.k-peers-main:hover {
-  background: var(--alpha-white-5);
+.k-symov-tab:hover {
+  background: var(--k-selectable-background-hover);
 }
-.k-peers-main > .k-symbol-mark {
-  grid-area: logo;
+.k-symov-tab[data-state='active'] {
+  background: var(--k-selectable-background-selected);
+  color: var(--k-content-primary-foreground);
 }
-.k-peers-code {
-  grid-area: code;
-  font: 600 13px/16px var(--font-sans);
+/* 选中的页签是 selected 底，名字的 ink-300 只有 4.2:1（console，axe #190），提到 body。 */
+.k-symov-tab[data-state='active'] .k-symov-tab-name {
+  color: var(--k-content-body-foreground);
 }
-.k-peers-name {
-  grid-area: name;
-  min-width: 0;
+.k-symov-tab:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+.k-symov-tab-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.k-symov-swatch {
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-sm);
+}
+.k-symov-tab-symbol {
+  font-weight: 600;
+}
+.k-symov-tab-name {
   overflow: hidden;
-  color: var(--ink-300);
-  font: 400 12px/16px var(--font-sans);
+  max-width: 160px;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.k-peers-price {
-  grid-area: price;
-  margin-top: 8px;
-  font: 600 15px/20px var(--font-sans);
-  font-variant-numeric: tabular-nums;
-}
-.k-peers-price small {
-  margin-left: 4px;
-  color: var(--ink-300);
-  font: 400 11px/14px var(--font-sans);
-}
-.k-peers-change {
-  grid-area: change;
-  font: 500 13px/18px var(--font-sans);
-}
-.k-peers-add {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 22px;
-  height: 22px;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
-  color: var(--ink-300);
-  font: 400 16px/20px var(--font-sans);
-  cursor: pointer;
-}
-.k-peers-add:hover {
-  background: var(--alpha-white-7);
-  color: var(--ink-100);
-}
-
-/* —— 关键数据 —— */
-.k-keystats {
-  min-width: 0;
-  font: var(--text-data) var(--font-sans);
-}
-.k-keystats .k-keystats-title {
-  margin: 0 0 12px;
-  font: 600 16px/22px var(--font-sans);
-}
-.k-keystats button {
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
-}
-.k-keystats button:hover {
-  color: var(--ink-100);
-}
-.k-keystats-chev {
-  margin-left: 4px;
-  color: var(--ink-300);
-}
-.k-keystats-grid {
-  display: grid;
-  gap: 16px 24px;
-  margin: 0;
-}
-.k-keystats-item {
-  min-width: 0;
-}
-.k-keystats-item dt {
-  color: var(--ink-300);
-  font: 400 12px/16px var(--font-sans);
-}
-.k-keystats-item dd {
+.k-symov-tab-quote {
   display: flex;
-  flex-wrap: wrap;
   align-items: baseline;
-  gap: 2px 4px;
-  margin: 4px 0 0;
-  font-variant-numeric: tabular-nums;
-}
-.k-keystats-value {
-  font: 600 20px/26px var(--font-sans);
-}
-.k-keystats-item small {
-  color: var(--ink-300);
-  font: 400 12px/16px var(--font-sans);
-}
-.k-keystats-badge {
-  align-self: center;
-  padding: 1px 8px;
-  border-radius: 9999px;
-  background: var(--alpha-white-7);
-  color: var(--ink-200);
-  font: 600 10px/16px var(--font-sans);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-/* —— 区间条：TradingView 右栏的画法（标题在上、细轨道、轨道下方的三角）与比较条 —— */
-.k-range-block {
-  display: flex;
-  flex-direction: column;
   gap: 6px;
 }
-.k-range-title {
-  color: var(--ink-300);
-  font: 400 12px/16px var(--font-sans);
+.k-symov-tab-pct {
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
 }
-.k-range[data-marker='triangle'] .k-range-fill {
-  display: none;
+.k-symov-panel {
+  min-width: 0;
 }
-.k-range[data-marker='triangle'] .k-range-track {
-  height: 2px;
-  background: var(--ink-400);
-  overflow: visible;
-}
-.k-range[data-marker='triangle'] .k-range-mark {
-  top: 100%;
-  width: 0;
-  height: 0;
-  margin: 3px 0 0 -5px;
-  border-radius: 0;
-  border-right: 5px solid transparent;
-  border-bottom: 7px solid var(--ink-100);
-  border-left: 5px solid transparent;
-  background: transparent;
-}
-.k-compare {
+.k-symov-plotwrap {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  font: var(--text-caption) var(--font-sans);
-  font-variant-numeric: tabular-nums;
+  gap: 4px;
+  margin-right: 56px;
+  font: var(--text-num-sm) var(--font-num-small);
 }
-.k-compare-head {
-  display: flex;
-  justify-content: space-between;
-  color: var(--ink-300);
+.k-symov-plot {
+  position: relative;
+  outline: 0;
+  touch-action: pan-y;
 }
-.k-compare-text {
-  color: var(--ink-100);
+.k-symov-plot:focus-visible {
+  outline: 1px solid var(--focus-ring);
+  outline-offset: 2px;
 }
-.k-compare-track {
+.k-symov-plot > svg {
   display: block;
-  height: 4px;
-  margin-top: 4px;
-  border-radius: 2px;
-  background: var(--alpha-white-5);
-}
-.k-compare-fill {
-  display: block;
-  height: 100%;
-  border-radius: 2px;
-  transition: width var(--dur-snappy) var(--ease-snappy);
-}
-.k-compare-row[data-side='a'] .k-compare-fill {
-  background: var(--ink-100);
-}
-.k-compare-row[data-side='b'] .k-compare-fill {
-  background: var(--ink-400);
-}
-
-/* —— 自选列表 —— */
-.k-watch {
-  width: 100%;
-  border-collapse: collapse;
-  font: var(--text-data) var(--font-sans);
-  font-variant-numeric: tabular-nums;
-}
-.k-watch th,
-.k-watch td {
-  padding: 0 8px;
-  text-align: left;
-  font-weight: 400;
-}
-.k-watch .is-num {
-  text-align: right;
-}
-.k-watch thead th {
-  height: 28px;
-  color: var(--ink-300);
-  font: 500 11px/14px var(--font-sans);
-}
-.k-watch thead button {
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
-}
-.k-watch thead button:hover {
-  color: var(--ink-100);
-}
-.k-watch-caret {
-  display: inline-block;
-  width: 10px;
-  margin-left: 2px;
-  font-size: 8px;
-}
-.k-watch tbody tr {
-  height: 32px;
-  border-top: 1px solid var(--alpha-white-2_5);
-}
-.k-watch tbody tr:hover {
-  background: var(--alpha-white-2_5);
-}
-.k-watch tbody tr.is-link {
-  cursor: pointer;
-}
-.k-watch-sym {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.k-watch-code {
-  font-weight: 600;
-}
-.k-watch-flag {
-  display: inline-flex;
-  width: 14px;
-  height: 14px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--ink-400);
-  cursor: pointer;
-}
-.k-watch-flag svg {
   width: 100%;
   height: 100%;
+  overflow: visible;
+}
+.k-symov-line {
   fill: none;
-  stroke: currentColor;
-  stroke-width: 1.2;
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.7;
 }
-.k-watch-flag[aria-pressed='true'] {
-  color: var(--ink-100);
-}
-.k-watch-flag[aria-pressed='true'] svg {
-  fill: currentColor;
-}
-.k-watch tbody tr:not(:hover) .k-watch-flag[aria-pressed='false'] {
-  opacity: 0;
-}
-.k-watch-flag:focus-visible {
+.k-symov-line.is-selected {
+  stroke-width: 2;
   opacity: 1;
 }
-.k-watch td[data-tone='up'] {
-  color: var(--pnl-up);
+.k-symov-area {
+  stroke: none;
 }
-.k-watch td[data-tone='down'] {
-  color: var(--pnl-down);
+.k-symov-ytick {
+  position: absolute;
+  left: 100%;
+  padding-left: 8px;
+  translate: 0 round(nearest, -50%, 1px);
+  color: var(--chart-axis);
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-num-small));
+  pointer-events: none;
+  white-space: nowrap;
 }
-.k-watch-flash[data-flash='up'] {
-  animation: k-watch-flash-up 1s ease-out;
+.k-symov-dot {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
 }
-.k-watch-flash[data-flash='down'] {
-  animation: k-watch-flash-down 1s ease-out;
+.k-symov-dot > i {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border: 2px solid var(--k-surface-base-background);
+  border-radius: 50%;
 }
-/* 只写起点：终点就是它本来的字色，所以「约 1 秒回落」。 */
-@keyframes k-watch-flash-up {
-  from {
-    color: var(--pnl-up);
-  }
+.k-symov-empty {
+  display: grid;
+  place-items: center;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
 }
-@keyframes k-watch-flash-down {
-  from {
-    color: var(--pnl-down);
-  }
-}
-.k-watch-empty {
-  margin: 0;
-  padding: var(--space-6);
-  color: var(--ink-300);
-  text-align: center;
+.k-symov-ranges {
+  align-self: flex-start;
 }

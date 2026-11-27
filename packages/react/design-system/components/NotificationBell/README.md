@@ -36,7 +36,9 @@ export function NotificationBellUsage() {
 
 ## Don't
 
-- 铃是图标，label 必须传（读屏名字）。
+- 铃是图标，label 必须传（读屏名字），而且要带未读数：数变了就换这个字符串。
+- 不要拿角标数表示别的量（价格、进度）：它只表示未读条数，超过 max 写「99+」。
+- 不需要数字的场合用 variant=dot，不要传 1 假装。
 
 ## Composition
 

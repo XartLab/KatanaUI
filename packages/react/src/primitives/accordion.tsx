@@ -16,7 +16,7 @@ function AccordionItem({ className, ...props }: ComponentProps<typeof AccordionP
   return (
     <AccordionPrimitive.Item
       data-slot="accordion-item"
-      className={cn('border-b border-line last:border-b-0', className)}
+      className={cn('border-b border-(color:--k-separable-tertiary-borderColor) last:border-b-0', className)}
       {...props}
     />
   )
@@ -28,16 +28,16 @@ function AccordionTrigger({ className, children, ...props }: ComponentProps<type
       <AccordionPrimitive.Trigger
         data-slot="accordion-trigger"
         className={cn(
-          'k-text-body flex min-h-9 flex-1 cursor-pointer items-center justify-between gap-4 rounded-[6px] py-2 text-left text-ink-2',
-          'transition-colors duration-150 enabled:hover:text-ink disabled:cursor-not-allowed disabled:opacity-45',
-          '[&[data-state=open]]:text-ink [&[data-state=open]>svg]:rotate-180',
+          'k-text-body flex min-h-9 flex-1 cursor-pointer items-center justify-between gap-4 rounded-[var(--radius-control)] py-2 text-left text-(color:--k-content-body-foreground)',
+          'transition-colors duration-150 enabled:hover:text-(color:--k-content-primary-foreground) disabled:cursor-not-allowed disabled:opacity-45',
+          '[&[data-state=open]]:text-(color:--k-content-primary-foreground) [&[data-state=open]>svg]:rotate-180',
           focusRingInset,
           className,
         )}
         {...props}
       >
         {children}
-        <ChevronDownIcon className="pointer-events-none size-[13px] shrink-0 text-ink-3 transition-transform duration-200" />
+        <ChevronDownIcon className="pointer-events-none size-[13px] shrink-0 text-(color:--k-content-secondary-foreground) transition-transform duration-200" />
       </AccordionPrimitive.Trigger>
     </AccordionPrimitive.Header>
   )

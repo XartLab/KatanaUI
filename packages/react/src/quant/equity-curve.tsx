@@ -1,21 +1,25 @@
 // SPDX-License-Identifier: MIT
 // 权益曲线（组件卡 EquityCurve，design/katana-console components/EquityCurve，2026-10-17 读；#1931 从应用的 panels/kit 搬进来）：
 // 上区权益线 2px series-1，基准线 1px 灰虚线；下区镜像回撤面用点阵 / 斜线纹理（读 CSS 变量，见 theme/chart-kit.css），不用实色；
+//   纹理色：卡写 seq-300，橙不上数据（2026-11-15）后取同档的中性灰浓度 --k-heat-3（同 BrushStrip 的面）；涨跌色不上面积（dataviz §2，KatanaUI #165）。
 // 末点 signal-orange 旁标最终值；线性 / 对数纵轴；底下一条概览刷选条，拖窗口只看一段；右上三件（表格视图、导出、全屏）。
+// 实时刷新：新点追加时权益线与基准线平滑延伸（共用层 lib/live-line.ts），末点滑到新位置并闪一圈光晕；窗口停在最新点时跟着最新点走（宽度不变），用户拖到别处就不动它。回撤面积没有做过场，直接换。
 // 横轴是时间（照 TradingView 策略测试器的权益曲线）：点按自己的时刻摆。包里不带语言，文字与数值格式都由调用方传。
-import { useState, type PointerEvent } from 'react'
+import { useRef, useState, type PointerEvent } from 'react'
 import { cn } from '../lib/cn.ts'
+import { useLineExtend, type LinePoint } from '../lib/live-line.ts'
+import { useValueFlash } from '../lib/live.ts'
 import { useScrubber } from '../lib/use-scrubber.ts'
 import { ToggleGroup, ToggleGroupItem } from '../primitives/toggle-group.tsx'
 import { BrushStrip, type BrushLabels } from './brush-chart.tsx'
-import { clampWindow, type BrushWindow } from './brush-model.ts'
-import { ChartActions, type ChartActionsLabels } from './chart-kit/chart-actions.tsx'
-import { DotFill, useDotId } from './chart-kit/dot-fill.tsx'
-import { EndMarker } from './chart-kit/end-marker.tsx'
-import { LcdTooltip } from './chart-kit/lcd-tooltip.tsx'
-import { PlotGrid, PlotYAxis } from './chart-kit/plot-axes.tsx'
+import { clampWindow, type BrushWindow } from '../lib/chart/brush-model.ts'
+import { ChartActions, type ChartActionsLabels } from '../lib/chart/chart-kit/chart-actions.tsx'
+import { DotFill, useDotId } from '../lib/chart/chart-kit/dot-fill.tsx'
+import { EndMarker } from '../lib/chart/chart-kit/end-marker.tsx'
+import { LcdTooltip } from '../lib/chart/chart-kit/lcd-tooltip.tsx'
+import { PlotGrid, PlotYAxis } from '../lib/chart/chart-kit/plot-axes.tsx'
 import { canLog, defaultTimeTicks, drawdownY, equityPlot, timeX, type EquityScale } from './equity-curve-model.ts'
-import { linePath, pct, PLOT_W } from './series-geometry.ts'
+import { linePath, pct, PLOT_W } from '../lib/chart/series-geometry.ts'
 
 export type EquityCurvePoint = {
   /** 这一点的时刻（毫秒）：横轴按它摆。 */
@@ -59,9 +63,13 @@ export type EquityCurveProps = {
   formatTime: (time: number) => string
   labels: EquityCurveLabels
   /** 窗口变了（拖概览条）：给宿主把别的东西（成交表）跟着窗口筛。 */
+  onValueChange?: (window: BrushWindow) => void
+  /** @deprecated 用 `onValueChange`（G5 统一回调名）；下一个版本删。 */
   onWindowChange?: (window: BrushWindow) => void
   onExport?: () => void
   onFullscreen?: () => void
+  /** Copy-image handler (camera button; also give labels.actions.copyImage); receives this chart's figure for copyImage. 参数交给 copyImage。 */
+  onCopyImage?: (chart: HTMLElement) => void
   /** 来源与口径行（读自哪里、几点的数）。 */
   source?: string
   className?: string
@@ -70,6 +78,29 @@ export type EquityCurveProps = {
 const EQUITY_H = 128
 const DRAWDOWN_H = 56
 const PAD = { top: 10, bottom: 6 }
+
+/** 坐标写成路径（M…L…），位数与 linePath 一样。 */
+const pathText = (points: readonly LinePoint[]) =>
+  points.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(2)},${y.toFixed(2)}`).join('')
+
+/** 一条会延伸的线：d 仍由调用方按 linePath 给（断开的线也照旧），新点追加时在属性上做过场。 */
+function ExtendingLine({
+  d,
+  values,
+  coords,
+  className,
+  slot,
+}: {
+  d: string
+  values: readonly number[]
+  coords: readonly LinePoint[]
+  className: string
+  slot: string
+}) {
+  const ref = useRef<SVGPathElement>(null)
+  useLineExtend(ref, 'd', values, coords, pathText)
+  return <path ref={ref} className={className} data-slot={slot} d={d} />
+}
 
 export function EquityCurve({
   points,
@@ -82,9 +113,11 @@ export function EquityCurve({
   xTicks,
   formatTime,
   labels,
+  onValueChange,
   onWindowChange,
   onExport,
   onFullscreen,
+  onCopyImage,
   source,
   className,
 }: EquityCurveProps) {
@@ -94,6 +127,14 @@ export function EquityCurve({
   const [table, setTable] = useState(false)
   const [hover, setHover] = useState<number | null>(null)
   const dotId = useDotId('equity-dd')
+  // 窗口的右端贴着最新点时，新点来了窗口跟着走（宽度不变）；渲染时调整状态，免得先画一帧旧窗口。
+  const [seenTotal, setSeenTotal] = useState(total)
+  if (total !== seenTotal) {
+    setSeenTotal(total)
+    if (windowState && total > seenTotal && windowState[1] >= seenTotal)
+      setWindow([windowState[0] + (total - seenTotal), total])
+  }
+  const endFlash = useValueFlash(points[total - 1]?.equity)
   const window = clampWindow(windowState ?? [0, total], total, 2)
   const shown = points.slice(window[0], window[1])
   const count = shown.length
@@ -117,6 +158,8 @@ export function EquityCurve({
   const active = scrub.index
   const lastIndex = count - 1
   const marked = shown[active ?? lastIndex]!
+  const lineCoords = equities.map((value, index) => [plot.xAt(index), plot.yAt(value)] as const)
+  const benchCoords = (bench ?? []).map((value, index) => [plot.xAt(index), plot.yAt(value)] as const)
   const ticks = (xTicks ?? ((a, b) => defaultTimeTicks(a, b, 5, formatTime)))(start, end)
 
   // 悬停取横向最近的点（点不等距，不能按格数换算）；同一时刻的几笔取最后那笔。
@@ -132,7 +175,7 @@ export function EquityCurve({
   const change = (next: BrushWindow) => {
     setWindow(next)
     setHover(null)
-    onWindowChange?.(next)
+    ;(onValueChange ?? onWindowChange)?.(next)
   }
 
   return (
@@ -156,7 +199,7 @@ export function EquityCurve({
           {labels.drawdown}
         </span>
         <ToggleGroup
-          variant="sm"
+          size="sm"
           className="k-eq-scale"
           aria-label={labels.scale.group}
           value={mode}
@@ -173,6 +216,7 @@ export function EquityCurve({
           onTableView={setTable}
           onExport={onExport}
           onFullscreen={onFullscreen}
+          onCopyImage={onCopyImage}
         />
       </div>
 
@@ -219,8 +263,22 @@ export function EquityCurve({
           >
             <svg viewBox={`0 0 ${PLOT_W} ${EQUITY_H}`} preserveAspectRatio="none" aria-hidden="true">
               <PlotGrid plot={plot} />
-              {bench && <path className="k-eq-bench" data-slot="equity-bench" d={linePath(bench, plot)} />}
-              <path className="k-eq-line" data-slot="equity-line" d={linePath(equities, plot)} />
+              {bench && (
+                <ExtendingLine
+                  className="k-eq-bench"
+                  slot="equity-bench"
+                  d={linePath(bench, plot)}
+                  values={bench}
+                  coords={benchCoords}
+                />
+              )}
+              <ExtendingLine
+                className="k-eq-line"
+                slot="equity-line"
+                d={linePath(equities, plot)}
+                values={equities}
+                coords={lineCoords}
+              />
             </svg>
             <PlotYAxis plot={plot} format={axis} />
             <EndMarker
@@ -228,6 +286,16 @@ export function EquityCurve({
               y={plot.yAt(marked.equity)}
               side={(active ?? lastIndex) > count / 2 ? 'left' : 'right'}
               value={active === null ? marked.equityText : undefined}
+              // 跟着最新点时末点随线滑到新位置（和线的延伸同一档时长）；悬停看历史时不滑，免得拖影。
+              style={
+                active === null
+                  ? {
+                      transition:
+                        'left var(--dur-reorder) var(--ease-snappy), top var(--dur-reorder) var(--ease-snappy)',
+                    }
+                  : undefined
+              }
+              flash={active === null ? endFlash : undefined}
             />
             {active !== null && (
               <>
@@ -248,7 +316,7 @@ export function EquityCurve({
           <div className="k-eq-dd" style={{ height: DRAWDOWN_H }} data-slot="equity-drawdown" aria-hidden="true">
             <svg viewBox={`0 0 ${PLOT_W} ${DRAWDOWN_H}`} preserveAspectRatio="none">
               <defs>
-                <DotFill id={dotId} color="color-mix(in srgb, var(--pnl-down) 60%, transparent)" />
+                <DotFill id={dotId} color="var(--k-heat-3)" />
               </defs>
               <line className="k-ck-grid" x1={0} x2={PLOT_W} y1={zeroY} y2={zeroY} />
               {ddArea && (
@@ -280,8 +348,8 @@ export function EquityCurve({
 
       <BrushStrip
         values={points.map((point) => point.equity)}
-        window={window}
-        onWindowChange={change}
+        value={window}
+        onValueChange={change}
         formatX={(index) => points[index]!.title}
         labels={labels.brush}
         minSpan={2}

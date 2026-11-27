@@ -1,0 +1,10 @@
+<!-- @dsCard group="Overlays" height=375 -->
+<!-- SPDX-License-Identifier: MIT -->
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>CommandPalette</title></head>
+<body style="margin:0;padding:var(--space-4);background:var(--bg-100);color:var(--ink-200);font:var(--text-body) var(--font-sans);display:flex;flex-direction:column;gap:var(--space-3)">
+<div class="gal-row"><span class="gal-cap">打开</span><button data-slot="button" data-variant="default" data-size="sm" type="button" class="relative inline-flex shrink-0 cursor-pointer items-center justify-center gap-(--k-spacing-100) whitespace-nowrap select-none border border-(color:--k-actionable-borderColor) bg-(--k-actionable-background) text-(color:--k-actionable-foreground) transition-[color,background-color,border-color,scale] duration-150 ease-out not-disabled:hover:bg-(--k-actionable-background-hover) not-disabled:hover:text-(color:--k-actionable-foreground-hover) not-disabled:active:scale-[0.97] not-disabled:active:bg-(--k-actionable-background-active) disabled:cursor-not-allowed disabled:opacity-45 aria-busy:cursor-progress aria-busy:active:scale-100! data-[spinning=true]:[&amp;_svg]:animate-[spin_640ms_linear_infinite] [&amp;_svg]:pointer-events-none [&amp;_svg]:size-[13px] [&amp;_svg]:shrink-0 outline-0 focus-visible:outline-(length:--k-focused-outlineWidth) focus-visible:outline-offset-(--k-focused-outlineOffset) focus-visible:outline-(color:--k-focused-outlineColor) k-text-caption h-[26px] rounded-[var(--radius-control)] px-2 font-semibold">命令面板 <span class="k-keys" aria-label="Ctrl+K"><kbd class="k-kbd">Ctrl</kbd><kbd class="k-kbd">K</kbd></span></button></div><p class="gal-note" data-testid="palette-log">执行了：无；选过的命令下次打开排在「最近」（最多 5 条，存在 localStorage）。</p>
+
+</body>
+</html>

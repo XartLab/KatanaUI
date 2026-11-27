@@ -1,0 +1,139 @@
+/* SPDX-License-Identifier: MIT */
+/* G6 token 迁移：凹槽内阴影 rgba(0,0,0,.6) 没有对应的 --shadow-*，先留着。 */
+/* FlowGauges（#1929；G6 从 theme/quant.css 拆出，每件一个 css）：订单流四个仪表一行。
+   尺寸与层次照 design/katana-console/project/components/FlowGauges/preview.html；颜色只读 characteristics（--k-*）与语义 token；动效只用弹簧的 CSS 形式（--dur-* / --ease-*）。 */
+
+.k-flow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  font-family: var(--font-num-small);
+  font-size: var(--text-caption-size);
+  font-variant-numeric: tabular-nums;
+}
+.k-flow-cell-box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  min-height: 84px;
+  padding: 6px 8px;
+  background: var(--k-surface-sunken-background);
+  box-shadow: var(--recess);
+}
+.k-flow-title {
+  font-family: var(--font-num-small);
+  font-size: var(--text-tag-size);
+  letter-spacing: 0.1em;
+  color: var(--k-content-secondary-foreground);
+}
+.k-flow-value {
+  font-family: var(--font-num);
+  font-size: var(--text-lcd-size);
+  line-height: 20px;
+  letter-spacing: 0.06em;
+  color: var(--k-content-primary-foreground);
+}
+.k-flow-value.is-na {
+  color: var(--k-content-secondary-foreground);
+}
+.k-flow-est {
+  margin-left: 6px;
+  font-family: var(--font-num-small);
+  font-size: var(--text-micro-size);
+  letter-spacing: 0;
+  color: var(--k-status-warn-foreground);
+}
+.k-flow-cell-box[data-estimated] .k-flow-zero {
+  opacity: 0.55;
+}
+.k-flow-zero {
+  position: relative;
+  display: block;
+  height: 8px;
+  margin: 6px 0;
+  background: var(--k-container-secondary-background);
+  border: 1px solid var(--k-separable-tertiary-borderColor);
+  /* 净额条的起点与长度用 translate 加 scale 画，起点要量轨宽：轨是容器，取 cqw（kubai Vibe Design Tips 011，#251）。 */
+  container-type: inline-size;
+}
+.k-flow-zero::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -3px;
+  bottom: -3px;
+  width: 1px;
+  background: var(--k-separable-bold-borderColor);
+}
+.k-flow-zero i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--series-1);
+  left: 0;
+  width: 100%;
+  transform-origin: left;
+  translate: calc(var(--from, 0) * 100cqw) 0;
+  scale: var(--fill, 0) 1;
+  transition:
+    translate var(--dur-gentle) var(--ease-gentle),
+    scale var(--dur-gentle) var(--ease-gentle);
+}
+.k-flow-zero i.is-neg {
+  background: var(--series-2);
+}
+.k-flow-depth {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 30px;
+}
+.k-flow-depth i {
+  flex: 1;
+  min-width: 0;
+  background: var(--bid-200);
+}
+.k-flow-depth i.is-ask {
+  background: var(--ask-200);
+}
+.k-flow-matrix {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.k-flow-matrix-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--k-content-secondary-foreground);
+  font-size: var(--text-tag-size);
+}
+.k-flow-window {
+  width: 28px;
+  flex: none;
+}
+.k-flow-na {
+  color: var(--k-content-secondary-foreground);
+}
+.k-flow-led {
+  width: 10px;
+  height: 10px;
+  background: var(--led-off);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.6);
+}
+.k-flow-led.is-on {
+  background: var(--accent);
+  box-shadow: var(--glow-orange);
+}
+.k-flow-led.is-ok {
+  background: var(--k-status-ok-foreground);
+}
+.k-flow-led.is-warn {
+  background: var(--k-status-warn-foreground);
+}
+.k-flow-note {
+  color: var(--k-content-secondary-foreground);
+  font-size: var(--text-micro-size);
+  line-height: 14px;
+}

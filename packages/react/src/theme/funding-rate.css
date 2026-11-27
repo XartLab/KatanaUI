@@ -1,0 +1,74 @@
+/* SPDX-License-Identifier: MIT */
+/* FundingRate 资金费率（#104）：三个 Lcd 读数一行（当前、预测、倒计时），下面历史费率小柱状图。
+   柱子零线居中：正的在线上取 --pnl-up、负的在线下取 --pnl-down（跟 data-updown），当前费率另有「谁付谁」文字，方向不只靠颜色。 */
+.k-fund {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-3);
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-fund-readouts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-2);
+}
+.k-fund-readouts > div {
+  display: flex;
+  min-width: 0;
+}
+.k-fund-history {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+}
+.k-fund-history-name {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans);
+}
+.k-fund-bars {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  /* 撑满卡片宽；柱宽随数量自适应、每根最宽 28px，数量少时容器同步收窄，零线始终和柱一样长 */
+  width: min(100%, calc(var(--k-fund-n, 1) * 30px));
+  height: 56px;
+}
+.k-fund-bars::after {
+  content: '';
+  position: absolute;
+  inset: 50% 0 auto 0;
+  height: 1px;
+  background: var(--k-separable-secondary-borderColor);
+  pointer-events: none;
+}
+.k-fund-bar {
+  position: relative;
+  /* 柱宽固定、放不下才收窄；零线只跟柱一样长 */
+  flex: 1 1 0;
+  min-width: 2px;
+  max-width: 28px;
+}
+.k-fund-bar > i {
+  position: absolute;
+  left: 0;
+  right: 0;
+  min-height: 1px;
+  border-radius: var(--radius-sm);
+  background: var(--k-content-secondary-foreground);
+}
+.k-fund-bar[data-tone='up'] > i {
+  bottom: 50%;
+  background: var(--pnl-up);
+}
+.k-fund-bar[data-tone='down'] > i {
+  top: 50%;
+  background: var(--pnl-down);
+}
+.k-fund-bar[data-tone='flat'] > i {
+  top: calc(50% - 0.5px);
+}

@@ -53,7 +53,7 @@ function ComboboxContent({
       align="start"
       sideOffset={2}
       className={cn(
-        'w-[max(var(--radix-popover-trigger-width),220px)] overflow-hidden rounded-[7px] border-alpha-white-8 p-0 shadow-[0_8px_24px_rgba(0,0,0,0.4)]',
+        'w-[max(var(--radix-popover-trigger-width),220px)] overflow-hidden rounded-[var(--radius-overlay)] border-(color:--k-overlay-compact-borderColor) p-0 shadow-(--k-overlay-compact-shadow)',
         className,
       )}
       {...props}
@@ -83,10 +83,10 @@ function ComboboxItem({
     <CommandItem
       data-slot="combobox-item"
       data-checked={selected ? '' : undefined}
-      className={cn('data-[checked]:font-medium data-[checked]:text-ink', className)}
+      className={cn('data-[checked]:font-medium data-[checked]:text-(color:--k-content-primary-foreground)', className)}
       {...props}
     >
-      <span aria-hidden="true" className="w-[10px] flex-none text-ink">
+      <span aria-hidden="true" className="w-[10px] flex-none text-(color:--k-content-primary-foreground)">
         {selected ? '✓' : ''}
       </span>
       {children}

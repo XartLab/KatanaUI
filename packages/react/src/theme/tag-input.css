@@ -1,0 +1,127 @@
+/* SPDX-License-Identifier: MIT */
+/* TagInput（patterns/tag-input.tsx）：外框是我们输入框的皮（primitives/input.tsx：4% 白底 8% 白边 · 圆角 6 · 聚焦边提亮 · 无效红边），
+   标签与光标在框里换行排。md 框最小 30 高，标签 20 高 = 30 − 上下 1px 边 − 上下各 4px 内距；sm 框 26 高，标签 18 高（内距 3px）。
+   标签的底与边跟按钮一档（--k-actionable-*）；被 Backspace 或方向键选中的标签画一圈焦点色的环（原件是一个滑过去的环，§2.4 改成直接出现）。 */
+.k-tagin {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-hair);
+  min-width: 0;
+}
+.k-tagin-box {
+  --k-tagin-pad: 4px;
+  --k-tagin-tag: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  box-sizing: border-box;
+  min-height: 30px;
+  padding: var(--k-tagin-pad) 6px;
+  background: var(--k-editable-background);
+  border: 1px solid var(--k-editable-borderColor);
+  border-radius: var(--radius-control);
+  cursor: text;
+  transition: border-color var(--dur-hover) var(--ease-hover);
+}
+.k-tagin[data-size='sm'] .k-tagin-box {
+  --k-tagin-pad: 3px;
+  --k-tagin-tag: 18px;
+  min-height: 26px;
+}
+.k-tagin-box:focus-within {
+  border-color: var(--k-editable-borderColor-active);
+}
+.k-tagin-box:has(.k-tagin-input:focus-visible) {
+  outline: var(--k-focused-outlineWidth) solid var(--k-focused-outlineColor);
+  outline-offset: -2px;
+}
+.k-tagin[data-invalid] .k-tagin-box {
+  border-color: var(--k-status-danger-foreground);
+}
+/* 禁用：输入框与 × 淡到 0.45（原生 disabled，axe 不量）；标签上的字不用透明度（0.45 压到 3.6:1，axe #190），降一档到 body。 */
+.k-tagin[data-disabled] .k-tagin-box {
+  cursor: not-allowed;
+}
+.k-tagin[data-disabled] :is(.k-tagin-input, .k-tagin-remove) {
+  opacity: 0.45;
+}
+.k-tagin[data-disabled] .k-tagin-tag {
+  color: var(--k-content-body-foreground);
+}
+.k-tagin-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  box-sizing: border-box;
+  height: var(--k-tagin-tag);
+  max-width: 100%;
+  padding: 0 2px 0 6px;
+  background: var(--k-actionable-background);
+  border: 1px solid var(--k-actionable-borderColor);
+  border-radius: var(--radius-sm);
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: default;
+  user-select: none;
+}
+.k-tagin-tag[data-picked] {
+  background: var(--k-actionable-background-hover);
+  box-shadow: 0 0 0 1px var(--k-focused-outlineColor);
+}
+.k-tagin-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.k-tagin-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: var(--k-actionable-subtle-foreground);
+  cursor: pointer;
+}
+.k-tagin-remove:hover:not(:disabled) {
+  background: var(--k-actionable-subtle-background-hover);
+  color: var(--k-content-primary-foreground);
+}
+.k-tagin-remove:disabled {
+  cursor: not-allowed;
+}
+.k-tagin-remove svg {
+  width: 12px;
+  height: 12px;
+}
+.k-tagin-input {
+  flex: 1 0 64px;
+  min-width: 64px;
+  height: var(--k-tagin-tag);
+  padding: 0;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-body) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-tagin-input::placeholder {
+  color: var(--k-content-secondary-foreground);
+}
+.k-tagin-input:disabled {
+  cursor: not-allowed;
+}
+.k-tagin-error {
+  margin: 0;
+  color: var(--k-status-danger-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}

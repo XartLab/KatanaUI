@@ -29,9 +29,9 @@ const labels: MarketHeatmapLabels = {
   empty: '没有数据',
 }
 
-const item = (code: string, group: string | undefined, cap: number, day: number | null): HeatmapItem => ({
-  code,
-  name: `名${code}`,
+const item = (symbol: string, group: string | undefined, cap: number, day: number | null): HeatmapItem => ({
+  symbol,
+  name: `名${symbol}`,
   group,
   size: { cap },
   value: { day },
@@ -116,5 +116,32 @@ describe('MarketHeatmap 渲染结构', () => {
       />,
     )
     expect(empty).toContain('没有数据')
+  })
+  it('旧字段名 code（@deprecated）照样认：映射到 symbol', () => {
+    const legacy = renderToStaticMarkup(
+      <MarketHeatmap
+        items={[{ code: 'OLD', name: '旧名', size: { cap: 1 }, value: { day: 1 } }]}
+        sizeBy={[{ key: 'cap', label: '市值' }]}
+        colorBy={[{ key: 'day', label: '涨跌' }]}
+        labels={labels}
+      />,
+    )
+    expect(legacy).toContain('data-code="OLD"')
+  })
+  it('复制图（#87）：给了 onCopyImage 与 labels.copyImage 才出相机钮，它与全屏钮不进截图', () => {
+    const render = (extra: object) =>
+      renderToStaticMarkup(
+        <MarketHeatmap
+          items={items}
+          sizeBy={[{ key: 'cap', label: '市值' }]}
+          colorBy={[{ key: 'day', label: '涨跌' }]}
+          labels={{ ...labels, fullscreen: '全屏', copyImage: '复制图片' }}
+          {...extra}
+        />,
+      )
+    expect(render({})).not.toContain('data-slot="heatmap-copy-image"')
+    const html = render({ onCopyImage: () => {} })
+    expect(html).toMatch(/data-slot="heatmap-copy-image" data-copy-image="skip"/)
+    expect(html).toMatch(/data-copy-image="skip"[^>]*data-slot="heatmap-fullscreen"/)
   })
 })

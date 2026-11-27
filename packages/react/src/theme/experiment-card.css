@@ -1,0 +1,180 @@
+/* SPDX-License-Identifier: MIT */
+/* ExperimentCard（KATANAview #1908）：行是可点的单选，选中是中性灰底加一道左边强调线；好坏色只给变化那一格的字与箭头，值条是中性墨色。 */
+.k-xp {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-xp-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px var(--space-3);
+}
+.k-xp-title {
+  margin: 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-xp-status {
+  padding: 1px 6px;
+  border: 1px solid var(--k-status-neutral-borderColor);
+  border-radius: var(--radius-sm);
+  color: var(--k-status-neutral-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-xp-status[data-tone='ok'] {
+  border-color: var(--k-status-ok-borderColor);
+  color: var(--k-status-ok-foreground);
+}
+.k-xp-status[data-tone='warn'] {
+  border-color: var(--k-status-warn-borderColor);
+  color: var(--k-status-warn-foreground);
+}
+.k-xp-status[data-tone='danger'] {
+  border-color: var(--k-status-danger-borderColor);
+  color: var(--k-status-danger-foreground);
+}
+.k-xp-note {
+  margin-left: auto;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-xp-rows {
+  display: flex;
+  flex-direction: column;
+  border: var(--hairline);
+}
+.k-xp-row {
+  display: grid;
+  grid-template-columns: 22px minmax(96px, 1.4fr) minmax(64px, auto) minmax(60px, 1fr) minmax(64px, auto);
+  grid-template-areas: 'badge name value bar change' '. meta meta meta meta';
+  align-items: center;
+  gap: 2px var(--space-3);
+  width: 100%;
+  padding: 7px 10px;
+  border: 0;
+  border-bottom: var(--hairline);
+  border-left: 2px solid transparent;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.k-xp-row:last-child {
+  border-bottom: 0;
+}
+.k-xp-row:hover {
+  background: var(--k-selectable-background-hover);
+}
+.k-xp-row:focus-visible {
+  outline: 1px solid var(--focus-ring);
+  outline-offset: -1px;
+}
+.k-xp-row[aria-checked='true'] {
+  border-left-color: var(--accent);
+  background: var(--k-selectable-background-selected);
+}
+.k-xp-badge {
+  grid-area: badge;
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--k-container-borderColor);
+  border-radius: var(--radius-sm);
+  color: var(--k-content-primary-foreground);
+  font: var(--text-caption) var(--font-num-small);
+}
+.k-xp-row[aria-checked='true'] .k-xp-badge {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.k-xp-name {
+  grid-area: name;
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  min-width: 0;
+  color: var(--k-content-primary-foreground);
+}
+.k-xp-name small {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-xp-name small[data-tag='leader'] {
+  color: var(--k-status-ok-foreground);
+}
+.k-xp-value {
+  grid-area: value;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-num);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.k-xp-bar {
+  grid-area: bar;
+  position: relative;
+  display: block;
+  height: 6px;
+  background: var(--k-container-track-background);
+}
+.k-xp-bar i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--k-content-tertiary-foreground);
+}
+.k-xp-row[data-leader] .k-xp-bar i {
+  background: var(--k-content-secondary-foreground);
+}
+.k-xp-change {
+  grid-area: change;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2px;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-num-small);
+  font-variant-numeric: tabular-nums;
+}
+.k-xp-change svg {
+  width: 11px;
+  height: 11px;
+}
+.k-xp-change[data-verdict='better'] {
+  color: var(--k-status-ok-foreground);
+}
+.k-xp-change[data-verdict='worse'] {
+  color: var(--k-status-danger-foreground);
+}
+.k-xp-meta {
+  grid-area: meta;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-xp-tray {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: var(--k-size-base);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-xp-empty {
+  margin: 0;
+  padding: var(--space-6);
+  color: var(--k-content-secondary-foreground);
+  text-align: center;
+}
+@media (max-width: 560px) {
+  .k-xp-row {
+    grid-template-columns: 22px 1fr auto;
+    grid-template-areas: 'badge name value' '. bar change' '. meta meta';
+  }
+}

@@ -1,0 +1,107 @@
+/* SPDX-License-Identifier: MIT */
+/* KpiChart（KATANAview #1908）：大号读数用 LCD 字号档；线 2px 不填面（dataviz.md，同 SeriesExplorer）；涨跌色只给变化那一格。左侧留白 --k-plot-gutter 与 EquityCurve 同值；
+   normalized 纵轴不画刻度，留白收窄到 8px。 */
+.k-kpi {
+  position: relative;
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  margin: 0;
+  min-width: 0;
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-kpi-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px var(--space-3);
+}
+.k-kpi-title {
+  flex-basis: 100%;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-kpi-value {
+  color: var(--k-content-primary-foreground);
+  font: var(--text-lcd) var(--font-num);
+  font-variant-numeric: tabular-nums;
+}
+.k-kpi-delta {
+  color: var(--k-tone-flat-foreground);
+  font: var(--text-data) var(--font-num);
+  font-variant-numeric: tabular-nums;
+}
+.k-kpi-delta[data-tone='up'] {
+  color: var(--k-tone-up-foreground);
+}
+.k-kpi-delta[data-tone='down'] {
+  color: var(--k-tone-down-foreground);
+}
+.k-kpi-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-kpi-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.k-kpi-legend i {
+  width: 12px;
+  height: 2px;
+}
+.k-kpi-body {
+  --k-plot-gutter: 56px;
+}
+.k-kpi[data-scale='normalized'] .k-kpi-body {
+  --k-plot-gutter: 8px;
+}
+.k-kpi-main {
+  position: relative;
+  margin-left: var(--k-plot-gutter, 56px);
+  outline-offset: 2px;
+  touch-action: pan-y;
+  cursor: crosshair;
+}
+.k-kpi-main:focus-visible {
+  outline: 1px solid var(--focus-ring);
+}
+.k-kpi-main > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.k-kpi-line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.k-kpi-dot {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border: 1px solid var(--k-surface-base-background);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.k-kpi-xaxis {
+  margin-left: var(--k-plot-gutter, 56px);
+  margin-top: 4px;
+}
+.k-kpi-empty {
+  display: grid;
+  place-items: center;
+  border: 1px dashed var(--k-container-borderColor);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}

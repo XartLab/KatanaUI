@@ -1,0 +1,46 @@
+/* SPDX-License-Identifier: MIT */
+/* Tag（katana/tag.tsx）：小标签的底座。颜色只读 --k-status-*（Severity 四档），尺寸两档，填充或描边。
+   md 的数值等于改前的 .k-estimate（左右 --k-spacing-100，默认密度 6px、caption 500、圆角 radius-sm、1px 边），sm 等于改前的 .k-badge（micro 档、行高 1），
+   换底座不改它们的样子；sm 填充时多一层 neutral 的底（4% 白）与左右 2px（--space-hair），跟 TradingView 列表里品种名后的小标一样是一块小底，不是裸字。 */
+.k-tag {
+  --k-tag-fg: var(--k-status-neutral-foreground);
+  --k-tag-bg: var(--k-status-neutral-background);
+  display: inline-block;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: var(--k-tag-bg);
+  color: var(--k-tag-fg);
+  white-space: nowrap;
+}
+.k-tag[data-tone='ok'] {
+  --k-tag-fg: var(--k-status-ok-foreground);
+  --k-tag-bg: var(--k-status-ok-background);
+}
+.k-tag[data-tone='warn'] {
+  --k-tag-fg: var(--k-status-warn-foreground);
+  --k-tag-bg: var(--k-status-warn-background);
+}
+.k-tag[data-tone='danger'] {
+  --k-tag-fg: var(--k-status-danger-foreground);
+  --k-tag-bg: var(--k-status-danger-background);
+}
+.k-tag[data-outlined] {
+  background: transparent;
+  border-color: currentColor;
+}
+.k-tag[data-size='md'] {
+  padding: 0 var(--k-spacing-100);
+  font: var(--text-caption) var(--font-sans-small);
+  font-weight: 500;
+}
+.k-tag[data-size='sm'] {
+  padding: 0 var(--space-hair);
+  border-width: 0;
+  font: var(--text-micro) var(--font-sans);
+  letter-spacing: var(--text-micro-tracking);
+  line-height: 1;
+}
+.k-tag[data-size='sm'][data-outlined] {
+  border-width: 1px;
+}

@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: MIT */
-/* 原样搬自 src/ui/ui.css（#1860，2026-11-14）：类名与规则都没改，应用里的件（src/ui/*.tsx）是这里的件外面包的一层。 */
+/* 搬自 src/ui/ui.css（#1860，2026-11-14）。G3 起颜色只读 characteristics（--k-*），间距读 --space-*。 */
 
 /* 加载中（Loading / LoadingBoundary）：骨架照 states.md 的加载态：bg-200 条、line-200 细边、点阵纹理，不脉冲不转圈。
    点阵是 pixel.md / DotMatrix 的 4px 实、2px 空方点（交叉的两组条纹用 mask 求交），不另画一套。
@@ -7,7 +7,7 @@
 .k-loading {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2);
   padding: var(--space-3);
 }
 .k-loading-line {
@@ -15,8 +15,8 @@
   display: block;
   box-sizing: border-box;
   height: 12px;
-  background: var(--bg-200);
-  border: 1px solid var(--line-200);
+  background: var(--k-container-secondary-background);
+  border: 1px solid var(--k-separable-bold-borderColor);
   border-radius: var(--radius-control);
   overflow: hidden;
 }
@@ -24,8 +24,9 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: var(--line-200);
+  background: var(--k-separable-bold-borderColor);
   opacity: 0.6;
+  /* mask 只看透明度：#000 是「这里留下」，不是颜色，不换 token。 */
   -webkit-mask-image:
     repeating-linear-gradient(90deg, #000 0 4px, transparent 4px 6px),
     repeating-linear-gradient(0deg, #000 0 4px, transparent 4px 6px);
@@ -36,7 +37,7 @@
   mask-composite: intersect;
 }
 /* 等的时候的整块（#1234，states.md 加载态）：顶部一行 caption（LED on 橙、不呼吸 + 「加载 X · 来源」，2s 起「仍在加载」），
-   然后是真表头（有的话），然后是骨架行区；10s 转成琥珀条（LED warn + 文案 + 重试），骨架留着、降到半透明。琥珀的底与边跟 .k-cite.is-external 同一套。
+   然后是真表头（有的话），然后是骨架行区；10s 转成琥珀条（LED warn + 文案 + 重试），骨架留着、降到半透明。琥珀的底与边是 --k-status-warn-background / -borderColor（G3 起，边从 35% 收到 token 的 30%）。
    撑满面板主体（is-fill）时行区占剩下的高度，骨架每行占一个表格行高（--row-base），行数由 LoadingWait 量出来。 */
 .k-loading-wait {
   min-width: 0;
@@ -66,18 +67,18 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-loading-caption {
   padding: var(--space-2) var(--space-3);
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-loading-bar {
   margin: var(--space-2) var(--space-3);
   padding: var(--space-1) var(--space-2);
-  color: var(--ink-100);
-  background: color-mix(in srgb, var(--signal-amber) 10%, transparent);
-  border: 1px solid color-mix(in srgb, var(--signal-amber) 35%, transparent);
+  color: var(--k-content-primary-foreground);
+  background: var(--k-status-warn-background);
+  border: 1px solid var(--k-status-warn-borderColor);
   border-radius: var(--radius-control);
 }
 .k-loading-text {
@@ -112,4 +113,18 @@
   to {
     filter: none;
   }
+}
+
+/* 量出来的骨架（MeasuredSkeleton，skullet 的主题变量）：底色同 .k-loading-line 的 bg-200，不闪不脉冲（animation none），
+   文字条圆角取同一个 radius-control，图片与头像、按钮的圆角跟随内容自己的。出现前（is-wait）整块不可见、照样占位：不露骨架条，也不露卡片自己的边框底色。 */
+/* 骨架条画在 skullet 的 Shadow DOM 里，外面的边框与点阵纹进不去；只能给底色：用 k-loading-line 描边那档 line-200，bg-200 在面板底上几乎看不见。 */
+.k-measured {
+  --skullet-base: var(--k-separable-bold-borderColor);
+  --skullet-animation: none;
+  --skullet-radius: var(--radius-control);
+}
+/* 等待期整块不可见、只占位：只藏骨架条（[skullet-layer]）不够，skullet 让容器「保留表面」，带边框、底色的卡片
+   会先露出一个空框，500ms 后才填进骨架条。整块 visibility: hidden，量版照样进行（量的是盒子，不看可见性）。 */
+.k-measured.is-wait {
+  visibility: hidden;
 }

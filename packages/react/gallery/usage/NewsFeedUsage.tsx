@@ -86,6 +86,7 @@ const NEWS_ITEMS: NewsItem[] = [
 ]
 
 const NEWS_LABELS: NewsFeedLabels = {
+  itemActions: '新闻操作',
   all: '全部',
   feed: '新闻流',
   channels: '频道',
@@ -135,8 +136,7 @@ export function NewsFeedUsage() {
                 sources={NEWS_SOURCES}
                 now={NEWS_NOW}
                 labels={NEWS_LABELS}
-                onSymbolPick={(s) => setPicked(s.code)}
-                itemActionsLabel="新闻操作"
+                onSymbolSelect={(s) => setPicked(s.code)}
                 itemActions={(item) =>
                   item.symbols?.length
                     ? symbolMenu({

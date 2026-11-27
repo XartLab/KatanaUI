@@ -2,7 +2,9 @@
 import { ChevronRight, ExternalLink } from 'lucide-react'
 import { useId, useState, type ReactNode } from 'react'
 import { cn } from '../../lib/cn.ts'
-import { Led, type LedState } from '../../katana/led.tsx'
+import { Led } from '../../katana/led.tsx'
+import { MeasuredSkeleton } from '../../katana/measured-skeleton.tsx'
+import { Skeleton } from '../../katana/skeleton.tsx'
 import { ChipGroup } from '../../patterns/chip-group.tsx'
 import { ToggleGroup, ToggleGroupItem } from '../../primitives/toggle-group.tsx'
 import {
@@ -13,6 +15,7 @@ import {
   countEvidence,
   daysLeft,
   effectiveStatus,
+  hypothesisSeverity,
   visibleHypotheses,
   type EvidenceKind,
   type Hypothesis,
@@ -59,10 +62,16 @@ export type HypothesisLedgerLabels = {
   watchLayer: string
   watchEvidence: string
   watchConfusion: string
+  /** 加载中读屏读的话；不给就读 ledger。 */
+  loading?: string
 }
 
 export type HypothesisLedgerProps = {
   items: readonly Hypothesis[]
+  /** 在加载：给了（含 false）账本的列表区就走量出来的骨架，false 时骨架退场、真假说淡入；不传和以前一样。 */
+  loading?: boolean
+  /** 加载时拿来量骨架的示例假说（命题长度、证据条数跟真的差不多；4 到 6 条够用）；不给画几行条。 */
+  sample?: readonly Hypothesis[]
   /** 观察表的行；不给就没有「观察表」视图。 */
   watch?: readonly WatchRow[]
   /** 当前时间（毫秒）：倒计时、过期都按它算；件不在渲染里取时间。 */
@@ -74,10 +83,10 @@ export type HypothesisLedgerProps = {
   className?: string
 }
 
-const LED: Record<HypothesisStatus, LedState> = { pending: 'on', supported: 'ok', refuted: 'danger', expired: 'warn' }
-
 export function HypothesisLedger({
   items,
+  loading,
+  sample,
   watch,
   now,
   labels,
@@ -91,12 +100,26 @@ export function HypothesisLedger({
   const byStatus = countByStatus(items, layers, now)
   const byLayer = countByLayer(items, status, now)
   const rows = visibleHypotheses(items, { layers, status }, now)
+  const loadingLabel = labels.loading ?? labels.ledger
+  // 一张账本列表；加载时用示例假说排同样的版，量出来的骨架就和真行对得上。
+  const list = (shown: readonly Hypothesis[]) =>
+    shown.length === 0 ? (
+      <div className="k-hl-empty">{labels.empty}</div>
+    ) : (
+      <ol className="k-hl-list" aria-label={labels.ledger}>
+        {shown.map((h) => (
+          <li key={h.id} className="k-hl-item" data-hypothesis-id={h.id}>
+            <Row h={h} now={now} labels={labels} renderAsset={renderAsset} />
+          </li>
+        ))}
+      </ol>
+    )
   return (
     <section className={cn('k-hl', className)} aria-label={labels.ledger}>
       <div className="k-hl-bar">
         {watch && (
           <ToggleGroup
-            variant="sm"
+            size="sm"
             aria-label={labels.views}
             value={view}
             onValueChange={(next) => next && setView(next as 'ledger' | 'watch')}
@@ -107,7 +130,7 @@ export function HypothesisLedger({
         )}
         {view === 'ledger' && (
           <ToggleGroup
-            variant="sm"
+            size="sm"
             aria-label={labels.statusFilter}
             value={status}
             onValueChange={(next) => next && setStatus(next as HypothesisStatus | 'all')}
@@ -127,28 +150,26 @@ export function HypothesisLedger({
         <>
           <ChipGroup
             label={labels.layerFilter}
-            clearLabel={labels.clearLayers}
+            labels={{ clear: labels.clearLayers }}
             value={layers}
             onValueChange={(next) => setLayers(next as HypothesisLayer[])}
             items={HYPOTHESIS_LAYERS.map((l) => ({ value: l, label: labels.layer[l], count: byLayer[l] }))}
           />
           <div className="k-hl-scroll">
-            {rows.length === 0 ? (
-              <div className="k-hl-empty">{labels.empty}</div>
+            {loading === undefined ? (
+              list(rows)
+            ) : loading && sample === undefined ? (
+              <Skeleton label={loadingLabel} lines={8} rows />
             ) : (
-              <ol className="k-hl-list" aria-label={labels.ledger}>
-                {rows.map((h) => (
-                  <li key={h.id} className="k-hl-item" data-hypothesis-id={h.id}>
-                    <Row h={h} now={now} labels={labels} renderAsset={renderAsset} />
-                  </li>
-                ))}
-              </ol>
+              <MeasuredSkeleton loading={loading} label={loadingLabel}>
+                {list(loading ? (sample ?? []) : rows)}
+              </MeasuredSkeleton>
             )}
           </div>
         </>
       ) : (
         <div className="k-hl-scroll">
-          <table className="k-hl-watch">
+          <table className="k-hl-watch k-table-comfortable">
             <thead>
               <tr>
                 <th scope="col">{labels.watchLayer}</th>
@@ -205,7 +226,7 @@ function Row({
         onClick={() => setOpen(!open)}
       >
         <ChevronRight size={12} aria-hidden className="k-hl-chevron" />
-        <Led state={LED[status]} small label={labels.status[status]} />
+        <Led tone={hypothesisSeverity(status)} small label={labels.status[status]} />
         <span className="k-hl-status">{labels.status[status]}</span>
         <span className="k-hl-layer">{labels.layer[h.layer]}</span>
         <span className="k-hl-claim">{h.claim}</span>

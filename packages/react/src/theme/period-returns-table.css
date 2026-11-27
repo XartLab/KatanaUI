@@ -1,0 +1,141 @@
+/* SPDX-License-Identifier: MIT */
+/* PeriodReturnsTable（#120）：格底色是涨跌发散色（零附近中性灰，行内 style 给）；涨跌色（--pnl-*）只给文字（年度合计与读数）。 */
+.k-pr {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  min-width: 0;
+}
+.k-pr-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px var(--space-4);
+}
+.k-pr-scale {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
+}
+.k-pr-scale i {
+  width: 120px;
+  height: 8px;
+  border-radius: var(--radius-sm);
+}
+.k-pr-scroll {
+  overflow-x: auto;
+}
+.k-pr-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 2px;
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-num);
+  font-variant-numeric: tabular-nums;
+  table-layout: fixed;
+}
+.k-pr-table th {
+  padding: 3px 4px;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-weight: 400;
+  text-align: center;
+  white-space: nowrap;
+}
+.k-pr-table tbody th {
+  width: 52px;
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+}
+.k-pr-table thead th:first-child {
+  width: 52px;
+  text-align: left;
+}
+.k-pr-total-head,
+.k-pr-total {
+  width: 72px;
+  font-variant-numeric: tabular-nums;
+}
+.k-pr-cell {
+  height: 28px;
+  padding: 0 4px;
+  border-radius: var(--radius-sm);
+  background: var(--k-container-secondary-background);
+  color: var(--k-content-primary-foreground);
+  text-align: center;
+  outline: none;
+  white-space: nowrap;
+}
+/* 格字压在热力底上，要主文字色；写成 td.k-pr-cell 抬一档优先级，免得宿主页的 td 规则（如文档站的 .gal-doc td 用 body 色）盖掉，console 下红格上只剩 3.2:1（axe #190）。 */
+.k-pr-table td.k-pr-cell {
+  color: var(--k-content-primary-foreground);
+}
+.k-pr-cell[data-tone='none'] {
+  background: var(--k-container-secondary-background);
+}
+.k-pr-cell:hover,
+.k-pr-cell:focus-visible,
+.k-pr-cell[data-picked] {
+  box-shadow: inset 0 0 0 1px var(--k-content-primary-foreground);
+}
+.k-pr-cell:focus-visible {
+  outline: 1px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+.k-pr-total {
+  padding: 0 4px;
+  text-align: right;
+  font-weight: 600;
+  border-left: var(--hairline);
+}
+.k-pr-total[data-tone='up'],
+.k-pr-readout [data-tone='up'] {
+  color: var(--pnl-up);
+}
+.k-pr-total[data-tone='down'],
+.k-pr-readout [data-tone='down'] {
+  color: var(--pnl-down);
+}
+/* 周视图：52 列放不下数字，格子窄而低，数字收起给读屏（读数区与 title 里仍有）；表自己横向滚动。 */
+.k-pr-scroll[data-compact] .k-pr-table {
+  min-width: 920px;
+}
+.k-pr-scroll[data-compact] .k-pr-cell {
+  height: 22px;
+  padding: 0;
+}
+.k-pr-scroll[data-compact] .k-pr-table thead th {
+  padding: 3px 0;
+  font-size: 9px;
+  overflow: hidden;
+}
+.k-pr-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.k-pr-readout {
+  display: inline-flex;
+  gap: var(--space-4);
+  min-height: 20px;
+  color: var(--k-content-body-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
+}
+.k-pr-readout b {
+  font-weight: 600;
+}
+.k-pr-empty {
+  margin: 0;
+  padding: var(--space-6);
+  color: var(--k-content-secondary-foreground);
+  text-align: center;
+}

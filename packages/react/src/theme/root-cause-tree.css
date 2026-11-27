@@ -1,0 +1,188 @@
+/* SPDX-License-Identifier: MIT */
+/* RootCauseTree（KATANAview #1908）：缩进树，每级 18px，左边一道竖线连到父行；已排除的行变淡、竖线变虚；
+   点亮的路（根因到故障）竖线与状态字用 danger，根因行加一层淡 danger 底。证据面板在右，窄了落到下面。 */
+.k-rct {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-rct-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px var(--space-3);
+}
+.k-rct-title {
+  margin: 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-rct-counts {
+  margin-left: auto;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
+}
+.k-rct-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(220px, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+.k-rct-tree {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  border: var(--hairline);
+}
+.k-rct-row {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  min-height: var(--k-size-row);
+  padding: 3px 10px 3px calc(10px + var(--k-rct-depth, 0) * 18px);
+  cursor: pointer;
+}
+.k-rct-row:hover {
+  background: var(--k-selectable-background-hover);
+}
+.k-rct-row:focus-visible {
+  outline: 1px solid var(--focus-ring);
+  outline-offset: -1px;
+}
+.k-rct-row[aria-selected='true'] {
+  background: var(--k-selectable-background-selected);
+}
+/* 竖线：从父行的缩进处往下画到这一行的中线。 */
+.k-rct-row:not([data-status='failure'])::before {
+  position: absolute;
+  top: 0;
+  bottom: 50%;
+  left: calc(10px + (var(--k-rct-depth, 1) - 1) * 18px + 6px);
+  width: 8px;
+  border-bottom: 1px solid var(--k-separable-primary-borderColor);
+  border-left: 1px solid var(--k-separable-primary-borderColor);
+  content: '';
+}
+.k-rct-row[data-status='ruledOut']::before {
+  border-style: dashed;
+}
+.k-rct-row[data-lit]::before {
+  border-color: var(--k-status-danger-foreground);
+}
+.k-rct-row[data-root] {
+  background: color-mix(in srgb, var(--k-status-danger-foreground) 8%, transparent);
+}
+.k-rct-row[data-status='ruledOut'] .k-rct-name,
+.k-rct-row[data-status='ruledOut'] .k-rct-file {
+  color: var(--k-content-secondary-foreground);
+  text-decoration: line-through;
+}
+.k-rct-name {
+  min-width: 0;
+  color: var(--k-content-primary-foreground);
+}
+.k-rct-name[data-part='failure'] {
+  font-weight: 600;
+}
+.k-rct-detail {
+  color: var(--k-status-danger-foreground);
+  font: var(--text-caption) var(--font-num-small);
+}
+.k-rct-gate {
+  padding: 0 4px;
+  border: 1px solid var(--k-container-borderColor);
+  border-radius: var(--radius-sm);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-rct-status {
+  min-width: 3em;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-rct-status[data-status='checking'] {
+  color: var(--k-status-warn-foreground);
+}
+.k-rct-status[data-status='ruledOut'] {
+  color: var(--k-content-secondary-foreground);
+}
+.k-rct-status[data-status='confirmed'] {
+  color: var(--k-status-danger-foreground);
+}
+.k-rct-file {
+  padding: 0 4px;
+  border-radius: var(--radius-sm);
+  background: var(--k-container-secondary-background);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-mono);
+}
+.k-rct-evidence {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: 10px 12px;
+  border: var(--hairline);
+  background: var(--k-container-secondary-background);
+}
+.k-rct-evidence p {
+  margin: 0;
+}
+.k-rct-pick {
+  color: var(--k-content-secondary-foreground);
+}
+.k-rct-ev-title {
+  display: flex;
+  gap: 8px;
+  color: var(--k-content-primary-foreground);
+}
+.k-rct-verdict {
+  color: var(--k-content-body-foreground);
+}
+.k-rct-kind {
+  align-self: flex-start;
+  padding: 0 4px;
+  border: 1px solid var(--k-container-borderColor);
+  border-radius: var(--radius-sm);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-rct-code {
+  max-height: 160px;
+  margin: 0;
+  overflow: auto;
+  padding: 6px 8px;
+  background: var(--k-surface-sunken-background);
+  color: var(--k-content-body-foreground);
+  font: var(--text-caption) var(--font-mono);
+  white-space: pre;
+}
+.k-rct-code:focus-visible {
+  outline: 1px solid var(--focus-ring);
+}
+.k-rct-files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.k-rct-at {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-num-small);
+}
+.k-rct-actions {
+  display: flex;
+  gap: 6px;
+}
+@media (max-width: 720px) {
+  .k-rct-body {
+    grid-template-columns: 1fr;
+  }
+}

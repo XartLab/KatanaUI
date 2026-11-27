@@ -130,7 +130,13 @@ export function LimitLadderUsage() {
       <PanelFrame focused aria-label="连板天梯">
         <PanelFrameHeader heading="连板天梯" object="演示数据" />
         <PanelFrameBody>
-          <LimitLadder levels={LADDER_LEVELS} labels={LADDER_LABELS} selected={selected} onSelect={setSelected} />
+          <LimitLadder
+            levels={LADDER_LEVELS}
+            labels={LADDER_LABELS}
+            locale="zh-CN"
+            selected={selected}
+            onSelect={(item) => setSelected(item.code)}
+          />
         </PanelFrameBody>
       </PanelFrame>
     </div>

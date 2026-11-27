@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-import { RatingText } from '../../src/quant'
+import { RatingText } from '../../src/quotes'
 
 export function RatingTextUsage() {
   return (

@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
+    "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "jsx": "react-jsx",
     "strict": true,
     "skipLibCheck": true,
@@ -12,9 +12,27 @@
     "isolatedModules": true,
     "resolveJsonModule": true,
     "erasableSyntaxOnly": true,
-    "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": true,
+    "customConditions": ["katana-source"]
   },
-  "include": ["src", "gallery", "ds", "scripts", "e2e", "bombadil", "vite.config.ts", "playwright.config.ts", "happo.config.ts"],
+  "include": [
+    "src",
+    "gallery",
+    "ds",
+    "scripts",
+    "e2e",
+    "bombadil",
+    "browser",
+    "vitest.browser.config.ts",
+    "vite.config.ts",
+    "playwright.config.ts",
+    "happo.config.ts",
+    "pixelgate.config.ts",
+    "pixelgate.hidpi.config.ts",
+    "pixelgate.shared.ts",
+    "pixelgate.vite.config.ts",
+    "pixelgate.fast.config.ts"
+  ],
   "exclude": [
     "src/**/*.test.ts",
     "src/**/*.test.tsx",

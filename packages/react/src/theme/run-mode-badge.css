@@ -1,0 +1,60 @@
+/* SPDX-License-Identifier: MIT */
+/* 运行模式徽标：四种模式四个样子，不只换色——
+   模拟：中性灰、虚线框；回放：蓝、实线细框；前向测试：绿、实线框加淡底；实盘：强调色实心底、粗字、外圈，最醒目。 */
+
+.k-run-mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  padding: 0 8px;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  font-size: var(--text-data-size);
+  line-height: 1;
+  white-space: nowrap;
+}
+.k-run-mode-glyph {
+  flex: none;
+}
+/* 不用透明度：0.75 把回放的蓝、前向的绿压到 4.4:1（axe #190）。 */
+.k-run-mode-detail {
+  font-variant-numeric: tabular-nums;
+}
+
+.k-run-mode[data-mode='paper'] {
+  border-style: dashed;
+  border-color: var(--k-status-neutral-borderColor);
+  background: transparent;
+  color: var(--k-content-secondary-foreground);
+}
+.k-run-mode[data-mode='replay'] {
+  border-color: color-mix(in srgb, var(--signal-blue) 45%, transparent);
+  background: transparent;
+  color: var(--signal-blue);
+}
+.k-run-mode[data-mode='forward'] {
+  border-color: var(--k-status-ok-borderColor);
+  background: var(--k-status-ok-background);
+  color: var(--k-status-ok-foreground);
+}
+.k-run-mode[data-mode='live'] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--bg-000);
+  font-weight: 700;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+/* 实盘的点缓缓呼吸；减弱动效偏好下不动。 */
+@media (prefers-reduced-motion: no-preference) {
+  .k-run-mode[data-mode='live'] .k-run-mode-glyph {
+    animation: k-run-mode-pulse 2s ease-in-out infinite;
+  }
+}
+@keyframes k-run-mode-pulse {
+  50% {
+    opacity: 0.45;
+  }
+}

@@ -1,4 +1,5 @@
 /* SPDX-License-Identifier: MIT */
+/* token：颜色读 --k-*（G5）；还读 --alpha-white-5 / -8 / -10 的几处（行悬停、选中日卡、药丸按下）没有对应的 characteristic（--k-actionable-* 只有 3 / 4 / 6 / 9 四档），先留着，待 tokens 补一档再换。 */
 /* 经济日历（EventCalendar，#28）。表格手感同连板天梯：无衬线加 tabular-nums、右对齐数字、紧凑行、极淡分隔线、悬停整行提亮。
    重要程度是 3 格亮度条（不上色）；实际值上涨 / 下跌色走 pnl token（data-updown 互换时跟着换）；橙色不画数据。 */
 .k-ecal {
@@ -12,18 +13,7 @@
   overflow: hidden;
   padding: var(--space-3) 0 0;
   font: var(--text-data) var(--font-sans);
-  color: var(--ink-100);
-}
-.k-ecal-tabs {
-  align-self: flex-start;
-  margin: 0 var(--inset-x);
-}
-.k-ecal-panel {
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  gap: var(--space-2);
-  min-height: 0;
+  color: var(--k-content-primary-foreground);
 }
 .k-ecal-scroll {
   flex: 1 1 auto;
@@ -42,8 +32,8 @@
 }
 .k-ecal-count {
   margin-left: auto;
-  color: var(--ink-300);
-  font: 500 12px/16px var(--font-sans);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-data) var(--font-sans);
   font-variant-numeric: tabular-nums;
 }
 .k-ecal-day-head,
@@ -53,14 +43,6 @@
   align-items: center;
   column-gap: 8px;
   padding: 0 var(--inset-x);
-}
-.k-ecal-columns {
-  height: 20px;
-  color: var(--ink-300);
-  font: 500 11px/14px var(--font-sans);
-}
-.k-ecal-columns .is-num {
-  text-align: right;
 }
 .k-ecal-list {
   display: flex;
@@ -79,17 +61,17 @@
   column-gap: 8px;
   height: 28px;
   padding: 0 var(--inset-x);
-  border-bottom: 1px solid var(--line-100);
-  background: var(--bg-100);
-  font: 700 13px/18px var(--font-sans);
+  border-bottom: 1px solid var(--k-separable-tertiary-borderColor);
+  background: var(--k-surface-base-background);
+  font: 700 var(--text-body-size)/18px var(--font-sans);
 }
 .k-ecal-today {
   margin-left: 8px;
   padding: 1px 7px;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   background: var(--alpha-white-5);
-  color: var(--ink-200);
-  font: 500 11px/16px var(--font-sans);
+  color: var(--k-content-body-foreground);
+  font: 500 var(--text-caption-size)/16px var(--font-sans);
 }
 .k-ecal-row {
   position: relative;
@@ -102,7 +84,7 @@
   background: var(--alpha-white-2_5);
 }
 .k-ecal-row:focus-visible {
-  outline: 1px solid var(--line-200);
+  outline: 1px solid var(--k-separable-bold-borderColor);
   outline-offset: -1px;
 }
 .k-ecal-time,
@@ -110,13 +92,13 @@
   font-variant-numeric: tabular-nums;
 }
 .k-ecal-time {
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
 }
 .k-ecal-region {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   min-width: 0;
 }
 .k-ecal-name {
@@ -135,7 +117,7 @@
 }
 .k-ecal-level i {
   width: 4px;
-  border-radius: 1px;
+  border-radius: var(--radius-sm);
   background: var(--alpha-white-10);
 }
 .k-ecal-level i:nth-child(1) {
@@ -148,50 +130,15 @@
   height: 12px;
 }
 .k-ecal-level i.is-on {
-  background: var(--ink-100);
-}
-/* 重要程度筛选：三个按钮各画一档格条，亮着的是选中；按下是灰底，不上色。 */
-.k-ecal-imp {
-  display: inline-flex;
-  gap: 2px;
-  padding: 2px;
-  border-radius: 8px;
-  background: var(--alpha-white-3);
-}
-.k-ecal-imp-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 24px;
-  border: 0;
-  border-radius: 6px;
-  background: transparent;
-  cursor: pointer;
-}
-.k-ecal-imp-btn:hover {
-  background: var(--alpha-white-5);
-}
-.k-ecal-imp-btn[aria-pressed='true'] {
-  background: var(--alpha-white-10);
-}
-.k-ecal-imp-btn:focus-visible {
-  outline: 1px solid var(--line-200);
-  outline-offset: -1px;
-}
-.k-ecal-imp-btn .k-ecal-level i {
-  background: var(--alpha-white-11);
-}
-.k-ecal-imp-btn .k-ecal-level i.is-on {
-  background: var(--ink-100);
+  background: var(--k-content-primary-foreground);
 }
 /* 已发布与未发布：已出数的行时间与事件名退一档，等着出数的保持全亮。 */
 .k-ecal-row[data-state='released'] .k-ecal-time,
 .k-ecal-row[data-state='released'] .k-ecal-name {
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
 }
 .k-ecal-row[data-state='overdue'] .k-ecal-actual {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-ecal-row[data-expandable] {
   cursor: pointer;
@@ -210,14 +157,14 @@
 .k-ecal-sub-cell,
 .k-ecal-status {
   overflow: hidden;
-  color: var(--ink-300);
-  font-size: 11px;
+  color: var(--k-content-secondary-foreground);
+  font-size: var(--text-caption-size);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .k-ecal-sub-cell,
 .k-ecal-status {
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
 }
 /* 「现在」线：一条 1px 细线加一个读数标签，线用强调色以外的中性亮线（橙色不画数据）。 */
 .k-ecal-now {
@@ -226,8 +173,8 @@
   align-items: center;
   height: 16px;
   padding: 0 var(--inset-x);
-  color: var(--ink-200);
-  font: 500 10px/12px var(--font-sans);
+  color: var(--k-content-body-foreground);
+  font: 500 var(--text-micro-size)/12px var(--font-sans);
   font-variant-numeric: tabular-nums;
 }
 .k-ecal-now::before {
@@ -235,12 +182,12 @@
   position: absolute;
   inset: 50% var(--inset-x) auto;
   height: 1px;
-  background: var(--ink-300);
+  background: var(--k-content-secondary-foreground);
 }
 .k-ecal-now > span {
   position: relative;
   padding: 0 6px 0 0;
-  background: var(--bg-100);
+  background: var(--k-surface-base-background);
 }
 /* 行详情：说明、来源、下次发布、历史值小图，缩进到事件名那一列。 */
 .k-ecal-detail {
@@ -248,8 +195,8 @@
   padding: 6px var(--inset-x) 10px calc(var(--inset-x) + 128px);
   border-top: 1px solid var(--alpha-white-2_5);
   background: var(--alpha-white-2_5);
-  color: var(--ink-200);
-  font: 400 12px/18px var(--font-sans);
+  color: var(--k-content-body-foreground);
+  font: 400 var(--text-data-size)/18px var(--font-sans);
 }
 .k-ecal-detail-body {
   display: flex;
@@ -261,7 +208,7 @@
 }
 .k-ecal-detail b {
   margin-right: 8px;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font-weight: 500;
 }
 .k-ecal-detail dl {
@@ -275,7 +222,7 @@
   gap: 8px;
 }
 .k-ecal-detail dt {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-ecal-detail dd {
   margin: 0;
@@ -309,13 +256,13 @@
   color: var(--pnl-down);
 }
 .k-ecal-wait {
-  color: var(--ink-300);
-  font: 400 10px/12px var(--font-sans);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-num-sm) var(--font-sans);
 }
 .k-ecal-empty {
   margin: auto;
   padding: var(--space-6);
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 /* 名字里的展开按钮：看起来就是文字，整行都能点。 */
 .k-ecal-name-btn {
@@ -346,10 +293,10 @@
 }
 .k-ecal-sort:hover,
 .k-ecal-sort[aria-sort] {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 .k-ecal-sort:focus-visible {
-  outline: 1px solid var(--line-200);
+  outline: 1px solid var(--k-separable-bold-borderColor);
   outline-offset: 2px;
 }
 
@@ -364,20 +311,20 @@
 .k-ecal-date {
   height: 28px;
   padding: 0 6px;
-  border: 1px solid var(--alpha-white-9);
+  border: 1px solid var(--k-actionable-background-active);
   border-radius: var(--radius-control);
-  background: var(--alpha-white-4);
-  color: var(--ink-100);
-  font: 500 12px/16px var(--font-sans);
+  background: var(--k-actionable-subtle-background-hover);
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
   color-scheme: dark;
 }
 .k-ecal-range {
-  font: 600 13px/18px var(--font-sans);
+  font: 600 var(--text-body-size)/18px var(--font-sans);
 }
 .k-ecal-tz {
   margin-left: auto;
-  color: var(--ink-300);
-  font: 500 12px/16px var(--font-sans);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-data) var(--font-sans);
   font-variant-numeric: tabular-nums;
 }
 .k-ecal-week {
@@ -393,10 +340,10 @@
   min-height: 64px;
   padding: 6px 8px;
   border: 0;
-  border-radius: 8px;
-  background: var(--alpha-white-3);
-  color: var(--ink-200);
-  font: 400 11px/15px var(--font-sans);
+  border-radius: var(--radius-overlay);
+  background: var(--k-actionable-background);
+  color: var(--k-content-body-foreground);
+  font: 400 var(--text-caption-size)/15px var(--font-sans);
   text-align: left;
   cursor: pointer;
 }
@@ -405,20 +352,20 @@
 }
 .k-ecal-daycard[aria-pressed='true'] {
   background: var(--alpha-white-10);
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 .k-ecal-daycard:focus-visible {
-  outline: 1px solid var(--line-200);
+  outline: 1px solid var(--k-separable-bold-borderColor);
   outline-offset: -1px;
 }
 .k-ecal-daycard-head {
   display: flex;
   gap: 6px;
   align-items: baseline;
-  font-size: 12px;
+  font-size: var(--text-data-size);
 }
 .k-ecal-daycard-head b {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font-weight: 700;
 }
 .k-ecal-daycard[data-today] .k-ecal-daycard-head b {
@@ -426,7 +373,7 @@
   text-underline-offset: 3px;
 }
 .k-ecal-daycard-line b {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font-variant-numeric: tabular-nums;
 }
 .k-ecal-pills {
@@ -437,21 +384,21 @@
   height: 28px;
   padding: 0 12px;
   border: 0;
-  border-radius: 9999px;
-  background: var(--alpha-white-4);
-  color: var(--ink-200);
-  font: 500 12px/16px var(--font-sans);
+  border-radius: var(--radius-pill);
+  background: var(--k-actionable-subtle-background-hover);
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-sans);
   cursor: pointer;
 }
 .k-ecal-pill:hover {
   background: var(--alpha-white-8);
 }
 .k-ecal-pill[aria-selected='true'] {
-  background: var(--ink-100);
-  color: var(--bg-000);
+  background: var(--k-content-primary-foreground);
+  color: var(--k-surface-sunken-background);
 }
 .k-ecal-pill:focus-visible {
-  outline: 2px solid var(--line-200);
+  outline: 2px solid var(--k-separable-bold-borderColor);
   outline-offset: 1px;
 }
 .k-ecal-bar-gap {
@@ -464,9 +411,9 @@
   width: 28px;
   height: 28px;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   background: transparent;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   cursor: pointer;
 }
 .k-ecal-high:hover {
@@ -474,7 +421,7 @@
 }
 .k-ecal-high[aria-pressed='true'] {
   background: var(--alpha-white-10);
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 .k-ecal-count {
   margin-left: 0;
@@ -488,7 +435,7 @@
 }
 .k-ecal-row[data-state='released'] .k-ecal-time,
 .k-ecal-row[data-state='released'] .k-ecal-name {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 .k-ecal-actual {
   font-weight: 700;
@@ -499,17 +446,14 @@
 .k-ecal-num[data-tone='down'] {
   color: var(--pnl-down);
 }
-.k-ecal-unit {
-  color: var(--ink-300);
-  font-size: 10px;
-}
+/* 币种单位是共用的单位小字 .k-num-unit（theme/cell-type.css，#92）。 */
 .k-ecal-session {
   display: inline-flex;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-ecal-code {
   padding: 0 6px;
-  border-radius: 4px;
+  border-radius: var(--radius-md);
   background: var(--alpha-white-5);
   font-weight: 600;
 }
@@ -520,17 +464,17 @@
 .k-ecal-link {
   margin-right: 6px;
   padding: 2px 8px;
-  border: 1px solid var(--alpha-white-9);
-  border-radius: 6px;
+  border: 1px solid var(--k-actionable-background-active);
+  border-radius: var(--radius-control);
   background: transparent;
-  color: var(--ink-200);
-  font: 500 11px/16px var(--font-sans);
+  color: var(--k-content-body-foreground);
+  font: 500 var(--text-caption-size)/16px var(--font-sans);
   text-decoration: none;
   cursor: pointer;
 }
 .k-ecal-link:hover {
   background: var(--alpha-white-5);
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 /* 国家选择框：地区分组、两列带旗帜的复选。 */
 .k-ecal-presets {
@@ -544,8 +488,8 @@
 }
 .k-ecal-region-group legend {
   padding: 8px 0 4px;
-  color: var(--ink-300);
-  font: 600 11px/14px var(--font-sans);
+  color: var(--k-content-secondary-foreground);
+  font: 600 var(--text-caption-size)/14px var(--font-sans);
   letter-spacing: 0.04em;
 }
 .k-ecal-region-grid {
@@ -558,13 +502,13 @@
   align-items: center;
   gap: 8px;
   min-height: 28px;
-  color: var(--ink-100);
-  font: 400 13px/18px var(--font-sans);
+  color: var(--k-content-primary-foreground);
+  font: var(--text-body) var(--font-sans);
 }
 
 .k-ecal-day-head [role='columnheader']:not(:first-child) {
-  color: var(--ink-300);
-  font: 500 11px/14px var(--font-sans);
+  color: var(--k-content-secondary-foreground);
+  font: 500 var(--text-caption-size)/14px var(--font-sans);
   white-space: nowrap;
 }
 .k-ecal-day-head .is-num {

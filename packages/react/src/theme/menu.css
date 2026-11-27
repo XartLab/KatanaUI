@@ -14,14 +14,14 @@
 .k-pop .k-pop-item .k-pop-label {
   padding-left: calc(var(--k-pop-pad-check, 0px) + var(--k-pop-pad-icon, 0px));
 }
-/* 行内图标：14px，ink-300。 */
+/* 行内图标：14px，次要字色（ink-300）。 */
 .k-pop-label svg.lucide {
   width: 14px;
   height: 14px;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-pop-item small {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font-size: var(--text-caption-size);
 }
 /* 外链行是真的 <a>：颜色取菜单的，不带下划线（#397）。 */
@@ -30,5 +30,5 @@
   text-decoration: none;
 }
 .k-pop a.k-pop-item[data-highlighted] {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }

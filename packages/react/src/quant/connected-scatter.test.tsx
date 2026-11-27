@@ -2,7 +2,7 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
 import { ConnectedScatter } from './connected-scatter.tsx'
-import { arrowHead, moveScatter, scatterLayout, type ScatterSeries } from './scatter-model.ts'
+import { arrowHead, moveScatter, scatterLayout, type ScatterSeries } from '../lib/chart/scatter-model.ts'
 
 const view = {
   actionLabels: { group: '操作', table: '表格视图', exportCsv: '导出', fullscreen: '全屏' },
@@ -86,5 +86,20 @@ describe('ConnectedScatter', () => {
     expect(html).toContain('data-kind="start"')
     expect(html).toContain('--series-1')
     expect(html).toContain('--series-2')
+  })
+
+  it('第 8 条轨迹起是 series-other，不从 series-1 循环（dataviz §2）', () => {
+    const nine = Array.from({ length: 9 }, (_, i) => ({
+      id: `s${i}`,
+      label: `轨迹${i}`,
+      points: [{ x: i, y: i, label: `p${i}` }],
+    }))
+    const many = renderToStaticMarkup(<ConnectedScatter {...view} series={nine} label="多" axes={{ x: 'x', y: 'y' }} />)
+    const colors = [...many.matchAll(/class="k-scatter-series"[^>]*style="--k-scatter-color:([^"]+)"/g)].map(
+      (m) => m[1],
+    )
+    expect(colors).toHaveLength(9)
+    expect(colors.slice(0, 7)).toEqual(Array.from({ length: 7 }, (_, i) => `var(--series-${i + 1})`))
+    expect(colors.slice(7)).toEqual(['var(--series-other)', 'var(--series-other)'])
   })
 })

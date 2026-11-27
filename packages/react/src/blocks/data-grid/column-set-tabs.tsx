@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { cn } from '../../lib/cn.ts'
 import type { ColumnSet } from './column-picker.tsx'
-import type { GridColumnLayout } from './data-grid.tsx'
+import type { GridColumnLayout } from './data-grid-props.ts'
 import { activeColumnSet, applyColumnSet } from './layout-model.ts'
 
 // 列集标签行（选股器表上方的 Overview、Performance、Valuation…，主会话 2026-11-15 实测 tradingview.com/screener/）：一行页签，点一个就把表的列换成这一套。

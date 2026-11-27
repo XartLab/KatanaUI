@@ -1,4 +1,5 @@
-/* SPDX-License-Identifier: MIT */
+/* SPDX-License-Identifier: MIT 
+   G2（2026-11-18）：颜色改读 characteristics（--k-selectable-*、--k-actionable-*、--k-content-*），值与改前相等；预设悬停底 5% → 4% 白（subtle）。 */
 /* DateRangePicker：两个日期框用 DateTimeInput 的皮肤（.k-dt-*），弹层里左边一列预设、右边双月日历（.k-cal* 同单月日历）。
    区间内的日子用 12% 强调色底，起止两头用实心强调色（同单月日历的选中色）。 */
 .k-dr {
@@ -7,7 +8,7 @@
   gap: 6px;
 }
 .k-dr-dash {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-pop.k-dr-pop {
   display: flex;
@@ -21,7 +22,7 @@
   gap: 2px;
   min-width: 88px;
   padding-right: 8px;
-  border-right: 1px solid var(--alpha-white-7);
+  border-right: 1px solid var(--k-separable-secondary-borderColor);
 }
 .k-dr-preset {
   display: flex;
@@ -30,21 +31,21 @@
   padding: 0 8px;
   background: transparent;
   border: 0;
-  border-radius: 6px;
-  color: var(--ink-200);
+  border-radius: var(--radius-control);
+  color: var(--k-content-body-foreground);
   font: var(--text-data) var(--font-sans);
   text-align: left;
   white-space: nowrap;
   cursor: pointer;
 }
 .k-dr-preset:hover {
-  background: var(--alpha-white-5);
-  color: var(--ink-100);
+  background: var(--k-actionable-subtle-background-hover);
+  color: var(--k-content-primary-foreground);
 }
 .k-dr-preset[aria-pressed='true'],
 .k-dr-preset[data-custom] {
-  background: var(--alpha-white-6);
-  color: var(--ink-100);
+  background: var(--k-actionable-background-hover);
+  color: var(--k-content-primary-foreground);
   font-weight: 600;
 }
 .k-dr-preset[data-custom] {
@@ -60,23 +61,23 @@
 }
 /* 双月日历里所有日子都画，起止之间的日子是 12% 强调色底，两头是实心。 */
 .k-rcal .k-cal-cell[data-selected] {
-  background: var(--alpha-white-10);
-  color: var(--ink-100);
+  background: var(--k-selectable-bold-background);
+  color: var(--k-content-primary-foreground);
   font-weight: 500;
   border-radius: 0;
 }
 .k-rcal .k-cal-cell[data-selection-start],
 .k-rcal .k-cal-cell[data-selection-end] {
-  background: var(--ink-100);
-  color: var(--bg-000);
+  background: var(--k-selectable-bold-background-selected);
+  color: var(--k-selectable-bold-foreground-selected);
   font-weight: 600;
 }
 .k-rcal .k-cal-cell[data-selection-start] {
-  border-radius: 6px 0 0 6px;
+  border-radius: var(--radius-control) 0 0 var(--radius-control);
 }
 .k-rcal .k-cal-cell[data-selection-end] {
-  border-radius: 0 6px 6px 0;
+  border-radius: 0 var(--radius-control) var(--radius-control) 0;
 }
 .k-rcal .k-cal-cell[data-selection-start][data-selection-end] {
-  border-radius: 6px;
+  border-radius: var(--radius-control);
 }

@@ -1,0 +1,212 @@
+/* SPDX-License-Identifier: MIT */
+/* NetBuyBar 龙虎榜净买居中条（#11）。行的手感取 TradingView 列表（紧凑行、tabular-nums、右对齐、极淡分隔、悬停整行提亮）；
+   零轴条照 AttributionBars：轨道中间一根 1px 零线，净买往右、净卖往左，条高 6px、圆角 1px。
+   颜色只读 --k-*：净买 / 买入席位 --k-tone-up-foreground，净卖 / 卖出席位 --k-tone-down-foreground（根上 data-updown="cn" 就是买红卖绿）；条用 60% 混透明，字用实色。 */
+.k-netbuy {
+  --netbuy-cols: minmax(132px, 1.6fr) 64px minmax(120px, 2fr) 76px 68px 68px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: var(--space-3) 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-netbuy-columns,
+.k-netbuy-row {
+  display: grid;
+  grid-template-columns: var(--netbuy-cols);
+  align-items: center;
+  column-gap: 8px;
+  padding: 0 var(--inset-x);
+}
+.k-netbuy-columns {
+  height: 22px;
+  color: var(--k-content-secondary-foreground);
+  font: 500 11px/14px var(--font-sans);
+}
+.k-netbuy-columns .is-num {
+  text-align: right;
+}
+.k-netbuy-scale {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.k-netbuy-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-netbuy-item {
+  border-top: 1px solid var(--k-separable-subtle-borderColor);
+}
+.k-netbuy-row {
+  width: 100%;
+  height: 32px;
+  margin: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.k-netbuy-row:hover {
+  background: var(--k-selectable-background-hover);
+}
+.k-netbuy-row:focus-visible {
+  outline: 1px solid var(--k-separable-bold-borderColor);
+  outline-offset: -1px;
+}
+.k-netbuy-item[data-open] .k-netbuy-row {
+  background: var(--k-selectable-background-selected);
+  box-shadow: inset 2px 0 0 var(--k-content-primary-foreground);
+}
+/* 打开的行是 selected 底：名字小字提到 body，涨跌色字往 primary 混 35%（原样只有 3.8 / 4.3:1，console，axe #190）。 */
+.k-netbuy-item[data-open] .k-netbuy-sub {
+  color: var(--k-content-body-foreground);
+}
+.k-netbuy-item[data-open] :is(.k-netbuy-net[data-tone='up'], .k-netbuy-num [data-tone='up']) {
+  color: color-mix(in srgb, var(--k-tone-up-foreground) 65%, var(--k-content-primary-foreground));
+}
+.k-netbuy-item[data-open] :is(.k-netbuy-net[data-tone='down'], .k-netbuy-num [data-tone='down']) {
+  color: color-mix(in srgb, var(--k-tone-down-foreground) 65%, var(--k-content-primary-foreground));
+}
+.k-netbuy-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.k-netbuy-code {
+  font-variant-numeric: tabular-nums;
+}
+.k-netbuy-sub {
+  overflow: hidden;
+  min-width: 0;
+  color: var(--k-content-secondary-foreground);
+  font: 400 11px/14px var(--font-sans);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-netbuy-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.k-netbuy-net[data-tone='up'] {
+  color: var(--k-tone-up-foreground);
+}
+.k-netbuy-net[data-tone='down'] {
+  color: var(--k-tone-down-foreground);
+}
+.k-netbuy-track {
+  position: relative;
+  height: 6px;
+  /* 净额条的起点与长度用 translate 加 scale 画，起点要量轨宽：轨是容器，取 cqw（kubai Vibe Design Tips 011，#251）。 */
+  container-type: inline-size;
+}
+.k-netbuy-track::before {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  left: 50%;
+  width: 1px;
+  background: var(--k-separable-bold-borderColor);
+  content: '';
+}
+.k-netbuy-track i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: var(--radius-sm);
+  background: var(--k-tone-flat-foreground);
+  left: 0;
+  width: 100%;
+  transform-origin: left;
+  translate: calc(var(--from, 0) * 100cqw) 0;
+  scale: var(--fill, 0) 1;
+  transition:
+    translate var(--dur-gentle) var(--ease-gentle),
+    scale var(--dur-gentle) var(--ease-gentle);
+}
+.k-netbuy-track i[data-tone='up'] {
+  background: color-mix(in srgb, var(--k-tone-up-foreground) 60%, transparent);
+}
+.k-netbuy-track i[data-tone='down'] {
+  background: color-mix(in srgb, var(--k-tone-down-foreground) 60%, transparent);
+}
+.k-netbuy-reason {
+  display: block;
+  padding: 0 var(--inset-x) 4px calc(var(--inset-x) + 28px);
+  color: var(--k-content-secondary-foreground);
+  font: 400 11px/14px var(--font-sans);
+}
+.k-netbuy-detail {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  padding: var(--space-2) var(--inset-x) var(--space-3);
+  background: var(--k-selectable-subtle-groupBackground);
+}
+/* 席位区铺着 subtle 组底，ink-300 压在上面只有 4.4:1（console，axe #190）：标题与「机构」小标的字用 body。 */
+.k-netbuy-seats-title {
+  margin-bottom: 4px;
+  color: var(--k-content-body-foreground);
+  font: 500 11px/14px var(--font-sans);
+}
+.k-netbuy-seats ol {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-netbuy-seats li {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(40px, 1fr) 64px;
+  align-items: center;
+  gap: 8px;
+  height: 22px;
+}
+.k-netbuy-seat-name {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow: hidden;
+  min-width: 0;
+  white-space: nowrap;
+}
+.k-netbuy-seat-name .k-tag {
+  --k-tag-fg: var(--k-content-body-foreground);
+}
+.k-netbuy-seat-name > span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.k-netbuy-seat-track {
+  height: 4px;
+  border-radius: var(--radius-sm);
+  background: var(--k-container-track-background);
+}
+.k-netbuy-seat-track i {
+  display: block;
+  height: 100%;
+  border-radius: var(--radius-sm);
+}
+.k-netbuy-seats[data-side='buy'] .k-netbuy-seat-track i {
+  background: color-mix(in srgb, var(--k-tone-up-foreground) 60%, transparent);
+}
+.k-netbuy-seats[data-side='sell'] .k-netbuy-seat-track i {
+  background: color-mix(in srgb, var(--k-tone-down-foreground) 60%, transparent);
+}
+.k-netbuy-seat-amount {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.k-netbuy-empty {
+  margin: auto;
+  padding: var(--space-6);
+  color: var(--k-content-secondary-foreground);
+}

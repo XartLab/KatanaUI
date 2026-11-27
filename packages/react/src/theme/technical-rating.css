@@ -1,4 +1,5 @@
 /* SPDX-License-Identifier: MIT */
+/* 还直接读色阶的（2026-11-18 G4 迁 token 时留下）：--alpha-white-2_5、--alpha-white-9——characteristics 里没有同值、同语义的（轨道、徽标底、悬停的半透明灰档，暗橙边框），等 G0 补齐再换。 */
 /* 技术评级仪表（TechnicalRating，#20）。仪表是半圆五档弧加指针（几何与 RatingGauge 同一把尺子），总评居中放大；
    指针转动用包里的 gentle 弹簧。明细表照 TradingView 的手感（无衬线 tabular-nums、右对齐、极淡分隔线、悬停整行提亮、结论是纯文字上色，2026-11-15 实测）。
    颜色走涨跌语义色与中性灰，不用橙色。窄于 440px 时总评独占一行、两个小仪表并排在下。 */
@@ -13,7 +14,7 @@
   overflow: auto;
   padding: var(--space-3) var(--inset-x);
   font: var(--text-data) var(--font-sans);
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 .k-trating-bar {
   display: flex;
@@ -40,11 +41,11 @@
   max-width: 300px;
 }
 .k-trating-name {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: 500 12px/16px var(--font-sans);
 }
 .k-trating-dial.is-primary .k-trating-name {
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
 }
 .k-trating-gauge {
   position: relative;
@@ -72,11 +73,11 @@
 .k-trating-zone.is-z1,
 .k-trating-zone.is-z2,
 .k-trating-zone.is-z3 {
-  stroke: var(--ink-300);
+  stroke: var(--k-content-secondary-foreground);
 }
 .k-trating-zone.is-z1,
 .k-trating-zone.is-z3 {
-  stroke: var(--ink-400);
+  stroke: var(--k-content-tertiary-foreground);
 }
 .k-trating-zone.is-z4 {
   stroke: var(--pnl-up);
@@ -86,21 +87,21 @@
   transform-box: fill-box;
   transform-origin: 50% 100%;
   transition: transform var(--dur-gentle) var(--ease-gentle);
-  fill: var(--ink-100);
+  fill: var(--k-content-primary-foreground);
 }
 .k-trating-hub {
-  fill: var(--ink-100);
+  fill: var(--k-content-primary-foreground);
 }
 .k-trating-tick {
   position: absolute;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: 500 11px/14px var(--font-sans);
   white-space: nowrap;
-  transform: translate(-50%, -50%);
+  translate: round(nearest, -50%, 1px) round(nearest, -50%, 1px);
   transition: color var(--dur-gentle) var(--ease-gentle);
 }
 .k-trating-tick.is-active {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 /* 小仪表窄，不画刻度字，靠弧的颜色与下面的大字。 */
 .k-trating-dial:not(.is-primary) .k-trating-tick {
@@ -112,6 +113,7 @@
   letter-spacing: -0.01em;
 }
 .k-trating-dial.is-primary .k-trating-word {
+  /* 24px 没有对应的字号 token（display 档是 28），照 TradingView 技术评级的总评字号留着。 */
   font-size: 24px;
   line-height: 28px;
 }
@@ -129,8 +131,8 @@
   width: 100%;
   max-width: 220px;
   margin-top: 6px;
-  border: 1px solid var(--alpha-white-7);
-  border-radius: 8px;
+  border: 1px solid var(--k-separable-secondary-borderColor);
+  border-radius: var(--radius-overlay);
   font-variant-numeric: tabular-nums;
 }
 .k-trating-counts span {
@@ -140,10 +142,10 @@
   padding: 6px 4px;
 }
 .k-trating-counts span + span {
-  border-left: 1px solid var(--alpha-white-7);
+  border-left: 1px solid var(--k-separable-secondary-borderColor);
 }
 .k-trating-counts small {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: 400 11px/14px var(--font-sans);
 }
 .k-trating-counts b {
@@ -156,12 +158,13 @@
   color: var(--pnl-up);
 }
 .k-trating-total {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: 400 11px/14px var(--font-sans);
+  font-variant-numeric: tabular-nums;
 }
 .k-trating-disclaimer {
   margin: 0;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: 400 11px/16px var(--font-sans);
   text-align: center;
 }
@@ -180,7 +183,7 @@
 }
 .k-trating-chev {
   margin-left: 4px;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-trating-table {
   width: 100%;
@@ -190,7 +193,7 @@
 .k-trating-table thead th {
   height: 24px;
   padding: 0;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: 500 11px/14px var(--font-sans);
   text-align: left;
 }
@@ -226,7 +229,7 @@
   display: inline-block;
   font: 500 13px/18px var(--font-sans);
   white-space: nowrap;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-trating-verdict[data-verdict='buy'] {
   color: var(--pnl-up);
@@ -237,7 +240,7 @@
 .k-trating-empty {
   margin: auto;
   padding: var(--space-6);
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 @container (max-width: 440px) {
   .k-trating-dial.is-primary {
@@ -254,7 +257,7 @@
   scrollbar-width: none;
 }
 .k-trating-bar [data-state='on'] {
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   background: var(--alpha-white-9);
 }
 .k-trating-bar > div {
@@ -262,6 +265,6 @@
   background: transparent;
 }
 .k-trating-bar button {
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   white-space: nowrap;
 }

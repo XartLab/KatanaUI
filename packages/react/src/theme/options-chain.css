@@ -1,0 +1,138 @@
+/* SPDX-License-Identifier: MIT */
+/* OptionsChain 期权 T 型报价（#104，照 KATANAview 设计稿 OptionsChain）：行权价居中凹陷一列，左认购右认沽；
+   平值行加亮并在行权价上写「平值」；实值区（认购在平值之下、认沽在平值之上）铺淡底。设计稿「不用涨跌色」沿用：认购认沽靠位置与表头区分。 */
+.k-opt {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-opt-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  /* 右端的「标的」不贴框边 */
+  padding-inline: var(--space-3);
+}
+/* 到期日按钮里的小注跟按钮字同色（未选中 ink-200、选中 --seg-on-ink）：ink-300 压在分段的组底上只有 4.4:1（console，axe #190），压在选中块上更看不见。 */
+.k-opt-note {
+  margin-left: 4px;
+  color: inherit;
+  font: var(--text-caption) var(--font-sans);
+}
+.k-opt-underlying {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.k-opt-underlying-name {
+  color: var(--k-content-secondary-foreground);
+  font-weight: 400;
+}
+.k-opt-scroll {
+  overflow-x: auto;
+}
+.k-opt-grid {
+  min-width: max-content;
+  width: 100%;
+}
+.k-opt-row {
+  display: grid;
+  align-items: stretch;
+  border-bottom: 1px solid var(--k-separable-tertiary-borderColor);
+}
+.k-opt-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--k-container-secondary-background);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans);
+}
+.k-opt-wing {
+  padding: 4px 8px 2px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--k-content-primary-foreground);
+  border-bottom: 1px solid var(--k-separable-secondary-borderColor);
+}
+.k-opt-field {
+  padding: 2px 8px 4px;
+  text-align: right;
+}
+.k-opt-strike-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  background: var(--alpha-white-2);
+  font-weight: 700;
+  color: var(--k-content-primary-foreground);
+}
+.k-opt-cell {
+  display: flex;
+  min-width: 0;
+}
+.k-opt-cell[data-itm='true'] {
+  background: var(--alpha-white-2);
+}
+.k-opt-quote {
+  flex: 1;
+  min-width: 0;
+  height: 26px;
+  padding: 0 8px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  cursor: pointer;
+}
+.k-opt-quote:hover {
+  background: var(--k-selectable-background-hover);
+}
+.k-opt-quote:focus-visible {
+  outline: 2px solid var(--k-content-primary-foreground);
+  outline-offset: -2px;
+}
+.k-opt-quote[aria-disabled='true'] {
+  color: var(--k-content-secondary-foreground);
+  cursor: default;
+}
+.k-opt-strike {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  background: var(--k-container-tertiary-background, var(--alpha-white-3));
+  box-shadow: inset 0 0 0 1px var(--k-separable-tertiary-borderColor);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.k-opt-row[data-atm='true'] {
+  background: var(--k-selectable-background-selected);
+}
+.k-opt-row[data-atm='true'] .k-opt-strike {
+  /* 平值行多一行小字，上下留白，不让描边压住字 */
+  padding-block: 4px;
+  box-shadow: inset 0 0 0 1px var(--k-content-primary-foreground);
+  font-weight: 700;
+}
+/* 平值行是 selected 底再叠行权价格的 tertiary 底，ink-300 只有 3.3:1（console，axe #190），用 body。 */
+.k-opt-atm {
+  color: var(--k-content-body-foreground);
+  font: var(--text-micro) var(--font-sans);
+  line-height: 1;
+  margin-top: 2px;
+}
+.k-opt-empty {
+  margin: 0;
+  padding: var(--space-6);
+  color: var(--k-content-secondary-foreground);
+  text-align: center;
+}

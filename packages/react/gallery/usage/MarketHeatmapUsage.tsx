@@ -48,7 +48,7 @@ function makeStocks(): HeatmapItem[] {
       const cap = 1.2e10 * Math.exp(rand() * 3.6) * (g === 2 ? 3 : 1)
       const day = tilt + (rand() + rand() + rand() - 1.5) * 4
       out.push({
-        code: String(600000 + n * 7).padStart(6, '0'),
+        symbol: String(600000 + n * 7).padStart(6, '0'),
         name: `示例${mark}${HEAT_ORDINALS[i]}`,
         group: industry,
         price: 4 + rand() * 180,
@@ -99,7 +99,7 @@ function makeCoins(): HeatmapItem[] {
     const cap = 6e11 * Math.exp(-i * 0.28) * (0.7 + rand() * 0.6)
     const day = (rand() + rand() + rand() - 1.5) * 7
     return {
-      code,
+      symbol: code,
       name: `示例币 ${String(i + 1).padStart(2, '0')}`,
       price: 0.02 + rand() * 4000,
       size: { cap, turnover: cap * (0.02 + rand() * 0.12) },
@@ -178,16 +178,16 @@ export function MarketHeatmapUsage() {
   return (
     <div style={{ display: 'grid', gap: 12, width: '100%', maxWidth: wide ? undefined : 760 }}>
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-        <ToggleGroup variant="sm" aria-label="数据" value={market} onValueChange={setMarket}>
+        <ToggleGroup size="sm" aria-label="数据" value={market} onValueChange={setMarket}>
           <ToggleGroupItem value="stocks">分行业的股票</ToggleGroupItem>
           <ToggleGroupItem value="coins">不分组的加密</ToggleGroupItem>
         </ToggleGroup>
-        <ToggleGroup variant="sm" aria-label="配色" value={scheme} onValueChange={(v) => setScheme(v as HeatmapScheme)}>
+        <ToggleGroup size="sm" aria-label="配色" value={scheme} onValueChange={(v) => setScheme(v as HeatmapScheme)}>
           <ToggleGroupItem value="classic">经典</ToggleGroupItem>
           <ToggleGroupItem value="mono">单色</ToggleGroupItem>
         </ToggleGroup>
         <ToggleGroup
-          variant="sm"
+          size="sm"
           aria-label="屏幕"
           value={wide ? 'wide' : 'small'}
           onValueChange={(v) => setWide(v === 'wide')}
@@ -196,7 +196,7 @@ export function MarketHeatmapUsage() {
           <ToggleGroupItem value="wide">大屏 1920×1080</ToggleGroupItem>
         </ToggleGroup>
         <ToggleGroup
-          variant="sm"
+          size="sm"
           aria-label="更新"
           value={live ? 'live' : 'still'}
           onValueChange={(v) => setLive(v === 'live')}

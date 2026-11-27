@@ -13,7 +13,7 @@
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `value` | `string` | — | 框里的字，十进制写法；打字自由，合不合法由调用方与 Gateway 判。 |
-| `onValue` | `(value: string) => void` | — | 打字与走格都回调；走格给的是 toFixed() 的规范字符串。 |
+| `onValueChange` | `(value: string) => void` | — | 打字与走格都回调；走格给的是 toFixed() 的规范字符串。旧名 onValue 留一个版本（@deprecated）。 |
 | `step` | `string` | — | 一格有多大（最小变动价位或最小下单量）；"0" 按 1 走。不给用户设步长。 |
 | `base` | `string \| null` | `null` | 空框走格从哪起（例：最新价）；没有就空框不动。 |
 | `label` | `string` | — | 读屏名（必填：包里没有文字）。 |
@@ -22,7 +22,7 @@
 | `disabled` | `boolean` | `false` | 灰掉：不能打字，方向键与按钮都不动它。 |
 | `readOnly` | `boolean` | `false` | 能选能复制，方向键与按钮都不改值。 |
 | `status` | `'error' \| 'warning'` | — | error：aria-invalid 并换危险色边；warning：只换琥珀色边，不设 aria-invalid。 |
-| `buttons` | `{ decrease: string; increase: string }` | — | 给了才显示 − / + 按钮；两个字符串是读屏名，也是悬停提示。包里不带语言。 |
+| `labels` | `DecimalFieldLabels` | — | { decrease, increase }：给了才显示 − / + 按钮；两个字符串是读屏名，也是悬停提示。包里不带语言。旧名 buttons 留一个版本（@deprecated）。 |
 
 ## Usage
 
@@ -41,7 +41,7 @@ export function DecimalFieldUsage() {
   return (
     <>
       <div className="gal-wide">
-        <DecimalField label="价格" value={price} onValue={setPrice} step="0.5" buttons={BUTTONS} />
+        <DecimalField label="价格" value={price} onValueChange={setPrice} step="0.5" buttons={BUTTONS} />
       </div>
       <output data-testid="decimal-price-out">{price}</output>
 
@@ -49,7 +49,7 @@ export function DecimalFieldUsage() {
         <DecimalField
           label="数量"
           value={qty}
-          onValue={setQty}
+          onValueChange={setQty}
           step="0.001"
           base="1"
           unit="BTC"
@@ -59,13 +59,13 @@ export function DecimalFieldUsage() {
       </div>
       <output data-testid="decimal-qty-out">{qty}</output>
 
-      <DecimalField label="只读价格" value={locked} onValue={setLocked} step="0.5" readOnly buttons={BUTTONS} />
+      <DecimalField label="只读价格" value={locked} onValueChange={setLocked} step="0.5" readOnly buttons={BUTTONS} />
 
-      <DecimalField label="禁用价格" value={locked} onValue={setLocked} step="0.5" disabled buttons={BUTTONS} />
+      <DecimalField label="禁用价格" value={locked} onValueChange={setLocked} step="0.5" disabled buttons={BUTTONS} />
 
-      <DecimalField label="错误价格" value="abc" onValue={() => {}} step="0.5" status="error" />
+      <DecimalField label="错误价格" value="abc" onValueChange={() => {}} step="0.5" status="error" />
 
-      <DecimalField label="警告价格" value="100.3" onValue={() => {}} step="0.5" status="warning" />
+      <DecimalField label="警告价格" value="100.3" onValueChange={() => {}} step="0.5" status="warning" />
     </>
   )
 }
@@ -81,7 +81,7 @@ export function DecimalFieldUsage() {
 ## Don't
 
 - 不要把值转成 number 再传：价格与数量不经浮点。
-- 不要在包里写按钮文字，buttons 由调用方传。
+- 不要在包里写按钮文字，labels 由调用方传。
 - 不要在这里校验价位：在不在格子上由调用方与 Gateway 判。
 
 ## Composition

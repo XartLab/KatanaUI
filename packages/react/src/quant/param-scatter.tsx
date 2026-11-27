@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from 'react'
-import { ChartActions } from './chart-kit/chart-actions.tsx'
-import { ChartTable, type ChartViewProps } from './chart-kit/chart-table.tsx'
+import { ChartActions } from '../lib/chart/chart-kit/chart-actions.tsx'
+import { ChartTable, type ChartViewProps } from '../lib/chart/chart-kit/chart-table.tsx'
 import {
   bestIndex,
   moveParam,
@@ -14,7 +14,7 @@ import {
   type ParamPoint,
   type ParamRamp,
 } from './param-scatter-model.ts'
-import type { ScatterFrame } from './scatter-model.ts'
+import type { ScatterFrame } from '../lib/chart/scatter-model.ts'
 
 // 参数优化散点图（#35）：两个参数为横纵轴，每个点是一组参数，颜色是目标值（夏普、净利润……），点选看这组参数的读数，最优点加环标出。
 // TradingView 没有这张图，照通用的参数扫描做法（热力散点）；颜色用单色灰阶或涨跌发散阶，不用橙与蓝（橙留给数据线）。纯逻辑在 param-scatter-model.ts。
@@ -75,6 +75,7 @@ export function ParamScatter({
   tableHead,
   onExport,
   onFullscreen,
+  onCopyImage,
   source,
 }: ParamScatterProps) {
   const [tableView, setTableView] = useState(false)
@@ -124,6 +125,7 @@ export function ParamScatter({
           onTableView={setTableView}
           onExport={onExport}
           onFullscreen={onFullscreen}
+          onCopyImage={onCopyImage}
         />
       </div>
       {tableView && (

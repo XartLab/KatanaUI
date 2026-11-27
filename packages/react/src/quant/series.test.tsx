@@ -2,23 +2,17 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
 import { CalendarHeatmap } from './calendar-heatmap.tsx'
-import {
-  addDays,
-  calendarGrid,
-  calendarKey,
-  calendarTone,
-  formatDate,
-  isoWeek,
-  monthGrid,
-  parseDate,
-} from './calendar-model.ts'
+import { addDays, calendarGrid, calendarKey, calendarTone, isoWeek, monthGrid } from './calendar-model.ts'
 import { BrushChart } from './brush-chart.tsx'
-import { centerWindow, clampWindow, moveWindow, resizeWindow } from './brush-model.ts'
+import { centerWindow, clampWindow, moveWindow, resizeWindow } from '../lib/chart/brush-model.ts'
 import { HorizonChart } from './horizon-chart.tsx'
 import { horizonBands, horizonMax } from './horizon-model.ts'
-import { areaPath, extent, linePath, makePlot, niceTicks, PLOT_W } from './series-geometry.ts'
+import { areaPath, extent, linePath, makePlot, niceTicks, PLOT_W } from '../lib/chart/series-geometry.ts'
 
 // #1917：时间序列与盈亏的件的几何与结构（纯函数）。拖拽、悬停、键盘与画出来的像素在 e2e/ui-gallery.spec.ts 里用真浏览器验。
+
+/** 图右上三件（表格视图必须有，dataviz §4，KatanaUI #165）。 */
+const ACTIONS = { group: '图工具', table: '表格视图', exportCsv: '导出', fullscreen: '全屏' }
 
 describe('序列几何', () => {
   it('好看的刻度：整齐步长，区间包住数据', () => {
@@ -104,9 +98,19 @@ describe('BrushChart', () => {
       formatX={(i) => `d${i}`}
       formatValue={String}
       labels={labels}
-      defaultWindow={[10, 20]}
+      defaultValue={[10, 20]}
+      actionLabels={ACTIONS}
+      tableLabel="表"
+      tableHead={['日', '值']}
     />,
   )
+
+  it('右上有表格视图开关（键盘可达的按钮），默认关着；导出与全屏没给回调就不画', () => {
+    const actions = html.slice(html.indexOf('data-slot="chart-actions"'), html.indexOf('data-slot="brush-main"'))
+    expect(actions).toContain('<button type="button" class="k-ck-action" data-action="table" aria-pressed="false"')
+    expect(actions).not.toContain('data-action="export"')
+    expect(html).not.toContain('data-slot="brush-table"')
+  })
 
   it('主图只画窗口里的点；概览条画全部', () => {
     const line = /data-slot="brush-line" d="([^"]*)"/.exec(html)![1]!
@@ -133,12 +137,15 @@ describe('BrushChart', () => {
 })
 
 describe('日历热力图', () => {
-  it('日期按 UTC 日历日算：往返不变，写错的日期是 NaN', () => {
-    expect(formatDate(parseDate('2026-02-28'))).toBe('2026-02-28')
+  it('日期按日历日算（CalendarDate）：跨月、闰年对；写错或不存在的日期排不出格子', () => {
     expect(addDays('2026-02-28', 1)).toBe('2026-03-01')
     expect(addDays('2024-02-28', 1)).toBe('2024-02-29')
-    expect(parseDate('2026-02-30')).toBeNaN()
-    expect(parseDate('abc')).toBeNaN()
+    expect(addDays('2026-01-01', -1)).toBe('2025-12-31')
+    expect(calendarGrid('2026-02-30', '2026-03-05').cells).toEqual([])
+    expect(calendarGrid('abc', '2026-03-05').cells).toEqual([])
+    expect(monthGrid('2026-13')).toEqual([])
+    expect(isoWeek('2021-01-03')).toBe(53)
+    expect(isoWeek('2026-12-31')).toBe(53)
   })
 
   it('排布：一周一列、一天一格；周一起头时周一在第 0 行；第一列开头的空位不画', () => {
@@ -307,11 +314,17 @@ describe('地平线图分带', () => {
       { key: 'a', label: 'A', values: [0, 3, -3, 1] },
       { key: 'b', label: 'B', values: [0, 1, -1, 0.5] },
     ]
-    const shared = renderToStaticMarkup(<HorizonChart rows={rows} label="示例" formatValue={String} />)
+    const view = { actionLabels: ACTIONS, tableLabel: '表', tableXHead: '点' }
+    const shared = renderToStaticMarkup(<HorizonChart rows={rows} label="示例" formatValue={String} {...view} />)
     expect(shared.match(/data-slot="horizon-band"/g)).toHaveLength(12)
     expect(shared).toMatch(/data-row="b"[\s\S]*data-band="2"(?: data-outer="true")? style="[^"]*" d=""/)
-    const own = renderToStaticMarkup(<HorizonChart rows={rows} label="示例" formatValue={String} scale="row" />)
+    const own = renderToStaticMarkup(
+      <HorizonChart rows={rows} label="示例" formatValue={String} scale="row" {...view} />,
+    )
     expect(own.match(/ d=""/g)?.length ?? 0).toBeLessThan(shared.match(/ d=""/g)!.length)
     expect(shared).toContain('data-tone="up"')
+    expect(shared).toContain('data-action="table" aria-pressed="false"')
+    expect(shared).not.toContain('data-slot="horizon-table"')
+    expect(shared).not.toContain('data-slot="lcd-tooltip"')
   })
 })

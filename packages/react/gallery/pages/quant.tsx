@@ -1,24 +1,31 @@
 // SPDX-License-Identifier: MIT
-import { useEffect, useMemo, useState } from 'react'
-import { PanelFrame, PanelFrameBody, PanelFrameHeader } from '../../src/blocks/index.ts'
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react'
 import {
-  ChangeText,
   ConsensusBlock,
   countConsensus,
+  FlowGauges,
+  Meter,
+  PanelFrame,
+  PanelFrameBody,
+  PanelFrameHeader,
+  RegimeBand,
+  RegimeStrip,
+  type ConsensusParty,
+  type FlowGaugeData,
+  type RegimeSegment,
+  type RegimeState,
+} from '../../src/blocks/index.ts'
+import {
+  ChangeText,
   DecimalField,
   DistributionBars,
   EventCalendar,
-  FlowGauges,
   LimitLadder,
   MarketHeatmap,
   MetricCard,
   MetricCardGrid,
-  Meter,
   PnlText,
   RatingText,
-  RegimeBand,
-  RegimeStrip,
-  SparkTile,
   TechnicalRating,
   formatCompact,
   formatPercentChange,
@@ -45,13 +52,14 @@ import {
   type RatingVerdict,
   type PivotTable,
   type TechnicalRatingLabels,
-  type ConsensusParty,
-  type FlowGaugeData,
-  type RegimeSegment,
-  type RegimeState,
 } from '../../src/quant/index.ts'
-import { symbolMenu } from '../../src/patterns/row-actions.tsx'
+import { symbolMenu } from '../../src/quotes/row-actions.tsx'
 import { ToggleGroup, ToggleGroupItem } from '../../src/primitives/toggle-group.tsx'
+import { LiveToggle } from '../LiveToggle.tsx'
+import { ladderFrom, ladderLevels, ladderStep } from '../ladder-sim.ts'
+import { useLiveTicker } from '../live-sim.ts'
+import { LiveMetricCardDemo, LivePnlTextDemo, LiveSparkTileDemo } from './live-readouts.tsx'
+import { demoCopyImage } from './demo-copy.tsx'
 import { ActionLog, Cell, Row, SAMPLE_MARK_SRC, demoSymbolActions } from './parts.tsx'
 
 // 量化层（@katana-ui/react/quant，#1862、#1929）的演示。数值都是示例，不是行情，页上也写明。根元素设 data-updown="cn" 时涨跌色互换（红涨绿跌）。
@@ -100,24 +108,28 @@ export function ChangeTextDemo() {
           <ChangeText data-testid="quant-arrow-down" value={-1.1} arrow />
         </Cell>
       </Row>
+      <LivePnlTextDemo />
     </>
   )
 }
 
 export function PnlTextDemo() {
   return (
-    <Row name="盈亏">
-      <Cell name="盈">
-        <PnlText data-testid="quant-pnl-up" value="12.5">
-          +12.5 USDT
-        </PnlText>
-      </Cell>
-      <Cell name="亏">
-        <PnlText data-testid="quant-pnl-down" value="-3">
-          {'−3 USDT'}
-        </PnlText>
-      </Cell>
-    </Row>
+    <>
+      <Row name="盈亏">
+        <Cell name="盈">
+          <PnlText data-testid="quant-pnl-up" value="12.5">
+            +12.5 USDT
+          </PnlText>
+        </Cell>
+        <Cell name="亏">
+          <PnlText data-testid="quant-pnl-down" value="-3">
+            {'−3 USDT'}
+          </PnlText>
+        </Cell>
+      </Row>
+      <LivePnlTextDemo />
+    </>
   )
 }
 
@@ -274,20 +286,43 @@ const LADDER_LABELS: LimitLadderLabels = {
   empty: '这一天没有涨停',
 }
 
+/** A 股件的演示挂着时根上是 data-updown="cn"（红涨绿跌，照 #78 的 cn-pack 页），离开这一页还原成原来的值。 */
+function useCnUpdown() {
+  useLayoutEffect(() => {
+    const root = document.documentElement
+    const before = root.dataset.updown
+    root.dataset.updown = 'cn'
+    return () => {
+      if (before === undefined) delete root.dataset.updown
+      else root.dataset.updown = before
+    }
+  }, [])
+}
+
 export function LimitLadderDemo() {
+  useCnUpdown()
   const [selected, setSelected] = useState<string | null>('300004')
   const [log, setLog] = useState('')
+  // 实时：每 2 秒随机让某只封单量变、炸板、回封，偶尔升板换层、来一只新首板；自动化浏览器里默认暂停，用 window.__liveStep 步进。
+  const { state: sim } = useLiveTicker(() => ladderFrom(LADDER_LEVELS), ladderStep, { intervalMs: 2000 })
   return (
     <div style={{ width: '100%', maxWidth: 640 }}>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center', paddingBottom: 8 }}>
+        <LiveToggle labels={{ group: '数据刷新', live: '实时', paused: '暂停' }} />
+        <span className="gal-note">
+          封单量变化闪、炸板琥珀警示、回封与升板闪涨色、新首板蓝线高亮；本页根上设了 data-updown="cn"（红涨绿跌）
+        </span>
+      </div>
       <div style={{ height: 660 }}>
         <PanelFrame focused aria-label="连板天梯">
           <PanelFrameHeader heading="连板天梯" object="演示数据" />
           <PanelFrameBody>
             <LimitLadder
-              levels={LADDER_LEVELS}
+              levels={ladderLevels(sim)}
               labels={LADDER_LABELS}
+              locale="zh-CN"
               selected={selected}
-              onSelect={setSelected}
+              onSelect={(item) => setSelected(item.code)}
               rowActions={(item) => demoSymbolActions(item.code, setLog)}
             />
           </PanelFrameBody>
@@ -331,7 +366,7 @@ function makeStocks(): HeatmapItem[] {
       const cap = 1.2e10 * Math.exp(rand() * 3.6) * (g === 2 ? 3 : 1)
       const day = tilt + (rand() + rand() + rand() - 1.5) * 4
       out.push({
-        code: String(600000 + n * 7).padStart(6, '0'),
+        symbol: String(600000 + n * 7).padStart(6, '0'),
         name: `示例${mark}${HEAT_ORDINALS[i]}`,
         group: industry,
         price: 4 + rand() * 180,
@@ -382,7 +417,7 @@ function makeCoins(): HeatmapItem[] {
     const cap = 6e11 * Math.exp(-i * 0.28) * (0.7 + rand() * 0.6)
     const day = (rand() + rand() + rand() - 1.5) * 7
     return {
-      code,
+      symbol: code,
       name: `示例币 ${String(i + 1).padStart(2, '0')}`,
       price: 0.02 + rand() * 4000,
       size: { cap, turnover: cap * (0.02 + rand() * 0.12) },
@@ -430,6 +465,7 @@ const HEAT_LABELS: MarketHeatmapLabels = {
   list: '市场热力图',
   empty: '没有数据',
   fullscreen: '全屏',
+  copyImage: '复制图片',
   dataset: '数据集',
   openInScreener: '在选股器打开',
   display: {
@@ -471,12 +507,12 @@ export function MarketHeatmapDemo() {
   return (
     <div style={{ display: 'grid', gap: 12, width: '100%', maxWidth: wide ? undefined : 760 }}>
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-        <ToggleGroup variant="sm" aria-label="配色" value={scheme} onValueChange={(v) => setScheme(v as HeatmapScheme)}>
+        <ToggleGroup size="sm" aria-label="配色" value={scheme} onValueChange={(v) => setScheme(v as HeatmapScheme)}>
           <ToggleGroupItem value="classic">经典</ToggleGroupItem>
           <ToggleGroupItem value="mono">单色</ToggleGroupItem>
         </ToggleGroup>
         <ToggleGroup
-          variant="sm"
+          size="sm"
           aria-label="屏幕"
           value={wide ? 'wide' : 'small'}
           onValueChange={(v) => setWide(v === 'wide')}
@@ -485,7 +521,7 @@ export function MarketHeatmapDemo() {
           <ToggleGroupItem value="wide">大屏 1920×1080</ToggleGroupItem>
         </ToggleGroup>
         <ToggleGroup
-          variant="sm"
+          size="sm"
           aria-label="更新"
           value={live ? 'live' : 'still'}
           onValueChange={(v) => setLive(v === 'live')}
@@ -515,7 +551,8 @@ export function MarketHeatmapDemo() {
                 scheme={scheme}
                 selected={selected}
                 onSelect={setSelected}
-                cellActions={(item) => demoSymbolActions(item.code, setLog)}
+                cellActions={(item) => demoSymbolActions(item.symbol, setLog)}
+                onCopyImage={demoCopyImage}
               />
             </PanelFrameBody>
           </PanelFrame>
@@ -624,7 +661,7 @@ function indicators(close: readonly number[]) {
   return [...osc.map(row('osc')), ...avg.map(row('ma'))]
 }
 
-function makeRating(frame: number) {
+function makeRating(frame: number, extra: readonly number[] = []) {
   const rand = seeded(20 + frame * 7)
   const drift = (rand() - 0.45) * 0.6
   const close: number[] = []
@@ -633,7 +670,12 @@ function makeRating(frame: number) {
     price += drift + Math.sin(i / (9 + frame * 3)) * 0.9 + (rand() - 0.5) * 2.4
     close.push(price)
   }
-  const rows = indicators(close)
+  // 实时：在固定的合成行情后面接上节拍器给的新价（每步一个涨跌量），评级窗口保持 260 根，读数与结论就跟着慢慢变。
+  for (const step of extra) {
+    price += step
+    close.push(price)
+  }
+  const rows = indicators(close.slice(-260))
   const tally = (list: readonly RatingRow[]) => ({
     sell: list.filter((r) => r.verdict === 'sell').length,
     neutral: list.filter((r) => r.verdict === 'neutral').length,
@@ -656,7 +698,7 @@ function makeRating(frame: number) {
       rows.filter((r) => r.group === 'ma'),
     ),
   ]
-  return { rows, groups, pivots: makePivots(close) }
+  return { rows, groups, pivots: makePivots(close.slice(-260)) }
 }
 
 // 枢轴点：高低收取最近 20 根，规则照常见定义（Classic、Fibonacci、Camarilla、Woodie、DM）；Woodie 与 DM 只有一部分档位，缺的传 null 画「—」。演示用，不是行情。
@@ -696,25 +738,37 @@ function makePivots(close: readonly number[]): PivotTable {
 
 export function TechnicalRatingDemo() {
   const [frame, setFrame] = useState('1d')
-  const { rows, groups, pivots } = makeRating(RATING_TIMEFRAMES.findIndex((tf) => tf.value === frame))
+  // 实时：每个节拍给合成行情接一根新价（涨跌量随机，幅度比历史大一些，评级才看得出变）；档位升了闪涨色、降了闪跌色。
+  const { state: extra } = useLiveTicker<number[]>([], (steps, rng) => [...steps, (rng() - 0.5) * 6], {
+    intervalMs: 2500,
+  })
+  const { rows, groups, pivots } = makeRating(
+    RATING_TIMEFRAMES.findIndex((tf) => tf.value === frame),
+    extra,
+  )
   return (
-    <div style={{ width: '100%', maxWidth: 760, height: 900 }}>
-      <PanelFrame focused aria-label="技术评级">
-        <PanelFrameHeader heading="Technicals" object="演示数据" />
-        <PanelFrameBody>
-          <TechnicalRating
-            groups={groups}
-            rows={rows}
-            labels={RATING_LABELS}
-            primary="all"
-            pivots={pivots}
-            timeframes={RATING_TIMEFRAMES}
-            timeframe={frame}
-            onTimeframeChange={setFrame}
-            disclaimer="Ratings only summarise indicator readings; they are not trading advice."
-          />
-        </PanelFrameBody>
-      </PanelFrame>
+    <div style={{ width: '100%', maxWidth: 760 }}>
+      <div style={{ paddingBottom: 8 }}>
+        <LiveToggle labels={{ group: '数据刷新', live: '实时', paused: '暂停' }} />
+      </div>
+      <div style={{ height: 900 }}>
+        <PanelFrame focused aria-label="技术评级">
+          <PanelFrameHeader heading="Technicals" object="演示数据" />
+          <PanelFrameBody>
+            <TechnicalRating
+              groups={groups}
+              rows={rows}
+              labels={RATING_LABELS}
+              primary="all"
+              pivots={pivots}
+              timeframes={RATING_TIMEFRAMES}
+              value={frame}
+              onValueChange={setFrame}
+              disclaimer="Ratings only summarise indicator readings; they are not trading advice."
+            />
+          </PanelFrameBody>
+        </PanelFrame>
+      </div>
     </div>
   )
 }
@@ -732,52 +786,75 @@ export function SparkTileDemo() {
       <p className="gal-note">{SAMPLE}</p>
       <Row name="一行 5 个">
         <div className="gal-grid-5" data-testid="spark-row">
-          <SparkTile
+          <MetricCard
+            variant="tile"
             label="NET ASSET"
             value="2.42M"
             series={asset.map((v) => 20 - v)}
-            sparkLabel="近 9 期净值走势"
-            delta={1.31}
+            labels={{ spark: '近 9 期净值走势' }}
+            changePct={1.31}
             note="今日"
           />
-          <SparkTile
+          <MetricCard
+            variant="tile"
             label="DRAWDOWN"
             value="-3.1%"
             series={drawdown}
-            sparkLabel="近 9 期回撤走势"
+            labels={{ spark: '近 9 期回撤走势' }}
             trendTone="neutral"
             note="峰值 -6.8% · 02-14"
           />
-          <SparkTile label="TURNOVER" value="0.62" unit="/月" series={stable} sparkLabel="近 9 期换手" note="稳定" />
-          <SparkTile
+          <MetricCard
+            variant="tile"
+            label="TURNOVER"
+            value="0.62"
+            unit="/月"
+            series={stable}
+            labels={{ spark: '近 9 期换手' }}
+            note="稳定"
+          />
+          <MetricCard
+            variant="tile"
             label="EXPOSURE"
             value="131"
             unit="/ 150%"
             series={exposure.map((v) => 20 - v)}
-            sparkLabel="近 9 期敞口，虚线是上限"
+            labels={{ spark: '近 9 期敞口，虚线是上限' }}
             threshold={19}
-            state="near"
+            status="near"
             note="接近上限"
           />
-          <SparkTile label="SHARPE 60D" value={null} series={[]} sparkLabel="夏普：没有数据" note="等待数据" />
+          <MetricCard
+            variant="tile"
+            label="SHARPE 60D"
+            value={null}
+            series={[]}
+            labels={{ spark: '夏普：没有数据' }}
+            note="等待数据"
+          />
         </div>
       </Row>
       <Row name="可点">
         <div className="gal-grid-5">
-          <SparkTile
+          <MetricCard
+            variant="tile"
             label="FILLS"
             value={String(clicks)}
             series={stable}
-            sparkLabel="近 9 期成交"
-            delta={-0.8}
+            labels={{ spark: '近 9 期成交' }}
+            changePct={-0.8}
             note="点我 +1"
-            onClick={() => setClicks((n) => n + 1)}
+            onSelect={() => setClicks((n) => n + 1)}
           />
         </div>
       </Row>
+      <LiveSparkTileDemo />
     </>
   )
 }
+
+// 线照 LossLimits 卡：80% 起接近、100% 越限。
+const LIMIT_LABELS = { warn: '预警线 80%', hard: '硬限 100%' }
 
 export function MeterDemo() {
   return (
@@ -788,7 +865,29 @@ export function MeterDemo() {
           <Meter label="LOAD · 敞口" value={72} tone="ok" />
           <Meter label="LOAD · 受锁（超过 60% 上限）" value={38} tone="warn" mark={60} markLabel="上限" />
           <Meter label="回测进度" value={61} />
+          <Meter label="相对强弱 · 中性" value={48} tone="neutral" />
           <Meter label="OFF" value={0} tone="off" />
+        </div>
+      </Row>
+      <Row name="限额（warnAt / hardAt）">
+        <div className="gal-stack" data-testid="meter-limits">
+          <Meter label="总敞口 / 净值" value={54} warnAt={80} hardAt={100} valueText="54%" limitLabels={LIMIT_LABELS} />
+          <Meter
+            label="保证金占用"
+            value={86}
+            warnAt={80}
+            hardAt={100}
+            valueText="86% · 接近"
+            limitLabels={LIMIT_LABELS}
+          />
+          <Meter
+            label="日内回撤"
+            value={112}
+            warnAt={80}
+            hardAt={100}
+            valueText="112% · 越限"
+            limitLabels={LIMIT_LABELS}
+          />
         </div>
       </Row>
       <Row name="刻度（gauge）">
@@ -872,7 +971,7 @@ export function FlowGaugesDemo() {
                 note: '无逐笔方向',
               },
             ]}
-            estimateText="估算"
+            labels={{ estimate: '估算' }}
           />
         </div>
       </Row>
@@ -916,10 +1015,9 @@ export function RegimeStripDemo() {
               `${state.name} · ${segment.from}–${segment.to}${segment.estimated ? '（估）' : ''}`
             }
             current="trend"
-            currentText="当前"
-            estimateText="估（尚未确认）"
+            labels={{ current: '当前', estimate: '估（尚未确认）' }}
             activeState={active}
-            onPickState={setActive}
+            onSelect={(state) => setActive(state?.id ?? null)}
           />
         </div>
       </Row>
@@ -942,20 +1040,20 @@ const stateText = {
   pending: '评估中',
 }
 const orderParties: readonly ConsensusParty[] = [
-  { key: 'gw', label: 'GATEWAY', state: 'pass', message: '可用 ✓ 整手 ✓' },
+  { id: 'gw', label: 'GATEWAY', state: 'pass', message: '可用 ✓ 整手 ✓' },
   {
-    key: 'acct',
+    id: 'acct',
     label: 'ACCOUNT',
     state: 'warn',
     message: '集中度 58 / 60',
     detail: '单票集中度上限 60%，当前 58%；再买 2,000 股会到 61%（示例）。',
   },
-  { key: 'rules', label: 'RULES', state: 'pass', message: '无规则命中' },
+  { id: 'rules', label: 'RULES', state: 'pass', message: '无规则命中' },
 ]
 const promoteParties: readonly ConsensusParty[] = [
-  { key: 'gates', label: 'GATES', state: 'blocked', message: '偏离门未过 19.4%', detail: '偏离门要求 ≤ 15%（示例）。' },
-  { key: 'cap', label: 'CAPACITY', state: 'pass', message: '0.9 / 5 亿' },
-  { key: 'acct', label: 'ACCOUNT', state: 'unknown', message: '未指定' },
+  { id: 'gates', label: 'GATES', state: 'blocked', message: '偏离门未过 19.4%', detail: '偏离门要求 ≤ 15%（示例）。' },
+  { id: 'cap', label: 'CAPACITY', state: 'pass', message: '0.9 / 5 亿' },
+  { id: 'acct', label: 'ACCOUNT', state: 'unknown', message: '未指定' },
 ]
 const countText = (parties: readonly ConsensusParty[]) => {
   const n = countConsensus(parties)
@@ -970,7 +1068,7 @@ export function ConsensusBlockDemo() {
         <div style={{ width: 340 }} data-testid="consensus-ok">
           <ConsensusBlock
             label="下单必要条件"
-            intent="下单 · 账户 A · 买 300750 × 2,000"
+            subject="下单 · 账户 A · 买 300750 × 2,000"
             parties={orderParties}
             verdict="warn"
             verdictText="可提交"
@@ -985,7 +1083,7 @@ export function ConsensusBlockDemo() {
         <div style={{ width: 340 }} data-testid="consensus-blocked">
           <ConsensusBlock
             label="推进必要条件"
-            intent="推进 · alice-rev → LIVE"
+            subject="推进 · alice-rev → LIVE"
             parties={promoteParties}
             verdict="blocked"
             verdictText="不可推进"
@@ -1000,9 +1098,9 @@ export function ConsensusBlockDemo() {
           <ConsensusBlock
             label="重检必要条件"
             parties={[
-              { key: 'gw', label: 'GATEWAY', state: 'timeout', message: '超时' },
-              { key: 'acct', label: 'ACCOUNT', state: 'stale', message: '需重检' },
-              { key: 'rules', label: 'RULES', state: 'pending', message: '评估中' },
+              { id: 'gw', label: 'GATEWAY', state: 'timeout', message: '超时' },
+              { id: 'acct', label: 'ACCOUNT', state: 'stale', message: '需重检' },
+              { id: 'rules', label: 'RULES', state: 'pending', message: '评估中' },
             ]}
             verdict="blocked"
             verdictText="不可提交"
@@ -1025,7 +1123,7 @@ export function DecimalFieldDemo() {
     <>
       <Row name="价格（tick 0.5）">
         <div className="gal-wide">
-          <DecimalField label="价格" value={price} onValue={setPrice} step="0.5" buttons={BUTTONS} />
+          <DecimalField label="价格" value={price} onValueChange={setPrice} step="0.5" buttons={BUTTONS} />
         </div>
         <output data-testid="decimal-price-out">{price}</output>
       </Row>
@@ -1034,7 +1132,7 @@ export function DecimalFieldDemo() {
           <DecimalField
             label="数量"
             value={qty}
-            onValue={setQty}
+            onValueChange={setQty}
             step="0.001"
             base="1"
             unit="BTC"
@@ -1046,16 +1144,30 @@ export function DecimalFieldDemo() {
       </Row>
       <Row name="状态">
         <Cell name="只读">
-          <DecimalField label="只读价格" value={locked} onValue={setLocked} step="0.5" readOnly buttons={BUTTONS} />
+          <DecimalField
+            label="只读价格"
+            value={locked}
+            onValueChange={setLocked}
+            step="0.5"
+            readOnly
+            buttons={BUTTONS}
+          />
         </Cell>
         <Cell name="禁用">
-          <DecimalField label="禁用价格" value={locked} onValue={setLocked} step="0.5" disabled buttons={BUTTONS} />
+          <DecimalField
+            label="禁用价格"
+            value={locked}
+            onValueChange={setLocked}
+            step="0.5"
+            disabled
+            buttons={BUTTONS}
+          />
         </Cell>
         <Cell name="error">
-          <DecimalField label="错误价格" value="abc" onValue={() => {}} step="0.5" status="error" />
+          <DecimalField label="错误价格" value="abc" onValueChange={() => {}} step="0.5" status="error" />
         </Cell>
         <Cell name="warning">
-          <DecimalField label="警告价格" value="100.3" onValue={() => {}} step="0.5" status="warning" />
+          <DecimalField label="警告价格" value="100.3" onValueChange={() => {}} step="0.5" status="warning" />
         </Cell>
       </Row>
       <p className="gal-note">↑ / ↓ 走一格，Shift 十格；打字自由，合不合法由调用方判。0.1 的格子加起来是精确的。</p>
@@ -1610,13 +1722,12 @@ function MetricWall({
         return (
           <MetricCard
             key={d.title}
-            title={d.title}
+            label={d.title}
             value={last.toFixed(d.digits)}
             unit={'unit' in d ? d.unit : undefined}
             {...metricProps(values)}
             trendTone={'trend' in d ? d.trend : 'direction'}
-            rangeLabel={`${d.title}走势区间`}
-            sparkLabel={`${d.title}走势`}
+            labels={{ range: `${d.title}走势区间`, spark: `${d.title}走势` }}
             stages={'stages' in d ? d.stages : undefined}
             current={last}
             source="演示数据，不是行情"
@@ -1647,15 +1758,17 @@ export function MetricCardDemo() {
               <p className="gal-note">没有数据</p>
               <MetricCardGrid label="空态" minWidth={280}>
                 <MetricCard
-                  title="未接入的指标"
+                  label="未接入的指标"
                   value={null}
                   changes={[{ key: 'd', label: '较前日', value: null }]}
                   ranges={[{ key: '1m', label: '1 月', values: [] }]}
-                  rangeLabel="走势区间"
-                  sparkLabel="没有数据"
+                  labels={{ range: '走势区间', spark: '没有数据' }}
                   source="未连接"
                 />
               </MetricCardGrid>
+            </section>
+            <section data-testid="metric-live">
+              <LiveMetricCardDemo />
             </section>
           </div>
         </PanelFrameBody>

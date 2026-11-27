@@ -10,7 +10,7 @@ import { conditionText, groupFields, type FilterCondition, type FilterField } fr
 // 过滤条（选股器的顶部过滤行）：一行可换行的胶囊，每个胶囊是一个字段；点开浮层：标题加垃圾桶（把这个过滤从条上拿掉）、搜索框、
 // 预设条件列表（主文字 + 灰色副标题）、底部「手动设置」（运算符 + 值）。最后是「+」（弹出按分组列出所有字段的浮层，分组带计数，进组再选字段）与「⋯」（重置全部条件）。
 // 照 TradingView 选股器（主会话 2026-11-15 登录态实测 tradingview.com/screener/；胶囊 Price、Chg %、Mkt cap、P/E… 的浮层预设如「Above 100 / Fractional shares time」「10 to 100 / Mid-priced」），实现原创。
-// 字段、运算符、预设、文字全由调用方传；条件是受控的（value / onChange），件不过滤数据：调用方用 applyFilters 或自己的方式过滤。哪些字段在条上是件里的状态（defaultShown）。
+// 字段、运算符、预设、文字全由调用方传；条件是受控的（value / onValueChange），件不过滤数据：调用方用 applyFilters 或自己的方式过滤。哪些字段在条上是件里的状态（defaultShown）。
 
 export type FilterBarLabels = {
   /** 整条的读屏名。 */
@@ -40,8 +40,12 @@ export type FilterBarLabels = {
 
 export type FilterBarProps = {
   fields: readonly FilterField[]
+  /** The conditions (controlled). */
   value: readonly FilterCondition[]
-  onChange: (next: FilterCondition[]) => void
+  /** Called with the new conditions (set, clear, remove, reset, undo, redo). */
+  onValueChange?: (next: FilterCondition[]) => void
+  /** Old name of onValueChange, kept for one release. @deprecated Use onValueChange. */
+  onChange?: (next: FilterCondition[]) => void
   labels: FilterBarLabels
   /** 条上一开始有哪些字段（键）；不给就取 field.shown 为真的，再没有就取前 6 个。 */
   defaultShown?: readonly string[]
@@ -169,7 +173,17 @@ function FieldPill({
   )
 }
 
-export function FilterBar({ fields, value, onChange, labels, defaultShown, className }: FilterBarProps) {
+/** Screener filter row: one pill per field with presets and a manual operator + value; add, reset, undo and redo. */
+export function FilterBar({
+  fields,
+  value,
+  onValueChange,
+  onChange: legacyOnChange,
+  labels,
+  defaultShown,
+  className,
+}: FilterBarProps) {
+  const onChange = (next: FilterCondition[]) => (onValueChange ?? legacyOnChange)?.(next)
   const [shown, setShown] = useState<string[]>(() => {
     if (defaultShown) return [...defaultShown]
     const flagged = fields.filter((f) => f.shown).map((f) => f.key)

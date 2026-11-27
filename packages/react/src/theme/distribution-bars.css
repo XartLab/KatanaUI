@@ -34,20 +34,26 @@
   color: var(--ink-200);
   line-height: 16px;
   white-space: nowrap;
+  /* 家数标签跟着柱顶走：柱区满高 --k-dist-h 固定不动，标签按 (1 − --fill) 往下平移（kubai Vibe Design Tips 011，#251）。 */
+  translate: 0 calc((1 - var(--fill, 0)) * var(--k-dist-h, 0px));
+  transition: translate var(--dur-snappy) var(--ease-snappy);
 }
-.k-dist-bar {
+.k-dist-fill {
   display: block;
   width: 100%;
+  height: var(--k-dist-h, 0px);
   background: var(--ink-400);
-  transition: height var(--dur-snappy) var(--ease-snappy);
+  transform-origin: bottom;
+  scale: 1 var(--fill, 0);
+  transition: scale var(--dur-snappy) var(--ease-snappy);
 }
-.k-dist-col[data-tone='up'] .k-dist-bar {
+.k-dist-col[data-tone='up'] .k-dist-fill {
   background: var(--pnl-up);
 }
-.k-dist-col[data-tone='down'] .k-dist-bar {
+.k-dist-col[data-tone='down'] .k-dist-fill {
   background: var(--pnl-down);
 }
-.k-dist-col[data-tone='accent'] .k-dist-bar {
+.k-dist-col[data-tone='accent'] .k-dist-fill {
   background: var(--ink-100);
 }
 .k-dist-label {
@@ -67,7 +73,7 @@
 }
 .k-dist-totals > span + span::before {
   margin-right: 6px;
-  color: var(--ink-400);
+  color: var(--ink-300);
   content: '/';
 }
 .k-dist-totals b {

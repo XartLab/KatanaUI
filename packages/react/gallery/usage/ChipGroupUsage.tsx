@@ -15,7 +15,13 @@ export function ChipGroupUsage() {
   const [one, setOne] = useState<string[]>(['hk'])
   return (
     <>
-      <ChipGroup label="市场" items={CHIP_ITEMS} value={markets} onValueChange={setMarkets} clearLabel="清除筛选" />
+      <ChipGroup
+        label="市场"
+        items={CHIP_ITEMS}
+        value={markets}
+        onValueChange={setMarkets}
+        labels={{ clear: '清除筛选' }}
+      />
       <output data-gallery-chips>{markets.join(',') || '无'}</output>
 
       <ChipGroup

@@ -30,3 +30,35 @@
 
 - 这是运行中心 / 设置里的一个 PanelSpec（`render-settings`），用 Toggle、LCDReadout、StatusLED 组装，不写新控件。
 - 后端与抗锯齿改动需要重建 canvas 上下文，面板先显示"重建中"LCD 状态，不闪黑。
+
+
+## Web 文字与像素（2026-11-17）
+
+实现：`@katana-ui/react` 的 `theme/rendering.css` 与 `RenderingSettings` 件（设置页的「渲染」一节用它）。文档站「总览 → 渲染设置」能直接调、能看字样。
+
+### 能调的
+
+| 项 | 控件 | 做法 |
+|---|---|---|
+| 文字平滑 | 灰度 / 系统 | 默认灰度（`-webkit-font-smoothing: antialiased`，只在 macOS 生效）；系统 = 交回系统默认 |
+| 像素对齐 | 开 / 关 | 默认开：网格、零线、基线、无圆角的柱与格 `shape-rendering: crispEdges`，吸到设备像素；曲线不吸 |
+| 字重补偿 | −60…+60 | 全部文字档字重加减（typography.md §0.3） |
+| 字号 | 85%…130% | 全部文字档缩放，取整到整像素 |
+| 斜线零 | 开 / 关 | OpenType `zero` |
+| 中英对齐 | 开 / 关 | `font-size-adjust: cap-height from-font` |
+| 字体 | 界面 / 汉字 / 数据字 / 代码 | 字体目录（typography.md §0.2） |
+
+值挂在根节点：`data-text-smoothing`、`data-pixel-snap`、`data-numerals`、`data-cjk-adjust`、`data-font-<角色>`、`--k-weight-adjust`、`--k-text-scale`。件是受控的，应用存值，启动时 `applyRendering` 写回。
+
+### 写组件时的硬规则（清晰度）
+
+- **文字不落在小数像素上**：居中不用 `transform: translate(-50%)`，写 `translate: round(nearest, -50%, 1px)`；JS 算出的定位（刻度、末端值）`Math.round`；行高写整像素。
+- **不无故把文字放进合成层**：`will-change`、常驻 `transform`、半透明层上的文字在 Windows 会从 ClearType 退成灰度，看着发虚。
+- 1px 线与格子交给像素对齐；图表的线宽用 `vector-effect: non-scaling-stroke`。
+- 关平滑（`-webkit-font-smoothing: none`）只给点阵字与 LCD 字，界面字不许关。
+- 滚动条细（navigation.md §5）。
+
+### 管不到的
+
+- Windows 的 ClearType 由系统管（「调整 ClearType 文本」），CSS 改不了；我们只能避开让它退成灰度的情况。
+- 图表现在是 SVG 按比例拉伸（宽 1000 的 viewBox），像素对齐只是让浏览器帮忙吸附；彻底清楚要改成 canvas 按设备像素画（位图尺寸 = CSS 尺寸 × DPR 取整），待做。

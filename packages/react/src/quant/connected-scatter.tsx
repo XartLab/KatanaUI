@@ -1,18 +1,16 @@
 // SPDX-License-Identifier: MIT
 // 连线散点图：每个点是一个时刻的 (x, y)，按时间顺序连成轨迹，看一个对象在两个量之间怎么走（如策略的波动 vs 收益按月的路径，风格漂移）。
-// 时间方向三路表达，不靠颜色：起点是空心圈、终点是实心圈加箭头，点越靠后越不透明。多条轨迹各取 series 色板里的一个色，悬停或聚焦一个点其余轨迹变暗。
+// 时间方向三路表达，不靠颜色：起点是空心圈、终点是实心圈加箭头，点越靠后越不透明。多条轨迹按次序取 series-1..7，第 8 条起是 series-other（dataviz §2：
+//   固定顺序、永不循环，KatanaUI #165），悬停或聚焦一个点其余轨迹变暗。
 // 功能参照 Arc Connected scatter（uiarc.dev，2026-11-14 读，范例是 CAC vs LTV 随时间的路径），实现原创。文字全由 props 传。
 import { useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from 'react'
-import { ChartActions } from './chart-kit/chart-actions.tsx'
-import { ChartTable, type ChartViewProps } from './chart-kit/chart-table.tsx'
-import { seqColor } from './chart-kit/series-colors.ts'
-import { moveScatter, scatterLayout, type ScatterFrame, type ScatterSeries } from './scatter-model.ts'
+import { ChartActions } from '../lib/chart/chart-kit/chart-actions.tsx'
+import { ChartTable, type ChartViewProps } from '../lib/chart/chart-kit/chart-table.tsx'
+import { assignSeries, seqColor } from '../lib/chart/chart-kit/series-colors.ts'
+import { moveScatter, scatterLayout, type ScatterFrame, type ScatterSeries } from '../lib/chart/scatter-model.ts'
 
 const FRAME: ScatterFrame = { width: 640, height: 360, left: 52, top: 14, right: 18, bottom: 40 }
-/** series 色板七个 token，多于七条轨迹时循环。 */
-const PALETTE = ['--series-1', '--series-2', '--series-3', '--series-4', '--series-5', '--series-6', '--series-7']
-const colorOf = (index: number): CSSProperties =>
-  ({ '--k-scatter-color': `var(${PALETTE[index % PALETTE.length]})` }) as CSSProperties
+const colorOf = (color: string | undefined): CSSProperties => ({ '--k-scatter-color': color }) as CSSProperties
 
 export type ConnectedScatterProps = ChartViewProps & {
   series: readonly ScatterSeries[]
@@ -45,10 +43,12 @@ export function ConnectedScatter({
   tableHead,
   onExport,
   onFullscreen,
+  onCopyImage,
   source,
 }: ConnectedScatterProps) {
   const [tableView, setTableView] = useState(false)
   const layout = scatterLayout(series, FRAME, { xDomain, yDomain })
+  const colors = assignSeries(series.map((item) => item.id))
   const counts = series.map((item) => item.points.length)
   const [hover, setHover] = useState<[number, number] | null>(null)
   const [focus, setFocus] = useState<[number, number] | null>(null)
@@ -74,6 +74,7 @@ export function ConnectedScatter({
           onTableView={setTableView}
           onExport={onExport}
           onFullscreen={onFullscreen}
+          onCopyImage={onCopyImage}
         />
       </div>
       {tableView && (
@@ -135,7 +136,7 @@ export function ConnectedScatter({
               className="k-scatter-series"
               data-id={item.id}
               data-dim={active !== null && active[0] !== s ? 'true' : 'false'}
-              style={colorOf(s)}
+              style={colorOf(colors[item.id])}
               role="group"
               aria-label={item.label}
             >
@@ -179,8 +180,8 @@ export function ConnectedScatter({
         })}
       </svg>
       <ul className="k-scatter-legend">
-        {series.map((item, s) => (
-          <li key={item.id} style={colorOf(s)}>
+        {series.map((item) => (
+          <li key={item.id} style={colorOf(colors[item.id])}>
             {item.label}
           </li>
         ))}

@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: MIT */
-/* 原样搬自 src/ui/ui.css（#1860，2026-11-14）：类名与规则都没改，应用里的件（src/ui/*.tsx）是这里的件外面包的一层。 */
+/* 原样搬自 src/ui/ui.css（#1860，2026-11-14）：类名与规则都没改，应用里的件（src/ui/*.tsx）是这里的件外面包的一层。
+   G2（2026-11-18）：颜色改读 characteristics（--k-editable-*、--k-focused-background、--k-selectable-*、--k-content-*），值与改前相等；
+   不合法的边改成与 Input 相同的危险色（原来写死一个 55% 的浅红，不跟主题走）；小按钮的悬停底统一成 --k-actionable-subtle-background-hover（原 5% 白，现 4%）。 */
 
 /* 日期时间输入（#368，DateTimeInput）：外框照文本框 .k-in（30 高、4% 白底、8% 白边、圆角 6），里面是可以逐段打字的「年-月-日」与「时:分」；
    聚焦的那一段用橙暗底标出（同菜单走到的那一项）。日期框右边的日历按钮打开 .k-cal。 */
@@ -16,20 +18,20 @@
   align-items: center;
   height: 30px;
   padding: 0 8px;
-  background: var(--alpha-white-3);
-  border: 1px solid var(--alpha-white-7);
-  border-radius: 6px;
-  color: var(--ink-100);
+  background: var(--k-editable-background);
+  border: 1px solid var(--k-editable-borderColor);
+  border-radius: var(--radius-control);
+  color: var(--k-content-primary-foreground);
   font: var(--text-body) var(--font-sans);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
-  transition: border-color 0.12s;
+  transition: border-color var(--dur-hover) var(--ease-hover);
 }
 .k-dt-input[data-focus-within] {
-  border-color: var(--alpha-white-12);
+  border-color: var(--k-editable-borderColor-active);
 }
 .k-dt-input[data-invalid] {
-  border-color: rgba(255, 90, 90, 0.55);
+  border-color: var(--k-status-danger-foreground);
 }
 .k-dt.sm .k-dt-input {
   height: 26px;
@@ -38,18 +40,18 @@
 }
 .k-dt-seg {
   padding: 0 2px;
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
   outline: 0;
 }
 .k-dt-seg[data-placeholder] {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-dt-seg[data-focused] {
-  background: var(--alpha-white-10);
-  color: var(--ink-100);
+  background: var(--k-focused-background);
+  color: var(--k-content-primary-foreground);
 }
 .k-dt-sep {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-dt-pick {
   display: grid;
@@ -59,15 +61,15 @@
   margin-left: -4px;
   padding: 0;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   background: transparent;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   cursor: pointer;
 }
 .k-dt-pick:hover,
 .k-dt-pick[aria-expanded='true'] {
-  background: var(--alpha-white-5);
-  color: var(--ink-100);
+  background: var(--k-actionable-subtle-background-hover);
+  color: var(--k-content-primary-foreground);
 }
 .k-pop.k-dt-pop {
   min-width: 0;
@@ -82,7 +84,7 @@
 }
 .k-cal-title {
   margin: 0;
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font: var(--text-body) var(--font-sans);
   font-weight: 600;
 }
@@ -93,30 +95,30 @@
   height: 24px;
   padding: 0;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   background: transparent;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   cursor: pointer;
 }
 .k-cal-nav[data-hovered] {
-  background: var(--alpha-white-5);
-  color: var(--ink-100);
+  background: var(--k-actionable-subtle-background-hover);
+  color: var(--k-content-primary-foreground);
 }
 .k-cal-grid {
   border-collapse: collapse;
 }
 .k-cal-grid th {
   padding: 0 0 4px;
-  color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-cal-cell {
   display: grid;
   place-items: center;
   width: 30px;
   height: 28px;
-  border-radius: 6px;
-  color: var(--ink-200);
+  border-radius: var(--radius-control);
+  color: var(--k-content-body-foreground);
   font-variant-numeric: tabular-nums;
   cursor: pointer;
   outline: 0;
@@ -126,17 +128,17 @@
 }
 .k-cal-cell[data-disabled],
 .k-cal-cell[data-unavailable] {
-  color: var(--ink-400);
+  color: var(--k-content-tertiary-foreground);
   cursor: default;
 }
 .k-cal-cell[data-hovered]:not([data-disabled]) {
-  background: var(--alpha-white-5);
+  background: var(--k-actionable-subtle-background-hover);
 }
 .k-cal-cell[data-focus-visible] {
-  box-shadow: inset 0 0 0 2px var(--ink-200);
+  box-shadow: inset 0 0 0 2px var(--k-content-body-foreground);
 }
 .k-cal-cell[data-selected] {
-  background: var(--ink-100);
-  color: var(--bg-000);
+  background: var(--k-selectable-bold-background-selected);
+  color: var(--k-selectable-bold-foreground-selected);
   font-weight: 600;
 }

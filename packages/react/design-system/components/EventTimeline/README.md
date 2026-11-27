@@ -135,7 +135,7 @@ export function EventTimelineUsage() {
           now={cst(D1, '14:30')}
           scope="300750 · 账户 A、B"
           labels={TIMELINE_LABELS}
-          onPick={(event) => setPicked(event.id)}
+          onSelect={(event) => setPicked(event.id)}
           onBrush={({ from, to }) =>
             setBrushed(`${new Date(from).toISOString().slice(11, 16)}–${new Date(to).toISOString().slice(11, 16)}`)
           }

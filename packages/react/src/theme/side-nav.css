@@ -1,0 +1,188 @@
+/* SPDX-License-Identifier: MIT */
+/* G6 token 迁移：alpha-white-2 / -8 / -13 的框、底与滚动条色没有对应的 characteristics，先留着；mask 里的 #000 只取不透明度。 */
+/* SideNav（patterns/side-nav.tsx）：照 rareui.com 组件站左栏（2026-11-17 实测：链接 14px、上下 6px、左 20px，组名 11px 600 大写 0.14em，
+   没选中 50% 亮度、悬停 80%、当前 100%；轨迹 1px 虚线 2px 实 2px 空，6px 半径弯钩，top / height 200ms 过渡）。数值换成我们的 token。
+   轨迹颜色走 --k-sidenav-trail（默认品牌橙 --accent，跟参照一致）；要中性就在外层设成 var(--k-content-body-foreground)。 */
+.k-sidenav {
+  --k-sidenav-trail: var(--accent);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  color: var(--k-content-primary-foreground);
+}
+.k-sidenav-head {
+  padding: 0 4px 12px;
+}
+.k-sidenav-search {
+  position: relative;
+  margin: 0 4px 12px;
+}
+.k-sidenav-search input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 30px;
+  /* 右边让出按键提示：Mac 的 ⌘K 窄，别处的 Ctrl+K 宽一些。 */
+  padding: 0 52px 0 10px;
+  border: 1px solid var(--alpha-white-8);
+  border-radius: var(--radius-control);
+  background: var(--alpha-white-2);
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+  outline: none;
+}
+.k-sidenav-search input::placeholder {
+  color: var(--k-content-secondary-foreground);
+}
+.k-sidenav-search input:focus-visible {
+  border-color: var(--k-separable-primary-borderColor);
+  box-shadow: 0 0 0 2px var(--focus-ring);
+}
+.k-sidenav-search kbd {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  translate: 0 round(nearest, -50%, 1px);
+  padding: 2px 5px;
+  border-radius: var(--radius-inner);
+  background: var(--k-actionable-background-hover);
+  /* 次要字色压在悬停底上差一点到 4.5:1，换正文字色。 */
+  color: var(--k-content-body-foreground);
+  font: var(--text-micro) var(--font-sans-small);
+  pointer-events: none;
+}
+.k-sidenav-scroll {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 0;
+  padding: 0 4px 24px;
+  overflow-y: auto;
+  /* 滚动条细（用户：「滑条要小」）：平时透明，悬停栏里才显出来。 */
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  /* 底部淡出，跟参照一样提示还能往下滚。 */
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 48px), transparent);
+}
+.k-sidenav-scroll:hover {
+  scrollbar-color: var(--alpha-white-13) transparent;
+}
+.k-sidenav-title {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin: 0 0 6px;
+  /* 组名原来是主字色的 40%（约 3:1），2026-11-18 改为次要字色，≥4.5:1。 */
+  color: var(--k-content-secondary-foreground);
+  font: 600 11px/16px var(--font-sans-small);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.k-sidenav-items {
+  position: relative;
+}
+.k-sidenav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-sidenav-title-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 14px;
+  height: 14px;
+  color: color-mix(in srgb, var(--k-content-primary-foreground) 65%, transparent);
+}
+.k-sidenav-title-icon svg {
+  width: 14px;
+  height: 14px;
+  stroke-width: 1.75;
+}
+.k-sidenav-link {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 8px 6px 20px;
+  border-radius: var(--radius-overlay);
+  color: color-mix(in srgb, var(--k-content-primary-foreground) 50%, transparent);
+  font: calc(400 + var(--k-weight-adjust, 0)) round(nearest, calc(14px * var(--k-text-scale, 1)), 1px) /
+    round(nearest, calc(20px * var(--k-text-scale, 1)), 1px) var(--font-sans);
+  overflow: hidden;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color var(--dur-hover) var(--ease-hover);
+}
+.k-sidenav-icon {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  opacity: 0.8;
+}
+.k-sidenav-icon svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 1.75;
+}
+.k-sidenav-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-sidenav-link:hover {
+  color: color-mix(in srgb, var(--k-content-primary-foreground) 80%, transparent);
+}
+.k-sidenav-link[aria-current='page'] {
+  color: var(--k-content-primary-foreground);
+}
+.k-sidenav-link:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+.k-sidenav-trail {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* 线整根铺满、往上藏，露出的长度 = --k-trail-h（px）：用 translate 移，不动 height / top。 */
+  overflow: hidden;
+  transition: opacity var(--dur-hover) var(--ease-hover);
+}
+.k-sidenav-trail[data-kind='hover'] {
+  color: color-mix(in srgb, var(--k-content-primary-foreground) 30%, transparent);
+}
+.k-sidenav-trail[data-kind='active'] {
+  color: var(--k-sidenav-trail);
+}
+.k-sidenav-line {
+  position: absolute;
+  top: 0;
+  left: 2px;
+  width: 1px;
+  height: 100%;
+  background-image: repeating-linear-gradient(to top, transparent 0 2px, currentColor 2px 4px);
+  translate: 0 calc(var(--k-trail-h, 0px) - 100%);
+  transition: translate var(--dur-snappy) var(--ease-snappy);
+}
+.k-sidenav-hook {
+  position: absolute;
+  top: 0;
+  left: 2px;
+  translate: 0 var(--k-trail-h, -6px);
+  transition: translate var(--dur-snappy) var(--ease-snappy);
+}
+.k-sidenav-empty {
+  margin: 0;
+  padding: 6px 8px;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-sidenav-foot {
+  padding: 12px 4px 0;
+}

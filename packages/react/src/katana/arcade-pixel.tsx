@@ -2,336 +2,18 @@
 // 像素屏：5x7 点阵字体或自带精灵画在 canvas 上，可选打字、擦除、闪烁、跑马灯，叠 CRT 扫描线与荧光。
 // 取自 SmoothUI 的 arcade-pixel（https://smoothui.dev/docs/components/arcade-pixel ，源码 https://smoothui.dev/r/arcade-pixel.json ，MIT，Copyright (c) Eduardo Calvo，2026-11-14 读取），
 // 记在 THIRD_PARTY_NOTICES.md。相对上游的改动：① cn 换成本包的 ../lib/cn，去掉 "use client"，默认导出改具名导出；
-// ② 去掉 useReducedMotion 与 prefers-reduced-motion 分支（本项目不跟「减少动态效果」，AGENTS.md）；③ 默认色从 token 取（var(--signal-orange)），不用上游的 --color-brand；
-// ④ 屏外与标签页隐藏时暂停动画保留（那是性能，不是减少动态）；画布 aria-hidden、文字另放 sr-only 保留；⑤ 内部工具函数不再导出。
+// ② 去掉 useReducedMotion 与 prefers-reduced-motion 分支（本项目不跟「减少动态效果」，AGENTS.md）；③ 默认色从 token 取（var(--accent)），不用上游的 --color-brand；闪光、闪烁、CRT 叠层也读 token（G3 去掉写死的 #ffffff 与 bg-white）；
+// ④ 屏外与标签页隐藏时暂停动画保留（那是性能，不是减少动态）；画布 aria-hidden、文字另放 sr-only 保留；⑤ 内部工具函数不进包入口（G3 起放在 -sprites / -paint 两个内部模块里）。
 // 字体只有 5x7 拉丁字母、数字与 - , : ! ? . * 空格，没有中日韩字；不认识的字符画成空格。
+// 文件分三份（G3，体检 §7）：arcade-pixel-sprites.ts 是字形与精灵数据，arcade-pixel-paint.ts 是画一帧，这里只管 React、计时与 CRT 叠层。
 
-import { cn } from '../lib/cn.ts'
 import { motion } from 'motion/react'
 import { useEffect, useMemo, useRef } from 'react'
+import { cn } from '../lib/cn.ts'
+import { isSameFrame, paintFrame, PALETTE_SEPARATOR, resolveColor, type FrameState } from './arcade-pixel-paint.ts'
+import { CHARACTER_UNIT_WIDTH, resolveGrid } from './arcade-pixel-sprites.ts'
 
-/**
- * 5x7 pixel font glyphs expressed as readable row strings ("#" = lit pixel,
- * "." = blank pixel). Converted to numeric grids in PIXEL_FONT_5X7 below.
- */
-const FONT_GLYPH_ROWS: Record<string, string[]> = {
-  ' ': ['.....', '.....', '.....', '.....', '.....', '.....', '.....'],
-  '-': ['.....', '.....', '.....', '#####', '.....', '.....', '.....'],
-  ',': ['.....', '.....', '.....', '.....', '..#..', '..#..', '.#...'],
-  ':': ['.....', '..#..', '..#..', '.....', '..#..', '..#..', '.....'],
-  '!': ['..#..', '..#..', '..#..', '..#..', '..#..', '.....', '..#..'],
-  '?': ['.###.', '#...#', '....#', '...#.', '..#..', '.....', '..#..'],
-  '.': ['.....', '.....', '.....', '.....', '.....', '..#..', '..#..'],
-  '*': ['.....', '#.#.#', '.###.', '#####', '.###.', '#.#.#', '.....'],
-  '0': ['.###.', '#...#', '#..##', '#.#.#', '##..#', '#...#', '.###.'],
-  '1': ['..#..', '.##..', '..#..', '..#..', '..#..', '..#..', '.###.'],
-  '2': ['.###.', '#...#', '....#', '...#.', '..#..', '.#...', '#####'],
-  '3': ['.###.', '#...#', '....#', '..##.', '....#', '#...#', '.###.'],
-  '4': ['#...#', '#...#', '#...#', '#####', '....#', '....#', '....#'],
-  '5': ['#####', '#....', '#....', '####.', '....#', '....#', '####.'],
-  '6': ['.###.', '#....', '#....', '####.', '#...#', '#...#', '.###.'],
-  '7': ['#####', '....#', '...#.', '..#..', '..#..', '..#..', '..#..'],
-  '8': ['.###.', '#...#', '#...#', '.###.', '#...#', '#...#', '.###.'],
-  '9': ['.###.', '#...#', '#...#', '.####', '....#', '#...#', '.###.'],
-  A: ['.###.', '#...#', '#...#', '#####', '#...#', '#...#', '#...#'],
-  B: ['####.', '#...#', '#...#', '####.', '#...#', '#...#', '####.'],
-  C: ['.####', '#....', '#....', '#....', '#....', '#....', '.####'],
-  D: ['####.', '#...#', '#...#', '#...#', '#...#', '#...#', '####.'],
-  E: ['#####', '#....', '#....', '####.', '#....', '#....', '#####'],
-  F: ['#####', '#....', '#....', '####.', '#....', '#....', '#....'],
-  G: ['.####', '#....', '#....', '#..##', '#...#', '#...#', '.####'],
-  H: ['#...#', '#...#', '#...#', '#####', '#...#', '#...#', '#...#'],
-  I: ['#####', '..#..', '..#..', '..#..', '..#..', '..#..', '#####'],
-  J: ['..###', '...#.', '...#.', '...#.', '...#.', '#..#.', '.##..'],
-  K: ['#...#', '#..#.', '#.#..', '##...', '#.#..', '#..#.', '#...#'],
-  L: ['#....', '#....', '#....', '#....', '#....', '#....', '#####'],
-  M: ['#...#', '##.##', '#.#.#', '#.#.#', '#...#', '#...#', '#...#'],
-  N: ['#...#', '##..#', '#.#.#', '#.#.#', '#..##', '#...#', '#...#'],
-  O: ['.###.', '#...#', '#...#', '#...#', '#...#', '#...#', '.###.'],
-  P: ['####.', '#...#', '#...#', '####.', '#....', '#....', '#....'],
-  Q: ['.###.', '#...#', '#...#', '#...#', '#.#.#', '#..#.', '.##.#'],
-  R: ['####.', '#...#', '#...#', '####.', '#.#..', '#..#.', '#...#'],
-  S: ['.####', '#....', '#....', '.###.', '....#', '....#', '####.'],
-  T: ['#####', '..#..', '..#..', '..#..', '..#..', '..#..', '..#..'],
-  U: ['#...#', '#...#', '#...#', '#...#', '#...#', '#...#', '.###.'],
-  V: ['#...#', '#...#', '#...#', '#...#', '#...#', '.#.#.', '..#..'],
-  W: ['#...#', '#...#', '#...#', '#.#.#', '#.#.#', '#.#.#', '.#.#.'],
-  X: ['#...#', '#...#', '.#.#.', '..#..', '.#.#.', '#...#', '#...#'],
-  Y: ['#...#', '#...#', '.#.#.', '..#..', '..#..', '..#..', '..#..'],
-  Z: ['#####', '....#', '...#.', '..#..', '.#...', '#....', '#####'],
-}
-
-/** Glyph grid dimensions. */
-const FONT_COLUMNS = 5
-const FONT_ROWS = 7
-/** Blank columns inserted between characters when building a text grid. */
-const CHARACTER_SPACING_COLUMNS = 1
-const CHARACTER_UNIT_WIDTH = FONT_COLUMNS + CHARACTER_SPACING_COLUMNS
-
-const BLANK_CELL_CHARACTERS = new Set(['.', ' '])
-
-/**
- * Row strings accept "." or " " for an unlit cell, "#" for palette index 1, and
- * a digit for any other palette index, so sprites can be multi-colour.
- */
-const characterToCellValue = (character: string): number => {
-  if (BLANK_CELL_CHARACTERS.has(character)) {
-    return 0
-  }
-  const parsed = Number.parseInt(character, 10)
-  return Number.isNaN(parsed) ? 1 : parsed
-}
-
-const rowsToGrid = (rows: string[]): number[][] => rows.map((row) => Array.from(row, characterToCellValue))
-
-/** Numeric 5x7 pixel font map (0 = blank, 1 = lit), keyed by uppercase character. */
-const PIXEL_FONT_5X7: Record<string, number[][]> = Object.fromEntries(
-  Object.entries(FONT_GLYPH_ROWS).map(([character, rows]) => [character, rowsToGrid(rows)]),
-)
-
-/**
- * Ready-made sprites so the `sprite` path is usable without hand-authoring a
- * grid. `alien` and `alienAlt` are the two frames of a space-invader style
- * marcher: alternate them on a timer to animate it.
- */
-export const ARCADE_SPRITES: Record<string, number[][]> = {
-  alien: rowsToGrid([
-    '..#.....#..',
-    '...#...#...',
-    '..#######..',
-    '.##.###.##.',
-    '###########',
-    '#.#######.#',
-    '#.#.....#.#',
-    '...##.##...',
-  ]),
-  alienAlt: rowsToGrid([
-    '..#.....#..',
-    '#..#...#..#',
-    '#.#######.#',
-    '###.###.###',
-    '###########',
-    '.#########.',
-    '..#.....#..',
-    '.##.....##.',
-  ]),
-  arrow: rowsToGrid([
-    '....#....',
-    '....##...',
-    '....###..',
-    '########.',
-    '#########',
-    '########.',
-    '....###..',
-    '....##...',
-    '....#....',
-  ]),
-  heart: rowsToGrid([
-    '.###.###.',
-    '#22######',
-    '#2#######',
-    '#########',
-    '.#######.',
-    '..#####..',
-    '...###...',
-    '....#....',
-  ]),
-}
-
-const BLANK_GLYPH_GRID = rowsToGrid(Array.from({ length: FONT_ROWS }, () => '.'.repeat(FONT_COLUMNS)))
-
-const getGlyphGrid = (character: string): number[][] => PIXEL_FONT_5X7[character.toUpperCase()] ?? BLANK_GLYPH_GRID
-
-const buildTextGrid = (text: string): number[][] => {
-  const characters = text.length > 0 ? Array.from(text) : [' ']
-  const rows: number[][] = Array.from({ length: FONT_ROWS }, () => [] as number[])
-
-  for (const [index, character] of characters.entries()) {
-    const glyph = getGlyphGrid(character)
-    for (let rowIndex = 0; rowIndex < FONT_ROWS; rowIndex++) {
-      rows[rowIndex].push(...glyph[rowIndex])
-      if (index < characters.length - 1) {
-        rows[rowIndex].push(0)
-      }
-    }
-  }
-
-  return rows
-}
-
-const resolveGrid = (sprite?: number[][], text?: string): number[][] => {
-  if (sprite && sprite.length > 0) {
-    return sprite
-  }
-  if (typeof text === 'string') {
-    return buildTextGrid(text)
-  }
-  return BLANK_GLYPH_GRID
-}
-
-/**
- * `fillStyle` cannot resolve CSS custom properties, so `var()` palette
- * entries are read off the live element before the first paint.
- */
-const CSS_CUSTOM_PROPERTY_NAME = /^--[\w-]+$/
-const CSS_VAR_PREFIX = 'var('
-const FALLBACK_COLOR = '#ffffff'
-
-interface CssVariableParts {
-  fallback?: string
-  name: string
-}
-
-const parseCssVariable = (color: string): CssVariableParts | null => {
-  const trimmed = color.trim()
-  if (!(trimmed.startsWith(CSS_VAR_PREFIX) && trimmed.endsWith(')'))) {
-    return null
-  }
-
-  const inner = trimmed.slice(CSS_VAR_PREFIX.length, -1).trim()
-  const commaIndex = inner.indexOf(',')
-  const name = (commaIndex === -1 ? inner : inner.slice(0, commaIndex)).trim()
-  if (!CSS_CUSTOM_PROPERTY_NAME.test(name)) {
-    return null
-  }
-
-  if (commaIndex === -1) {
-    return { name }
-  }
-
-  const fallback = inner.slice(commaIndex + 1).trim()
-  return fallback.length > 0 ? { fallback, name } : { name }
-}
-
-const resolveColor = (element: HTMLElement, color: string): string => {
-  const parsed = parseCssVariable(color)
-  if (!parsed) {
-    return color
-  }
-  const computed = getComputedStyle(element).getPropertyValue(parsed.name).trim()
-  if (computed) {
-    return computed
-  }
-  return parsed.fallback ? resolveColor(element, parsed.fallback) : FALLBACK_COLOR
-}
-
-/**
- * Palettes arrive as arrays, which are a fresh reference on every render when
- * written inline. Serialising them gives the render effect a stable dependency.
- * The separator is a unit separator rather than a space, because a modern colour
- * such as `oklch(0.72 0.2 145)` contains spaces of its own.
- */
-const PALETTE_SEPARATOR = '\u001f'
-
-type FrameState = {
-  done: boolean
-  /** Column range currently landing with a type-reveal flash. */
-  flashEnd: number
-  flashStart: number
-  offsetColumns: number
-  revealedColumns: number
-  visible: boolean
-}
-
-type PaintOptions = {
-  bloomAlpha: number
-  columnsInView: number
-  frame: FrameState
-  grid: number[][]
-  height: number
-  matrixColor: string
-  palette: string[]
-  /** Column span after which the grid repeats, for a seamless marquee. */
-  period: number
-  pixelSize: number
-  stride: number
-  width: number
-}
-
-const isSameFrame = (a: FrameState, b: FrameState): boolean =>
-  a.visible === b.visible &&
-  a.revealedColumns === b.revealedColumns &&
-  a.offsetColumns === b.offsetColumns &&
-  a.flashStart === b.flashStart &&
-  a.flashEnd === b.flashEnd
-
-const FLASH_COLOR = '#ffffff'
-const BLOOM_BLUR_PX = 5
-const MATRIX_ALPHA = 0.07
-
-/** Crisp, opaque pixels: one fillRect per lit cell. */
-const paintLitPixels = (ctx: CanvasRenderingContext2D, options: PaintOptions): void => {
-  const { frame, period, pixelSize, stride, width } = options
-  const repeats = period > 0 ? [0, period] : [0]
-
-  for (const [rowIndex, row] of options.grid.entries()) {
-    const y = rowIndex * stride
-    for (const [columnIndex, value] of row.entries()) {
-      if (!value || columnIndex >= frame.revealedColumns) {
-        continue
-      }
-      const isFlashing = columnIndex >= frame.flashStart && columnIndex < frame.flashEnd
-      const color = isFlashing ? FLASH_COLOR : (options.palette[value] ?? options.palette.at(-1))
-      if (!color || color === 'transparent') {
-        continue
-      }
-      ctx.fillStyle = color
-      for (const repeat of repeats) {
-        const x = (columnIndex + repeat - frame.offsetColumns) * stride
-        if (x + pixelSize < 0 || x > width) {
-          continue
-        }
-        ctx.fillRect(x, y, pixelSize, pixelSize)
-      }
-    }
-  }
-}
-
-/**
- * Phosphor bleed. One blurred self-composite in `lighter` mode costs a single
- * draw call, where a per-pixel `shadowBlur` would cost one blur per lit cell.
- */
-const paintBloom = (ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, options: PaintOptions): void => {
-  if (options.bloomAlpha <= 0) {
-    return
-  }
-  ctx.save()
-  ctx.globalCompositeOperation = 'lighter'
-  ctx.globalAlpha = options.bloomAlpha
-  ctx.filter = `blur(${BLOOM_BLUR_PX}px)`
-  ctx.drawImage(canvas, 0, 0, options.width, options.height)
-  ctx.restore()
-}
-
-/**
- * The unlit dot matrix behind the message. Drawn last with `destination-over`
- * so it never dulls a lit pixel, and phase-locked to the marquee offset so the
- * dots and the message always sit on the same sub-cell grid.
- */
-const paintDotMatrix = (ctx: CanvasRenderingContext2D, options: PaintOptions): void => {
-  const { columnsInView, frame, pixelSize, stride } = options
-  const phase = frame.offsetColumns - Math.floor(frame.offsetColumns)
-  ctx.save()
-  ctx.globalCompositeOperation = 'destination-over'
-  ctx.globalAlpha = MATRIX_ALPHA
-  ctx.fillStyle = options.matrixColor
-  for (let rowIndex = 0; rowIndex < options.grid.length; rowIndex++) {
-    const y = rowIndex * stride
-    for (let column = 0; column <= columnsInView; column++) {
-      ctx.fillRect((column - phase) * stride, y, pixelSize, pixelSize)
-    }
-  }
-  ctx.restore()
-}
-
-const paintFrame = (ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, options: PaintOptions): void => {
-  ctx.clearRect(0, 0, options.width, options.height)
-  if (options.frame.visible) {
-    paintLitPixels(ctx, options)
-    paintBloom(ctx, canvas, options)
-  }
-  paintDotMatrix(ctx, options)
-}
+export { ARCADE_SPRITES } from './arcade-pixel-sprites.ts'
 
 export type ArcadePixelAnimate = 'none' | 'type' | 'wipe' | 'blink' | 'marquee'
 
@@ -361,11 +43,18 @@ export interface ArcadePixelProps {
   sprite?: number[][]
   /** Text rendered through the built-in 5x7 pixel font. Ignored if `sprite` is set. */
   text?: string
+  /**
+   * Accessible name; defaults to text. Without either (a bare sprite) the display is decorative and hidden from screen readers.
+   * 读屏名，不给用 text；纯精灵又没给就当装饰（包里不带兜底文案，改前写死英文 pixel art）。
+   */
+  label?: string
 }
 
 const DEFAULT_PIXEL_SIZE = 8
 const DEFAULT_GAP = 1
-const DEFAULT_PALETTE: string[] = ['transparent', 'var(--signal-orange)']
+const DEFAULT_PALETTE: string[] = ['transparent', 'var(--accent)']
+/** Token of the type-reveal flash: the brightest ink of the screen. */
+const FLASH_TOKEN = 'var(--lcd-fg)'
 const DEFAULT_SPEED = 1
 const MAX_DEVICE_PIXEL_RATIO = 2
 const TYPE_DURATION_MS = 1400
@@ -423,7 +112,7 @@ const ArcadeCrtOverlay = ({ crt, scanlines }: ArcadeCrtOverlayProps) => (
         <div className="k-arcade-vignette absolute inset-0" />
         <motion.div
           animate={{ opacity: [0.055, 0.015, 0.045, 0.01, 0.06] }}
-          className="absolute inset-0 bg-white"
+          className="k-arcade-flicker absolute inset-0"
           transition={{
             duration: FLICKER_SECONDS,
             ease: LINEAR_EASE,
@@ -449,6 +138,7 @@ export const ArcadePixel = ({
   animate = 'none',
   speed = DEFAULT_SPEED,
   loop = false,
+  label,
   className,
 }: ArcadePixelProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -475,7 +165,8 @@ export const ArcadePixel = ({
     return { numUnits: Math.max(1, totalColumns), unitWidth: 1 }
   }, [sprite, text, totalColumns])
 
-  const accessibleLabel = typeof text === 'string' && text.trim().length > 0 ? text : 'pixel art'
+  // 读屏名：调用方给的 label 优先，其次是文字本身；两样都没有（纯精灵且没给 label）就当装饰，整块对读屏隐藏，包里不带兜底文案。
+  const accessibleLabel = label ?? (typeof text === 'string' && text.trim().length > 0 ? text : undefined)
 
   const glowIntensity = typeof glow === 'number' ? glow : (glow && DEFAULT_GLOW_INTENSITY) || 0
 
@@ -492,7 +183,8 @@ export const ArcadePixel = ({
     const resolvedPalette = stablePalette.map((color) =>
       color === 'transparent' ? color : resolveColor(container, color),
     )
-    const matrixColor = resolvedPalette.find((color) => color !== 'transparent') ?? FALLBACK_COLOR
+    const matrixColor = resolvedPalette.find((color) => color !== 'transparent') ?? getComputedStyle(container).color
+    const flashColor = resolveColor(container, FLASH_TOKEN)
     const period = animate === 'marquee' ? totalColumns + MARQUEE_TAIL_COLUMNS : 0
 
     const staticFrame: FrameState = {
@@ -535,6 +227,7 @@ export const ArcadePixel = ({
       lastFrame = frame
       paintFrame(ctx, canvas, {
         bloomAlpha: glowIntensity,
+        flashColor,
         columnsInView,
         frame,
         grid,
@@ -722,8 +415,9 @@ export const ArcadePixel = ({
 
   return (
     <div
-      className={cn('relative inline-block overflow-hidden', className)}
+      className={cn('k-arcade relative inline-block overflow-hidden', className)}
       data-slot="arcade-pixel"
+      aria-hidden={accessibleLabel === undefined || undefined}
       ref={containerRef}
       style={{ height: cssHeight, width: cssWidth }}
     >
@@ -731,7 +425,7 @@ export const ArcadePixel = ({
         <canvas className="block h-full w-full" data-slot="arcade-pixel-canvas" ref={canvasRef} />
         <ArcadeCrtOverlay crt={crt} scanlines={scanlines} />
       </div>
-      <span className="sr-only">{accessibleLabel}</span>
+      {accessibleLabel === undefined ? null : <span className="sr-only">{accessibleLabel}</span>}
     </div>
   )
 }

@@ -1,4 +1,5 @@
 /* SPDX-License-Identifier: MIT */
+/* token：颜色读 --k-*（G5）；--alpha-white-5（组头分隔线、图例按下）没有对应的 characteristic，先留着，待 tokens 补一档再换。 */
 /* 市场热力图（MarketHeatmap，#15）。底子取 TradingView 的手感（格子无衬线加 tabular-nums、读数紧凑、图例一排色块各写边界值），
    卡片结构取 Arc（顶上一行汇总读数，再是工具条，留白克制）。不加工业装饰：没有点阵、没有橙色（橙色只给焦点环以外的状态灯，这里不用）。
    色阶七档（0…6 对应档 −3…+3）：涨跌色（跟 data-updown）取 token 与底色按 100% / 70% / 42% 混，中档是灰；单色是同一灰阶从暗到亮。
@@ -14,59 +15,59 @@
   margin: 0;
   padding: var(--space-3) var(--inset-x);
   font: var(--text-data) var(--font-sans);
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 .k-mheat[data-scheme='classic'] {
-  --mheat-0: color-mix(in srgb, var(--pnl-down) 100%, var(--bg-000));
-  --mheat-1: color-mix(in srgb, var(--pnl-down) 70%, var(--bg-000));
-  --mheat-2: color-mix(in srgb, var(--pnl-down) 42%, var(--bg-000));
-  --mheat-3: color-mix(in srgb, var(--ink-300) 30%, var(--bg-000));
-  --mheat-4: color-mix(in srgb, var(--pnl-up) 42%, var(--bg-000));
-  --mheat-5: color-mix(in srgb, var(--pnl-up) 70%, var(--bg-000));
-  --mheat-6: color-mix(in srgb, var(--pnl-up) 100%, var(--bg-000));
-  --mheat-na: color-mix(in srgb, var(--ink-300) 12%, var(--bg-000));
+  --mheat-0: color-mix(in srgb, var(--pnl-down) 100%, var(--k-surface-sunken-background));
+  --mheat-1: color-mix(in srgb, var(--pnl-down) 70%, var(--k-surface-sunken-background));
+  --mheat-2: color-mix(in srgb, var(--pnl-down) 42%, var(--k-surface-sunken-background));
+  --mheat-3: color-mix(in srgb, var(--k-content-secondary-foreground) 30%, var(--k-surface-sunken-background));
+  --mheat-4: color-mix(in srgb, var(--pnl-up) 42%, var(--k-surface-sunken-background));
+  --mheat-5: color-mix(in srgb, var(--pnl-up) 70%, var(--k-surface-sunken-background));
+  --mheat-6: color-mix(in srgb, var(--pnl-up) 100%, var(--k-surface-sunken-background));
+  --mheat-na: color-mix(in srgb, var(--k-content-secondary-foreground) 12%, var(--k-surface-sunken-background));
 }
 .k-mheat[data-scheme='mono'] {
-  --mheat-0: color-mix(in srgb, var(--ink-200) 8%, var(--bg-000));
-  --mheat-1: color-mix(in srgb, var(--ink-200) 18%, var(--bg-000));
-  --mheat-2: color-mix(in srgb, var(--ink-200) 30%, var(--bg-000));
-  --mheat-3: color-mix(in srgb, var(--ink-200) 44%, var(--bg-000));
-  --mheat-4: color-mix(in srgb, var(--ink-200) 58%, var(--bg-000));
-  --mheat-5: color-mix(in srgb, var(--ink-200) 72%, var(--bg-000));
-  --mheat-6: color-mix(in srgb, var(--ink-200) 88%, var(--bg-000));
-  --mheat-na: color-mix(in srgb, var(--ink-200) 4%, var(--bg-000));
+  --mheat-0: color-mix(in srgb, var(--k-content-body-foreground) 8%, var(--k-surface-sunken-background));
+  --mheat-1: color-mix(in srgb, var(--k-content-body-foreground) 18%, var(--k-surface-sunken-background));
+  --mheat-2: color-mix(in srgb, var(--k-content-body-foreground) 30%, var(--k-surface-sunken-background));
+  --mheat-3: color-mix(in srgb, var(--k-content-body-foreground) 44%, var(--k-surface-sunken-background));
+  --mheat-4: color-mix(in srgb, var(--k-content-body-foreground) 58%, var(--k-surface-sunken-background));
+  --mheat-5: color-mix(in srgb, var(--k-content-body-foreground) 72%, var(--k-surface-sunken-background));
+  --mheat-6: color-mix(in srgb, var(--k-content-body-foreground) 88%, var(--k-surface-sunken-background));
+  --mheat-na: color-mix(in srgb, var(--k-content-body-foreground) 4%, var(--k-surface-sunken-background));
 }
 .k-mheat [data-step='-3'] {
   --mheat-bg: var(--mheat-0);
-  --mheat-fg: var(--mheat-ink-0, var(--ink-100));
+  --mheat-fg: var(--mheat-ink-0, var(--k-content-primary-foreground));
 }
 .k-mheat [data-step='-2'] {
   --mheat-bg: var(--mheat-1);
-  --mheat-fg: var(--mheat-ink-1, var(--ink-100));
+  --mheat-fg: var(--mheat-ink-1, var(--k-content-primary-foreground));
 }
 .k-mheat [data-step='-1'] {
   --mheat-bg: var(--mheat-2);
-  --mheat-fg: var(--mheat-ink-2, var(--ink-100));
+  --mheat-fg: var(--mheat-ink-2, var(--k-content-primary-foreground));
 }
 .k-mheat [data-step='0'] {
   --mheat-bg: var(--mheat-3);
-  --mheat-fg: var(--mheat-ink-3, var(--ink-100));
+  --mheat-fg: var(--mheat-ink-3, var(--k-content-primary-foreground));
 }
 .k-mheat [data-step='1'] {
   --mheat-bg: var(--mheat-4);
-  --mheat-fg: var(--mheat-ink-4, var(--ink-100));
+  --mheat-fg: var(--mheat-ink-4, var(--k-content-primary-foreground));
 }
 .k-mheat [data-step='2'] {
   --mheat-bg: var(--mheat-5);
-  --mheat-fg: var(--mheat-ink-5, var(--ink-100));
+  --mheat-fg: var(--mheat-ink-5, var(--k-content-primary-foreground));
 }
 .k-mheat [data-step='3'] {
   --mheat-bg: var(--mheat-6);
-  --mheat-fg: var(--mheat-ink-6, var(--ink-100));
+  --mheat-fg: var(--mheat-ink-6, var(--k-content-primary-foreground));
 }
 .k-mheat [data-step='na'] {
   --mheat-bg: var(--mheat-na);
-  --mheat-fg: var(--ink-300);
+  --mheat-fg: var(--k-content-secondary-foreground);
 }
 
 .k-mheat-summary {
@@ -86,12 +87,12 @@
   gap: 2px;
 }
 .k-mheat-read dt {
-  color: var(--ink-300);
-  font: 500 11px/14px var(--font-sans);
+  color: var(--k-content-secondary-foreground);
+  font: 500 var(--text-caption-size)/14px var(--font-sans);
 }
 .k-mheat-read dd {
   margin: 0;
-  font: 600 22px/26px var(--font-sans);
+  font: 600 22px/26px var(--font-sans); /* 22px 没有对应字号档（display 是 28），先留着，待 tokens 定读数大字一档 */
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
 }
@@ -106,23 +107,23 @@
   align-items: center;
   gap: 6px;
   margin-left: auto;
-  color: var(--ink-300);
-  font: 500 12px/16px var(--font-sans);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-data) var(--font-sans);
 }
 .k-mheat-crumb [aria-current='page'] {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font-weight: 600;
 }
 .k-mheat-crumb button {
   padding: 0;
   border: 0;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   background: transparent;
   font: inherit;
   cursor: pointer;
 }
 .k-mheat-crumb button:hover {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 .k-mheat-bar {
   display: flex;
@@ -136,8 +137,8 @@
   gap: 8px;
 }
 .k-mheat-field-label {
-  color: var(--ink-300);
-  font: 500 11px/14px var(--font-sans);
+  color: var(--k-content-secondary-foreground);
+  font: 500 var(--text-caption-size)/14px var(--font-sans);
 }
 .k-mheat-plot {
   position: relative;
@@ -159,13 +160,13 @@
   padding: 0 2px;
   overflow: hidden;
   border: 0;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   background: transparent;
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 8px;
-  font: 600 11px/22px var(--font-sans);
+  font: 600 var(--text-caption-size)/22px var(--font-sans);
   text-align: left;
   white-space: nowrap;
   cursor: zoom-in;
@@ -174,6 +175,7 @@
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .k-mheat-head-avg {
   flex: none;
@@ -187,12 +189,12 @@
   color: var(--pnl-down);
 }
 .k-mheat-head:hover {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 .k-mheat-head:focus-visible,
 .k-mheat-cell:focus-visible,
 .k-mheat-segment:focus-visible {
-  outline: 1px solid var(--ink-100);
+  outline: 1px solid var(--k-content-primary-foreground);
   outline-offset: 1px;
 }
 .k-mheat-cell {
@@ -202,10 +204,10 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   color: var(--mheat-fg);
   background: var(--mheat-bg);
-  font: 500 12px/14px var(--font-sans);
+  font: 500 var(--text-data-size)/14px var(--font-sans);
   font-variant-numeric: tabular-nums;
   text-align: center;
   cursor: pointer;
@@ -220,7 +222,7 @@
 /* 悬停与键盘焦点同一个样子：1px 亮描边加轻微提亮，别的格子不动。 */
 .k-mheat-cell:hover,
 .k-mheat-cell:focus-visible {
-  outline: 1px solid var(--ink-100);
+  outline: 1px solid var(--k-content-primary-foreground);
   outline-offset: -1px;
   filter: brightness(1.12);
 }
@@ -233,27 +235,20 @@
 .k-mheat-cell[data-dim='legend'] {
   opacity: 0.18;
 }
+/* 方向翻了的闪烁在共用层 live.css（.k-live-flash）：格子自己有底色，把它交给 --k-live-base，闪色才是混在格子色上、不是盖成透明。 */
 .k-mheat-cell[data-flash] {
-  animation: k-mheat-flash 700ms ease-out;
-}
-@keyframes k-mheat-flash {
-  from {
-    box-shadow: inset 0 0 0 2px var(--ink-100);
-  }
-  to {
-    box-shadow: inset 0 0 0 2px transparent;
-  }
+  --k-live-base: var(--mheat-bg);
 }
 .k-mheat-ring {
   position: absolute;
   z-index: 1;
   box-sizing: border-box;
-  border: 1px solid var(--ink-100);
-  border-radius: 2px;
+  border: 1px solid var(--k-content-primary-foreground);
+  border-radius: var(--radius-sm);
   pointer-events: none !important;
 }
 .k-mheat-cell[data-selected] {
-  outline: 2px solid var(--ink-100);
+  outline: 2px solid var(--k-content-primary-foreground);
   outline-offset: -2px;
 }
 .k-mheat-cell[data-hidden] {
@@ -275,30 +270,31 @@
   max-width: 100%;
   padding: 0 4px;
   overflow: hidden;
-  font: 400 11px/14px var(--font-sans);
+  font: 400 var(--text-caption-size)/14px var(--font-sans);
   opacity: 0.8;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .k-mheat-cell[data-logo='24'] .k-mheat-code {
-  font-size: 13px;
+  font-size: var(--text-body-size);
   line-height: 16px;
 }
 .k-mheat-cell[data-logo='32'] .k-mheat-code {
-  font-size: 15px;
+  font-size: var(--text-title-size);
   line-height: 18px;
 }
 .k-mheat-cell[data-logo='32'] .k-mheat-value {
-  font-size: 13px;
+  font-size: var(--text-body-size);
   line-height: 16px;
 }
 .k-mheat-value {
   max-width: 100%;
   overflow: hidden;
-  font: 400 11px/14px var(--font-sans);
+  font: 400 var(--text-caption-size)/14px var(--font-sans);
   opacity: 0.85;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 .k-mheat-card {
   position: absolute;
@@ -307,7 +303,7 @@
   padding: var(--space-2) var(--space-3);
   border: var(--hairline);
   border-radius: var(--radius-overlay);
-  background: var(--bg-400);
+  background: var(--k-surface-overlay-background);
   box-shadow: var(--lift);
   pointer-events: none;
   /* 位置用弹簧跟过去；首次出现淡入 100ms、离开淡出 160ms（待定，没实测）；刚出现时（data-snap）位置不过渡。 */
@@ -342,8 +338,8 @@
 .k-mheat-card-name {
   min-width: 0;
   overflow: hidden;
-  color: var(--ink-300);
-  font: 400 11px/14px var(--font-sans);
+  color: var(--k-content-secondary-foreground);
+  font: 400 var(--text-caption-size)/14px var(--font-sans);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -359,15 +355,15 @@
   gap: var(--space-3);
 }
 .k-mheat-card-rows dt {
-  color: var(--ink-300);
-  font: 400 11px/16px var(--font-sans);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans);
 }
 .k-mheat-card-rows dd {
   margin: 0;
   font-variant-numeric: tabular-nums;
 }
 .k-mheat-card-rows [data-active] dt {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 .k-mheat-card-rows dd.is-up {
   color: var(--pnl-up);
@@ -393,19 +389,19 @@
   width: 100%;
   padding: 0;
   border: 0;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   background: transparent;
-  font: 500 11px/14px var(--font-sans);
+  font: 500 var(--text-caption-size)/14px var(--font-sans);
   font-variant-numeric: tabular-nums;
   cursor: pointer;
 }
 .k-mheat-segment:hover {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 .k-mheat-swatch {
   display: block;
   height: 10px;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   background: var(--mheat-bg);
 }
 .k-mheat-swatch[data-off] {
@@ -417,7 +413,7 @@
 .k-mheat-empty {
   margin: auto;
   padding: var(--space-6);
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 /* 全屏钮：工具条最右，无边框图标按钮（TradingView 热图右上有全屏）。 */
 .k-mheat-fullscreen {
@@ -428,22 +424,26 @@
   height: 28px;
   margin-left: auto;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   background: transparent;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   cursor: pointer;
 }
 .k-mheat-fullscreen:hover {
   background: var(--alpha-white-5);
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 .k-mheat-fullscreen:focus-visible {
-  outline: 1px solid var(--line-200);
+  outline: 1px solid var(--k-separable-bold-borderColor);
   outline-offset: -1px;
+}
+/* 相机钮在全屏钮前（#87）：两颗挨着靠右，auto 留给相机钮。 */
+.k-mheat-copy + .k-mheat-fullscreen {
+  margin-left: 0;
 }
 .k-mheat:fullscreen {
   padding: var(--space-4);
-  background: var(--bg-100);
+  background: var(--k-surface-base-background);
 }
 .k-mheat-select {
   min-width: 96px;
@@ -455,10 +455,10 @@
   border: var(--hairline);
   border-radius: var(--radius-control);
   background: transparent;
-  color: var(--ink-100);
-  font: 500 12px/1 var(--font-sans);
+  color: var(--k-content-primary-foreground);
+  font: 500 var(--text-data-size)/1 var(--font-sans);
   cursor: pointer;
 }
 .k-mheat-open:hover {
-  background: var(--alpha-white-4);
+  background: var(--k-actionable-subtle-background-hover);
 }

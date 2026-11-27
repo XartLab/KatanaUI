@@ -1,4 +1,5 @@
 /* SPDX-License-Identifier: MIT */
+/* G6 token 迁移：alpha-white-4 的内高光没有对应的 characteristics，先留着。 */
 /* WorkspaceTabs 的皮肤（#1901）。组件卡 WorkspaceTabs：条高 48（--rail-h 没有就 48），bg-300；标签 display 14px 600 大写字距 0.06em，
    溢出的标签收进末尾的「…」下拉；右侧 mono 9px 快捷键 ink-400，标签之间 1px 发丝线；当前标签凹陷 bg-000、ink-100，底部 2px ink-100 的线用 snappy 弹簧滑过去；hover bg-400。 */
 .k-wtabs {
@@ -8,7 +9,7 @@
   min-width: 0;
   height: var(--rail-h, 48px);
   overflow: hidden;
-  background: var(--bg-300);
+  background: var(--k-surface-raised-background);
   box-shadow: inset 0 1px 0 var(--alpha-white-4);
 }
 .k-wtabs-list {
@@ -26,9 +27,9 @@
   max-width: 200px;
   padding: 0 16px;
   border: 0;
-  border-right: 1px solid var(--line-100);
+  border-right: 1px solid var(--k-separable-tertiary-borderColor);
   background: transparent;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: 600 14px/1 var(--font-sans);
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -36,44 +37,37 @@
   cursor: pointer;
 }
 .k-wtab:hover {
-  background: var(--bg-400);
-  color: var(--ink-200);
+  background: var(--k-surface-overlay-background);
+  color: var(--k-content-body-foreground);
 }
 .k-wtab[aria-selected='true'] {
-  background: var(--bg-000);
-  color: var(--ink-100);
+  background: var(--k-surface-sunken-background);
+  color: var(--k-content-primary-foreground);
 }
 .k-wtab[data-over] {
-  box-shadow: inset 2px 0 0 var(--ink-200);
+  box-shadow: inset 2px 0 0 var(--k-content-body-foreground);
 }
 .k-wtab-name {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .k-wtab-key {
   flex: 0 0 auto;
-  color: var(--ink-300);
-  font: 9px/1 var(--font-mono);
+  color: var(--k-content-secondary-foreground);
+  font: 9px/1 var(--font-num);
   letter-spacing: 0;
 }
 .k-wtabs-mark {
   position: absolute;
   bottom: 0;
   height: 2px;
-  background: var(--ink-100);
+  background: var(--k-actionable-bold-background);
   pointer-events: none;
   transition:
     left var(--dur-snappy, 333ms) var(--ease-snappy),
     width var(--dur-snappy, 333ms) var(--ease-snappy);
-}
-.k-wtabs-ruler {
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: flex;
-  visibility: hidden;
-  pointer-events: none;
 }
 .k-wtabs-more,
 .k-wtabs-create {
@@ -84,13 +78,13 @@
   padding: 0;
   border: 0;
   background: transparent;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   cursor: pointer;
 }
 .k-wtabs-more:hover,
 .k-wtabs-create:hover {
-  background: var(--bg-400);
-  color: var(--ink-100);
+  background: var(--k-surface-overlay-background);
+  color: var(--k-content-primary-foreground);
 }
 .k-wtabs-more svg,
 .k-wtabs-create svg {

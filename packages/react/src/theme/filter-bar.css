@@ -1,5 +1,8 @@
 /* SPDX-License-Identifier: MIT */
-/* 过滤条（FilterBar）：胶囊 24 高 · 4% 白底 8% 白边 · 12px，同 ChipGroup；设了条件的胶囊字提亮并带条件文字；浮层里预设是主文字加灰色副标题。 */
+/* 过滤条（FilterBar）：胶囊 26 高 · 3% 白底 7% 白边 · 12px，同 ChipGroup；设了条件的胶囊字提亮并带条件文字；浮层里预设是主文字加灰色副标题。
+   G2（2026-11-18）：FilterBar 部分的颜色改读 characteristics、字号改读字号档（12/16 = text-data，13/18 = text-body）；胶囊边 8% → 7% 白（同按钮），
+   设了条件的胶囊底 8% → 9% 白（按下底），列表悬停底 5% → 4%（subtle）。11/14 的小字没有对应的档（caption 是 11/16），用 caption 再把行高压回 14px。
+   ViewSwitcher 的规则挪到 view-switcher.css。下面的 ColumnSetTabs（.k-cset）不归这一批，原样留着。 */
 .k-fbar {
   display: flex;
   flex-wrap: wrap;
@@ -12,28 +15,28 @@
   gap: 6px;
   height: 26px;
   padding: 0 10px;
-  border: 1px solid var(--alpha-white-8);
+  border: 1px solid var(--k-actionable-borderColor);
   border-radius: var(--radius-pill);
-  background: var(--alpha-white-3);
-  color: var(--ink-200);
-  font: 500 12px/16px var(--font-sans);
+  background: var(--k-actionable-background);
+  color: var(--k-actionable-foreground);
+  font: var(--text-data) var(--font-sans);
   white-space: nowrap;
   cursor: pointer;
 }
 .k-fbar-pill:hover {
-  background: var(--alpha-white-6);
-  color: var(--ink-100);
+  background: var(--k-actionable-background-hover);
+  color: var(--k-actionable-foreground-hover);
 }
 .k-fbar-pill[data-active] {
-  background: var(--alpha-white-8);
-  color: var(--ink-100);
+  background: var(--k-actionable-background-active);
+  color: var(--k-actionable-foreground-hover);
 }
 .k-fbar-pill:focus-visible {
-  outline: 1px solid var(--line-200);
+  outline: 1px solid var(--k-separable-bold-borderColor);
   outline-offset: 1px;
 }
 .k-fbar-pill-value {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font-weight: 600;
 }
 .k-fbar-pop {
@@ -48,7 +51,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font: 600 13px/18px var(--font-sans);
+  font: var(--text-body) var(--font-sans);
+  font-weight: 600;
 }
 .k-fbar-pop-head > span {
   display: inline-flex;
@@ -72,29 +76,31 @@
   width: 100%;
   padding: 6px 8px;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   background: transparent;
-  color: var(--ink-100);
-  font: 500 12px/16px var(--font-sans);
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
   text-align: left;
   cursor: pointer;
 }
 .k-fbar-presets button:hover,
 .k-fbar-groups button:hover {
-  background: var(--alpha-white-5);
+  background: var(--k-actionable-subtle-background-hover);
 }
 .k-fbar-groups button[aria-disabled='true'] {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-fbar-presets small,
 .k-fbar-groups small {
-  color: var(--ink-300);
-  font: 400 11px/14px var(--font-sans);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans);
+  line-height: 14px;
 }
 .k-fbar-empty {
   padding: 8px;
-  color: var(--ink-300);
-  font: 400 12px/16px var(--font-sans);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-data) var(--font-sans);
+  font-weight: 400;
 }
 .k-fbar-manual {
   display: grid;
@@ -102,20 +108,22 @@
   gap: 6px;
   align-items: center;
   padding-top: 8px;
-  border-top: 1px solid var(--alpha-white-5);
+  border-top: 1px solid var(--k-separable-secondary-borderColor);
 }
 .k-fbar-manual b {
   grid-column: 1 / -1;
-  color: var(--ink-300);
-  font: 500 11px/14px var(--font-sans);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans);
+  font-weight: 500;
+  line-height: 14px;
 }
 .k-fbar-manual select {
   height: 26px;
-  border: 1px solid var(--alpha-white-9);
-  border-radius: 6px;
-  background: var(--alpha-white-4);
-  color: var(--ink-100);
-  font: 500 12px/16px var(--font-sans);
+  border: 1px solid var(--k-editable-borderColor);
+  border-radius: var(--radius-control);
+  background: var(--k-editable-background);
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
 }
 
 /* ColumnSetTabs：一行页签，选中的是白底黑字小胶囊（同日历的类别药丸），右侧留按钮位。 */
@@ -138,7 +146,7 @@
   height: 26px;
   padding: 0 10px;
   border: 0;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   background: transparent;
   color: var(--ink-200);
   font: 500 12px/16px var(--font-sans);
@@ -157,26 +165,6 @@
   outline-offset: 1px;
 }
 
-/* ViewSwitcher：标题位置的下拉 */
-.k-viewsw {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 2px 6px;
-  border: 0;
-  border-radius: var(--radius-control);
-  background: transparent;
-  color: var(--ink-100);
-  font: 600 14px/20px var(--font-sans);
-  cursor: pointer;
-}
-.k-viewsw:hover {
-  background: var(--alpha-white-4);
-}
-.k-viewsw:focus-visible {
-  outline: 2px solid var(--ink-100);
-  outline-offset: 1px;
-}
 .k-fbar-history {
   display: inline-flex;
   gap: 2px;

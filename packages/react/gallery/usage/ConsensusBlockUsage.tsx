@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-import { ConsensusBlock, countConsensus, type ConsensusParty } from '../../src/quant'
+import { ConsensusBlock, countConsensus, type ConsensusParty } from '../../src/blocks'
 
 const stateText = {
   pass: '通过',
@@ -12,21 +12,21 @@ const stateText = {
 }
 
 const orderParties: readonly ConsensusParty[] = [
-  { key: 'gw', label: 'GATEWAY', state: 'pass', message: '可用 ✓ 整手 ✓' },
+  { id: 'gw', label: 'GATEWAY', state: 'pass', message: '可用 ✓ 整手 ✓' },
   {
-    key: 'acct',
+    id: 'acct',
     label: 'ACCOUNT',
     state: 'warn',
     message: '集中度 58 / 60',
     detail: '单票集中度上限 60%，当前 58%；再买 2,000 股会到 61%（示例）。',
   },
-  { key: 'rules', label: 'RULES', state: 'pass', message: '无规则命中' },
+  { id: 'rules', label: 'RULES', state: 'pass', message: '无规则命中' },
 ]
 
 const promoteParties: readonly ConsensusParty[] = [
-  { key: 'gates', label: 'GATES', state: 'blocked', message: '偏离门未过 19.4%', detail: '偏离门要求 ≤ 15%（示例）。' },
-  { key: 'cap', label: 'CAPACITY', state: 'pass', message: '0.9 / 5 亿' },
-  { key: 'acct', label: 'ACCOUNT', state: 'unknown', message: '未指定' },
+  { id: 'gates', label: 'GATES', state: 'blocked', message: '偏离门未过 19.4%', detail: '偏离门要求 ≤ 15%（示例）。' },
+  { id: 'cap', label: 'CAPACITY', state: 'pass', message: '0.9 / 5 亿' },
+  { id: 'acct', label: 'ACCOUNT', state: 'unknown', message: '未指定' },
 ]
 
 const countText = (parties: readonly ConsensusParty[]) => {
@@ -40,7 +40,7 @@ export function ConsensusBlockUsage() {
       <div style={{ width: 340 }} data-testid="consensus-ok">
         <ConsensusBlock
           label="下单必要条件"
-          intent="下单 · 账户 A · 买 300750 × 2,000"
+          subject="下单 · 账户 A · 买 300750 × 2,000"
           parties={orderParties}
           verdict="warn"
           verdictText="可提交"
@@ -54,7 +54,7 @@ export function ConsensusBlockUsage() {
       <div style={{ width: 340 }} data-testid="consensus-blocked">
         <ConsensusBlock
           label="推进必要条件"
-          intent="推进 · alice-rev → LIVE"
+          subject="推进 · alice-rev → LIVE"
           parties={promoteParties}
           verdict="blocked"
           verdictText="不可推进"
@@ -68,9 +68,9 @@ export function ConsensusBlockUsage() {
         <ConsensusBlock
           label="重检必要条件"
           parties={[
-            { key: 'gw', label: 'GATEWAY', state: 'timeout', message: '超时' },
-            { key: 'acct', label: 'ACCOUNT', state: 'stale', message: '需重检' },
-            { key: 'rules', label: 'RULES', state: 'pending', message: '评估中' },
+            { id: 'gw', label: 'GATEWAY', state: 'timeout', message: '超时' },
+            { id: 'acct', label: 'ACCOUNT', state: 'stale', message: '需重检' },
+            { id: 'rules', label: 'RULES', state: 'pending', message: '评估中' },
           ]}
           verdict="blocked"
           verdictText="不可提交"

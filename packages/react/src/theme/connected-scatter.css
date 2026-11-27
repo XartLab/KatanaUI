@@ -1,0 +1,84 @@
+/* SPDX-License-Identifier: MIT */
+/* ConnectedScatter（#1918）：波动 vs 收益的月度轨迹（连线散点图）。颜色只用语义 token。 */
+
+.k-scatter {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  min-width: 0;
+}
+.k-scatter-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.k-scatter-tick line {
+  stroke: var(--chart-grid);
+}
+.k-scatter-tick text,
+.k-scatter-axis {
+  fill: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-scatter-series {
+  transition: opacity var(--dur-snappy) var(--ease-snappy);
+}
+.k-scatter-series[data-dim='true'] {
+  opacity: 0.25;
+}
+.k-scatter-path {
+  fill: none;
+  stroke: var(--k-scatter-color);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.k-scatter-arrow {
+  fill: var(--k-scatter-color);
+}
+.k-scatter-dot {
+  fill: var(--k-dot, var(--k-scatter-color));
+  outline: none;
+}
+/* 末点是强调色（dataviz §3：末点 / 当前点 + 辉光）；中间的点按时间取 seq，越新越亮。 */
+.k-scatter-dot[data-kind='end'] {
+  fill: var(--chart-accent, var(--k-content-primary-foreground));
+  filter: drop-shadow(0 0 4px var(--chart-accent, var(--k-content-primary-foreground)));
+}
+.k-scatter-dot[data-kind='start'] {
+  fill: var(--k-surface-sunken-background);
+  stroke: var(--k-scatter-color);
+  stroke-width: 2;
+}
+.k-scatter-dot:hover,
+.k-scatter-dot:focus-visible {
+  stroke: var(--k-content-primary-foreground);
+  stroke-width: 2;
+  opacity: 1 !important;
+}
+.k-scatter-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--k-content-body-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-scatter-legend li::before {
+  display: inline-block;
+  width: 12px;
+  height: 2px;
+  margin-right: 6px;
+  vertical-align: middle;
+  background: var(--k-scatter-color);
+  content: '';
+}
+.k-scatter-readout {
+  min-height: 16px;
+  color: var(--k-content-body-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
+}

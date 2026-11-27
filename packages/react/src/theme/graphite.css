@@ -1,0 +1,93 @@
+/* SPDX-License-Identifier: MIT */
+/* Graphite 主题的样式层（#130，从 KATANAview src/styles/graphite.css 搬回包，2026-11-22）。
+   颜色、玻璃、圆角的值都在 @katana-ui/tokens 的 tokens.json；这里只写 Graphite 下「哪些件用哪个 token」。
+   原来写在 KATANAview 里、按它自己挂的钩子类（k-btn、k-sel-pop、k-tip）选，组件库的文档站与别的消费方都拿不到；
+   搬过来改成包自己的 data-slot 与钩子类（k-pop、k-pop-item、k-dlg），应用专用的（顶栏、面板头、设置页、自选表）留在应用。
+
+   设计依据（KATANAview docs/design/themes.md，用户 2026-10-17 定：冷灰中性暗色，取 Apple 的排版，不是处处圆角）：
+   - 玻璃只给浮在内容上的功能层（菜单、下拉、弹层、对话框、悬停卡），内容层不用；减少透明度时变实色（token 已处理）。
+   - 圆角分档：浮层 overlay（8）、控件 control（6）、内层 inner（4）；面板、窗格、工具条是方角。
+   - 层级靠字重与灰度、留白有节奏，分组靠留白与细分隔线，不靠边框；分组标题用标题式写法，不全大写。
+   Graphite 是包的默认主题（根节点不写 data-theme），也认显式的 data-theme='graphite'；console 与其它主题一行不动。 */
+
+/* ── 细分隔线：--hairline 在 tokens.css 里是完整的 border 简写，这里只换它的颜色 ── */
+:root:is(:not([data-theme]), [data-theme='graphite']) {
+  --g-hairline-color: color-mix(in srgb, var(--line-100) 70%, transparent);
+  --hairline: 1px solid var(--g-hairline-color);
+}
+
+/* ── 玻璃 · 浮在内容上的层：半透明底 + 模糊 + 1px 外边 + 顶部内高光 + 影子 ── */
+:root:is(:not([data-theme]), [data-theme='graphite'])
+  :is(
+    .k-pop,
+    .k-glass,
+    [data-slot='popover-content'],
+    [data-slot='dropdown-menu-content'],
+    [data-slot='dropdown-menu-sub-content'],
+    [data-slot='context-menu-content'],
+    [data-slot='context-menu-sub-content'],
+    [data-slot='menubar-content'],
+    [data-slot='select-content'],
+    [data-slot='hover-card-content'],
+    [data-slot='dialog-content'],
+    [data-slot='alert-dialog-content']
+  ) {
+  border-color: var(--glass-edge);
+  /* Graphite 下对话框与浮层同为 --radius-overlay（8）：这条盖掉了对话框自己的 --radius-dialog（14，Console 与 Sheet、搜索窗仍用它）。改前就是这样，#251 只写明、没改（待用户确认要不要让 Graphite 的对话框也取 14）。 */
+  border-radius: var(--radius-overlay);
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    var(--glass-shadow);
+}
+
+/* ── 圆角分档 ── */
+:root:is(:not([data-theme]), [data-theme='graphite']) [data-slot='tooltip-content'] {
+  border-radius: var(--radius-inner);
+}
+:root:is(:not([data-theme]), [data-theme='graphite'])
+  :is([data-slot='input'], [data-slot='select-trigger'], .k-tool, textarea) {
+  border-radius: var(--radius-control);
+}
+:root:is(:not([data-theme]), [data-theme='graphite'])
+  :is(.k-pop-item, [data-slot='select-item'], [data-slot='toggle-group-pill'], [data-slot='button'][data-size='sm']) {
+  border-radius: var(--radius-inner);
+}
+
+/* ── 菜单：内边 8，行高 32、左右 12；分组标题标题式（caption 600、不全大写、不拉字距）、上面留白；分隔线内缩一档，不通到边 ── */
+:root:is(:not([data-theme]), [data-theme='graphite']) .k-pop {
+  padding: var(--space-2);
+}
+:root:is(:not([data-theme]), [data-theme='graphite']) .k-pop-item {
+  height: 32px;
+  padding: 0 var(--space-3);
+}
+:root:is(:not([data-theme]), [data-theme='graphite']) .k-pop-group {
+  padding: var(--space-3) var(--space-3) var(--space-1);
+  font: var(--text-caption) var(--font-sans);
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+:root:is(:not([data-theme]), [data-theme='graphite']) .k-pop-sep {
+  margin: var(--space-2) var(--space-3);
+  background: var(--g-hairline-color);
+}
+
+/* ── 对话框：头 56、左 24 右 16，脚 16 24，头脚的分隔线用细线色（标题字号仍是 title 档） ── */
+:root:is(:not([data-theme]), [data-theme='graphite']) .k-dlg-head {
+  flex-basis: 56px;
+  height: 56px;
+  padding-inline: var(--space-6) var(--space-4);
+  border-bottom-color: var(--g-hairline-color);
+}
+/* DialogHeader 右边有关闭钮（绝对定位），留出它的位置 */
+:root:is(:not([data-theme]), [data-theme='graphite']) [data-slot='dialog-header'].k-dlg-head {
+  padding-inline-end: 48px;
+}
+:root:is(:not([data-theme]), [data-theme='graphite']) .k-dlg-foot {
+  padding: var(--space-4) var(--space-6);
+  border-top-color: var(--g-hairline-color);
+}

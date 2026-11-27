@@ -1,0 +1,173 @@
+/* SPDX-License-Identifier: MIT */
+/* OrderBook 订单簿（#104）。买盘走涨色、卖盘走跌色（--k-tone-up / --k-tone-down，根上 data-updown 互换时跟着换，这里不写死色值）。
+   深度条是整行底下的一条半透明色带，从右往左长，宽度 = 这一行累计量占显示行里最大累计量的比例；数字一律 tabular-nums、右对齐。 */
+.k-book {
+  --book-row-h: 20px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-book-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--inset-x);
+}
+.k-book-cols,
+.k-book-row {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr 1fr;
+  align-items: center;
+  column-gap: 8px;
+  padding: 0 var(--inset-x);
+}
+.k-book-cols {
+  height: 22px;
+  color: var(--k-content-secondary-foreground);
+  font: 500 11px/14px var(--font-sans);
+}
+.k-book-cols span:not(:first-child) {
+  text-align: right;
+}
+.k-book-side {
+  display: flex;
+  flex-direction: column;
+}
+.k-book-row {
+  position: relative;
+  width: 100%;
+  height: var(--book-row-h);
+  margin: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+}
+button.k-book-row {
+  cursor: pointer;
+}
+button.k-book-row:hover {
+  background: var(--k-selectable-background-hover);
+}
+button.k-book-row:focus-visible {
+  outline: 1px solid var(--k-separable-bold-borderColor);
+  outline-offset: -1px;
+}
+.k-book-bar {
+  position: absolute;
+  inset: 1px 0;
+  /* 12% 而不是 18%：最深的几行深度条铺到价格底下，18% 的同色底让卖价红字只剩 4.4:1（console，axe #190），12% 是 4.8:1（同成交明细大单行的底）。 */
+  background: color-mix(in srgb, var(--k-bar-tone) 12%, transparent);
+  pointer-events: none;
+  /* 深度条：长度是 --fill（0 到 1），贴右边用 scale 画；行情一刷新就变，不重排（kubai Vibe Design Tips 011，#251）。 */
+  transform-origin: right;
+  scale: var(--fill, 0) 1;
+  transition: scale var(--dur-snappy) var(--ease-snappy);
+}
+.k-book-side[data-side='bid'] {
+  --k-bar-tone: var(--k-tone-up-foreground);
+}
+.k-book-side[data-side='ask'] {
+  --k-bar-tone: var(--k-tone-down-foreground);
+}
+.k-book-price {
+  position: relative;
+  color: var(--k-bar-tone);
+}
+.k-book-size,
+.k-book-total {
+  position: relative;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+/* 累计列压在深度条上，ink-300 只有 3.4–4.2:1（console，axe #190），用 body。 */
+.k-book-total {
+  color: var(--k-content-body-foreground);
+}
+/* 中间一行：最新价（涨跌色）与价差。夹在两侧之间，上下各一条细线。 */
+.k-book-mid {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  min-height: 26px;
+  padding: 3px var(--inset-x);
+  border-block: 1px solid var(--k-separable-subtle-borderColor);
+  font-variant-numeric: tabular-nums;
+}
+.k-book-last {
+  font: var(--text-title) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-book-lastwrap[data-tone='up'] {
+  color: var(--k-tone-up-foreground);
+}
+.k-book-lastwrap[data-tone='down'] {
+  color: var(--k-tone-down-foreground);
+}
+.k-book-spread {
+  display: inline-flex;
+  gap: 6px;
+  margin-left: auto;
+  color: var(--k-content-secondary-foreground);
+}
+.k-book-empty {
+  margin: 0;
+  padding: var(--space-4) var(--inset-x);
+  color: var(--k-content-secondary-foreground);
+  text-align: center;
+}
+/* 买卖占比条：左买右卖，宽度各占百分比；字写在条里，条再窄也不挤出去（溢出裁掉，读屏有 aria-label）。 */
+.k-book-share {
+  position: relative;
+  display: flex;
+  height: 20px;
+  margin: var(--space-2) var(--inset-x) var(--space-3);
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  font: 500 11px/20px var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+/* 两段各铺满整条：clip-path 裁出自己的占比（--fill，0 到 1），字留在原位、条长变化不重排。
+   底色不画在整段上：整段铺满整条，买卖两段的底会叠在一起，axe 按盒子（不看 clip-path）算背景，把卖字的底算成「红叠绿」（3.4:1，#258）。
+   底色画在里面的 .k-book-share-fill 上，它按 --fill 用 scale 缩到自己的占比（买从左、卖从右），两块底盒子不相交，axe 量到的就是画出来的颜色。 */
+.k-book-share > span {
+  position: absolute;
+  inset: 0;
+  isolation: isolate;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0 6px;
+  white-space: nowrap;
+  transition: clip-path var(--dur-snappy) var(--ease-snappy);
+}
+.k-book-share-fill {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  scale: var(--fill, 0) 1;
+  transition: scale var(--dur-snappy) var(--ease-snappy);
+}
+/* 条里的字压在 28% 的同色底上原样只有 3.9–4.4:1（axe #190），往 primary 混 35%，仍是红 / 绿（混 25% 时最深一格 4.45:1）。 */
+.k-book-share-bid {
+  clip-path: inset(0 calc((1 - var(--fill, 0)) * 100%) 0 0);
+  color: color-mix(in srgb, var(--k-tone-up-foreground) 65%, var(--k-content-primary-foreground));
+}
+.k-book-share-bid > .k-book-share-fill {
+  transform-origin: left;
+  background: color-mix(in srgb, var(--k-tone-up-foreground) 28%, transparent);
+}
+.k-book-share-ask {
+  clip-path: inset(0 0 0 calc((1 - var(--fill, 0)) * 100%));
+  color: color-mix(in srgb, var(--k-tone-down-foreground) 65%, var(--k-content-primary-foreground));
+  text-align: right;
+}
+.k-book-share-ask > .k-book-share-fill {
+  transform-origin: right;
+  background: color-mix(in srgb, var(--k-tone-down-foreground) 28%, transparent);
+}

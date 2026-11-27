@@ -1,0 +1,92 @@
+/* SPDX-License-Identifier: MIT */
+/* AccountEquity 账户权益概览（#104）：四个 Lcd 读数一行（窄了自动折行），下面保证金率风险条，再下面可选的迷你权益曲线。
+   风险条三段取 --k-status-ok / warn / danger-foreground 的淡底，指针是主文字色的细竖线；档位同时写成文字（Tag），不只靠颜色。 */
+.k-acct {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-3);
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-acct-readouts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-2);
+}
+.k-acct-readouts > div {
+  display: flex;
+  min-width: 0;
+}
+.k-acct-risk {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.k-acct-risk-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.k-acct-risk-name {
+  color: var(--k-content-secondary-foreground);
+}
+.k-acct-risk-value {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.k-acct-risk[data-level='warn'] .k-acct-risk-value {
+  color: var(--k-status-warn-foreground);
+}
+.k-acct-risk[data-level='danger'] .k-acct-risk-value {
+  color: var(--k-status-danger-foreground);
+}
+.k-acct-track {
+  position: relative;
+  display: flex;
+  height: 8px;
+  border-radius: var(--radius-md);
+  overflow: visible;
+}
+.k-acct-band {
+  display: block;
+  height: 100%;
+  opacity: 0.55;
+}
+.k-acct-band:first-child {
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
+}
+.k-acct-band:last-of-type {
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+.k-acct-band[data-band='safe'] {
+  background: var(--k-status-ok-foreground);
+}
+.k-acct-band[data-band='warn'] {
+  background: var(--k-status-warn-foreground);
+}
+.k-acct-band[data-band='danger'] {
+  background: var(--k-status-danger-foreground);
+}
+.k-acct-marker {
+  position: absolute;
+  top: -3px;
+  width: 3px;
+  height: 14px;
+  margin-left: -1.5px;
+  border-radius: var(--radius-sm);
+  background: var(--k-content-primary-foreground);
+  box-shadow: 0 0 0 1px var(--k-container-secondary-background);
+}
+.k-acct-scale {
+  display: flex;
+  justify-content: space-between;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans);
+}
+.k-acct-curve {
+  display: block;
+  width: 100%;
+  height: 56px;
+}

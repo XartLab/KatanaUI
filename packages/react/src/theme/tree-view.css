@@ -6,8 +6,8 @@
   display: flex;
   flex-direction: column;
   outline: 0;
-  color: var(--ink-200);
-  font: var(--text-data) var(--font-mono);
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-num);
 }
 .k-tree-item {
   display: block;
@@ -28,13 +28,13 @@
   user-select: none;
 }
 .k-tree-item[data-hovered] .k-tree-row {
-  background: var(--bg-400);
-  color: var(--ink-100);
+  background: var(--k-surface-overlay-background);
+  color: var(--k-content-primary-foreground);
 }
 .k-tree-item[data-selected] .k-tree-row {
-  background: var(--bg-000);
-  box-shadow: inset 2px 0 0 var(--ink-100);
-  color: var(--ink-100);
+  background: var(--k-surface-sunken-background);
+  box-shadow: inset 2px 0 0 var(--k-content-primary-foreground);
+  color: var(--k-content-primary-foreground);
 }
 .k-tree-item[data-focus-visible] .k-tree-row {
   outline: 2px solid var(--focus-ring);
@@ -49,8 +49,8 @@
   padding: 0;
   background: transparent;
   border: 0;
-  border-radius: 4px;
-  color: var(--ink-300);
+  border-radius: var(--radius-md);
+  color: var(--k-content-secondary-foreground);
   cursor: pointer;
 }
 .k-tree-chevron svg {
@@ -63,7 +63,7 @@
   display: inline-grid;
   flex: none;
   place-items: center;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-tree-label {
   flex: 1;
@@ -73,6 +73,6 @@
   white-space: nowrap;
 }
 .k-tree-count {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font-variant-numeric: tabular-nums;
 }

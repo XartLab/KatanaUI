@@ -1,0 +1,16 @@
+/* SPDX-License-Identifier: MIT */
+/* 文字动效的样式：目前只有打字光标。光标用当前文字色，宽是字高的 8%，一秒一明灭（steps 硬切，像终端光标）。 */
+.k-tw-caret {
+  display: inline-block;
+  width: 0.08em;
+  height: 1em;
+  margin-inline-start: 0.1em;
+  vertical-align: text-bottom;
+  background: currentColor;
+  animation: k-tw-blink 1s steps(1) infinite;
+}
+@keyframes k-tw-blink {
+  50% {
+    opacity: 0;
+  }
+}

@@ -3,11 +3,11 @@ import { useState } from 'react'
 import { cn } from '../lib/cn.ts'
 import { useScrubber } from '../lib/use-scrubber.ts'
 import { ToggleGroup, ToggleGroupItem } from '../primitives/toggle-group.tsx'
-import { ChartActions } from './chart-kit/chart-actions.tsx'
-import { ChartTable, type ChartViewProps } from './chart-kit/chart-table.tsx'
-import { LcdTooltip, type LcdTooltipRow } from './chart-kit/lcd-tooltip.tsx'
-import { PlotGrid, PlotYAxis } from './chart-kit/plot-axes.tsx'
-import { linePath, makePlot, pct, PLOT_W } from './series-geometry.ts'
+import { ChartActions } from '../lib/chart/chart-kit/chart-actions.tsx'
+import { ChartTable, type ChartViewProps } from '../lib/chart/chart-kit/chart-table.tsx'
+import { LcdTooltip, type LcdTooltipRow } from '../lib/chart/chart-kit/lcd-tooltip.tsx'
+import { PlotGrid, PlotYAxis } from '../lib/chart/chart-kit/plot-axes.tsx'
+import { linePath, makePlot, pct, PLOT_W } from '../lib/chart/series-geometry.ts'
 import {
   knownValue,
   normalizeVintages,
@@ -87,6 +87,7 @@ export function VintageSeries({
   source,
   onExport,
   onFullscreen,
+  onCopyImage,
 }: VintageSeriesProps) {
   const [mode, setMode] = useState<VintageMode>(defaultMode)
   const [tableView, setTableView] = useState(false)
@@ -139,7 +140,7 @@ export function VintageSeries({
     <figure className={cn('k-vs', className)} data-slot="vintage-series" data-mode={mode}>
       <div className="k-vs-bar">
         <ToggleGroup
-          variant="sm"
+          size="sm"
           aria-label={labels.mode}
           value={mode}
           onValueChange={(next) => {
@@ -157,6 +158,7 @@ export function VintageSeries({
           onTableView={setTableView}
           onExport={onExport}
           onFullscreen={onFullscreen}
+          onCopyImage={onCopyImage}
         />
       </div>
       <dl className="k-vs-stats" data-slot="vintage-stats">

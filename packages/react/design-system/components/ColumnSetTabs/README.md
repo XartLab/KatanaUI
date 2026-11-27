@@ -48,6 +48,8 @@ export function ColumnSetTabsUsage() {
 ## Don't
 
 - 不要自己存「当前列集」：它由列推出来。
+- 不要拿它代替 ColumnPicker：页签只套整套列，单列的显隐与次序在 ColumnPicker 里改。
+- 页签不要超过一行能放下的数量（约 8 个）；更多的套用放进 ColumnPicker 的列集芯片。
 
 ## Composition
 

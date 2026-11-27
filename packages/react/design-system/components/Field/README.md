@@ -1,6 +1,6 @@
 # Field
 
-标签加控件加说明加错误排成一组，并把它们的 ARIA 关联好：标签点一下聚焦控件，说明与错误进控件的 aria-describedby，出错时 aria-invalid、错误条 role=alert。
+标签加控件加说明加错误排成一组，并把它们的 ARIA 关联好：标签点一下聚焦控件，说明与错误进控件的 aria-describedby，出错时 aria-invalid、错误条 role=alert。可选 shakeOnInvalid：变成无效的那一刻整组抖一下（改自 SmoothUI form，MIT）。
 
 ## Provide
 
@@ -15,6 +15,7 @@
 | `orientation` | `"vertical" \| "horizontal"` | — | Label above the control, or label and description on the left with the control on the right. |
 | `invalid` | `boolean` | `false` | Turns the label to the danger color, marks the control aria-invalid and shows FieldError. |
 | `disabled` | `boolean` | `false` | Dims the label to 45% and disables the control. |
+| `shakeOnInvalid` | `boolean` | `false` | Shake the whole field once (3px) when it turns invalid. |
 
 ### FieldError
 

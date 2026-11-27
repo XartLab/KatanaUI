@@ -12,7 +12,7 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `tone` | `"default" \| "ok" \| "warn" \| "danger"` | — | Color of the stripe and the icon. |
+| `tone` | `Severity \| 'default' \| null` | — | Color of the stripe and the icon: neutral (default), ok, warn or danger. |
 
 ### AlertTitle / AlertDescription
 
@@ -36,8 +36,8 @@ export function AlertUsage() {
 
 ## States
 
-- default、ok：role=status；warn、danger：role=alert。
-- 左边 2px 色条取语气的颜色。
+- tone 是 Severity：neutral（默认）、ok 是 role=status；warn、danger 是 role=alert。旧名 default 等于 neutral。
+- 左边 2px 色条与图标取 --k-status-<tone>-foreground；neutral 的色条是 --k-status-neutral-bold-borderColor（22% 白）。
 
 ## Don't
 

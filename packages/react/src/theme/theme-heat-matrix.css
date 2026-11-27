@@ -1,0 +1,127 @@
+/* SPDX-License-Identifier: MIT */
+/* ThemeHeatMatrix 题材热度矩阵（#11）。色阶：中性前景色的五档浓度（主文字色 10% / 20% / 34% / 52% / 74% 混透明），不用品牌橙（#50：橙只给焦点角括号）。
+   tokens 里现有的顺序色阶 seq-* 是品牌橙系，没有不含橙的语义顺序档，所以这里用 --k-content-primary-foreground 混透明，五档规则（⌊只数 / 最大 × 5⌋，封顶 4）仍与 CalendarHeatmap 换手视图同一条。
+   0 只与没有数据不着色（容器底色），没有数据的格不写字。字色按档换：0–2 档主文字色，3–4 档（浅灰底）换深色字，两个主题都过 4.5:1。
+   表格手感取 TradingView 的列表：无衬线 + tabular-nums、28px 行、极淡分隔；选中格 1px 主色描边，键盘焦点 1px 分隔粗线。 */
+.k-theme-heat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-3) var(--inset-x);
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-theme-heat-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.k-theme-heat-row {
+  display: grid;
+  grid-template-columns: var(--heat-cols);
+  gap: 2px;
+  align-items: stretch;
+}
+.k-theme-heat-row.is-head {
+  height: 20px;
+  align-items: center;
+  color: var(--k-content-secondary-foreground);
+  font: 500 11px/14px var(--font-sans);
+}
+.k-theme-heat-date {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.k-theme-heat-date[data-latest] {
+  color: var(--k-content-primary-foreground);
+}
+.k-theme-heat-name {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  min-width: 0;
+  padding-right: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-theme-heat-cell {
+  --k-cell: var(--k-container-secondary-background);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--k-cell);
+  color: var(--k-content-primary-foreground);
+  cursor: pointer;
+  outline: none;
+}
+.k-theme-heat-cell[data-seq='0'],
+.k-theme-heat i[data-seq='0'] {
+  --k-cell: color-mix(in srgb, var(--k-content-primary-foreground) 10%, transparent);
+}
+.k-theme-heat-cell[data-seq='1'],
+.k-theme-heat i[data-seq='1'] {
+  --k-cell: color-mix(in srgb, var(--k-content-primary-foreground) 20%, transparent);
+}
+.k-theme-heat-cell[data-seq='2'],
+.k-theme-heat i[data-seq='2'] {
+  --k-cell: color-mix(in srgb, var(--k-content-primary-foreground) 34%, transparent);
+}
+.k-theme-heat-cell[data-seq='3'],
+.k-theme-heat i[data-seq='3'] {
+  --k-cell: color-mix(in srgb, var(--k-content-primary-foreground) 52%, transparent);
+}
+.k-theme-heat-cell[data-seq='4'],
+.k-theme-heat i[data-seq='4'] {
+  --k-cell: color-mix(in srgb, var(--k-content-primary-foreground) 74%, transparent);
+}
+.k-theme-heat-cell:is([data-seq='3'], [data-seq='4']) {
+  color: var(--k-selectable-bold-foreground-selected);
+}
+.k-theme-heat-count {
+  font: 600 13px/16px var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-theme-heat-rank {
+  position: absolute;
+  top: 1px;
+  right: 3px;
+  font: 500 9px/11px var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-theme-heat-cell:hover {
+  box-shadow: inset 0 0 0 1px var(--k-separable-bold-borderColor);
+}
+.k-theme-heat-cell.is-selected {
+  box-shadow: inset 0 0 0 1px var(--k-content-primary-foreground);
+}
+.k-theme-heat-cell:focus-visible {
+  outline: 1px solid var(--k-separable-bold-borderColor);
+  outline-offset: 1px;
+}
+.k-theme-heat-legend {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  align-self: flex-end;
+  color: var(--k-content-secondary-foreground);
+  font: 500 11px/14px var(--font-sans);
+}
+.k-theme-heat-legend span {
+  padding: 0 4px;
+}
+.k-theme-heat-legend i {
+  width: 14px;
+  height: 8px;
+  border-radius: var(--radius-sm);
+  background: var(--k-cell);
+}
+.k-theme-heat-empty {
+  margin: auto;
+  padding: var(--space-6);
+  color: var(--k-content-secondary-foreground);
+}

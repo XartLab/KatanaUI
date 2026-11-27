@@ -15,11 +15,10 @@ const find = (group: 'color' | 'shadow', name: string): Token =>
 
 describe('语义别名', () => {
   it('accent 在每个主题里都指向 signal-orange，没有新色值', () => {
-    expect(find('color', 'accent').value).toEqual({
-      console: '{signal-orange}',
-      paper: '{signal-orange}',
-      graphite: '{signal-orange}',
-    })
+    const accent = find('color', 'accent').value as Record<string, string>
+    const themes = (tokens.color.themes as { id: string }[]).map((theme) => theme.id)
+    expect(Object.keys(accent).sort()).toEqual([...themes].sort())
+    for (const theme of themes) expect(accent[theme]).toBe('{signal-orange}')
     expect(css).toContain('--accent: var(--signal-orange);')
   })
 

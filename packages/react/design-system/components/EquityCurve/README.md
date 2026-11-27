@@ -17,7 +17,7 @@
 | `axis / formatTime` | `(n) => string` | — | 纵轴刻度与基准读数、横轴默认刻度的写法。 |
 | `xTicks` | `(start, end) => { time, label }[]` | — | 宿主自己给整点 / 整日刻度（按显示时区）；不给就在窗口里均分 5 个。 |
 | `labels` | `object` | — | 回撤、时刻列头、线性 / 对数、概览条三个手柄、右上三件的文字。 |
-| `onWindowChange` | `(window) => void` | — | 拖概览条改窗口后回调，宿主可把别的表跟着筛。 |
+| `onValueChange` | `(window) => void` | — | 拖概览条改窗口后回调，宿主可把别的表跟着筛。旧名 onWindowChange 留一个版本。 |
 | `onExport / onFullscreen` | `() => void` | — | 不给就不画那个按钮；表格视图总有。 |
 
 ## Usage

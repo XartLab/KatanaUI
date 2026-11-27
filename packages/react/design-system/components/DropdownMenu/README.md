@@ -29,7 +29,7 @@
 
 ### DropdownMenuSub / DropdownMenuSubTrigger / DropdownMenuSubContent
 
-二级菜单。安全三角：斜着朝二级走时路过下一行不误收。
+二级菜单。悬停 220ms 开；安全三角：斜着朝二级走时路过下一行不换不闪，停在三角里最多护 1.2s；滑出 360ms 才收。
 
 ### DropdownMenuLabel / DropdownMenuSeparator / DropdownMenuShortcut / DropdownMenuGroup / DropdownMenuPortal
 
@@ -72,6 +72,8 @@ export function DropdownMenuUsage() {
 ## Don't
 
 - 菜单项不超过一屏，更长的换命令面板。
+- 不要拿它选表单里的一个值，那是 Select。
+- 二级菜单不要超过一层。
 
 ## Composition
 

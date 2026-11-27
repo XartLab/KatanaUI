@@ -1,0 +1,350 @@
+/* SPDX-License-Identifier: MIT */
+/* Whiteboard（白板，#51）：底座 React Flow 的结构样式（@xyflow/react 的 base.css，MIT）加我们的皮。
+   React Flow 的颜色变量（--xy-*）全部在 .k-wb 上改成我们的 characteristics 与语义 token，不读色阶；不用它的 style.css（那是它自己的皮）。
+   橙色只给键盘焦点的四角括号（#50）；选中用中性的亮边，下游高亮用亮边 + 选中底色，其余淡到 35%。
+   边的状态线型与色与 transmission-chain.css 同值：支持 --pnl-up 实线、反对 --pnl-down 实线、部分琥珀点划线、未检验灰虚线；反馈边点线。 */
+@import '@xyflow/react/dist/base.css';
+
+.k-wb {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+  border: var(--hairline);
+  background: var(--k-surface-base-background);
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-sans);
+
+  --xy-background-color: var(--k-surface-base-background);
+  --xy-background-pattern-color: var(--k-separable-primary-borderColor);
+  --xy-node-color: var(--k-content-body-foreground);
+  --xy-node-border: none;
+  --xy-node-background-color: transparent;
+  --xy-node-border-radius: 0;
+  --xy-node-boxshadow-hover: none;
+  --xy-node-boxshadow-selected: none;
+  --xy-edge-stroke: var(--k-content-tertiary-foreground);
+  --xy-edge-stroke-selected: var(--k-content-primary-foreground);
+  --xy-edge-stroke-width: 1.5;
+  --xy-connectionline-stroke: var(--k-content-secondary-foreground);
+  --xy-connectionline-stroke-width: 1.5;
+  --xy-handle-background-color: var(--k-content-secondary-foreground);
+  --xy-handle-border-color: var(--k-surface-base-background);
+  --xy-selection-background-color: var(--k-selectable-subtle-background-selected);
+  --xy-selection-border: 1px dashed var(--k-separable-primary-borderColor);
+  --xy-resize-background-color: var(--k-content-secondary-foreground);
+  --xy-minimap-background-color: var(--k-container-secondary-background);
+  --xy-minimap-mask-background-color: var(--k-selectable-background-hover);
+  --xy-minimap-mask-stroke-color: var(--k-separable-primary-borderColor);
+  --xy-minimap-node-background-color: var(--k-separable-bold-borderColor);
+  --xy-minimap-node-stroke-color: transparent;
+  --xy-edge-label-background-color: var(--k-container-secondary-background);
+  --xy-edge-label-color: var(--k-content-body-foreground);
+  --xy-attribution-background-color: transparent;
+}
+.k-wb .react-flow {
+  background: var(--xy-background-color);
+}
+.k-wb-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+/* 工具条：左上角浮在画布上。 */
+.k-wb .k-wb-toolbar {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 5;
+  height: auto;
+  padding: 2px;
+  border: var(--hairline);
+  background: var(--k-container-secondary-background);
+}
+.k-wb .react-flow__minimap {
+  border: var(--hairline);
+}
+
+/* 节点：外壳由 React Flow 画（.react-flow__node），里面是 .k-wb-node。键盘焦点画四角括号（橙色，--k-focused-outlineColor），不画外框。 */
+.k-wb .react-flow__node {
+  outline: none;
+}
+.k-wb .react-flow__node:focus-visible::after {
+  position: absolute;
+  inset: -4px;
+  content: '';
+  pointer-events: none;
+  --wb-b: var(--k-focused-outlineColor);
+  background:
+    linear-gradient(var(--wb-b), var(--wb-b)) top left / 10px 2px,
+    linear-gradient(var(--wb-b), var(--wb-b)) top left / 2px 10px,
+    linear-gradient(var(--wb-b), var(--wb-b)) top right / 10px 2px,
+    linear-gradient(var(--wb-b), var(--wb-b)) top right / 2px 10px,
+    linear-gradient(var(--wb-b), var(--wb-b)) bottom left / 10px 2px,
+    linear-gradient(var(--wb-b), var(--wb-b)) bottom left / 2px 10px,
+    linear-gradient(var(--wb-b), var(--wb-b)) bottom right / 10px 2px,
+    linear-gradient(var(--wb-b), var(--wb-b)) bottom right / 2px 10px;
+  background-repeat: no-repeat;
+}
+.k-wb-node {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 140px;
+  max-width: 260px;
+  padding: 8px 10px;
+  border: 1px solid var(--k-separable-bold-borderColor);
+  border-radius: var(--radius-control);
+  background: var(--k-container-secondary-background);
+  transition: opacity var(--dur-hover) var(--ease-hover);
+}
+.k-wb .react-flow__node:hover .k-wb-node {
+  background: var(--k-surface-raised-background);
+}
+.k-wb .react-flow__node.selected .k-wb-node {
+  border-color: var(--k-content-primary-foreground);
+}
+.k-wb-node[data-mark='downstream'] {
+  border-color: var(--k-content-primary-foreground);
+  background: var(--k-selectable-background-selected);
+}
+.k-wb-node[data-mark='dim'] {
+  opacity: 0.35;
+}
+.k-wb-node[data-kind='note'] {
+  border-style: dashed;
+  background: var(--k-surface-base-background);
+}
+.k-wb-note-text {
+  margin: 0;
+  color: var(--k-content-primary-foreground);
+  white-space: pre-wrap;
+}
+.k-wb-note-edit {
+  min-height: 48px;
+  padding: 2px;
+  border: var(--hairline);
+  background: var(--k-surface-base-background);
+  color: var(--k-content-primary-foreground);
+  font: inherit;
+  field-sizing: content;
+  resize: none;
+}
+.k-wb-title {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-weight: 700;
+}
+.k-wb-metric-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.k-wb-value {
+  color: var(--k-content-primary-foreground);
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+}
+.k-wb-value small {
+  margin-left: 2px;
+  color: var(--k-content-secondary-foreground);
+  font-size: 11px;
+  font-weight: 400;
+}
+.k-wb-spark {
+  display: block;
+  width: 72px;
+  height: 24px;
+}
+.k-wb-slot {
+  min-height: 24px;
+  cursor: auto;
+}
+.k-wb-hyp-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.k-wb-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 8px;
+  border: 1px solid var(--wb-color);
+  border-radius: var(--radius-pill);
+  color: var(--k-content-primary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-wb-badge svg {
+  color: var(--wb-color);
+}
+.k-wb-count {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
+}
+.k-wb-node[data-kind='hypothesis'] {
+  border-left: 3px solid var(--wb-color);
+}
+
+/* 分组框：虚线框，左上角标题，选中可拖角改大小。 */
+.k-wb-group {
+  width: 100%;
+  height: 100%;
+  border: 1px dashed var(--k-separable-primary-borderColor);
+  border-radius: var(--radius-overlay);
+  background: var(--k-selectable-subtle-groupBackground);
+}
+.k-wb .react-flow__node.selected .k-wb-group {
+  border-color: var(--k-content-secondary-foreground);
+}
+.k-wb-group-title {
+  position: absolute;
+  top: 6px;
+  left: 10px;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-weight: 700;
+}
+.k-wb .k-wb-resize-handle {
+  width: 7px;
+  height: 7px;
+  border: 1px solid var(--k-surface-base-background);
+  border-radius: 0;
+  background: var(--k-content-secondary-foreground);
+}
+.k-wb .k-wb-resize-line {
+  border-color: var(--k-content-tertiary-foreground);
+}
+
+/* 连接点：平时看不见，悬停节点时出来。 */
+.k-wb .react-flow__handle {
+  width: 7px;
+  height: 7px;
+  opacity: 0;
+  transition: opacity var(--dur-hover) var(--ease-hover);
+}
+.k-wb .react-flow__node:hover .react-flow__handle,
+.k-wb .react-flow__node.selected .react-flow__handle,
+.k-wb .react-flow__handle.connectingfrom {
+  opacity: 1;
+}
+
+/* 节点工具条（选中时出在上方）。 */
+.k-wb-node-tools {
+  display: flex;
+  border: var(--hairline);
+  background: var(--k-container-secondary-background);
+  box-shadow: var(--shadow-overlay);
+}
+.k-wb-node-tools button {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--k-content-secondary-foreground);
+  cursor: pointer;
+}
+.k-wb-node-tools button:hover {
+  background: var(--k-selectable-background-hover);
+  color: var(--k-content-primary-foreground);
+}
+.k-wb-node-tools button:focus-visible {
+  outline: var(--k-focused-outlineWidth) solid var(--k-focused-outlineColor);
+  outline-offset: -2px;
+}
+.k-wb-node-tools svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* 边：状态定色与线型（同 transmission-chain.css）。 */
+.k-wb-edge-line[data-status='plain'],
+.k-wb-edge-chip[data-status='plain'],
+.k-wb-arrow[data-status='plain'] {
+  --wb-color: var(--k-content-tertiary-foreground);
+  --wb-dash: none;
+}
+.k-wb [data-status='supported'] {
+  --wb-color: var(--pnl-up);
+  --wb-dash: none;
+}
+.k-wb [data-status='contradicted'] {
+  --wb-color: var(--pnl-down);
+  --wb-dash: none;
+}
+.k-wb [data-status='partial'] {
+  --wb-color: var(--k-status-warn-foreground);
+  --wb-dash: 9 3 2 3;
+}
+.k-wb [data-status='untested'] {
+  --wb-color: var(--k-content-tertiary-foreground);
+  --wb-dash: 5 4;
+}
+.k-wb-arrow path {
+  fill: var(--wb-color);
+}
+.k-wb .react-flow__edge-path.k-wb-edge-line {
+  stroke: var(--wb-color);
+  stroke-width: 1.75;
+  stroke-dasharray: var(--wb-dash);
+  transition: opacity var(--dur-hover) var(--ease-hover);
+}
+.k-wb .react-flow__edge-path.k-wb-edge-line[data-feedback='true'] {
+  stroke-dasharray: 2 4;
+  stroke-linecap: round;
+}
+.k-wb .react-flow__edge.selected .k-wb-edge-line,
+.k-wb .react-flow__edge:hover .k-wb-edge-line,
+.k-wb .k-wb-edge-line[data-mark='downstream'] {
+  stroke-width: 3;
+}
+.k-wb [data-mark='dim'].k-wb-edge-line,
+.k-wb [data-mark='dim'].k-wb-edge-chip {
+  opacity: 0.35;
+}
+.k-wb .react-flow__edge:focus-visible .k-wb-edge-line {
+  stroke: var(--k-content-primary-foreground);
+}
+.k-wb-edge-chip {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 8px;
+  border: 1px solid var(--wb-color);
+  border-radius: var(--radius-pill);
+  background: var(--k-container-secondary-background);
+  color: var(--k-content-body-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  white-space: nowrap;
+  pointer-events: all;
+}
+.k-wb-edge-chip svg {
+  color: var(--wb-color);
+}
+
+/* 辅助线：拖动时与别的节点对齐的竖线 / 横线。 */
+.k-wb-guide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  background: var(--k-content-secondary-foreground);
+}
+.k-wb-guide.is-v {
+  width: 1px;
+  height: 100000px;
+}
+.k-wb-guide.is-h {
+  width: 100000px;
+  height: 1px;
+}
+.k-wb:focus {
+  outline: none;
+}

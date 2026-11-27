@@ -71,6 +71,15 @@ export function PanelFrame({
   )
 }
 
+/** Texts of PanelFrameHeader (screen-reader names; the package has no language). */
+export type PanelFrameHeaderLabels = {
+  /** 色点的名字。有 linkGroup 时必填。 */
+  link?: string
+  /** 折叠按钮展开时与收起时的名字（collapsible 时要给）。 */
+  collapse?: string
+  expand?: string
+}
+
 export type PanelFrameHeaderProps = ComponentProps<'header'> & {
   /** 标题（h2）。不传就没有标题行（空格子）。不叫 title：那是 header 自己的悬停提示属性，照常透传。 */
   heading?: ReactNode
@@ -80,7 +89,8 @@ export type PanelFrameHeaderProps = ComponentProps<'header'> & {
   object?: ReactNode
   /** 联动组的色点：给组名画那一组的颜色；null 画熄灭的环；不传不画。 */
   linkGroup?: LinkGroup | null
-  /** 色点的名字（读屏念，包里没有文字）。有 linkGroup 时必填。 */
+  labels?: PanelFrameHeaderLabels
+  /** @deprecated Use `labels.link`; kept for one version. */
   linkLabel?: string
   /** 固定（不跟随联动）：色点变空心圆。 */
   pinned?: boolean
@@ -88,9 +98,11 @@ export type PanelFrameHeaderProps = ComponentProps<'header'> & {
   toolbar?: ReactNode
   /** 右侧动作槽（设置、最大化、关闭这类图标按钮；不超过三个，更多进设置）。 */
   actions?: ReactNode
-  /** 画折叠按钮；两个名字由调用方传。 */
+  /** 画折叠按钮；两个名字由调用方经 labels 传。 */
   collapsible?: boolean
+  /** @deprecated Use `labels.collapse`; kept for one version. */
   collapseLabel?: string
+  /** @deprecated Use `labels.expand`; kept for one version. */
   expandLabel?: string
   classNames?: Partial<Record<PanelFrameSlot, string>>
 }
@@ -100,13 +112,14 @@ export function PanelFrameHeader({
   headingHidden = false,
   object,
   linkGroup,
-  linkLabel = '',
+  labels,
+  linkLabel = labels?.link ?? '',
   pinned = false,
   toolbar,
   actions,
   collapsible = false,
-  collapseLabel,
-  expandLabel,
+  collapseLabel = labels?.collapse,
+  expandLabel = labels?.expand,
   classNames = {},
   className,
   children,
@@ -149,18 +162,29 @@ export function PanelFrameHeader({
 
 export type PanelFrameState = 'ready' | 'loading' | 'empty' | 'disconnected'
 
+/** Texts of PanelFrameBody. */
+export type PanelFrameBodyLabels = {
+  /** loading 时骨架的名字（读屏念，包里没有文字）。 */
+  loading?: string
+}
+
 export type PanelFrameBodyProps = ComponentProps<'div'> & {
   /** 内容区的状态：ready 画 children；loading 画骨架；empty、disconnected 画空态（不画假数据）。 */
+  status?: PanelFrameState
+  /** @deprecated Use `status`; kept for one version. */
   state?: PanelFrameState
-  /** loading 时骨架的名字（读屏念，包里没有文字）。 */
+  labels?: PanelFrameBodyLabels
+  /** @deprecated Use `labels.loading`; kept for one version. */
   loadingLabel?: string
   /** empty、disconnected 时空态的文字与动作；同一个面板两种状态各传各的。 */
   view?: { tag?: string; title: string; description?: ReactNode; actions?: ReactNode }
 }
 
 export function PanelFrameBody({
-  state = 'ready',
-  loadingLabel = '',
+  state: legacyState,
+  status = legacyState ?? 'ready',
+  labels,
+  loadingLabel = labels?.loading ?? '',
   view,
   className,
   children,
@@ -173,12 +197,12 @@ export function PanelFrameBody({
       {...rest}
       id={rest.id ?? frame?.bodyId}
       data-slot="panel-frame-body"
-      data-state={state}
+      data-state={status}
       className={cn('k-panel-body', className)}
     >
-      {state === 'ready' ? (
+      {status === 'ready' ? (
         children
-      ) : state === 'loading' ? (
+      ) : status === 'loading' ? (
         <Skeleton label={loadingLabel} lines={6} />
       ) : view ? (
         <EmptyState tag={view.tag} title={view.title} actions={view.actions}>

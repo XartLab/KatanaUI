@@ -15,17 +15,17 @@ import { Button } from './button.tsx'
 // 入场走 gentle 弹簧从那一边滑进来，退场 120ms 直线滑出（theme/motion.css，按 data-side）。要有标题（SheetTitle，读屏靠它报名字），不想显示就加 sr-only。
 const sheetVariants = cva(
   [
-    'k-sheet k-text-body fixed z-41 flex flex-col border border-alpha-white-8 bg-surface-3 leading-[1.45] text-ink outline-0',
-    'shadow-[0_2px_4px_rgba(0,0,0,0.5),0_24px_70px_rgba(0,0,0,0.45)]',
+    'k-sheet k-text-body fixed z-41 flex flex-col border border-(color:--k-overlay-dialog-borderColor) bg-(--k-surface-raised-background) leading-[1.45] text-(color:--k-content-primary-foreground) outline-0',
+    'shadow-(--k-overlay-dialog-shadow)',
   ],
   {
     variants: {
       /** Which edge the sheet sticks to; it slides in from that edge. */
       side: {
-        right: 'inset-y-0 right-0 w-[min(360px,calc(100vw-24px))] rounded-l-[14px] border-r-0',
-        left: 'inset-y-0 left-0 w-[min(360px,calc(100vw-24px))] rounded-r-[14px] border-l-0',
-        top: 'inset-x-0 top-0 max-h-[50dvh] rounded-b-[14px] border-t-0',
-        bottom: 'inset-x-0 bottom-0 max-h-[50dvh] rounded-t-[14px] border-b-0',
+        right: 'inset-y-0 right-0 w-[min(360px,calc(100vw-24px))] rounded-l-[var(--radius-dialog)] border-r-0',
+        left: 'inset-y-0 left-0 w-[min(360px,calc(100vw-24px))] rounded-r-[var(--radius-dialog)] border-l-0',
+        top: 'inset-x-0 top-0 max-h-[50dvh] rounded-b-[var(--radius-dialog)] border-t-0',
+        bottom: 'inset-x-0 bottom-0 max-h-[50dvh] rounded-t-[var(--radius-dialog)] border-b-0',
       },
     },
     defaultVariants: { side: 'right' },
@@ -100,7 +100,7 @@ function SheetHeader({ className, ...props }: ComponentProps<'div'>) {
     <div
       data-slot="sheet-header"
       className={cn(
-        'flex min-h-[50px] shrink-0 flex-col justify-center gap-1 border-b border-alpha-white-5 py-2 pr-12 pl-4',
+        'flex min-h-[50px] shrink-0 flex-col justify-center gap-1 border-b border-(color:--k-separable-subtle-borderColor) py-2 pr-12 pl-4',
         className,
       )}
       {...props}
@@ -123,7 +123,7 @@ function SheetFooter({ className, ...props }: ComponentProps<'div'>) {
     <div
       data-slot="sheet-footer"
       className={cn(
-        'flex shrink-0 flex-wrap items-center justify-end gap-2 border-t border-alpha-white-5 px-4 py-3',
+        'flex shrink-0 flex-wrap items-center justify-end gap-2 border-t border-(color:--k-separable-subtle-borderColor) px-4 py-3',
         className,
       )}
       {...props}
@@ -135,7 +135,7 @@ function SheetTitle({ className, ...props }: ComponentProps<typeof SheetPrimitiv
   return (
     <SheetPrimitive.Title
       data-slot="sheet-title"
-      className={cn('k-text-title m-0 leading-none text-ink', className)}
+      className={cn('k-text-title m-0 leading-none text-(color:--k-content-primary-foreground)', className)}
       {...props}
     />
   )
@@ -145,7 +145,7 @@ function SheetDescription({ className, ...props }: ComponentProps<typeof SheetPr
   return (
     <SheetPrimitive.Description
       data-slot="sheet-description"
-      className={cn('k-text-data m-0 text-ink-3', className)}
+      className={cn('k-text-data m-0 text-(color:--k-content-secondary-foreground)', className)}
       {...props}
     />
   )

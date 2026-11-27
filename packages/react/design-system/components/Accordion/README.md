@@ -44,6 +44,8 @@ export function AccordionUsage() {
 ## Don't
 
 - 不要把用户必须读的内容收起来。
+- 只有一段可收起时用 Collapsible。
+- 标题里不放按钮或链接，整行就是展开的触发。
 
 ## Composition
 

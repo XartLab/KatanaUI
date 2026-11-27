@@ -17,16 +17,25 @@ import {
   type UptimeCell,
   type UptimeStatus,
 } from '../../src/index.ts'
+import { LiveUptimeDemo } from './live-readouts.tsx'
+import { demoCopyImage } from './demo-copy.tsx'
 import { Row } from './parts.tsx'
 
-/** 图右上三件的演示 props；导出与全屏的回调留空（演示页没有可导出的东西）。 */
-const ACTIONS = { group: '图的操作', table: '表格视图', exportCsv: '导出 CSV', fullscreen: '全屏' }
+/** 图右上的几颗钮的演示 props；导出与全屏的回调留空（演示页没有可导出的东西），复制图真的拍（#87）。 */
+const ACTIONS = {
+  group: '图的操作',
+  table: '表格视图',
+  exportCsv: '导出 CSV',
+  fullscreen: '全屏',
+  copyImage: '复制图片',
+}
 const view = (tableHead: string[], tableLabel: string) => ({
   actionLabels: ACTIONS,
   tableLabel,
   tableHead,
   onExport: () => {},
   onFullscreen: () => {},
+  onCopyImage: demoCopyImage,
   source: '来源 / 演示数据 · 固定种子合成 · 非行情',
 })
 
@@ -117,6 +126,7 @@ export function UptimeBarsDemo() {
           <p data-gallery-uptime-picked>{picked}</p>
         </div>
       </Row>
+      <LiveUptimeDemo />
     </>
   )
 }
@@ -434,7 +444,7 @@ function QuantileCase({ monotone, id }: { monotone: boolean; id: string }) {
   const x = (i: number) => `${2024 + Math.floor(i / 12)}-${String(1 + (i % 12)).padStart(2, '0')}`
   const labels = {
     chart: '示例：因子分层累计收益',
-    actions: { group: '图的操作', table: '表格视图', exportCsv: '导出 CSV', fullscreen: '全屏' },
+    actions: ACTIONS,
     x: '日期',
     layers: '分层',
     table: '分层累计收益表',
@@ -466,6 +476,7 @@ function QuantileCase({ monotone, id }: { monotone: boolean; id: string }) {
         stats={stats}
         source="来源 / 演示数据 · 固定种子合成 · 非回测"
         onExport={() => {}}
+        onCopyImage={demoCopyImage}
       />
     </div>
   )

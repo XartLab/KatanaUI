@@ -72,7 +72,7 @@
   }
 }
 
-/* 菜单、右键菜单、弹层、提示：从触发它的那一边长出来（Radix Popper 给了 --radix-popper-transform-origin）。入场走 snappy 弹簧，退场 120ms 直线淡出。 */
+/* 菜单、右键菜单、弹层、提示：从触发它的那一边长出来（Radix Popper 给了 --radix-popper-transform-origin）。入场走 snappy 弹簧，退场 --dur-exit 的 --ease-exit 淡出。 */
 [data-slot='dropdown-menu-content'],
 [data-slot='dropdown-menu-sub-content'],
 [data-slot='context-menu-content'],
@@ -97,18 +97,20 @@
 [data-slot='context-menu-content'][data-state='closed'],
 [data-slot='context-menu-sub-content'][data-state='closed'],
 [data-slot='popover-content'][data-state='closed'] {
-  animation: kc-pop-out 120ms linear both;
+  animation: kc-pop-out var(--dur-exit) var(--ease-exit) both;
 }
 /* 提示没有退场动画：Radix 的 Presence 要等退场动画放完才卸载，期间它还是最上层的 DismissableLayer，会把这一下 Esc 吞掉，
    提示后面的对话框就关不掉（#1849：指标窗里提示刚收起就按 Esc）。提示不可交互、只是个标注，直接消失。 */
 /* 对话框：升起（gentle），背板淡入。bare 的浮层（自带整套外观的命令搜索、指标库、品种搜索，popover 的 bare 变体）位置由调用方定，
    入场按 transform 的缩放与竖移（不碰 translate，居中靠它），起点与曲线用变量配：--k-in-scale（默认 0.97）、--k-in-y（默认 4px）、
    --k-in-dur / --k-in-ease（默认 gentle，弹层用 snappy 的调用方自己覆盖）。 */
-[data-slot='dialog-content']:not([data-bare])[data-state='open'] {
+[data-slot='dialog-content']:not([data-bare])[data-state='open'],
+[data-slot='alert-dialog-content'][data-state='open'] {
   animation: kc-dialog-in var(--dur-gentle) var(--ease-gentle) both;
 }
-[data-slot='dialog-content']:not([data-bare])[data-state='closed'] {
-  animation: kc-dialog-out 120ms linear both;
+[data-slot='dialog-content']:not([data-bare])[data-state='closed'],
+[data-slot='alert-dialog-content'][data-state='closed'] {
+  animation: kc-dialog-out var(--dur-exit) var(--ease-exit) both;
 }
 [data-slot='dialog-content'][data-bare][data-state='open'],
 [data-slot='popover-content'][data-variant='bare'][data-state='open'] {
@@ -116,27 +118,29 @@
 }
 [data-slot='dialog-content'][data-bare][data-state='closed'],
 [data-slot='popover-content'][data-variant='bare'][data-state='closed'] {
-  animation: kc-bare-out 120ms linear both;
+  animation: kc-bare-out var(--dur-exit) var(--ease-exit) both;
 }
-[data-slot='dialog-overlay'][data-state='open'] {
-  animation: kc-fade-in 120ms linear both;
+[data-slot='dialog-overlay'][data-state='open'],
+[data-slot='alert-dialog-overlay'][data-state='open'] {
+  animation: kc-fade-in var(--dur-hover) var(--ease-hover) both;
 }
-[data-slot='dialog-overlay'][data-state='closed'] {
-  animation: kc-fade-out 120ms linear both;
+[data-slot='dialog-overlay'][data-state='closed'],
+[data-slot='alert-dialog-overlay'][data-state='closed'] {
+  animation: kc-fade-out var(--dur-exit) var(--ease-exit) both;
 }
 /* 折叠：高度从 0 长到内容高度。 */
 [data-slot='accordion-content'][data-state='open'] {
   animation: kc-accordion-down var(--dur-snappy) var(--ease-snappy);
 }
 [data-slot='accordion-content'][data-state='closed'] {
-  animation: kc-accordion-up 120ms linear;
+  animation: kc-accordion-up var(--dur-exit) var(--ease-exit);
 }
 /* 开关：圆钮滑过去走 snappy 弹簧（自带一点过冲）；按住时被压扁一点，像真的在推它。 */
 [data-slot='switch-thumb'] {
   transition:
     translate var(--dur-snappy) var(--ease-snappy),
     scale 160ms var(--ease-snappy),
-    background-color 150ms linear;
+    background-color var(--dur-hover) var(--ease-hover);
 }
 [data-slot='switch']:active:not(:disabled) [data-slot='switch-thumb'] {
   scale: 1.18 0.9;
@@ -149,10 +153,12 @@
 }
 /* 滑块：松手后把手与填充走 settle 弹簧落到步进位置（slider.tsx 在松手后的一小段时间里挂 data-settling）；拖动中不带过渡，跟手。 */
 [data-slot='slider'][data-settling] [data-slot='slider-thumb'] {
-  transition: translate var(--dur-settle) var(--ease-settle);
+  transition:
+    translate var(--dur-settle) var(--ease-settle),
+    scale 160ms var(--ease-snappy);
 }
 [data-slot='slider'][data-settling] [data-slot='slider-fill'] {
-  transition: width var(--dur-settle) var(--ease-settle);
+  transition: clip-path var(--dur-settle) var(--ease-settle);
 }
 /* 下拉：跟菜单、弹层同一套入场。 */
 [data-slot='select-content'] {
@@ -162,10 +168,10 @@
   animation: kc-pop-in var(--dur-snappy) var(--ease-snappy) both;
 }
 [data-slot='select-content'][data-state='closed'] {
-  animation: kc-pop-out 120ms linear both;
+  animation: kc-pop-out var(--dur-exit) var(--ease-exit) both;
 }
 
-/* 悬停卡：跟弹层同一套入场（从触发处轻升，Radix HoverCard 给了 --radix-hover-card-content-transform-origin），退场 120ms 直线淡出。 */
+/* 悬停卡：跟弹层同一套入场（从触发处轻升，Radix HoverCard 给了 --radix-hover-card-content-transform-origin），退场 --dur-exit 的 --ease-exit 淡出。 */
 [data-slot='hover-card-content'] {
   transform-origin: var(--radix-hover-card-content-transform-origin);
 }
@@ -173,10 +179,10 @@
   animation: kc-pop-in var(--dur-snappy) var(--ease-snappy) both;
 }
 [data-slot='hover-card-content'][data-state='closed'] {
-  animation: kc-pop-out 120ms linear both;
+  animation: kc-pop-out var(--dur-exit) var(--ease-exit) both;
 }
 
-/* 抽屉：从贴着的那一边滑进来（gentle 弹簧），退场 120ms 直线滑出；背板跟对话框一样淡入淡出。用 translate，不碰 inset。 */
+/* 抽屉：从贴着的那一边滑进来（gentle 弹簧），退场 --dur-exit 的 --ease-exit 滑出；背板跟对话框一样淡入淡出。用 translate，不碰 inset。 */
 @keyframes kc-sheet-in-right {
   from {
     translate: 100% 0;
@@ -221,31 +227,31 @@
   animation: kc-sheet-in-right var(--dur-gentle) var(--ease-gentle) both;
 }
 [data-slot='sheet-content'][data-state='closed'][data-side='right'] {
-  animation: kc-sheet-out-right 120ms linear both;
+  animation: kc-sheet-out-right var(--dur-exit) var(--ease-exit) both;
 }
 [data-slot='sheet-content'][data-state='open'][data-side='left'] {
   animation: kc-sheet-in-left var(--dur-gentle) var(--ease-gentle) both;
 }
 [data-slot='sheet-content'][data-state='closed'][data-side='left'] {
-  animation: kc-sheet-out-left 120ms linear both;
+  animation: kc-sheet-out-left var(--dur-exit) var(--ease-exit) both;
 }
 [data-slot='sheet-content'][data-state='open'][data-side='top'] {
   animation: kc-sheet-in-top var(--dur-gentle) var(--ease-gentle) both;
 }
 [data-slot='sheet-content'][data-state='closed'][data-side='top'] {
-  animation: kc-sheet-out-top 120ms linear both;
+  animation: kc-sheet-out-top var(--dur-exit) var(--ease-exit) both;
 }
 [data-slot='sheet-content'][data-state='open'][data-side='bottom'] {
   animation: kc-sheet-in-bottom var(--dur-gentle) var(--ease-gentle) both;
 }
 [data-slot='sheet-content'][data-state='closed'][data-side='bottom'] {
-  animation: kc-sheet-out-bottom 120ms linear both;
+  animation: kc-sheet-out-bottom var(--dur-exit) var(--ease-exit) both;
 }
 [data-slot='sheet-overlay'][data-state='open'] {
-  animation: kc-fade-in 120ms linear both;
+  animation: kc-fade-in var(--dur-hover) var(--ease-hover) both;
 }
 [data-slot='sheet-overlay'][data-state='closed'] {
-  animation: kc-fade-out 120ms linear both;
+  animation: kc-fade-out var(--dur-exit) var(--ease-exit) both;
 }
 
 /* 进度条：填充走 snappy 弹簧滑到新位置；不确定态是一块 40% 宽的条来回滑。 */
@@ -269,5 +275,5 @@
 [data-slot='toast'] {
   transition:
     translate var(--dur-snappy) var(--ease-snappy),
-    opacity 120ms linear;
+    opacity var(--dur-hover) var(--ease-hover);
 }

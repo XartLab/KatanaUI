@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: MIT */
-/* 原样搬自 src/ui/ui.css（#1860，2026-11-14）：类名与规则都没改，应用里的件（src/ui/*.tsx）是这里的件外面包的一层。 */
-
-/* 品种名后的板块与风险徽标（Badges.tsx）：上标小字，颜色取次要文字色，不抢品种名。 */
+/* 品种名后的板块与风险徽标（BadgeGroup）的排布：一排贴在品种名右上，间距 space-1。徽标本身是 Tag 的 sm 档（theme/tag.css）。 */
 .k-badges {
   display: inline-flex;
   align-items: flex-start;
@@ -10,9 +8,5 @@
   flex: none;
 }
 .k-badge {
-  font: var(--text-micro) var(--font-sans);
-  letter-spacing: var(--text-micro-tracking);
-  color: var(--ink-300);
-  line-height: 1;
   cursor: help;
 }

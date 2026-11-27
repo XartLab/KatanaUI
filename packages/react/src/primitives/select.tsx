@@ -14,7 +14,7 @@ import { focusRing } from '../lib/focus.ts'
 // 列表 4px 内边 · 圆角 7 · 9% 白边 · 0 8 24 阴影，选项 6px 8px · 圆角 inner · 11px，悬停 5% 白，当前 9% 白 + 600，不打勾。
 const selectTriggerVariants = cva([
   'k-text-data box-border inline-flex h-[30px] min-w-[120px] cursor-pointer items-center justify-between gap-1.5',
-  'rounded-[var(--radius-control)] border border-alpha-white-8 bg-alpha-white-1 px-2 leading-none whitespace-nowrap text-ink',
+  'rounded-[var(--radius-control)] border border-(color:--k-editable-subtle-borderColor) bg-(--k-editable-subtle-background) px-2 leading-none whitespace-nowrap text-(color:--k-content-primary-foreground)',
   'transition-[background-color] duration-[120ms]',
   'disabled:cursor-not-allowed disabled:opacity-45',
   '[&_[data-slot=select-icon]]:transition-transform [&_[data-slot=select-icon]]:duration-150',
@@ -25,14 +25,14 @@ const selectTriggerVariants = cva([
 /** 触发器上的小箭头：单选与多选共用，开时翻转（触发器 data-state=open）。 */
 function SelectArrow() {
   return (
-    <span data-slot="select-icon" className="inline-flex text-ink-3">
+    <span data-slot="select-icon" className="inline-flex text-(color:--k-content-secondary-foreground)">
       <ChevronDown className="size-[10px]" aria-hidden="true" />
     </span>
   )
 }
 
 const selectItemClass =
-  'k-text-caption relative flex cursor-pointer items-center gap-1.5 rounded-[var(--radius-inner)] px-2 py-1.5 leading-[1.4] whitespace-nowrap text-ink-3 outline-0 transition-[background-color] duration-[80ms] select-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-40 data-[highlighted]:data-[state=unchecked]:bg-alpha-white-4 data-[state=checked]:bg-alpha-white-8 data-[state=checked]:font-semibold data-[state=checked]:text-ink'
+  'k-text-caption relative flex cursor-pointer items-center gap-1.5 rounded-[var(--radius-inner)] px-2 py-1.5 leading-[1.4] whitespace-nowrap text-(color:--k-content-secondary-foreground) outline-0 transition-[background-color] duration-[80ms] select-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-40 data-[highlighted]:data-[state=unchecked]:bg-(--k-selectable-background-hover) data-[state=checked]:bg-(--k-selectable-background-selected) data-[state=checked]:font-semibold data-[state=checked]:text-(color:--k-content-primary-foreground)'
 
 function Select(props: ComponentProps<typeof SelectPrimitive.Root>) {
   return <SelectPrimitive.Root {...props} />
@@ -63,7 +63,7 @@ function SelectContent({ className, children, ...props }: ComponentProps<typeof 
         align="start"
         sideOffset={2}
         className={cn(
-          'k-text-body z-50 box-border max-h-[min(var(--radix-select-content-available-height),calc(100dvh-16px))] min-w-[var(--radix-select-trigger-width)] overflow-y-auto rounded-[7px] border border-alpha-white-8 bg-surface-4 p-1 text-ink-2 shadow-[0_8px_24px_rgba(0,0,0,0.4)] outline-0',
+          'k-text-body z-50 box-border max-h-[min(var(--radix-select-content-available-height),calc(100dvh-16px))] min-w-[var(--radix-select-trigger-width)] overflow-y-auto rounded-[var(--radius-overlay)] border border-(color:--k-overlay-compact-borderColor) bg-(--k-surface-overlay-background) p-1 text-(color:--k-content-body-foreground) shadow-(--k-overlay-compact-shadow) outline-0',
           className,
         )}
         {...props}

@@ -14,69 +14,81 @@ body {
 
 /* 外壳：左侧目录 + 右侧一页。窄屏时目录叠到上面。 */
 .gal-shell {
+  /* 顶栏与吸顶页签的高度：粘性定位、锚点的 scroll-margin、目录的起点都从这里算，改一处全跟上。 */
+  --gal-bar-h: calc(var(--space-8) + var(--space-4));
+  --gal-tabs-h: calc(var(--space-8) + var(--space-2));
   display: grid;
-  grid-template-columns: 224px minmax(0, 1fr);
+  grid-template-columns: 300px minmax(0, 1fr);
   min-height: 100vh;
 }
-.gal-nav {
+.gal-shell:not(:has(.gal-side)) {
+  grid-template-columns: minmax(0, 1fr);
+}
+/* 左栏照 rareui：贴着页面底色，不加边框；右边内容是一块圆角面板（见 .gal-main）。 */
+.gal-side {
   position: sticky;
   top: 0;
   align-self: start;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  box-sizing: border-box;
   height: 100vh;
-  padding: 16px 12px 24px;
-  overflow-y: auto;
-  background: var(--bg-100);
-  border-right: 1px solid var(--line-100);
+  padding: 16px 12px 0 16px;
 }
-.gal-brand {
-  color: var(--ink-100);
-  font: var(--text-title) var(--font-sans);
-  text-decoration: none;
-}
-.gal-nav h2 {
-  margin: 0 0 4px;
-  padding: 0 8px;
-  color: var(--ink-300);
-  font: var(--text-micro) var(--font-sans);
-  letter-spacing: var(--text-micro-tracking);
-  text-transform: uppercase;
-}
-.gal-nav ul {
+.gal-side-head {
   display: flex;
-  flex-direction: column;
-  gap: 1px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  align-items: center;
+  gap: 10px;
 }
-.gal-nav li a {
-  display: block;
-  padding: 5px 8px;
-  border-radius: var(--radius-control);
+.gal-side-toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--alpha-white-6);
   color: var(--ink-200);
-  font: var(--text-data) var(--font-sans);
+  cursor: pointer;
+}
+.gal-side-toggle:hover {
+  background: var(--alpha-white-9);
+  color: var(--ink-100);
+}
+.gal-crumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: color-mix(in srgb, var(--ink-100) 55%, transparent);
+  font: 400 15px/20px var(--font-sans);
   text-decoration: none;
 }
-.gal-nav li a:hover {
-  background: var(--alpha-white-4);
+.gal-crumb b {
   color: var(--ink-100);
+  font-weight: 500;
 }
-.gal-nav li a[aria-current='page'] {
-  background: color-mix(in srgb, var(--signal-orange) 14%, transparent);
-  color: var(--ink-100);
+.gal-crumb-sep {
+  color: var(--ink-400);
 }
-.gal-nav a:focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: -2px;
+.gal-crumb {
+  gap: 8px;
+}
+.gal-nav-cn {
+  /* 2026-11-18：原来是 currentColor 的 70%，压在没选中（50% 亮度）的链接上不到 4.5:1，换成次要字色。 */
+  color: var(--k-content-secondary-foreground);
+  font-size: 0.86em;
 }
 
 .gal-main {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  margin: 8px 8px 8px 0;
+  border-radius: 16px;
+  background: var(--bg-100);
+  box-shadow: inset 0 0 0 1px var(--line-100);
+  overflow: clip;
+}
+.gal-shell:not(:has(.gal-side)) .gal-main {
+  margin-left: 8px;
 }
 .gal-bar {
   position: sticky;
@@ -84,19 +96,91 @@ body {
   z-index: 2;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px 24px;
-  background: var(--bg-000);
+  justify-content: flex-end;
+  gap: var(--space-3);
+  box-sizing: border-box;
+  height: var(--gal-bar-h);
+  padding: 0 var(--space-6);
+  background: var(--bg-100);
   border-bottom: 1px solid var(--line-100);
   color: var(--ink-300);
   font: var(--text-caption) var(--font-sans);
 }
-.gal-main > main {
+/* 主区：正文列最宽 960；视口 ≥1560（侧栏 300 + 正文 960 + 缝 32 + 目录 200 + 内边距）才在右侧放 200 宽的「本页」目录，宽度不够时先保正文，不挤成 850 让表格横滚。 */
+.gal-page {
+  display: grid;
+  grid-template-columns: minmax(0, 960px);
+  justify-content: start;
+  column-gap: var(--space-8);
   width: 100%;
-  max-width: 920px;
   box-sizing: border-box;
-  padding: 24px 24px 64px;
+  padding: var(--space-6) var(--space-6) calc(var(--space-8) * 2);
+}
+.gal-page-body {
+  min-width: 0;
+}
+@media (min-width: 1560px) {
+  .gal-page:has(.gal-toc) {
+    grid-template-columns: minmax(0, 960px) 200px;
+  }
+}
+/* 本页目录：样式照侧栏（13px、次级文字色，当前项主文字色加左侧 2px 线）。 */
+.gal-toc {
+  display: none;
+}
+@media (min-width: 1560px) {
+  .gal-toc {
+    display: block;
+    position: sticky;
+    top: calc(var(--gal-bar-h) + var(--space-6));
+    align-self: start;
+    max-height: calc(100vh - var(--gal-bar-h) - var(--space-8));
+    overflow-y: auto;
+  }
+}
+.gal-toc-title {
+  margin: 0 0 var(--space-2);
+  color: var(--ink-300);
+  font: var(--text-micro) var(--font-sans);
+  letter-spacing: var(--text-micro-tracking);
+}
+.gal-toc ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-left: 1px solid var(--line-100);
+}
+.gal-toc button {
+  display: block;
+  width: 100%;
+  margin: 0 0 0 -1px;
+  padding: var(--space-1) var(--space-3);
+  border: 0;
+  border-left: 2px solid transparent;
+  background: none;
+  color: var(--ink-300);
+  font: var(--text-body-size) / 1.4 var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+}
+.gal-toc li[data-level='3'] button {
+  padding-left: var(--space-6);
+}
+.gal-toc button:hover {
+  color: var(--ink-100);
+}
+.gal-toc button[aria-current='location'] {
+  border-left-color: var(--ink-100);
+  color: var(--ink-100);
+}
+/* 锚点与「本页」跳转落点要让开顶栏（文档页再让开吸顶页签）。 */
+.gal-page h2,
+.gal-page h3 {
+  scroll-margin-top: calc(var(--gal-bar-h) + var(--space-4));
+}
+.gal-doc-tabs h2,
+.gal-doc-tabs h3 {
+  scroll-margin-top: calc(var(--gal-bar-h) + var(--gal-tabs-h) + var(--space-4));
 }
 .gal-missing {
   color: var(--ink-300);
@@ -106,19 +190,24 @@ body {
 .gal-doc {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: var(--space-6);
 }
-.gal-doc-head h1 {
-  margin: 0 0 6px;
-  font: var(--text-title) var(--font-sans);
-  font-size: 22px;
+/* 页头节奏（照 Salt）：标题 → 导语 8，导语 → meta 12，meta → 页签 24；字号用最接近的档，display 档加粗。 */
+.gal-doc-head h1,
+.gal-fd > h1 {
+  margin: 0 0 var(--space-2);
+  font: var(--text-display) var(--font-sans);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: var(--text-display-tracking);
 }
-.gal-doc-head p {
+.gal-doc-head p,
+.gal-fd > .gal-lede:first-of-type {
   margin: 0;
-  max-width: 62ch;
+  max-width: 68ch;
   color: var(--ink-200);
-  font: var(--text-body) var(--font-sans);
-  line-height: 1.6;
+  font: var(--text-title-size) var(--font-sans);
+  line-height: round(nearest, 1.7em, 1px);
 }
 .gal-doc h2[id^='gal-h-'] {
   margin: 0 0 8px;
@@ -127,7 +216,8 @@ body {
   letter-spacing: var(--text-micro-tracking);
   text-transform: uppercase;
 }
-.gal-doc h3 {
+/* 只管属性表的小标题：不带作用域会漏进预览里的演示（演示自己的 h3 被改成等宽加粗）。 */
+.gal-prop > h3 {
   margin: 0;
   color: var(--ink-100);
   font: var(--text-data) var(--font-mono);
@@ -143,6 +233,9 @@ body {
   background: var(--bg-100);
   border: 1px solid var(--line-100);
   border-radius: var(--radius-overlay);
+  /* 内容永远不出卡片边：超宽的表格在卡片里横向滚。 */
+  min-width: 0;
+  overflow-x: auto;
 }
 /* 用法：真实例子渲染在一块底上，下面是源码与复制钮。 */
 .gal-usage {
@@ -164,6 +257,8 @@ body {
   background: var(--bg-100);
   border: 1px solid var(--line-100);
   border-radius: var(--radius-overlay);
+  min-width: 0;
+  overflow-x: auto;
 }
 .gal-doc abbr {
   margin-left: 2px;
@@ -214,7 +309,7 @@ body {
   padding-left: 20px;
   color: var(--ink-200);
   font: var(--text-data) var(--font-sans);
-  line-height: 1.6;
+  line-height: round(nearest, 1.6em, 1px);
 }
 .gal-keys th {
   width: 220px;
@@ -237,28 +332,691 @@ body {
   border-radius: var(--radius-control);
   color: var(--ink-200);
   font: var(--text-data) var(--font-mono);
-  line-height: 1.6;
+  line-height: round(nearest, 1.6em, 1px);
 }
 
 @media (max-width: 760px) {
   .gal-shell {
     grid-template-columns: minmax(0, 1fr);
   }
-  .gal-nav {
-    position: static;
-    height: auto;
-    border-right: 0;
-    border-bottom: 1px solid var(--line-100);
+  /* 窄屏左栏不渲染（docs.tsx 的 useNarrow），目录收进底栏 + 抽屉（.gal-dock、.gal-drawer）。 */
+  .gal-bar .gal-side-toggle {
+    display: none;
+  }
+  .gal-main {
+    margin: 0 8px 8px;
   }
   .gal-bar {
     position: static;
   }
-  .gal-main > main {
-    padding: 16px 16px 48px;
+  .gal-doc-tablist {
+    top: 0;
   }
+  .gal-page {
+    /* 底栏固定在底，页尾留出它的高度。 */
+    padding: var(--space-4) var(--space-4) calc(var(--gal-dock-h) + var(--space-8));
+  }
+}
+
+/* 左栏两端的渐隐（kubai 008）：上 40px、下 56px，各留 10% 全透明的边，免得切了一半的行在边上留一道淡线；
+   SideRail 按滚动位置写 data-more-above / data-more-below，只在那一端还有内容时才有渐隐（顶部没滚过、滚到底都没有）。
+   取代 side-nav.css 里写死的底部渐隐。 */
+@property --gal-fade-above {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+@property --gal-fade-below {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+.gal-rail {
+  height: 100%;
+  min-height: 0;
+}
+.gal-rail .k-sidenav-scroll {
+  scroll-padding-block: 24px 56px;
+  mask:
+    linear-gradient(#000, #000) no-clip subtract,
+    linear-gradient(to bottom, #000 0 10%, transparent) 0 0 / 100% var(--gal-fade-above) no-repeat no-clip,
+    linear-gradient(to bottom, transparent, #000 90%) 0 100% / 100% var(--gal-fade-below) no-repeat no-clip;
+  transition:
+    --gal-fade-above 160ms,
+    --gal-fade-below 160ms;
+}
+.gal-rail .k-sidenav-scroll[data-more-above] {
+  --gal-fade-above: 40px;
+}
+.gal-rail .k-sidenav-scroll[data-more-below] {
+  --gal-fade-below: 56px;
+}
+
+/* 页末上一页 / 下一页（kubai 008）：两块并排，小字方向 + 页名；只有一个方向时它仍在自己那一侧。 */
+.gal-pager {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin-top: calc(var(--space-8) * 2);
+}
+.gal-pager-link {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--k-separable-primary-borderColor);
+  border-radius: var(--radius-control);
+  color: var(--k-content-primary-foreground);
+  text-decoration: none;
+  transition: background-color 120ms;
+}
+.gal-pager-link[data-dir='next'] {
+  grid-column: 2;
+  text-align: right;
+}
+.gal-pager-link:hover {
+  background: var(--k-actionable-background-hover);
+}
+.gal-pager-link:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+.gal-pager-dir {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans);
+}
+.gal-pager-title {
+  overflow: hidden;
+  font: var(--text-body) var(--font-sans);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 窄屏底栏：不在窄屏时不显示（窄屏才渲染 NavDrawer，这里再保一道）。 */
+.gal-dock {
+  display: none;
+}
+@media (max-width: 760px) {
+  .gal-shell {
+    --gal-dock-h: 48px;
+  }
+  .gal-dock {
+    position: fixed;
+    inset: auto 8px 8px;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    box-sizing: border-box;
+    height: var(--gal-dock-h);
+    padding: 0 var(--space-2);
+    border-radius: var(--radius-overlay);
+    background: var(--bg-200);
+    box-shadow:
+      inset 0 0 0 1px var(--k-overlay-borderColor),
+      var(--shadow-overlay-sm);
+  }
+  .gal-dock-button {
+    flex: none;
+    height: 36px;
+    padding: 0 var(--space-4);
+    border: 0;
+    border-radius: var(--radius-control);
+    background: var(--k-actionable-background);
+    color: var(--k-content-primary-foreground);
+    font: var(--text-body) var(--font-sans);
+    cursor: pointer;
+  }
+  .gal-dock-button:hover {
+    background: var(--k-actionable-background-hover);
+  }
+  .gal-dock-section {
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+    color: var(--k-content-secondary-foreground);
+    font: var(--text-body) var(--font-sans);
+    text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+/* 抽屉：从底边升起，上移 24px 淡入，不压暗背后；退场反过来（display、overlay 离散过渡，关的时候也走完）。 */
+.gal-drawer {
+  inset: auto 0 0;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  height: min(72dvh, 560px);
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: calc(var(--radius-overlay) * 2) calc(var(--radius-overlay) * 2) 0 0;
+  background: var(--bg-200);
+  box-shadow:
+    inset 0 0 0 1px var(--k-overlay-borderColor),
+    var(--shadow-overlay);
+  color: var(--k-content-primary-foreground);
+  overflow: hidden;
+  overscroll-behavior: contain;
+  opacity: 0;
+  translate: 0 24px;
+  transition:
+    opacity 200ms var(--ease-gentle),
+    translate 200ms var(--ease-gentle),
+    display 200ms allow-discrete,
+    overlay 200ms allow-discrete;
+}
+.gal-drawer[open] {
+  opacity: 1;
+  translate: 0 0;
+}
+@starting-style {
+  .gal-drawer[open] {
+    opacity: 0;
+    translate: 0 24px;
+  }
+}
+.gal-drawer::backdrop {
+  background: transparent;
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+.gal-drawer[open] {
+  display: flex;
+}
+.gal-drawer-sheet {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  padding: var(--space-3) var(--space-3) 0;
+}
+.gal-drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-1) var(--space-3);
+  font: var(--text-body) var(--font-sans);
+}
+.gal-drawer-close {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: var(--k-actionable-background);
+  color: var(--k-content-primary-foreground);
+  cursor: pointer;
+}
+.gal-drawer-close:hover {
+  background: var(--k-actionable-background-hover);
+}
+/* 点按的目标比桌面的大一档：条目行高 44px 上下。 */
+.gal-drawer .k-sidenav-link {
+  padding-block: 11px;
+}
+.gal-drawer .gal-rail {
+  flex: 1;
 }
 /* 用法源码里的注释（文件头的 SPDX 行）与行号：代码块默认用装饰灰 ink-400，在页面底上对比度不够（Console 1.95:1、Graphite 3.95:1），这里提到 ink-300 过 axe。 */
 [data-usage-code] .italic,
 [data-usage-code] [data-slot='code-block-gutter'] {
   color: var(--ink-300);
+}
+/* 顶栏左侧：面包屑「分组 / 页名」，右边一枚小标签说明数据是演示用的。 */
+.gal-bar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+  margin-right: auto;
+}
+.gal-bar-crumb {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  white-space: nowrap;
+}
+.gal-bar-crumb a {
+  color: var(--ink-300);
+  text-decoration: none;
+}
+.gal-bar-crumb a:hover {
+  color: var(--ink-100);
+}
+.gal-bar-crumb b {
+  color: var(--ink-100);
+  font-weight: 500;
+}
+.gal-bar-sep {
+  color: var(--ink-400);
+}
+.gal-bar-tag {
+  padding: 0 var(--space-2);
+  border: 1px solid var(--line-100);
+  border-radius: var(--radius-control);
+  color: var(--ink-300);
+  font: var(--text-micro) var(--font-sans);
+  white-space: nowrap;
+}
+.gal-render-page h2 {
+  margin: 28px 0 10px;
+  color: var(--ink-100);
+  font: var(--text-title) var(--font-sans);
+}
+.gal-render-env {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 16px;
+  margin: 0;
+  font: var(--text-data) var(--font-sans);
+}
+.gal-render-env dt {
+  color: var(--ink-300);
+}
+.gal-render-env dd {
+  margin: 0;
+  color: var(--ink-400);
+}
+.gal-render-env dd[data-ok] {
+  color: var(--ink-100);
+}
+.gal-render-envrow {
+  display: contents;
+}
+.gal-render-ramp {
+  border-collapse: collapse;
+}
+.gal-render-ramp th {
+  padding: 6px 16px 6px 0;
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans-small);
+  text-align: left;
+  white-space: nowrap;
+}
+.gal-render-ramp td {
+  padding: 6px 0;
+  color: var(--ink-100);
+  white-space: nowrap;
+}
+.gal-render-inks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  border: 1px solid var(--line-100);
+}
+.gal-render-inks > div {
+  padding: 10px 14px;
+}
+.gal-render-inks p {
+  margin: 4px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gal-render-lines {
+  height: 120px;
+  border: 1px solid var(--line-100);
+}
+.gal-render-lines svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.gal-render-lines rect {
+  fill: color-mix(in srgb, var(--ink-200) 40%, transparent);
+}
+
+/* 「基础」一组页（foundations.tsx）。 */
+.gal-fd h2 {
+  /* 上 40 下 12：右侧「本页」目录读 h2/h3，间距统一才对得齐。 */
+  margin: calc(var(--space-8) + var(--space-2)) 0 var(--space-3);
+  color: var(--ink-100);
+  font: var(--text-title) var(--font-sans);
+}
+.gal-fd h3 {
+  margin: var(--space-6) 0 var(--space-2);
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-sans);
+  font-weight: 600;
+}
+/* 正文段落最宽 68ch，长行读不动。 */
+.gal-fd > p,
+.gal-fd > .gal-list {
+  max-width: 68ch;
+}
+.gal-fd > p {
+  margin: 0 0 var(--space-4);
+  color: var(--ink-200);
+  font: var(--text-body) var(--font-sans);
+  line-height: var(--space-6);
+}
+.gal-fd p code,
+.gal-fd .gal-list code {
+  color: var(--ink-100);
+  font: var(--text-caption) var(--font-mono);
+}
+.gal-fd-table {
+  width: 100%;
+  border-collapse: collapse;
+  font: var(--text-data) var(--font-sans);
+}
+.gal-fd-table th {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--line-100);
+  color: var(--ink-300);
+  font: var(--text-micro) var(--font-sans-small);
+  text-align: left;
+  vertical-align: top;
+}
+.gal-fd-table td {
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--line-100);
+  color: var(--ink-200);
+  /* 三列都顶对齐，统一 20 行高让首行基线一致（24 对 13px 正文太松）。 */
+  line-height: var(--space-5);
+  vertical-align: top;
+}
+.gal-fd-table code {
+  color: var(--ink-100);
+  font: var(--text-caption) var(--font-mono);
+  line-height: var(--space-5);
+  overflow-wrap: anywhere;
+}
+.gal-fd-preview {
+  width: 160px;
+}
+.gal-fd-usage {
+  color: var(--ink-300);
+}
+/* 字族表：token 列定 260（栈已截断，用不着更宽），余下全给用途列，说明少折行。 */
+.gal-fd-table:has(.k-fd-stack) td:nth-child(2) {
+  width: 260px;
+}
+/* 字族示例：每行同字号，才能比字形。 */
+.k-fd-sample {
+  display: block;
+  font-size: var(--space-4);
+  line-height: var(--space-5);
+  white-space: nowrap;
+}
+/* 字体栈放在 token 名下面，单行截断，全文在 title。 */
+.gal-fd-table .k-fd-stack {
+  display: block;
+  max-width: 260px;
+  overflow: hidden;
+  color: var(--ink-400);
+  overflow-wrap: normal;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gal-fd-values {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+}
+.gal-fd-values > div {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 8px;
+}
+.gal-fd-values dt {
+  /* 主题名是要读的标签：ink-4 是装饰灰（约 2.5:1），改用次要字色（≥4.5:1）。整页 a11y 扫出来的（2026-11-18）。 */
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.gal-fd-values dd {
+  margin: 0;
+}
+.gal-fd-swatch {
+  display: block;
+  width: 96px;
+  height: 28px;
+  border: 1px solid var(--line-100);
+  border-radius: 4px;
+}
+.gal-fd-bar {
+  display: inline-block;
+  vertical-align: middle;
+  min-width: 1px;
+  height: 12px;
+  background: var(--ink-300);
+}
+.gal-fd-box {
+  display: block;
+  width: 72px;
+  height: 40px;
+  background: var(--bg-300);
+}
+.gal-fd-density {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.gal-fd-density > div {
+  display: flex;
+  gap: var(--k-spacing-200);
+  align-items: center;
+}
+.gal-fd-density span {
+  width: 120px;
+  color: var(--ink-300);
+}
+
+/* 组件页头的包 / 源码 / 别名（照 Salt 组件页）。 */
+.gal-doc-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  margin: var(--space-3) 0 0;
+  font: var(--text-caption) var(--font-sans-small);
+}
+.gal-doc-meta > div {
+  display: flex;
+  gap: 6px;
+}
+.gal-doc-meta dt {
+  /* ink-4 是装饰灰（2.5:1 左右），属性名要可读，用次要字色（≥4.5:1）。 */
+  color: var(--k-content-secondary-foreground);
+}
+.gal-doc-meta dd {
+  margin: 0;
+  color: var(--ink-200);
+}
+.gal-doc-meta a {
+  color: var(--ink-200);
+  text-decoration: underline;
+  text-decoration-color: var(--line-200);
+  text-underline-offset: 3px;
+}
+/* 页头与页签之间的 24 由 .gal-doc 的 gap 给，这里不再叠加。 */
+.gal-doc-tabs {
+  margin-top: 0;
+}
+/* 页签吸在顶栏下面：页面底色 + 下边一条线，滚动时内容从它下面走。 */
+.gal-doc-tablist {
+  position: sticky;
+  top: var(--gal-bar-h);
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  box-sizing: border-box;
+  height: var(--gal-tabs-h);
+  background: var(--bg-100);
+  border-bottom: 1px solid var(--line-100);
+}
+.gal-todo {
+  color: var(--ink-400);
+  font: var(--text-data) var(--font-sans);
+}
+.gal-fd-source {
+  margin: 8px 0 0;
+  color: var(--ink-400);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.gal-fd-source a {
+  color: var(--ink-300);
+}
+.gal-fd-icons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 8px 0 12px;
+}
+.gal-fd-icons > span {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  min-width: 64px;
+  color: var(--ink-200);
+}
+.gal-fd-icons small,
+.gal-fd-ramp small {
+  color: var(--ink-400);
+  font: var(--text-micro) var(--font-sans-small);
+}
+.gal-fd-ramp {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0;
+}
+.gal-fd-ramp > span {
+  display: grid;
+  gap: 4px;
+}
+.gal-fd-ramp i {
+  display: block;
+  width: 72px;
+  height: 28px;
+  border: 1px solid var(--line-100);
+  border-radius: 4px;
+}
+.gal-doc-tabs [role='tabpanel'] {
+  padding-top: 8px;
+}
+.gal-doc-tabs [role='tabpanel'] > section + section {
+  margin-top: 24px;
+}
+/* 只管文档自己的节标题：别的选择器写成后代会压过预览里 PanelFrame 等件的 h2（零特异性皮肤），标题颜色、字号、边距全被改掉。 */
+.gal-doc-tabs [role='tabpanel'] > section:not(.gal-preview) > h2,
+.gal-usage-head > h2,
+.gal-doc > section > h2 {
+  margin: 0 0 8px;
+  color: var(--ink-100);
+  font: var(--text-title) var(--font-sans);
+}
+.gal-doc > section + section {
+  margin-top: 24px;
+}
+.gal-fd-table a {
+  color: var(--ink-100);
+  text-decoration: underline;
+  text-decoration-color: var(--line-200);
+  text-underline-offset: 3px;
+}
+.gal-fd-table a:hover {
+  text-decoration-color: var(--ink-300);
+}
+.gal-theme-select {
+  min-width: 168px;
+}
+.gal-theme-swatch {
+  display: inline-block;
+  width: 28px;
+  height: 12px;
+  margin-right: 8px;
+  vertical-align: -1px;
+  border: 1px solid var(--line-200);
+  border-radius: 3px;
+}
+.gal-orb-level {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  width: 220px;
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.gal-orb-level > span {
+  flex: none;
+}
+
+/* 「基础 → 中英排版开关」页的并排演示（#250）：没开 / 开了，各一个框；样子只取页面已有的 token。 */
+.gal-ts-compare {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin: 0 0 var(--space-4);
+}
+.gal-ts-compare figure {
+  margin: 0;
+}
+.gal-ts-compare figcaption {
+  margin: 0 0 var(--space-1);
+  color: var(--ink-300);
+  font: var(--text-micro) var(--font-sans);
+}
+.gal-ts-box {
+  box-sizing: border-box;
+  min-height: 72px;
+  padding: var(--space-3);
+  border: 1px solid var(--line-100);
+  border-radius: var(--radius-md);
+  color: var(--ink-100);
+  font: var(--text-body) var(--font-sans);
+  line-height: var(--space-6);
+  overflow: hidden;
+}
+.gal-ts-box p,
+.gal-ts-box h4 {
+  margin: 0;
+  max-width: none;
+}
+.gal-ts-box h4 {
+  width: 9em;
+  font-weight: 600;
+}
+.gal-ts-nums {
+  /* 演示用随包的 Barlow Condensed：它默认是比例数字、带 tnum / pnum，开关的差别在任何机器上都看得见；系统界面字体栈在没有
+     Segoe UI / Roboto 的机器（CI 的 Linux 容器）上回退到不带 tnum 的字体，两边会一样。 */
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-title-size);
+  text-align: right;
+}
+.gal-ts-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 240px;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--line-100);
+  border-radius: var(--radius-sm);
+}
+.gal-ts-row i {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--ink-300);
+}
+.gal-ts-row b {
+  flex: none;
+}
+.gal-ts-item[data-fixed='on'] {
+  min-width: 0;
+}
+.gal-ts-label {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

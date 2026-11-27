@@ -1,0 +1,97 @@
+/* SPDX-License-Identifier: MIT */
+/* TradeTape 成交明细（#104）。价格按主动方向着色：主动买走涨色、主动卖走跌色（--k-tone-up / --k-tone-down，根上 data-updown 互换时跟着换）。
+   大单整行淡底加粗体量；新成交从顶上滑入并带蓝线高亮（共用层 live.css 管高亮，这里只加位移）。数字等宽、右对齐。 */
+.k-tape {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-tape-cols,
+.k-tape-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 76px 1fr 1fr;
+  align-items: center;
+  column-gap: 8px;
+  padding: 0 var(--inset-x);
+}
+.k-tape-cols {
+  height: 22px;
+  color: var(--k-content-secondary-foreground);
+  font: 500 11px/14px var(--font-sans);
+}
+.k-tape-cols span:not(:first-child) {
+  text-align: right;
+}
+.k-tape-row {
+  position: relative;
+  height: 20px;
+  font-variant-numeric: tabular-nums;
+}
+.k-tape-row[data-side='buy'] .k-tape-price {
+  color: var(--k-tone-up-foreground);
+}
+.k-tape-row[data-side='sell'] .k-tape-price {
+  color: var(--k-tone-down-foreground);
+}
+.k-tape-time {
+  color: var(--k-content-secondary-foreground);
+}
+.k-tape-price,
+.k-tape-size {
+  text-align: right;
+}
+.k-tape-size {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 6px;
+}
+.k-tape-count {
+  color: var(--k-content-secondary-foreground);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.k-tape-row.is-large {
+  --k-large-tone: var(--k-tone-up-foreground);
+  background: color-mix(in srgb, var(--k-large-tone) 12%, transparent);
+}
+.k-tape-row.is-large[data-side='sell'] {
+  --k-large-tone: var(--k-tone-down-foreground);
+}
+.k-tape-row.is-large .k-tape-size {
+  font-weight: 700;
+}
+/* 大单行铺着 12% 的涨跌色底，时间的 ink-300 只有 3.9 / 4.2:1（console，axe #190），用 body。 */
+.k-tape-row.is-large .k-tape-time {
+  color: var(--k-content-body-foreground);
+}
+.k-tape-row.k-tape-enter {
+  animation:
+    k-live-enter var(--dur-enter) linear,
+    k-tape-in var(--dur-reorder) var(--ease-snappy);
+}
+@keyframes k-tape-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+.k-tape-empty {
+  margin: 0;
+  padding: var(--space-4) var(--inset-x);
+  color: var(--k-content-secondary-foreground);
+  text-align: center;
+}
+/* 读屏用的字（方向、大单）：视觉上藏起来，颜色与加粗已经说了，文字留在 DOM 里。 */
+.k-tape-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

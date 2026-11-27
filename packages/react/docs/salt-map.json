@@ -1,0 +1,510 @@
+{
+  "source": "https://www.saltdesignsystem.com/salt/components/",
+  "readOn": "2026-11-22",
+  "components": [
+    {
+      "slug": "accordion",
+      "name": "Accordion",
+      "status": "有",
+      "pages": ["accordion"]
+    },
+    {
+      "slug": "ag-grid-theme",
+      "name": "AG Grid theme",
+      "status": "没有",
+      "pages": [],
+      "note": "Salt 给 AG Grid 套皮的主题。我们的表是自有的 DataGrid（TanStack Table），不用 AG Grid，这一件不适用。"
+    },
+    {
+      "slug": "avatar",
+      "name": "Avatar",
+      "status": "有",
+      "pages": ["avatar"]
+    },
+    {
+      "slug": "avatar-group",
+      "name": "Avatar group",
+      "status": "有",
+      "pages": ["avatar"],
+      "note": "AvatarGroup 与 Avatar 同页：叠放、环形描边、超出折成 +N。"
+    },
+    {
+      "slug": "badge",
+      "name": "Badge",
+      "status": "有",
+      "pages": ["count-badge"],
+      "note": "CountBadge：数字、纯点、状态点三种，贴在元素角上。"
+    },
+    {
+      "slug": "banner",
+      "name": "Banner",
+      "status": "有",
+      "pages": ["alert"],
+      "note": "Salt 页上写明别名就是 Alert；Alert 是嵌在页面里的一条语气提示（neutral / ok / warn / danger）。"
+    },
+    {
+      "slug": "breadcrumbs",
+      "name": "Breadcrumbs",
+      "status": "有",
+      "pages": ["breadcrumb"]
+    },
+    {
+      "slug": "button",
+      "name": "Button",
+      "status": "有",
+      "pages": ["button"]
+    },
+    {
+      "slug": "calendar",
+      "name": "Calendar",
+      "status": "有",
+      "pages": ["calendar", "date-time-input", "date-range-picker"],
+      "note": "Calendar 单独摆在页上（#104 补）；日期框与区间选择器的弹层里是同一套日历。"
+    },
+    {
+      "slug": "card",
+      "name": "Card",
+      "status": "有",
+      "pages": ["card", "metric-card", "glass-card", "expandable-cards"],
+      "note": "通用 Card（#104 补）：四档底色，interactive 加 asChild 就是 Salt 的 InteractableCard；另有指标卡、玻璃卡、可展开卡这些专用卡。"
+    },
+    {
+      "slug": "carousel",
+      "name": "Carousel",
+      "status": "部分",
+      "pages": ["reel"],
+      "note": "Reel 能横向滚动，没有上一页 / 下一页按钮与分页点。"
+    },
+    {
+      "slug": "chart",
+      "name": "Chart",
+      "status": "有",
+      "pages": ["equity-curve", "sparkline", "treemap", "brush-chart"],
+      "note": "图表按用途分件（权益曲线、迷你图、矩形树图、刷选条等），没有一个统一的 Chart 容器。"
+    },
+    {
+      "slug": "checkbox",
+      "name": "Checkbox",
+      "status": "有",
+      "pages": ["checkbox", "checkbox-group"]
+    },
+    {
+      "slug": "collapsible",
+      "name": "Collapsible",
+      "status": "有",
+      "pages": ["collapsible"]
+    },
+    {
+      "slug": "combo-box",
+      "name": "Combo box",
+      "status": "有",
+      "pages": ["combobox"]
+    },
+    {
+      "slug": "country-symbol",
+      "name": "Country symbol",
+      "status": "没有",
+      "pages": [],
+      "note": "没有国旗件。SymbolMark 是品种徽标，只出字母或图片。"
+    },
+    {
+      "slug": "date-input",
+      "name": "Date input",
+      "status": "有",
+      "pages": ["date-time-input"],
+      "note": "逐段打字的日期与时间框。"
+    },
+    {
+      "slug": "date-picker",
+      "name": "Date picker",
+      "status": "有",
+      "pages": ["date-time-input"],
+      "note": "日期框右边的日历按钮打开日历。"
+    },
+    {
+      "slug": "date-picker/range-date-picker",
+      "name": "Range date picker",
+      "status": "有",
+      "pages": ["date-range-picker"],
+      "note": "起点终点两个框加双月日历与预设。"
+    },
+    {
+      "slug": "dialog",
+      "name": "Dialog",
+      "status": "有",
+      "pages": ["dialog"]
+    },
+    {
+      "slug": "divider",
+      "name": "Divider",
+      "status": "有",
+      "pages": ["separator"]
+    },
+    {
+      "slug": "drawer",
+      "name": "Drawer",
+      "status": "有",
+      "pages": ["sheet"]
+    },
+    {
+      "slug": "dropdown",
+      "name": "Dropdown",
+      "status": "有",
+      "pages": ["select"]
+    },
+    {
+      "slug": "file-drop-zone",
+      "name": "File drop zone",
+      "status": "有",
+      "pages": ["animated-file-upload"]
+    },
+    {
+      "slug": "form-field",
+      "name": "Form field",
+      "status": "有",
+      "pages": ["field"]
+    },
+    {
+      "slug": "icon",
+      "name": "Icon",
+      "status": "没有",
+      "pages": [],
+      "note": "没有 Icon 件：图标直接用 lucide-react，包里只有状态图标、变形图标这类专用的。"
+    },
+    {
+      "slug": "input",
+      "name": "Input",
+      "status": "有",
+      "pages": ["input", "input-group"]
+    },
+    {
+      "slug": "kbd",
+      "name": "Kbd",
+      "status": "有",
+      "pages": ["kbd"]
+    },
+    {
+      "slug": "layouts/border-layout",
+      "name": "Border layout",
+      "status": "没有",
+      "pages": [],
+      "note": "没有上、下、左、右、中五区的应用级布局件；排版原语只有 Stack、Cluster、Sidebar、Switcher、Grid、Reel。"
+    },
+    {
+      "slug": "layouts/flex-layout",
+      "name": "Flex layout",
+      "status": "有",
+      "pages": ["stack", "cluster"],
+      "note": "Stack 管竖排，Cluster 管横排换行与对齐。"
+    },
+    {
+      "slug": "layouts/flow-layout",
+      "name": "Flow layout",
+      "status": "有",
+      "pages": ["cluster"]
+    },
+    {
+      "slug": "layouts/grid-layout",
+      "name": "Grid layout",
+      "status": "有",
+      "pages": ["grid"]
+    },
+    {
+      "slug": "layouts/parent-child-layout",
+      "name": "Parent-child layout",
+      "status": "部分",
+      "pages": ["sidebar"],
+      "note": "Sidebar 一窄一宽、放不下时上下叠，版面相同；没有「选中主项、右边出明细」的联动封装。"
+    },
+    {
+      "slug": "layouts/split-layout",
+      "name": "Split layout",
+      "status": "有",
+      "pages": ["cluster"],
+      "note": "Cluster 的 justify=between：首尾贴边。"
+    },
+    {
+      "slug": "layouts/stack-layout",
+      "name": "Stack layout",
+      "status": "有",
+      "pages": ["stack"]
+    },
+    {
+      "slug": "link",
+      "name": "Link",
+      "status": "有",
+      "pages": ["link"],
+      "note": "Link（#104 补）：行内文字链接，下划线常在，external 带外链图标与读屏提示。"
+    },
+    {
+      "slug": "link-button",
+      "name": "Link button",
+      "status": "有",
+      "pages": ["button"],
+      "note": "Button variant=link 加 asChild 渲染成 a。"
+    },
+    {
+      "slug": "list-box",
+      "name": "List box",
+      "status": "有",
+      "pages": ["list-box"],
+      "note": "ListBox（#104 补）：常驻页面，单选或多选，分组对应 Salt 的 OptionGroup。"
+    },
+    {
+      "slug": "localization-provider",
+      "name": "Localization provider",
+      "status": "没有",
+      "pages": [],
+      "note": "有意不做：包不带语言，所有文字由调用方经 labels 传。"
+    },
+    {
+      "slug": "mega-menu",
+      "name": "Mega menu",
+      "status": "部分",
+      "pages": ["navigation-menu"],
+      "note": "NavigationMenu 的面板共用一个视口、按方向滑入；页上没有多列大面板的写法。"
+    },
+    {
+      "slug": "menu",
+      "name": "Menu",
+      "status": "有",
+      "pages": ["dropdown-menu", "context-menu", "menubar"]
+    },
+    {
+      "slug": "multiline-input",
+      "name": "Multiline input",
+      "status": "有",
+      "pages": ["textarea"]
+    },
+    {
+      "slug": "navigation-item",
+      "name": "Navigation item",
+      "status": "有",
+      "pages": ["side-nav"],
+      "note": "SideNav 的项：链接给 href，当前项由调用方传。"
+    },
+    {
+      "slug": "number-input",
+      "name": "Number input",
+      "status": "有",
+      "pages": ["number-input", "decimal-field"]
+    },
+    {
+      "slug": "overlay",
+      "name": "Overlay",
+      "status": "有",
+      "pages": ["popover"]
+    },
+    {
+      "slug": "pagination",
+      "name": "Pagination",
+      "status": "有",
+      "pages": ["pagination"]
+    },
+    {
+      "slug": "panel",
+      "name": "Panel",
+      "status": "有",
+      "pages": ["panel", "panel-frame"],
+      "note": "Panel（#104 补）是不带标题栏的纯容器；带标题栏的工作台面板壳是 PanelFrame。"
+    },
+    {
+      "slug": "pill",
+      "name": "Pill",
+      "status": "有",
+      "pages": ["pill", "chip-group"],
+      "note": "Pill（#104 补）：单个可点、可关；一整组开关芯片是 ChipGroup（对应 Salt 的 PillGroup 多选）。"
+    },
+    {
+      "slug": "progress",
+      "name": "Progress",
+      "status": "有",
+      "pages": ["progress", "gauge-bar"]
+    },
+    {
+      "slug": "radio-button",
+      "name": "Radio button",
+      "status": "有",
+      "pages": ["radio-group"]
+    },
+    {
+      "slug": "rating",
+      "name": "Rating",
+      "status": "部分",
+      "pages": ["rating-text", "rating-gauge"],
+      "note": "只有评级的展示（文字与仪表），没有可点选的星级输入。"
+    },
+    {
+      "slug": "salt-provider",
+      "name": "Salt provider",
+      "status": "部分",
+      "pages": ["theme-selector", "emphasis"],
+      "note": "有主题选择件与分量 EmphasisProvider；没有把主题、密度、模式一起提供的总 Provider。"
+    },
+    {
+      "slug": "scrim",
+      "name": "Scrim",
+      "status": "部分",
+      "pages": ["dialog", "sheet"],
+      "note": "遮罩画在对话框与抽屉里，没有可单独使用的 Scrim。"
+    },
+    {
+      "slug": "segmented-button-group",
+      "name": "Segmented button group",
+      "status": "有",
+      "pages": ["toggle-group"]
+    },
+    {
+      "slug": "semantic-icon-provider",
+      "name": "Semantic icon provider",
+      "status": "没有",
+      "pages": [],
+      "note": "没有图标注册表，也没有按语义换图标的 Provider。"
+    },
+    {
+      "slug": "side-panel",
+      "name": "Side panel",
+      "status": "有",
+      "pages": ["sheet"]
+    },
+    {
+      "slug": "skip-link",
+      "name": "Skip link",
+      "status": "没有",
+      "pages": [],
+      "note": "没有「跳到主内容」的跳转链接件。"
+    },
+    {
+      "slug": "slider",
+      "name": "Slider",
+      "status": "有",
+      "pages": ["slider"]
+    },
+    {
+      "slug": "slider/range-slider",
+      "name": "Range slider",
+      "status": "有",
+      "pages": ["slider", "range-histogram-slider"],
+      "note": "Slider 传两个值就是区间。"
+    },
+    {
+      "slug": "spinner",
+      "name": "Spinner",
+      "status": "有",
+      "pages": ["motion-loader", "grid-loader", "loading"]
+    },
+    {
+      "slug": "splitter",
+      "name": "Splitter",
+      "status": "有",
+      "pages": ["splitter"]
+    },
+    {
+      "slug": "static-list",
+      "name": "Static list",
+      "status": "没有",
+      "pages": [],
+      "note": "没有基础的静态列表件；现有的列表都带业务含义（任务清单、置顶列表、信息流）。"
+    },
+    {
+      "slug": "status-indicator",
+      "name": "Status indicator",
+      "status": "有",
+      "pages": ["led", "status-icon"]
+    },
+    {
+      "slug": "stepper",
+      "name": "Stepper",
+      "status": "有",
+      "pages": ["animated-stepper"]
+    },
+    {
+      "slug": "switch",
+      "name": "Switch",
+      "status": "有",
+      "pages": ["switch"]
+    },
+    {
+      "slug": "system-status",
+      "name": "System status",
+      "status": "有",
+      "pages": ["system-status"],
+      "note": "SystemStatus（#104 补）：贴在应用顶上、可关的全站消息条；页内提示是 Alert。"
+    },
+    {
+      "slug": "table",
+      "name": "Table",
+      "status": "有",
+      "pages": ["data-grid"]
+    },
+    {
+      "slug": "tabs",
+      "name": "Tabs",
+      "status": "有",
+      "pages": ["tabs", "panel-tabs", "workspace-tabs"]
+    },
+    {
+      "slug": "tag",
+      "name": "Tag",
+      "status": "有",
+      "pages": ["tag"]
+    },
+    {
+      "slug": "text",
+      "name": "Text",
+      "status": "部分",
+      "pages": ["emphasis", "emphasis-guide"],
+      "note": "字号由 EmphasisProvider 与 k-text-* 类给出，没有包一层的 Text 组件。"
+    },
+    {
+      "slug": "toast",
+      "name": "Toast",
+      "status": "有",
+      "pages": ["toast"]
+    },
+    {
+      "slug": "toggle-button",
+      "name": "Toggle button",
+      "status": "有",
+      "pages": ["toggle"]
+    },
+    {
+      "slug": "toggletip",
+      "name": "Toggletip",
+      "status": "有",
+      "pages": ["rich-popover"],
+      "note": "点触发器弹出的小卡，带标题、说明与主动作。"
+    },
+    {
+      "slug": "tokenized-input-next",
+      "name": "Tokenized input",
+      "status": "有",
+      "pages": ["tag-input"],
+      "note": "TagInput（#156，改自 Arc）：输入框里打字成标签，Enter 或逗号收下，粘贴一串拆成几个；AnimatedTags 是从候选里挑。"
+    },
+    {
+      "slug": "toolbar",
+      "name": "Toolbar",
+      "status": "有",
+      "pages": ["toolbar"]
+    },
+    {
+      "slug": "tooltip",
+      "name": "Tooltip",
+      "status": "有",
+      "pages": ["tooltip"]
+    },
+    {
+      "slug": "tree",
+      "name": "Tree",
+      "status": "有",
+      "pages": ["tree-view"]
+    },
+    {
+      "slug": "vertical-navigation",
+      "name": "Vertical navigation",
+      "status": "有",
+      "pages": ["side-nav"]
+    }
+  ]
+}

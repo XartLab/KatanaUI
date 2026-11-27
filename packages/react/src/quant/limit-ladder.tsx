@@ -1,16 +1,22 @@
 // SPDX-License-Identifier: MIT
-import { useId, type KeyboardEvent } from 'react'
+import { useId, useRef, type KeyboardEvent } from 'react'
 import { cn } from '../lib/cn.ts'
-import { RowActions, RowContextMenu, type RowAction } from '../patterns/row-actions.tsx'
-import { SymbolMark } from '../katana/symbol-mark.tsx'
-import { ChangeText } from './change-text.tsx'
-import { formatVolume } from './format/index.ts'
+import { useEnterMarks, useFlipList, useStatusFlash, useValueFlash } from '../lib/live.ts'
+import { RollingText } from '../katana/rolling-text.tsx'
+import { RowActions, RowContextMenu, type RowAction } from '../quotes/row-actions.tsx'
+import { SymbolMark } from '../quotes/symbol-mark.tsx'
+import { ChangeText } from '../quotes/change-text.tsx'
+import { CompactValue } from '../quotes/cell-type.tsx'
 
 // 连板天梯（#12）：顶上一行汇总读数，下面按板位从高到低分层，层头写板位、只数与晋级率，层里列个股；炸板、跌停、没涨停的票文字淡显、状态胶囊保持全亮。
 // 画法参照 KATANAview 的「涨停梯队」（分组列表 + 晋级条 + 状态标签，用户在看板截图里看过），只取结构与版式，实现在这里重写。
 // v2（用户看过 v1 后改）：表格手感取 TradingView 的列表（无衬线加 tabular-nums、右对齐、紧凑行、品种徽标，只看只量），
 // 汇总读数与分组头取 Arc UI（uiarc.dev，2026-11-14 读：Revenue explorer、Metric explorer 的块），实现原创。
 // 包里不带语言、不认任何数据集：层号单位、晋级率文字、状态名、列名都由调用方传；数字、涨跌幅的格式在件里。
+// 刷新动效全走共用层 lib/live.ts（皮肤在 theme/live.css）：涨幅、封单额变了闪涨跌色，汇总读数滚动；封板→炸板整行警示琥珀闪，炸板→回封闪涨色；
+// 升板时整行 FLIP 移到新层并闪涨色；新晋的票用蓝色强调线高亮。数据不变就一动不动，首次渲染也不闪。
+// 封单额（#92）：按 locale 缩写（zh-CN 是 万 / 亿，en-US 是 K / M / B）；中文缩写自带量级，不再挂币种（用户 2026-11-18 定），
+// 只有非中文时才把 labels.sealUnit 写成次要色小字（跟 DataGrid 的单位同一份，quotes/cell-type.tsx）；行高照旧 30。
 
 export type LadderStatus = 'sealed' | 'broken' | 'down' | 'none'
 
@@ -48,6 +54,8 @@ export type LimitLadderLabels = {
   count: (n: number) => string
   status: Record<LadderStatus, string>
   columns: { name: string; change: string; firstSeal: string; sealAmount: string; opens: string; industry: string }
+  /** 封单额后的单位小字（「CNY」）；locale 是中文（万 / 亿）时不写，中文缩写自带量级。省略不写单位。 */
+  sealUnit?: string
   /** 顶部汇总读数的名字：涨停只数、最高板、整体晋级率。 */
   summary: { sealed: string; highest: string; promoteRate: string }
   /** 整张天梯的读屏名。 */
@@ -63,20 +71,141 @@ export type LimitLadderProps = {
   labels: LimitLadderLabels
   /** 选中的个股代码。 */
   selected?: string | null
-  onSelect?: (code: string) => void
+  onSelect?: (item: LadderItem) => void
+  /** 封单额缩写用哪种语言（zh-CN 是 万 / 亿，en-US 是 K / M / B）；省略是 en-US。 */
+  locale?: string
   /** 行快捷操作（#23，一般传 symbolMenu(...)）：悬停或键盘落到这一行时右端浮出前几颗带图标的按钮，右键（菜单键、Shift+F10）出整份菜单；不传就没有。 */
   rowActions?: (item: LadderItem) => readonly RowAction[]
   className?: string
 }
 
 const DASH = '—'
+const zhLocale = (locale: string | undefined) => locale?.toLowerCase().startsWith('zh') ?? false
 
-export function LimitLadder({ levels, labels, selected = null, onSelect, rowActions, className }: LimitLadderProps) {
+/** 一行个股：数值、状态的刷新动效挂在这里；换层时这一行会在新的层容器里重新挂载，所以「刚升板」由外面按 代码@板位 判断后传进来（moved）。 */
+function LadderRow({
+  item,
+  labels,
+  selected,
+  tabbable,
+  onSelect,
+  rowActions,
+  entering,
+  moved,
+  locale,
+}: {
+  item: LadderItem
+  labels: LimitLadderLabels
+  locale?: string
+  selected: boolean
+  tabbable: boolean
+  onSelect?: (item: LadderItem) => void
+  rowActions?: (item: LadderItem) => readonly RowAction[]
+  entering: boolean
+  moved: boolean
+}) {
+  const seal = useValueFlash(item.sealAmount)
+  const status = useStatusFlash(item.status)
+  // 封板→炸板与跌停是要人去看的事：整行警示闪（跌停用跌红）；回封与升板是好消息：整行闪涨色。
+  const alert = status.flash && (item.status === 'broken' || item.status === 'down')
+  const good = (status.flash && item.status === 'sealed') || moved
+  return (
+    <div
+      role="option"
+      aria-selected={selected}
+      tabIndex={tabbable ? 0 : -1}
+      className={cn(
+        'k-ladder-row',
+        selected && 'is-selected',
+        entering && 'k-live-enter',
+        alert && 'k-live-alert',
+        good && !alert && 'k-live-flash',
+      )}
+      data-flash={good && !alert ? 'up' : undefined}
+      data-tone={alert && item.status === 'down' ? 'negative' : undefined}
+      data-slot="ladder-row"
+      data-code={item.code}
+      data-live-id={item.code}
+      data-status={item.status}
+      onClick={() => onSelect?.(item)}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault()
+          onSelect?.(item)
+        }
+      }}
+    >
+      <span className="k-ladder-name">
+        <SymbolMark symbol={item.code} name={item.name} src={item.logo} size="sm" />
+        <span className="k-ladder-symbol">{item.code}</span>
+        <span className="k-ladder-sub">{item.name}</span>
+      </span>
+      <ChangeText className="k-ladder-num" value={item.change} flash />
+      <span className="k-ladder-num">{item.firstSeal ?? DASH}</span>
+      <span
+        key={`seal-${seal.key}`}
+        className="k-ladder-num k-live-flash"
+        data-flash={seal.flash ?? undefined}
+        data-slot="ladder-seal"
+      >
+        {!item.sealAmount ? (
+          DASH
+        ) : (
+          <CompactValue value={item.sealAmount} locale={locale} unit={zhLocale(locale) ? undefined : labels.sealUnit} />
+        )}
+      </span>
+      <span className="k-ladder-num">{item.opens ?? DASH}</span>
+      <span className="k-ladder-industry">{item.industry ?? DASH}</span>
+      <span className="k-ladder-status" data-status={item.status}>
+        {labels.status[item.status]}
+      </span>
+      {rowActions && <RowActions items={rowActions(item)} label={labels.rowActions ?? 'Row actions'} pointerOnly />}
+    </div>
+  )
+}
+
+/** 层头的晋级率：已晋级只数涨了，文字闪一下涨色。 */
+function PromoteText({ done, total, labels }: { done: number; total: number; labels: LimitLadderLabels }) {
+  const flash = useValueFlash(done)
+  return (
+    <span className="k-ladder-promote" data-slot="ladder-promote">
+      <span
+        key={`promote-${flash.key}`}
+        className="k-ladder-promote-text k-live-flash"
+        data-flash={flash.flash ?? undefined}
+      >
+        {labels.promoted(done, total)}
+      </span>
+      <span className="k-ladder-promote-bar" aria-hidden="true">
+        <i style={{ width: `${total > 0 ? Math.min(100, (done / total) * 100) : 0}%` }} />
+      </span>
+    </span>
+  )
+}
+
+export function LimitLadder({
+  levels,
+  labels,
+  selected = null,
+  onSelect,
+  rowActions,
+  locale,
+  className,
+}: LimitLadderProps) {
   const uid = useId()
-  const sorted = [...levels].sort((a, b) => b.board - a.board)
+  const root = useRef<HTMLDivElement>(null)
+  // js/copying-array-methods：toSorted 替代「展开复制再 sort」。
+  const sorted = levels.toSorted((a, b) => b.board - a.board)
 
   // 上下键在行间走（roving）：焦点所在行 tabIndex=0，其余 -1；没有焦点行时选中行、再没有就第一行进 Tab 序。
   const rows = sorted.flatMap((level) => level.items)
+  const codes = rows.map((item) => item.code)
+  // 新来的票（代码第一次出现）与换层的票（代码@板位第一次出现，扣掉新来的）；升板的行在新层容器里重挂载，状态带不过去，所以在这一层按 id 判断。
+  const entering = useEnterMarks(codes)
+  const placed = sorted.flatMap((level) => level.items.map((item) => `${item.code}@${level.board}`))
+  const tiered = useEnterMarks(placed)
+  // 重排的判据带上板位：升板的票若恰好在代码顺序里原地不动（上一层末尾与下一层开头相接），位置仍然变了，也要换位。
+  useFlipList(root, placed)
   const tabbable = rows.find((item) => item.code === selected)?.code ?? rows[0]?.code
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -100,7 +229,7 @@ export function LimitLadder({ levels, labels, selected = null, onSelect, rowActi
   const highest = sorted[0]?.board
   const candidates = sorted.reduce((sum, level) => sum + (level.promoted?.[1] ?? 0), 0)
   const advanced = sorted.reduce((sum, level) => sum + (level.promoted?.[0] ?? 0), 0)
-  const rate = candidates > 0 ? `${Math.round((advanced / candidates) * 100)}%` : DASH
+  const ratePct = candidates > 0 ? Math.round((advanced / candidates) * 100) : null
 
   if (sorted.length === 0) {
     return (
@@ -111,16 +240,18 @@ export function LimitLadder({ levels, labels, selected = null, onSelect, rowActi
   }
 
   return (
-    <div className={cn('k-ladder', className)} data-slot="limit-ladder">
+    <div ref={root} className={cn('k-ladder', className)} data-slot="limit-ladder">
       <dl className="k-ladder-summary" data-slot="ladder-summary">
         {[
-          [labels.summary.sealed, sealed],
-          [labels.summary.highest, highest],
-          [labels.summary.promoteRate, rate],
-        ].map(([name, value]) => (
+          { name: labels.summary.sealed, text: String(sealed), value: sealed },
+          { name: labels.summary.highest, text: highest === undefined ? DASH : String(highest), value: highest ?? NaN },
+          { name: labels.summary.promoteRate, text: ratePct === null ? DASH : `${ratePct}%`, value: ratePct ?? NaN },
+        ].map(({ name, text, value }) => (
           <div key={name} className="k-ladder-read">
             <dt>{name}</dt>
-            <dd>{value}</dd>
+            <dd>
+              <RollingText text={text} value={value} animate />
+            </dd>
           </div>
         ))}
       </dl>
@@ -152,54 +283,22 @@ export function LimitLadder({ levels, labels, selected = null, onSelect, rowActi
                   </span>
                   <span className="k-ladder-unit">{labels.board}</span>
                   <span className="k-ladder-count">{labels.count(level.items.length)}</span>
-                  {level.promoted ? (
-                    <span className="k-ladder-promote" data-slot="ladder-promote">
-                      <span className="k-ladder-promote-text">{labels.promoted(done, total)}</span>
-                      <span className="k-ladder-promote-bar" aria-hidden="true">
-                        <i style={{ width: `${total > 0 ? Math.min(100, (done / total) * 100) : 0}%` }} />
-                      </span>
-                    </span>
-                  ) : null}
+                  {level.promoted ? <PromoteText done={done} total={total} labels={labels} /> : null}
                 </div>
-                {level.items.map((item) => {
-                  const isSelected = item.code === selected
-                  return (
-                    <div
-                      key={item.code}
-                      role="option"
-                      aria-selected={isSelected}
-                      tabIndex={item.code === tabbable ? 0 : -1}
-                      className={cn('k-ladder-row', isSelected && 'is-selected')}
-                      data-slot="ladder-row"
-                      data-code={item.code}
-                      data-status={item.status}
-                      onClick={() => onSelect?.(item.code)}
-                      onKeyDown={(event) => {
-                        if (event.key === 'Enter' || event.key === ' ') {
-                          event.preventDefault()
-                          onSelect?.(item.code)
-                        }
-                      }}
-                    >
-                      <span className="k-ladder-name">
-                        <SymbolMark code={item.code} name={item.name} src={item.logo} size={18} />
-                        <span className="k-ladder-symbol">{item.code}</span>
-                        <span className="k-ladder-sub">{item.name}</span>
-                      </span>
-                      <ChangeText className="k-ladder-num" value={item.change} />
-                      <span className="k-ladder-num">{item.firstSeal ?? DASH}</span>
-                      <span className="k-ladder-num">{!item.sealAmount ? DASH : formatVolume(item.sealAmount)}</span>
-                      <span className="k-ladder-num">{item.opens ?? DASH}</span>
-                      <span className="k-ladder-industry">{item.industry ?? DASH}</span>
-                      <span className="k-ladder-status" data-status={item.status}>
-                        {labels.status[item.status]}
-                      </span>
-                      {rowActions && (
-                        <RowActions items={rowActions(item)} label={labels.rowActions ?? 'Row actions'} pointerOnly />
-                      )}
-                    </div>
-                  )
-                })}
+                {level.items.map((item) => (
+                  <LadderRow
+                    key={item.code}
+                    item={item}
+                    labels={labels}
+                    selected={item.code === selected}
+                    tabbable={item.code === tabbable}
+                    onSelect={onSelect}
+                    rowActions={rowActions}
+                    entering={entering.has(item.code)}
+                    moved={!entering.has(item.code) && tiered.has(`${item.code}@${level.board}`)}
+                    locale={locale}
+                  />
+                ))}
               </div>
             )
           })}

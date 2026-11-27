@@ -6,8 +6,8 @@
   min-height: 0;
   height: 100%;
   border: var(--hairline);
-  background: var(--bg-100);
-  color: var(--ink-200);
+  background: var(--k-surface-base-background);
+  color: var(--k-content-body-foreground);
   font: var(--text-data) var(--font-sans);
 }
 .k-tc-canvas {
@@ -28,7 +28,7 @@
 .k-tc-empty {
   margin: 0;
   padding: 24px;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   text-align: center;
 }
 .k-tc-tools {
@@ -38,7 +38,7 @@
   display: flex;
   flex-direction: column;
   border: var(--hairline);
-  background: var(--bg-200);
+  background: var(--k-container-secondary-background);
 }
 .k-tc-legend {
   position: absolute;
@@ -51,9 +51,9 @@
   padding: 4px 8px;
   list-style: none;
   border: var(--hairline);
-  background: var(--bg-200);
-  color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  background: var(--k-container-secondary-background);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-tc-legend li {
   display: inline-flex;
@@ -61,7 +61,7 @@
   gap: 4px;
 }
 .k-tc-legend b {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font-variant-numeric: tabular-nums;
 }
 
@@ -84,21 +84,21 @@
 .k-tc-legend [data-status='partial'],
 .k-tc-badge[data-status='partial'],
 .k-tc-arrow[data-status='partial'] {
-  --tc-color: var(--signal-amber);
+  --tc-color: var(--k-status-warn-foreground);
   --tc-dash: 9 3 2 3;
 }
 .k-tc-edge[data-status='untested'],
 .k-tc-legend [data-status='untested'],
 .k-tc-badge[data-status='untested'],
 .k-tc-arrow[data-status='untested'] {
-  --tc-color: var(--ink-400);
+  --tc-color: var(--k-content-tertiary-foreground);
   --tc-dash: 5 4;
 }
 .k-tc-arrow path {
   fill: var(--tc-color);
 }
 .k-tc-legend [data-status] {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-tc-legend-line {
   stroke: var(--tc-color);
@@ -109,7 +109,7 @@
 .k-tc-edge {
   cursor: pointer;
   outline: none;
-  transition: opacity 120ms;
+  transition: opacity var(--dur-hover) var(--ease-hover);
 }
 .k-tc-hit {
   fill: none;
@@ -128,10 +128,10 @@
 }
 .k-tc-edge:focus-visible .k-tc-chip,
 .k-tc-edge[data-selected='true'] .k-tc-chip {
-  stroke: var(--ink-100);
+  stroke: var(--k-content-primary-foreground);
 }
 .k-tc-chip {
-  fill: var(--bg-200);
+  fill: var(--k-container-secondary-background);
   stroke: var(--tc-color);
   stroke-width: 1;
 }
@@ -140,33 +140,33 @@
   stroke: var(--tc-color);
 }
 .k-tc-chip-text {
-  fill: var(--ink-200);
-  font: var(--text-caption) var(--font-sans);
+  fill: var(--k-content-body-foreground);
+  font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
   dominant-baseline: central;
 }
 .k-tc-node {
   cursor: pointer;
   outline: none;
-  transition: opacity 120ms;
+  transition: opacity var(--dur-hover) var(--ease-hover);
 }
 .k-tc-node rect {
-  fill: var(--bg-200);
-  stroke: var(--line-200);
+  fill: var(--k-container-secondary-background);
+  stroke: var(--k-separable-bold-borderColor);
 }
 .k-tc-node text {
-  fill: var(--ink-100);
+  fill: var(--k-content-primary-foreground);
   font: var(--text-data) var(--font-sans);
   font-weight: 600;
   text-anchor: middle;
   dominant-baseline: central;
 }
 .k-tc-node:hover rect {
-  fill: var(--bg-300);
+  fill: var(--k-surface-raised-background);
 }
 .k-tc-node:focus-visible rect,
 .k-tc-node[data-selected='true'] rect {
-  stroke: var(--ink-100);
+  stroke: var(--k-content-primary-foreground);
   stroke-width: 2;
 }
 .k-tc [data-dim='true'] {
@@ -179,17 +179,17 @@
   overflow: auto;
   padding: 12px;
   border-left: var(--hairline);
-  background: var(--bg-100);
+  background: var(--k-surface-base-background);
 }
 .k-tc-hint,
 .k-tc-missing,
 .k-tc-note {
   margin: 0;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-tc-title {
   margin: 0 0 8px;
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font: inherit;
   font-weight: 700;
 }
@@ -206,8 +206,8 @@
   padding: 1px 8px;
   border: 1px solid var(--tc-color);
   border-radius: var(--radius-pill);
-  color: var(--ink-100);
-  font: var(--text-caption) var(--font-sans);
+  color: var(--k-content-primary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-tc-badge svg {
   color: var(--tc-color);
@@ -215,13 +215,13 @@
 .k-tc-tag {
   margin-right: 6px;
   padding: 1px 6px;
-  border: 1px solid var(--line-200);
+  border: 1px solid var(--k-separable-bold-borderColor);
   border-radius: var(--radius-pill);
-  color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-tc-count {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font-variant-numeric: tabular-nums;
 }
 .k-tc-section {
@@ -229,16 +229,16 @@
 }
 .k-tc-section h5 {
   margin: 0 0 4px;
-  color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
   font-weight: 700;
 }
 .k-tc-failure {
   margin: 0;
   padding: 6px 8px;
-  border-left: 3px solid var(--signal-amber);
-  background: var(--bg-200);
-  color: var(--ink-100);
+  border-left: 3px solid var(--k-status-warn-foreground);
+  background: var(--k-container-secondary-background);
+  color: var(--k-content-primary-foreground);
 }
 .k-tc-missing {
   font-style: italic;
@@ -258,12 +258,12 @@
   width: 100%;
   padding: 4px 6px;
   border: var(--hairline);
-  background: var(--bg-200);
-  color: var(--ink-100);
+  background: var(--k-container-secondary-background);
+  color: var(--k-content-primary-foreground);
   font: inherit;
   text-align: left;
   cursor: pointer;
 }
 .k-tc-link:hover {
-  background: var(--bg-300);
+  background: var(--k-surface-raised-background);
 }

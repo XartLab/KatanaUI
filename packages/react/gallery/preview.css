@@ -33,7 +33,7 @@
   margin: 0;
   color: var(--ink-300);
   font: var(--text-caption) var(--font-sans);
-  line-height: 1.5;
+  line-height: round(nearest, 1.5em, 1px);
 }
 .gal-wide {
   width: 100%;
@@ -122,6 +122,107 @@
   width: 320px;
 }
 
+/* 过场、背景、特效演示的尺寸类（gallery/pages/motion-effects.tsx）：演示页不扫 Tailwind，件的 className 只能靠这里的类定大小。 */
+.gal-fx-fill {
+  width: 100%;
+  height: 100%;
+}
+.gal-fx-w {
+  width: 100%;
+}
+.gal-fx-sq {
+  width: 128px;
+  height: 128px;
+}
+.gal-fx-card {
+  width: 288px;
+}
+.gal-fx-draw {
+  width: 320px;
+  height: 192px;
+  margin: 0 auto;
+}
+.gal-fx-reveal {
+  width: 100%;
+  height: 160px;
+}
+.gal-fx-parallax {
+  width: 100%;
+  height: 192px;
+  overflow: hidden;
+}
+.gal-fx-field {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  gap: 16px;
+  min-height: 160px;
+  padding: 24px;
+  width: 100%;
+  background: var(--bg-100);
+  border: 1px solid var(--line-100);
+}
+.gal-fx-blur-bottom {
+  top: auto !important;
+  height: 80px;
+}
+.gal-fx-blur-top {
+  bottom: auto !important;
+  height: 80px;
+}
+.gal-fx-blur-right {
+  left: auto !important;
+  width: 96px;
+}
+
+/* 迷你图画廊：高一点的图、表格行里 96 × 22 的紧凑用法。 */
+.gal-spark-case {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.gal-spark-tall .k-spark {
+  height: 64px;
+}
+/* TradingView 式一节：迷你行情卡与日内大图上下排，大图高 220。 */
+.gal-spark-tv-live {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 720px;
+}
+.gal-spark-tv {
+  width: 100%;
+}
+.gal-spark-tv[data-gallery-spark='tv-mini'] {
+  max-width: 320px;
+}
+.gal-spark-intraday .k-spark {
+  height: 220px;
+}
+/* 仪器档案的大图：高 300，放得下眉头、投影谱、时间刻度与 SOURCES 行。 */
+.gal-spark-sheet .k-spark {
+  height: 300px;
+}
+.gal-spark-table {
+  border-collapse: collapse;
+  font: var(--text-data) var(--font-sans);
+  color: var(--ink-200);
+}
+.gal-spark-table th {
+  padding: 4px 16px 4px 0;
+  text-align: left;
+  font-weight: 400;
+}
+.gal-spark-cell {
+  width: 96px;
+  padding: 4px 8px 4px 0;
+}
+.gal-spark-cell .k-spark {
+  height: 22px;
+}
 /* 排版原语与分量页（#115）的预览：色块、可拖宽的框、三档并排的小标题、决策表、四条规则的小样。只用 token。 */
 .gal-block {
   padding: var(--space-dense) var(--space-3);
@@ -142,7 +243,10 @@
   color: var(--ink-300);
   font: var(--text-caption) var(--font-mono);
 }
+/* 框上标的「容器 260」是里面件拿到的宽：钉成 content-box。#73 起预览放进了文档页签（Tabs，data-slot="tabs"），
+   theme.css 给 data-slot 件的后代补了 border-box，框的内边距与边被算进 260，Grid「两列」只剩 242 宽、掉成一列。 */
 .gal-frame {
+  box-sizing: content-box;
   max-width: 100%;
   padding: var(--space-2);
   overflow: auto;

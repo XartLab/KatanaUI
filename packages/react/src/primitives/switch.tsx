@@ -26,14 +26,14 @@ function Switch({ className, ...props }: ComponentProps<typeof SwitchPrimitive.R
         aria-hidden
         className={cn(
           'pointer-events-none absolute inset-x-[3px] inset-y-[5px] rounded-full',
-          'bg-alpha-white-10 shadow-[inset_0_0_0_1px_var(--alpha-white-9)] transition-[background-color,box-shadow] duration-150',
-          'group-enabled:group-hover:bg-alpha-white-11 group-data-[state=checked]:bg-ink group-data-[state=checked]:shadow-none',
-          'group-data-[state=checked]:group-enabled:group-hover:bg-ink-2',
+          'bg-(--k-selectable-track-background) shadow-[inset_0_0_0_1px_var(--k-selectable-track-borderColor)] transition-[background-color,box-shadow] duration-150',
+          'group-enabled:group-hover:bg-(--k-selectable-track-background-hover) group-data-[state=checked]:bg-(--k-selectable-bold-background-selected) group-data-[state=checked]:shadow-none',
+          'group-data-[state=checked]:group-enabled:group-hover:bg-(--k-selectable-bold-background-selectedHover)',
         )}
       />
       <SwitchPrimitive.Thumb
         data-slot="switch-thumb"
-        className="pointer-events-none relative ml-[5px] block size-[14px] translate-x-0 rounded-full bg-ink-3 shadow-[0_1px_2px_rgba(0,0,0,0.5)] data-[state=checked]:translate-x-[16px] data-[state=checked]:bg-surface-0"
+        className="pointer-events-none relative ml-[5px] block size-[14px] translate-x-0 rounded-full bg-(--k-selectable-thumb-background) shadow-[var(--shadow-thumb)] data-[state=checked]:translate-x-[16px] data-[state=checked]:bg-(--k-selectable-bold-foreground-selected)"
       />
     </SwitchPrimitive.Root>
   )

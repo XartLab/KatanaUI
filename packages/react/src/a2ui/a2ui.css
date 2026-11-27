@@ -1,0 +1,93 @@
+/* SPDX-License-Identifier: MIT */
+/* 基础目录排版件（Row、Column、Card、Tabs、Divider、Text、List）的样子：把它读的 --a2ui-* 变量接到我们的 token 上，主题与密度跟着走。
+   用法：`@katana-ui/react/a2ui.css`，放在 tokens.css 之后。A2UI 的默认样式是零优先级的 :where()，这里写 :root 就压得过，不用 !important。
+   只重设基础件读的变量，不动 Katana 件（它们本来就吃 token）。 */
+:root {
+  /* 底色与字色：卡片放在 bg-200 上，跟 Panel 同一层。 */
+  --a2ui-color-background: var(--bg-100);
+  --a2ui-color-on-background: var(--ink-100);
+  --a2ui-color-surface: var(--bg-200);
+  --a2ui-color-on-surface: var(--ink-100);
+  --a2ui-text-color-text: var(--ink-100);
+  --a2ui-text-caption-color: var(--ink-300);
+
+  /* 强调：Graphite 没有品牌蓝，选中与主操作用最亮的墨色。 */
+  --a2ui-color-primary: var(--ink-100);
+  --a2ui-color-primary-light: var(--ink-200);
+  --a2ui-color-primary-dark: var(--ink-300);
+  --a2ui-color-primary-hover: var(--ink-200);
+  --a2ui-color-on-primary: var(--bg-000);
+  --a2ui-color-secondary: var(--bg-300);
+  --a2ui-color-secondary-light: var(--bg-400);
+  --a2ui-color-secondary-dark: var(--bg-200);
+  --a2ui-color-secondary-hover: var(--bg-400);
+  --a2ui-color-on-secondary: var(--ink-200);
+  --a2ui-color-input: var(--bg-300);
+  --a2ui-color-on-input: var(--ink-100);
+
+  /* 线与圆角：与 Panel、Card 一致，1px 细线，控件圆角 6、面板圆角 0。 */
+  --a2ui-color-border: var(--line-100);
+  --a2ui-border-width: 1px;
+  --a2ui-border: 1px solid var(--line-100);
+  --a2ui-border-radius: var(--radius-control);
+
+  /* 间距：4px 一档，基础件的 xs、s、m、l、xl 对应我们的 space-1、2、3、4、6。 */
+  --a2ui-spacing-xs: var(--space-1);
+  --a2ui-spacing-s: var(--space-2);
+  --a2ui-spacing-m: var(--space-3);
+  --a2ui-spacing-l: var(--space-4);
+  --a2ui-spacing-xl: var(--space-6);
+
+  /* 字：正文 13px，档位比 1.15，字体用界面字体。 */
+  --a2ui-font-size: var(--text-body-size);
+  --a2ui-font-scale: 1.15;
+  --a2ui-font-family-title: var(--font-sans-display);
+  --a2ui-font-family-monospace: var(--font-mono);
+  --a2ui-line-height-headings: 1.25;
+  --a2ui-line-height-body: 1.5;
+
+  /* 各件自己的变量：卡片贴一圈细线、不投影；标签页选中态用墨色下线。 */
+  --a2ui-card-background: var(--bg-200);
+  --a2ui-card-border-radius: var(--radius-panel);
+  --a2ui-card-box-shadow: 0 0 0 1px var(--line-100);
+  --a2ui-card-padding: var(--space-3);
+  --a2ui-card-margin: 0;
+  --a2ui-list-padding: 0;
+  --a2ui-tabs-border: 1px solid var(--line-100);
+  --a2ui-tabs-header-color: var(--ink-300);
+  --a2ui-tabs-header-color-active: var(--ink-100);
+  --a2ui-divider-spacing: var(--space-3);
+}
+
+/* 进度条加一句解释里的档位词（KatanaGaugeBar）：一枚中性小标，字与线都走 token。 */
+.k-a2ui-level {
+  padding: 0 var(--space-1);
+  border: 1px solid var(--line-100);
+  border-radius: var(--radius-control);
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans-small);
+}
+
+/* 积木与布局件的小样式：子组件纵向排开、面板工具条横向排开，间距走 token。 */
+.k-a2ui-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+.k-a2ui-panel-tools {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.k-a2ui-split {
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+}
+.k-a2ui-split > * {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+}

@@ -1,0 +1,382 @@
+/* SPDX-License-Identifier: MIT */
+/* SeriesExplorer（#1917、#1931）：KPI 瓦片点开成图面板、对账、刷选条、表格视图。颜色只用语义 token。 */
+
+.k-sx {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  color: var(--k-content-body-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
+}
+.k-sx-empty {
+  margin: 0;
+  color: var(--k-content-secondary-foreground);
+}
+/* 版式照工作台（Graphite）：纯黑面板、应用的界面字（sans）、数字 tabular-nums；控件是工作台已有的那几件
+   （Toolbar / ToolButton / ToggleGroup sm），不另写一套。橙色只给末点、限额线（红）、选中的刷选窗口，其余中性灰白。 */
+.k-sx {
+  font-variant-numeric: tabular-nums;
+}
+.k-sx-head {
+  height: 36px;
+}
+/* 标题：照 TradingView，用界面无衬线（2026-11-17 起不再用宽体 Michroma）。 */
+.k-sx-title {
+  margin: 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data-size)/20px var(--font-sans);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+/* 元信息行与来源行：等宽大写小字，字距 0.16em，ink-300（工业文档的页眉页脚感，只取感觉）。 */
+/* 装饰性小标签用点阵字（pixel.md：整数字号 12、不加字距、不斜体不伪粗、关抗锯齿；中英各用各的字）；数值与主标签不用。 */
+.k-sx-meta,
+.k-sx-source,
+.k-sx-evt-text,
+.k-sx-dim-label {
+  font: var(--text-tag-md) var(--font-num);
+  letter-spacing: 0;
+  font-style: normal;
+}
+.k-sx-meta,
+.k-sx-source {
+  margin: 0;
+  color: var(--k-content-secondary-foreground);
+  text-transform: uppercase;
+}
+.k-sx-meta {
+  padding-bottom: 6px;
+  /* 元信息行（名 · RUN 编号 · 区间 · 币种）是仪器档案的铭牌，用点阵字（Doto，汉字落到随包的方舟像素子集；精密仪器语言 #7）。
+     2026-11-17 数据字照 TradingView 换无衬线时它被一并换掉，这里改回；读数、事件文字、标注照旧用 --font-num。 */
+  font-family: var(--font-dot);
+  -webkit-font-smoothing: none;
+}
+.k-sx-span {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  white-space: nowrap;
+}
+/* KPI 一排平铺：没有边框与底色；选中的那一格顶上一条中性细线。 */
+.k-sx-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0 16px;
+}
+.k-sx-kpis .k-spark-tile {
+  padding: 4px 0 4px 10px;
+  border: 0;
+  border-left: 2px solid transparent;
+  background: transparent;
+  font-family: var(--font-sans);
+}
+/* 选中态：左侧 2px 强调色竖条（参照图 MASS / VOLUME 那种）。 */
+.k-sx-kpis .k-spark-tile[data-expanded='true'] {
+  border-left-color: var(--chart-accent, var(--k-content-primary-foreground));
+}
+.k-sx-kpis .k-spark-tile-tag {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-num-sm) var(--font-num-small);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.k-sx-kpis .k-spark-tile-value {
+  color: var(--k-content-primary-foreground);
+  font: 600 22px/28px var(--font-sans); /* 22px 没有对应字号档（display 是 28），先留着，待 tokens 定读数大字一档 */
+  letter-spacing: 0;
+}
+.k-sx-kpis .k-spark-tile-delta {
+  min-height: 0;
+  font-family: var(--font-sans);
+}
+/* 对账：键值式——标签等宽小号 ink-300，值无衬线；底下一条发丝线，灯 + 词在右。 */
+.k-sx-recon {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 16px;
+  padding: 6px 0;
+  border-bottom: var(--hairline);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-sx-recon-line {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+}
+.k-sx-kv {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.k-sx-kv small {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-num-sm) var(--font-num-small);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.k-sx-kv b {
+  color: var(--k-content-primary-foreground);
+  font-weight: 500;
+}
+.k-sx-kv i {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-num-sm) var(--font-num-small);
+  font-style: normal;
+}
+.k-sx-recon em {
+  color: var(--k-content-secondary-foreground);
+  font-style: normal;
+}
+.k-sx-recon[data-tone='warn'] .k-sx-recon-diff b {
+  color: var(--k-status-warn-foreground);
+}
+.k-sx-recon-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+/* 展开的图面板：打开时一次 snappy 的升起，关闭直接收起 */
+.k-sx-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 0 8px;
+  animation: k-sx-open var(--dur-snappy) var(--ease-snappy) 1;
+}
+@keyframes k-sx-open {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+.k-sx-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.k-sx-compare {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+/* 概览刷选条：线 ink-300，面 ink-400 的淡填充，选区描强调色细边。 */
+.k-sx .k-brush-strip {
+  border-color: var(--k-separable-tertiary-borderColor);
+  background: transparent;
+}
+.k-sx .k-brush-strip-line {
+  stroke: var(--k-content-secondary-foreground);
+  stroke-width: 1;
+}
+.k-sx .k-brush-strip-area {
+  fill: var(--k-content-tertiary-foreground);
+  fill-opacity: 0.15;
+}
+.k-sx .k-brush-dim {
+  background: var(--k-surface-sunken-background);
+  opacity: 0.5;
+}
+.k-sx .k-brush-window {
+  border: 1px solid var(--chart-accent, var(--k-content-primary-foreground));
+  background: transparent;
+}
+.k-sx .k-brush-handle::after {
+  background: var(--chart-accent, var(--k-content-primary-foreground));
+}
+.k-sx-chart {
+  position: relative;
+  /* 很淡的细网格：12px 一格、ink-400 的 12%（v4 是 25%，压过数据线，用户要求再减半）。12px 与 12% 都是目测值，没有出处，待定。 */
+  background-image:
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--k-content-tertiary-foreground) 12%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--k-content-tertiary-foreground) 12%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 12px 12px;
+  margin-left: var(--k-plot-gutter, 56px);
+  touch-action: pan-y;
+  outline-offset: 2px;
+}
+.k-sx-chart:focus-visible {
+  outline: 1px solid var(--focus-ring);
+}
+.k-sx-chart > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.k-sx-xaxis {
+  margin-left: var(--k-plot-gutter, 56px);
+}
+/* 状态带（#109）：缩进跟图一样（--k-plot-gutter），带的横轴就是上面图的横轴；十字线只画在带那一行（14px）。 */
+.k-sx-regimes {
+  position: relative;
+  margin-left: var(--k-plot-gutter, 56px);
+  margin-top: 6px;
+}
+.k-sx-regimes > .k-plot-cross {
+  bottom: auto;
+  height: 14px;
+}
+.k-sx-closed {
+  fill: var(--k-surface-base-background);
+}
+.k-sx-line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  filter: var(--chart-line-glow, none);
+  transition: d var(--dur-snappy) var(--ease-snappy);
+  vector-effect: non-scaling-stroke;
+}
+.k-sx-ghost {
+  fill: none;
+  stroke: var(--chart-bench);
+  stroke-width: 1;
+  stroke-dasharray: 4 3;
+  transition: d var(--dur-snappy) var(--ease-snappy);
+  vector-effect: non-scaling-stroke;
+}
+.k-sx-limit {
+  stroke: var(--k-status-danger-foreground);
+  stroke-width: 1;
+  stroke-dasharray: 4 3;
+  vector-effect: non-scaling-stroke;
+}
+.k-sx-bar-rect {
+  transition: fill-opacity var(--dur-snappy) var(--ease-snappy);
+}
+.k-sx-chart:has([data-active='true']) .k-sx-bar-rect:not([data-active='true']) {
+  fill-opacity: 0.45;
+}
+.k-sx-table {
+  max-height: 260px;
+  overflow: auto;
+  border: var(--hairline);
+}
+/* 里面是整页表（.k-table-comfortable，#92）时可视高放到表头 48 加 7 行 40。 */
+.k-sx-table:has(> .k-table-comfortable) {
+  max-height: 328px;
+}
+.k-sx-table:focus-visible {
+  outline: 1px solid var(--focus-ring);
+}
+.k-sx-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font: var(--text-data) var(--font-num);
+}
+.k-sx-table th,
+.k-sx-table td {
+  padding: 3px 8px;
+  border-bottom: var(--hairline);
+  text-align: right;
+}
+.k-sx-table th:first-child,
+.k-sx-table thead th {
+  background: var(--k-surface-raised-background);
+  color: var(--k-content-secondary-foreground);
+  font-weight: 400;
+}
+.k-sx-table th:first-child {
+  text-align: left;
+}
+.k-sx-table thead th {
+  position: sticky;
+  top: 0;
+}
+.k-sx-table tr[data-active='true'] td,
+.k-sx-table tr[data-active='true'] th {
+  background: color-mix(in srgb, var(--k-content-primary-foreground) 8%, transparent);
+}
+.k-sx-table td[data-tone='up'] {
+  color: var(--pnl-up);
+}
+.k-sx-table td[data-tone='down'] {
+  color: var(--pnl-down);
+}
+/* 尺寸标注：限额线到零线之间一条竖线，两端短横，旁边写数值（参照图的 109.0 M / 73.0 M）。 */
+.k-sx-dim {
+  position: absolute;
+  width: 0;
+  border-left: 1px solid var(--k-content-secondary-foreground);
+  pointer-events: none;
+}
+.k-sx-dim::before,
+.k-sx-dim::after {
+  content: '';
+  position: absolute;
+  left: -4px;
+  width: 8px;
+  border-top: 1px solid var(--k-content-secondary-foreground);
+}
+.k-sx-dim::before {
+  top: 0;
+}
+.k-sx-dim::after {
+  bottom: 0;
+}
+.k-sx-dim-label {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  translate: 0 round(nearest, -50%, 1px);
+  color: var(--k-content-body-foreground);
+  white-space: nowrap;
+}
+/* 事件点：点 + 斜引线 + 编号 + 短标签。编号强调色等宽小字，标签等宽 ink-200。 */
+.k-sx-evt {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.k-sx-evt-dot {
+  position: absolute;
+  left: -4px;
+  top: -4px;
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--k-content-primary-foreground);
+  border-radius: 50%;
+  background: var(--k-surface-sunken-background);
+}
+.k-sx-evt-lead {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--k-len);
+  border-top: 1px solid var(--k-content-secondary-foreground);
+  transform-origin: 0 0;
+  transform: rotate(var(--k-deg));
+}
+/* 标签落在引线终点：往右的左边贴终点，往左的右边贴终点；上下各让出半行。 */
+.k-sx-evt-text {
+  position: absolute;
+  top: calc(var(--k-sy) * var(--k-rise) - 8px);
+  left: calc(var(--k-run) + 4px);
+  color: var(--k-content-body-foreground);
+  white-space: nowrap;
+}
+.k-sx-evt[data-side='left'] .k-sx-evt-text {
+  left: auto;
+  right: calc(var(--k-run) + 4px);
+}
+.k-sx-evt-text em {
+  color: var(--chart-accent, var(--k-content-primary-foreground));
+  font-style: normal;
+}

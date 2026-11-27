@@ -14,14 +14,15 @@
 | --- | --- | --- | --- |
 | `code` * | `string` | — | The source code (required). |
 | `language` | `string` | `'plain'` | Language: ts, tsx, js, json, py, sh, css and so on; unknown ones are plain text. |
-| `accent` | `string` | `'var(--signal-orange)'` | Accent color, any CSS color; the whole palette is mixed from it. |
+| `accent` | `string` | `'var(--accent)'` | Accent color, any CSS color; the whole palette is mixed from it. |
 | `filename` | `string` | — | Name written in the header; the language is written when omitted. |
 | `showHeader` | `boolean` | `true` | Whether to draw the header; without it the copy button floats at the top right. |
 | `showLineNumbers` | `boolean` | `true` | Whether to draw line numbers. |
 | `showCopyButton` | `boolean` | `true` | Whether to draw the copy button. |
 | `highlightLines` | `readonly number[]` | — | Lines to highlight (1-based). |
-| `copyLabel` * | `string` | — | Accessible name of the copy button (required). |
-| `copiedLabel` * | `string` | — | Accessible name of the copy button after a successful copy (required). |
+| `labels` | `CodeBlockLabels` | — | Accessible names of the copy button, before and right after copying (required unless the deprecated copyLabel / copiedLabel are given). |
+| `copyLabel` | `string` | — | Old name kept for one release. |
+| `copiedLabel` | `string` | — | Old name kept for one release. |
 | `className` | `string` | — | Extra class name on the root. |
 
 ## Usage
@@ -36,8 +37,7 @@ export function CodeBlockUsage() {
       code={`export const answer = 42`}
       language="ts"
       filename="answer.ts"
-      copyLabel="Copy code"
-      copiedLabel="Copied"
+      labels={{ copy: 'Copy code', copied: 'Copied' }}
     />
   )
 }
@@ -45,12 +45,15 @@ export function CodeBlockUsage() {
 
 ## States
 
-- 带文件名头、行号、复制钮；复制后钮上写 copiedLabel。
-- 可高亮指定的行。
+- 带文件名头、行号、复制钮；复制后钮变对勾、读屏名换成 labels.copied，1.8 秒复原。
+- 可高亮指定的行（强调色 12% 的底）。
+- 没有头：复制钮浮在右上角。
 
 ## Don't
 
-- 复制钮的文案由调用方传（copyLabel、copiedLabel）。
+- 复制钮的文案由调用方传（labels.copy、labels.copied；旧的 copyLabel / copiedLabel 留一个版本）。
+- 注释不要用 ink-4：深底上不到 3:1，注释色是 ink-3 斜体。
+- 不要拿它执行或渲染代码：代码只当文字画。
 
 ## Composition
 

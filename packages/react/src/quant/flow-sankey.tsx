@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 import { useId, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react'
-import { ChartActions } from './chart-kit/chart-actions.tsx'
-import { ChartTable, type ChartViewProps } from './chart-kit/chart-table.tsx'
-import { LcdTooltip, type LcdTooltipRow } from './chart-kit/lcd-tooltip.tsx'
+import { ChartActions } from '../lib/chart/chart-kit/chart-actions.tsx'
+import { ChartTable, type ChartViewProps } from '../lib/chart/chart-kit/chart-table.tsx'
+import { LcdTooltip, type LcdTooltipRow } from '../lib/chart/chart-kit/lcd-tooltip.tsx'
 import {
   layoutFlow,
   linkEnds,
@@ -13,6 +13,7 @@ import {
   type LaidLink,
   type LaidNode,
 } from './flow-sankey-model.ts'
+import { fontFor, measureText, truncateText } from '../lib/text-measure.ts'
 
 // 资金流向桑基图：来源 → 通道 → 用途 → 受益方，节点与流量由调用方给。照 issue #45 的需求做（没有读到可对照的参照产品页面，待核对）：悬停出金额与占比，点节点高亮上下游，「交易流量」与「价格重估」分开画（重估用斜纹，不混进流量，也不进占比）。
 // 排布用 d3-sankey（BSD-3-Clause），见 flow-sankey-model.ts。颜色：链路与节点全是中性灰，不用橙与蓝；节点想着色由调用方给 color。
@@ -78,6 +79,7 @@ export function FlowSankey({
   source,
   onExport,
   onFullscreen,
+  onCopyImage,
 }: FlowSankeyProps) {
   const pattern = useId().replace(/:/g, '')
   const stage = useRef<HTMLDivElement>(null)
@@ -204,6 +206,21 @@ export function FlowSankey({
             : { x: (node.x0 + node.x1) / 2, anchor: 'middle' },
       )
 
+  // SVG 里的字没有 text-overflow：节点名只能写在它与相邻一列之间的空档里，超出的截尾加省略号，全文留在 <title>。
+  const labelFont = fontFor(400, 12, '--font-sans-small')
+  const amountFont = fontFor(400, 12, '--font-num')
+  const headFont = fontFor(400, 11, '--font-sans-small')
+  const layerEdge = (layer: number, pick: 'x0' | 'x1') => {
+    const xs = laid.nodes.filter((node) => node.layer === layer).map((node) => node[pick])
+    return xs.length === 0 ? null : pick === 'x0' ? Math.min(...xs) : Math.max(...xs)
+  }
+  const labelRoom = (node: (typeof laid.nodes)[number], onRight: boolean) => {
+    const far = onRight ? (layerEdge(node.layer - 1, 'x1') ?? 0) : (layerEdge(node.layer + 1, 'x0') ?? W)
+    const near = onRight ? node.x0 - 6 : node.x1 + 6
+    return Math.max(24, Math.abs(far - near) - 4)
+  }
+  const headPitch = laid.columns > 1 ? (W - 12) / laid.columns : W
+
   return (
     <figure className={`k-fsk${className ? ` ${className}` : ''}`} data-slot="flow-sankey">
       <div className="k-dist-bar">
@@ -224,6 +241,7 @@ export function FlowSankey({
           onTableView={setTableView}
           onExport={onExport}
           onFullscreen={onFullscreen}
+          onCopyImage={onCopyImage}
         />
       </div>
       {tableView && (
@@ -264,13 +282,22 @@ export function FlowSankey({
         >
           <defs>
             <pattern id={pattern} width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-              <line x1="0" y1="0" x2="0" y2="6" style={{ stroke: 'var(--ink-200)', strokeWidth: 2 }} />
+              <line
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="6"
+                style={{ stroke: 'var(--k-content-body-foreground)', strokeWidth: 2 }}
+              />
             </pattern>
           </defs>
           {columnLabels !== undefined &&
             [...heads].map(([layer, head]) => (
               <text key={layer} className="k-fsk-head" x={head.x} y={12} textAnchor={head.anchor}>
-                {columnLabels[layer] ?? ''}
+                {truncateText(columnLabels[layer] ?? '', headFont, headPitch - 8)}
+                {measureText(columnLabels[layer] ?? '', headFont) > headPitch - 10 && (
+                  <title>{columnLabels[layer]}</title>
+                )}
               </text>
             ))}
           <g className="k-fsk-links">
@@ -300,6 +327,9 @@ export function FlowSankey({
             {laid.nodes.map((node) => {
               const onRight = node.x0 > W / 2
               const amount = Math.max(node.flowIn, node.flowOut)
+              const amountText = formatValue(amount)
+              const room = labelRoom(node, onRight) - measureText(amountText, amountFont) - 6
+              const shown = truncateText(node.label, labelFont, room)
               return (
                 <g key={node.id} className="k-fsk-node" data-slot="flow-node" data-id={node.id}>
                   <rect
@@ -348,10 +378,11 @@ export function FlowSankey({
                     dy="0.35em"
                     textAnchor={onRight ? 'end' : 'start'}
                   >
-                    {node.label}
+                    {shown}
                     <tspan className="k-fsk-amount" dx="6">
-                      {formatValue(amount)}
+                      {amountText}
                     </tspan>
+                    {shown !== node.label && <title>{node.label}</title>}
                   </text>
                 </g>
               )

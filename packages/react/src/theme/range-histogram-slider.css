@@ -1,0 +1,70 @@
+/* SPDX-License-Identifier: MIT */
+/* RangeHistogramSlider：上面一排柱子（顺序色阶，越高越亮），区间外的柱子 35% 不透明度；下面 2px 轨道、选中段实心、两个 16px 圆把手（边 2px 主字色，芯是最深底）。
+   G2（2026-11-18）从 distribution.css 拆出，颜色改读 characteristics，值与改前相等。柱子的顺序色阶（--seq-*）由组件按高度取，是数据色。 */
+.k-range-hist {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.k-range-hist-body {
+  position: relative;
+  height: 76px;
+  padding-bottom: 20px;
+  touch-action: none;
+  user-select: none;
+  cursor: pointer;
+}
+.k-range-hist-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 1px;
+  height: 56px;
+}
+.k-range-hist-bar {
+  flex: 1 1 0;
+  min-height: 1px;
+  opacity: 0.35;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+}
+.k-range-hist-bar[data-in='true'] {
+  opacity: 1;
+}
+.k-range-hist-rail {
+  position: absolute;
+  right: 0;
+  bottom: 9px;
+  left: 0;
+  height: 2px;
+  background: var(--k-separable-bold-borderColor);
+}
+.k-range-hist-span {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--k-content-primary-foreground);
+}
+.k-range-hist-thumb {
+  position: absolute;
+  bottom: 2px;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  margin-left: -8px;
+  border: 2px solid var(--k-content-primary-foreground);
+  border-radius: var(--radius-pill);
+  background: var(--k-surface-sunken-background);
+  cursor: grab;
+  outline: none;
+}
+.k-range-hist-thumb:active {
+  cursor: grabbing;
+}
+.k-range-hist-thumb:focus-visible {
+  box-shadow: 0 0 0 2px var(--k-focused-outlineColor);
+}
+.k-range-hist-readout {
+  color: var(--k-content-body-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
+}

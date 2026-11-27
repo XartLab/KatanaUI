@@ -1,0 +1,129 @@
+/* SPDX-License-Identifier: MIT */
+/* 还直接读色阶的（2026-11-18 G4 迁 token 时留下）：--alpha-white-2、--alpha-white-5、--alpha-white-7、--alpha-white-9——characteristics 里没有同值、同语义的（轨道、徽标底、悬停的半透明灰档，暗橙边框），等 G0 补齐再换。 */
+/* 同业卡 PeerCards。 2026-11-18 从 symbol-overview.css 拆出（#53，对齐 TradingView 品种页，主会话 2026-11-15 实测，只取布局）。颜色只用涨跌语义色（--pnl-up / --pnl-down）与中性灰；选中是灰底，不用 TV 的蓝，徽标不用紫。 */
+
+/* —— 同业卡 —— */
+.k-peers {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  font: var(--text-data) var(--font-sans);
+}
+.k-peers-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}
+.k-peers-compare {
+  margin-right: 4px;
+  padding: 4px 10px;
+  border: 1px solid var(--alpha-white-9);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--k-content-primary-foreground);
+  font: 500 12px/16px var(--font-sans);
+  cursor: pointer;
+}
+.k-peers-compare:hover {
+  background: var(--alpha-white-5);
+}
+.k-peers-arrow {
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--alpha-white-5);
+  color: var(--k-content-primary-foreground);
+  font: 500 16px/22px var(--font-sans);
+  cursor: pointer;
+}
+.k-peers-arrow:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.k-peers-rail {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+}
+.k-peers-card {
+  position: relative;
+  flex: 0 0 168px;
+  scroll-snap-align: start;
+}
+.k-peers-main {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    'logo code'
+    'logo name'
+    'price price'
+    'change change';
+  column-gap: 8px;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  padding: 10px 36px 10px 10px;
+  border: 1px solid var(--k-separable-secondary-borderColor);
+  border-radius: var(--radius-overlay);
+  background: var(--alpha-white-2);
+  color: var(--k-content-primary-foreground);
+  text-align: left;
+  cursor: pointer;
+}
+.k-peers-main:hover {
+  background: var(--alpha-white-5);
+}
+.k-peers-main > .k-symbol-mark {
+  grid-area: logo;
+}
+.k-peers-code {
+  grid-area: code;
+  font: 600 13px/16px var(--font-sans);
+}
+.k-peers-name {
+  grid-area: name;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--k-content-secondary-foreground);
+  font: 400 12px/16px var(--font-sans);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-peers-price {
+  grid-area: price;
+  margin-top: 8px;
+  font: 600 15px/20px var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-peers-price small {
+  margin-left: 4px;
+  color: var(--k-content-secondary-foreground);
+  font: 400 11px/14px var(--font-sans);
+}
+.k-peers-change {
+  grid-area: change;
+  font: 500 13px/18px var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-peers-add {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--k-content-secondary-foreground);
+  font: 400 16px/20px var(--font-sans);
+  cursor: pointer;
+}
+.k-peers-add:hover {
+  background: var(--alpha-white-7);
+  color: var(--k-content-primary-foreground);
+}

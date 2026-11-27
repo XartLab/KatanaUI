@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { useState } from 'react'
+import { LiveToggle } from '../LiveToggle.tsx'
+import { chance, pick, useLiveTicker, type Rng } from '../live-sim.ts'
 import {
   ChipGroup,
   DateRangePicker,
@@ -30,16 +32,19 @@ export function HoldToConfirmDemo() {
   return (
     <>
       <Row name="danger · 默认 2 秒">
-        <HoldToConfirm hint="按住 2 秒，全部平仓" confirmedLabel="已平仓" onConfirm={() => setFlattened((n) => n + 1)}>
+        <HoldToConfirm
+          labels={{ hint: '按住 2 秒，全部平仓', confirmed: '已平仓' }}
+          onConfirm={() => setFlattened((n) => n + 1)}
+        >
           全部平仓
         </HoldToConfirm>
         <output data-gallery-hold>已触发 {flattened} 次</output>
       </Row>
-      <Row name="default · 1 秒">
+      <Row name="neutral · 1 秒">
         <HoldToConfirm
-          tone="default"
+          tone="neutral"
           holdMs={1000}
-          hint="按住 1 秒，停止策略"
+          labels={{ hint: '按住 1 秒，停止策略' }}
           onConfirm={() => setStopped((n) => n + 1)}
         >
           停止策略
@@ -47,7 +52,7 @@ export function HoldToConfirmDemo() {
         <output data-gallery-hold-fast>已触发 {stopped} 次</output>
       </Row>
       <Row name="禁用">
-        <HoldToConfirm disabled hint="按住 2 秒，全部撤单" onConfirm={() => {}}>
+        <HoldToConfirm disabled labels={{ hint: '按住 2 秒，全部撤单' }} onConfirm={() => {}}>
           全部撤单
         </HoldToConfirm>
       </Row>
@@ -76,7 +81,7 @@ export function ShortcutRecorderDemo() {
         <ShortcutRecorder
           label="全部平仓快捷键"
           value={flatten}
-          onValue={setFlatten}
+          onValueChange={setFlatten}
           labels={RECORDER_LABELS}
           conflicts={TAKEN}
         />
@@ -86,14 +91,14 @@ export function ShortcutRecorderDemo() {
         <ShortcutRecorder
           label="切换品种快捷键"
           value={bare}
-          onValue={setBare}
+          onValueChange={setBare}
           labels={RECORDER_LABELS}
           requireModifier
         />
         <output data-gallery-recorder-mod>{bare ?? '未设置'}</output>
       </Row>
       <Row name="禁用">
-        <ShortcutRecorder label="只读快捷键" value="F5" onValue={() => {}} labels={RECORDER_LABELS} disabled />
+        <ShortcutRecorder label="只读快捷键" value="F5" onValueChange={() => {}} labels={RECORDER_LABELS} disabled />
       </Row>
       <p className="gal-note">
         演示：占用表里是「全部撤单 = Ctrl+Shift+K」「市价买入 = Alt+B」，录到它们会提示冲突、不写入。
@@ -117,7 +122,13 @@ export function ChipGroupDemo() {
   return (
     <>
       <Row name="多选 · 带清除">
-        <ChipGroup label="市场" items={CHIP_ITEMS} value={markets} onValueChange={setMarkets} clearLabel="清除筛选" />
+        <ChipGroup
+          label="市场"
+          items={CHIP_ITEMS}
+          value={markets}
+          onValueChange={setMarkets}
+          labels={{ clear: '清除筛选' }}
+        />
         <output data-gallery-chips>{markets.join(',') || '无'}</output>
       </Row>
       <Row name="单选">
@@ -153,13 +164,19 @@ export function DateRangePickerDemo() {
   return (
     <>
       <Row name="区间 + 预设">
-        <DateRangePicker value={range} onValue={setRange} today="2026-11-14" labels={RANGE_LABELS} locale="zh-CN" />
+        <DateRangePicker
+          value={range}
+          onValueChange={setRange}
+          today="2026-11-14"
+          labels={RANGE_LABELS}
+          locale="zh-CN"
+        />
         <output data-gallery-range>{range ? `${range.start} ~ ${range.end}` : '未选'}</output>
       </Row>
       <Row name="未选 · 限定范围">
         <DateRangePicker
           value={null}
-          onValue={() => {}}
+          onValueChange={() => {}}
           today="2026-11-14"
           min="2026-01-01"
           max="2026-12-31"
@@ -215,8 +232,8 @@ export function TreeViewDemo() {
             label="品种分类"
             items={TREE_ITEMS}
             defaultExpandedKeys={['cn', 'cn-main']}
-            selectedKeys={selected}
-            onSelectionChange={setSelected}
+            value={selected}
+            onValueChange={setSelected}
             onAction={setOpened}
           />
         </div>
@@ -364,11 +381,33 @@ const TIMELINE_LABELS: EventTimelineLabels = {
   empty: '还没有事件',
 }
 
+// 实时模拟（演示）：每拍「现在」走两分钟（封顶 14:58，不出交易时段），约一半的拍来一个新事件；第一拍必来，手动步进有确定结果。
+const LIVE_EVENTS: readonly { kind: TimelineEvent['kind']; label: string }[] = [
+  { kind: 'anomaly', label: '放量拉升' },
+  { kind: 'alert', label: '触及价位提醒' },
+  { kind: 'notice', label: '新增公告' },
+  { kind: 'run', label: 'RUN 完成' },
+]
+type LiveTimeline = { now: number; events: readonly TimelineEvent[] }
+function timelineStep(state: LiveTimeline, rng: Rng, tick: number): LiveTimeline {
+  const now = Math.min(state.now + 2 * 60_000, cst(D1, '14:58'))
+  if (tick > 0 && !chance(rng, 0.5)) return { ...state, now }
+  const made = pick(rng, LIVE_EVENTS)
+  return {
+    now,
+    events: [...state.events, { id: `live-${tick}`, at: now, kind: made.kind, label: made.label, symbol: '300750' }],
+  }
+}
+
 export function EventTimelineDemo() {
+  const live = useLiveTicker<LiveTimeline>({ now: cst(D1, '14:30'), events: [] }, timelineStep, { intervalMs: 3000 })
   const [picked, setPicked] = useState<string | null>(null)
   const [brushed, setBrushed] = useState<string | null>(null)
   return (
     <>
+      <Row>
+        <LiveToggle labels={{ group: '数据刷新', live: '实时', paused: '暂停' }} />
+      </Row>
       <Row>
         <span className="gal-cap" style={{ width: '100%' }}>
           单日 · 现在 · 可点可拖选
@@ -376,13 +415,13 @@ export function EventTimelineDemo() {
         <div style={{ width: 640 }}>
           <EventTimeline
             label="事件流"
-            events={TIMELINE_EVENTS}
+            events={[...TIMELINE_EVENTS, ...live.state.events]}
             timeZone="Asia/Shanghai"
             session={SESSION}
-            now={cst(D1, '14:30')}
+            now={live.state.now}
             scope="300750 · 账户 A、B"
             labels={TIMELINE_LABELS}
-            onPick={(event) => setPicked(event.id)}
+            onSelect={(event) => setPicked(event.id)}
             onBrush={({ from, to }) =>
               setBrushed(`${new Date(from).toISOString().slice(11, 16)}–${new Date(to).toISOString().slice(11, 16)}`)
             }

@@ -13,8 +13,12 @@ import { createRequire } from 'node:module'
 import { mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+
+// 预览里有按本地时区格式化的时间（RefreshControl 的「上次刷新」），固定 UTC，生成结果不随机器时区变：
+// 自建机按本地时区生成、托管机按 UTC 检查，Pages 构建因此红过（main 949e9867，2026-11-24）。
+process.env.TZ = 'UTC'
 import tailwindcss from '@tailwindcss/vite'
-import { build, createServer } from 'vite-plus'
+import { build, createServer, defaultClientConditions, defaultServerConditions } from 'vite-plus'
 import { renderCover } from './ds-cover.mjs'
 import { declaredVars, hoistRawColours, referencedVars, runtimeVarsBlock } from './ds-css.mjs'
 import { buildDesignSystemTokens } from './ds-tokens.mjs'
@@ -55,6 +59,11 @@ async function loadRender() {
     logLevel: 'silent',
     appType: 'custom',
     server: { middlewareMode: true },
+    // 同仓库的 @katana-ui/logos 读 TS 源码（katana-source 条件，见 vite.config.ts），不靠它先构建。
+    resolve: { conditions: ['katana-source', ...defaultClientConditions] },
+    ssr: {
+      resolve: { conditions: ['katana-source', ...defaultServerConditions], externalConditions: ['katana-source'] },
+    },
   })
   try {
     return await server.ssrLoadModule('/ds/render.tsx')

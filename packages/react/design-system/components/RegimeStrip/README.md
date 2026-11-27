@@ -14,9 +14,8 @@
 | --- | --- | --- | --- |
 | `title` | `ReactNode` | — | 图例上方的标题行。 |
 | `current` | `string` | — | 当前所处状态的 id。 |
-| `currentText` | `string` | — | 「当前」的字；给了 current 就要给。 |
-| `estimateText` | `string` | `'est.'` | 有估算段时图例末尾的字。 |
-| `onPickState` | `(id: string \| null) => void` | — | 给了图例每项就是按钮：点选高亮，再点取消（传 null）。 |
+| `labels` | `{ current?, estimate? }` | — | 「当前」的字（给了 current 就要给）、有估算段时图例末尾的字（默认 'est.'）；旧名 currentText / estimateText 留一个版本。 |
+| `onSelect` | `(state: RegimeState \| null) => void` | — | 给了图例每项就是按钮：点选高亮，再点同一项取消（传 null）；旧名 onPickState（给 id）留一个版本。 |
 
 ### RegimeBand
 
@@ -36,7 +35,7 @@
 ```tsx
 // SPDX-License-Identifier: MIT
 import { useState } from 'react'
-import { RegimeBand, RegimeStrip, type RegimeSegment, type RegimeState } from '@katana-ui/react/quant'
+import { RegimeBand, RegimeStrip, type RegimeSegment, type RegimeState } from '@katana-ui/react/blocks'
 
 const regimeStates: readonly RegimeState[] = [
   { id: 'trend', name: '趋势上', color: 1, detail: '47%' },
@@ -73,10 +72,9 @@ export function RegimeStripUsage() {
             `${state.name} · ${segment.from}–${segment.to}${segment.estimated ? '（估）' : ''}`
           }
           current="trend"
-          currentText="当前"
-          estimateText="估（尚未确认）"
+          labels={{ current: '当前', estimate: '估（尚未确认）' }}
           activeState={active}
-          onPickState={setActive}
+          onSelect={(state) => setActive(state?.id ?? null)}
         />
       </div>
 
@@ -111,4 +109,4 @@ RegimeStrip
 
 ## Keyboard
 
-- `Enter / Space`：给了 onPickState 时，图例项点选或取消高亮
+- `Enter / Space`：给了 onSelect 时，图例项点选或取消高亮

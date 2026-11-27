@@ -1,0 +1,46 @@
+/* SPDX-License-Identifier: MIT */
+/* 自动刷新控件 RefreshControl（#77）：分段（ToggleGroup sm，26 高）· 立即刷新钮 24 × 24 · 「上次 HH:MM:SS · 下次 12s」次要文字色、等宽数字。
+   在刷时图标转圈（一圈 1.2s，线性），钮不禁用（aria-disabled，焦点不丢）。 */
+.k-refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-refresh-now {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--k-actionable-subtle-foreground);
+  cursor: pointer;
+}
+.k-refresh-now:hover {
+  background: var(--k-actionable-subtle-background-hover);
+  color: var(--k-actionable-subtle-foreground-hover);
+}
+.k-refresh-now[aria-disabled] {
+  cursor: progress;
+}
+.k-refresh[data-refreshing] .k-refresh-now svg {
+  animation: k-refresh-spin 1.2s linear infinite;
+}
+@keyframes k-refresh-spin {
+  to {
+    rotate: 1turn;
+  }
+}
+.k-refresh-meta {
+  display: inline-flex;
+  gap: 10px;
+  color: var(--k-content-secondary-foreground);
+  white-space: nowrap;
+}
+.k-refresh-meta time {
+  color: var(--k-content-primary-foreground);
+}

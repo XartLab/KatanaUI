@@ -80,6 +80,9 @@ export function DialogUsage() {
 ## States
 
 - 收起；打开后焦点圈在对话框里，Esc 关闭并还回焦点。
+- 打开：surface-raised 底、9% 白边（--k-overlay-dialog-borderColor）、--k-overlay-dialog-shadow，背后压一层遮罩。
+- 头脚：标题栏 50 高、按钮栏上下各一道 5% 白分隔（--k-separable-subtle-borderColor）；正文太长时只滚正文。
+- 确认类（.k-dlg.confirm）：边换成 line-200。
 
 ## Don't
 

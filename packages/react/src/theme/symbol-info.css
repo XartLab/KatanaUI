@@ -1,0 +1,80 @@
+/* SPDX-License-Identifier: MIT */
+/* 品种报价头 SymbolInfo（#147，KATANAview #1884：对 TradingView 的 Symbol Info 小组件）。颜色只用 token（涨跌走 ToneText 的 --pnl-up / --pnl-down）；数字一律等宽（tabular-nums）；区间条的样子归 range-bar.css。 */
+
+.k-syminfo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  padding: 14px 16px;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-syminfo-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.k-syminfo-id {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.k-syminfo-symbol {
+  overflow: hidden;
+  font: var(--text-title) var(--font-sans);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-syminfo-name {
+  overflow: hidden;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-syminfo-exchange {
+  color: var(--k-content-secondary-foreground);
+}
+.k-syminfo-status {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-syminfo-quote {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+}
+.k-syminfo-price {
+  font: var(--text-display-dense) var(--font-sans);
+  letter-spacing: var(--text-display-dense-tracking);
+  font-variant-numeric: tabular-nums;
+}
+.k-syminfo-unit {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-syminfo-change,
+.k-syminfo-pct {
+  font: var(--text-data) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-syminfo-ranges {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px 20px;
+}
+.k-syminfo-footer {
+  margin: 0;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}

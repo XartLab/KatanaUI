@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { describe, expect, it } from 'vitest'
 import {
+  decisionSeverity,
   countByFilter,
   effectiveStatus,
   secondsLeft,
@@ -34,5 +35,14 @@ describe('decision queue model', () => {
     expect(secondsLeft(items[0]!, 2000)).toBe(3)
     expect(secondsLeft(items[2]!, 2000)).toBe(0)
     expect(secondsLeft(items[5]!, 2000)).toBeNull()
+  })
+})
+
+describe('decisionSeverity', () => {
+  it('状态到语气只在模型里定一次，灯由 ledOf 取（G6）', async () => {
+    const { ledOf } = await import('../../lib/severity.ts')
+    expect(
+      ['pending', 'snoozed', 'accepted', 'rejected', 'expired'].map((s) => ledOf(decisionSeverity(s as never))),
+    ).toEqual(['on', 'warn', 'ok', 'danger', 'off'])
   })
 })

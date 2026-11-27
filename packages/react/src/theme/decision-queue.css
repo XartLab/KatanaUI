@@ -1,4 +1,5 @@
 /* SPDX-License-Identifier: MIT */
+/* G6 token 迁移：alpha-white-6 / -8 的边线与 ink-200 的实心条没有对应的 characteristics（separable 只有 -7、-13），先留着。 */
 /* DecisionQueue：建议卡片队列。卡片照 uiarc（4% 白底、8% 白边、8px 圆角），已处理的收成告警列表式的一行。
    状态靠灯 + 字，不单靠颜色；橙色不画数据；倒计时数字等宽，最后一分钟变琥珀。全用语义 token。 */
 .k-dq {
@@ -7,12 +8,12 @@
   gap: 8px;
   height: 100%;
   min-height: 0;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font: var(--text-data) var(--font-sans);
 }
 .k-dq-count {
   margin-inline-start: 6px;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font-variant-numeric: tabular-nums;
 }
 .k-dq-scroll {
@@ -22,7 +23,7 @@
 }
 .k-dq-empty {
   padding: 24px 12px;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   text-align: center;
 }
 .k-dq-list {
@@ -38,15 +39,15 @@
   flex-direction: column;
   gap: 8px;
   padding: 10px 12px;
-  background: var(--alpha-white-3);
+  background: var(--k-container-tertiary-background);
   border: 1px solid var(--alpha-white-8);
-  border-radius: 8px;
+  border-radius: var(--radius-overlay);
 }
 .k-dq-meta {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
 }
 .k-dq-time,
 .k-dq-left {
@@ -54,16 +55,16 @@
 }
 .k-dq-left {
   margin-inline-start: auto;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
 }
 .k-dq-left[data-urgent] {
-  color: var(--signal-amber);
+  color: var(--k-status-warn-foreground);
 }
 .k-dq-snoozed {
   padding: 0 6px;
   border: 1px solid var(--alpha-white-8);
   border-radius: var(--radius-pill);
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
 }
 .k-dq-head {
   display: flex;
@@ -72,31 +73,31 @@
   gap: 8px;
 }
 .k-dq-action {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font-weight: 700;
 }
 .k-dq-target {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font-weight: 600;
 }
 .k-dq-tag {
   padding: 0 6px;
-  background: var(--alpha-white-3);
+  background: var(--k-container-tertiary-background);
   border: 1px solid var(--alpha-white-8);
   border-radius: var(--radius-pill);
-  color: var(--ink-200);
-  font: var(--text-data) var(--font-mono);
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-num);
 }
 .k-dq-rationale {
   margin: 0;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
 }
 .k-dq-evidence {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 4px 16px;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
 }
 .k-dq-conf {
   display: inline-flex;
@@ -108,7 +109,7 @@
   width: 48px;
   height: 4px;
   background: var(--alpha-white-8);
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   overflow: hidden;
 }
 .k-dq-conf-bar i {
@@ -117,7 +118,7 @@
   background: var(--ink-200);
 }
 .k-dq-basis-label {
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font-weight: 600;
 }
 .k-dq-sources {
@@ -134,15 +135,15 @@
   gap: 4px;
   height: 20px;
   padding: 0 8px;
-  background: var(--alpha-white-3);
+  background: var(--k-actionable-background);
   border: 1px solid var(--alpha-white-8);
   border-radius: var(--radius-pill);
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   text-decoration: none;
 }
 .k-dq-source:hover {
-  background: var(--alpha-white-6);
-  color: var(--ink-100);
+  background: var(--k-actionable-background-hover);
+  color: var(--k-content-primary-foreground);
 }
 .k-dq-source:focus-visible,
 .k-dq-more:focus-visible,
@@ -158,12 +159,12 @@
   padding: 0;
   background: none;
   border: 0;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font: inherit;
   cursor: pointer;
 }
 .k-dq-more:hover {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 .k-dq-more[aria-expanded='true'] svg,
 .k-dq-row[aria-expanded='true'] .k-dq-chevron {
@@ -189,17 +190,17 @@
   background: none;
   border: 0;
   border-bottom: 1px solid var(--alpha-white-6);
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font: inherit;
   text-align: left;
   cursor: pointer;
 }
 .k-dq-row:hover {
-  background: var(--alpha-white-3);
+  background: var(--k-actionable-background);
 }
 .k-dq-result {
   min-width: 48px;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
 }
 .k-dq-who {
   margin-inline-start: auto;
@@ -207,7 +208,7 @@
 }
 .k-dq-row .k-dq-action,
 .k-dq-row .k-dq-target {
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font-weight: 500;
 }
 .k-dq-done-body {

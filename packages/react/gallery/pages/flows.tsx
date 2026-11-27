@@ -6,11 +6,20 @@ import {
   type FlowNode,
   type VintageObservation,
 } from '../../src/quant/index.ts'
+import { demoCopyImage } from './demo-copy.tsx'
 import { Row } from './parts.tsx'
+import { isoDate } from '../../src/lib/date.ts'
+import { pad } from '../../src/lib/num.ts'
 
 // 资金流向桑基图与按发布时间画的宏观序列的演示。下面所有数据都是虚构的演示数据（不是任何真实机构、市场或统计口径的数字），页上与小标都写明。
 
-const ACTIONS = { group: '图的操作', table: '表格视图', exportCsv: '导出 CSV', fullscreen: '全屏' }
+const ACTIONS = {
+  group: '图的操作',
+  table: '表格视图',
+  exportCsv: '导出 CSV',
+  fullscreen: '全屏',
+  copyImage: '复制图片',
+}
 
 const NODES: FlowNode[] = [
   { id: 'cb', label: '央行', column: 0 },
@@ -104,6 +113,7 @@ export function FlowSankeyDemo() {
             tableHead={['链路', '类型', '金额', '占来源流出', '占总量']}
             badge="演示数据"
             source="来源 / 演示数据（虚构）"
+            onCopyImage={demoCopyImage}
           />
         </div>
       </Row>
@@ -163,9 +173,8 @@ const VINTAGES: VintageObservation[] = (() => {
   })
 })()
 
-const pad = (n: number) => String(n).padStart(2, '0')
 const month = (at: number) => `${new Date(at).getUTCFullYear()}-${pad(new Date(at).getUTCMonth() + 1)}`
-const day = (at: number) => `${month(at)}-${pad(new Date(at).getUTCDate())}`
+const day = isoDate
 const signed = new Intl.NumberFormat('en-US', {
   minimumFractionDigits: 2,
   maximumFractionDigits: 2,
@@ -194,6 +203,7 @@ export function VintageSeriesDemo() {
     formatValue: (value: number) => `${plain.format(value)}%`,
     formatDelta: (delta: number) => signed.format(delta),
     actionLabels: ACTIONS,
+    onCopyImage: demoCopyImage,
     tableLabel: '发布值明细表',
     tableHead: ['统计期', '发布时刻', '值', '较上次', '较首次'],
     badge: '演示数据',

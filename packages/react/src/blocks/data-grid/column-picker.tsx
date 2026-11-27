@@ -4,7 +4,7 @@ import { ChipGroup } from '../../patterns/chip-group.tsx'
 import { Button } from '../../primitives/button.tsx'
 import { Checkbox } from '../../primitives/checkbox.tsx'
 import { Popover, PopoverContent, PopoverTrigger } from '../../primitives/popover.tsx'
-import type { GridColumnLayout } from './data-grid.tsx'
+import type { GridColumnLayout } from './data-grid-props.ts'
 import { activeColumnSet, applyColumnSet, setColumnVisible } from './layout-model.ts'
 
 // 列选择器（#27）：弹层里上面一组「列集」芯片（整套列一键切换），下面逐列勾选显隐。功能参照 TradingView 筛选器的 column sets

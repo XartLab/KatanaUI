@@ -15,6 +15,7 @@
 | `value` * | `number \| string \| null \| undefined` | — | Only decides the direction; 0, empty and unparseable values count as flat. |
 | `tone` | `Tone` | — | Overrides the direction when it is not given by the sign of value (a loss written as a positive number, say). |
 | `arrow` | `boolean` | — | Put an up or down triangle before the text. |
+| `flash` | `boolean` | `false` | Flash up or down color when value changes (for numbers that update live; off by default so static tables stay still). |
 | `as` | `'span' \| 'strong'` | — | Which element to render. |
 | `children` * | `ReactNode` | — | The text to show. |
 
@@ -22,7 +23,7 @@
 
 ```tsx
 // SPDX-License-Identifier: MIT
-import { PnlText } from '@katana-ui/react/quant'
+import { PnlText } from '@katana-ui/react/quotes'
 
 export function PnlTextUsage() {
   return (
