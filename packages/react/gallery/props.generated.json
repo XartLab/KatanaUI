@@ -4083,6 +4083,179 @@
       "source": "src/primitives/alert.tsx",
       "props": []
     },
+    "AlertDialog": {
+      "kind": "component",
+      "source": "src/primitives/alert-dialog.tsx",
+      "props": []
+    },
+    "AlertDialogAction": {
+      "kind": "component",
+      "source": "src/primitives/alert-dialog.tsx",
+      "props": [
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "description": "Render the child element itself (a link, a menu trigger) instead of wrapping it in a button."
+        },
+        {
+          "name": "size",
+          "type": "ButtonSize | 'default' | null",
+          "required": false,
+          "description": "Height: sm is 26px, md (default) is 30px, icon is a 28px square."
+        },
+        {
+          "name": "effect",
+          "type": "ButtonEffect",
+          "required": false,
+          "description": "Optional hover effect from SmoothUI: magnetic leans toward the pointer, dot-morph stretches a leading dot into a bar, clip-corners cuts the corners wider."
+        },
+        {
+          "name": "magnetStrength",
+          "type": "number",
+          "required": false,
+          "description": "How far a magnetic button leans: the fraction of the pointer offset it follows (0 to 1)."
+        },
+        {
+          "name": "magnetRadius",
+          "type": "number",
+          "required": false,
+          "description": "Distance in px from the button center within which a magnetic button reacts."
+        },
+        {
+          "name": "pending",
+          "type": "boolean",
+          "required": false,
+          "description": "The action is running."
+        },
+        {
+          "name": "spinIcon",
+          "type": "boolean",
+          "required": false,
+          "description": "Use with pending when the button's own icon already means the action (refresh, sync): that icon turns from the press, at least one whole turn, and stops on a whole turn; no separate spinner."
+        },
+        {
+          "name": "variant",
+          "type": "'primary' | 'danger' | 'default'",
+          "required": false,
+          "default": "'primary'",
+          "description": "Button style: primary by default, danger for an action that cannot be undone."
+        }
+      ]
+    },
+    "AlertDialogBody": {
+      "kind": "component",
+      "source": "src/primitives/alert-dialog.tsx",
+      "props": []
+    },
+    "AlertDialogCancel": {
+      "kind": "component",
+      "source": "src/primitives/alert-dialog.tsx",
+      "props": [
+        {
+          "name": "variant",
+          "type": "\"link\" | \"danger\" | \"default\" | \"primary\" | \"ghost\" | \"icon\"",
+          "required": false,
+          "description": "Visual style: primary is the solid light button, danger uses the danger text color, icon is a borderless 28px icon button."
+        },
+        {
+          "name": "size",
+          "type": "ButtonSize | 'default' | null",
+          "required": false,
+          "description": "Height: sm is 26px, md (default) is 30px, icon is a 28px square."
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "description": "Render the child element itself (a link, a menu trigger) instead of wrapping it in a button."
+        },
+        {
+          "name": "effect",
+          "type": "ButtonEffect",
+          "required": false,
+          "description": "Optional hover effect from SmoothUI: magnetic leans toward the pointer, dot-morph stretches a leading dot into a bar, clip-corners cuts the corners wider."
+        },
+        {
+          "name": "magnetStrength",
+          "type": "number",
+          "required": false,
+          "description": "How far a magnetic button leans: the fraction of the pointer offset it follows (0 to 1)."
+        },
+        {
+          "name": "magnetRadius",
+          "type": "number",
+          "required": false,
+          "description": "Distance in px from the button center within which a magnetic button reacts."
+        },
+        {
+          "name": "pending",
+          "type": "boolean",
+          "required": false,
+          "description": "The action is running."
+        },
+        {
+          "name": "spinIcon",
+          "type": "boolean",
+          "required": false,
+          "description": "Use with pending when the button's own icon already means the action (refresh, sync): that icon turns from the press, at least one whole turn, and stops on a whole turn; no separate spinner."
+        }
+      ]
+    },
+    "AlertDialogContent": {
+      "kind": "component",
+      "source": "src/primitives/alert-dialog.tsx",
+      "props": [
+        {
+          "name": "size",
+          "type": "'default' | 'sm'",
+          "required": false,
+          "default": "'default'",
+          "description": "Width: default is 560px like Dialog, sm is 320px for a one-line confirmation."
+        },
+        {
+          "name": "overlayClassName",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the backdrop."
+        }
+      ]
+    },
+    "AlertDialogDescription": {
+      "kind": "component",
+      "source": "src/primitives/alert-dialog.tsx",
+      "props": []
+    },
+    "AlertDialogFooter": {
+      "kind": "component",
+      "source": "src/primitives/alert-dialog.tsx",
+      "props": []
+    },
+    "AlertDialogHeader": {
+      "kind": "component",
+      "source": "src/primitives/alert-dialog.tsx",
+      "props": []
+    },
+    "AlertDialogOverlay": {
+      "kind": "component",
+      "source": "src/primitives/alert-dialog.tsx",
+      "props": []
+    },
+    "AlertDialogPortal": {
+      "kind": "component",
+      "source": "src/primitives/alert-dialog.tsx",
+      "props": []
+    },
+    "AlertDialogTitle": {
+      "kind": "component",
+      "source": "src/primitives/alert-dialog.tsx",
+      "props": []
+    },
+    "AlertDialogTrigger": {
+      "kind": "component",
+      "source": "src/primitives/alert-dialog.tsx",
+      "props": []
+    },
     "AlertTitle": {
       "kind": "component",
       "source": "src/primitives/alert.tsx",
@@ -6641,6 +6814,24 @@
         }
       ]
     },
+    "AxisSpec": {
+      "kind": "type",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
+      "props": [
+        {
+          "name": "domain",
+          "type": "Domain",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "ticks",
+          "type": "readonly number[]",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
     "BOARD_LIMIT_PERCENT": {
       "kind": "value",
       "source": "src/cn/badge-model.ts",
@@ -6685,6 +6876,30 @@
           "type": "Severity",
           "required": false,
           "description": "语气：风险标记（如 ST）给 warn 或 danger；不给是 neutral。"
+        }
+      ]
+    },
+    "BasisPoint": {
+      "kind": "type",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
+      "props": [
+        {
+          "name": "time",
+          "type": "number",
+          "required": true,
+          "description": "Bucket time in milliseconds."
+        },
+        {
+          "name": "contract",
+          "type": "Maybe",
+          "required": true,
+          "description": "Contract price."
+        },
+        {
+          "name": "index",
+          "type": "Maybe",
+          "required": true,
+          "description": "Index price."
         }
       ]
     },
@@ -7755,6 +7970,20 @@
           "required": false,
           "default": "120",
           "description": "Distance in px from the button center within which a magnetic button reacts."
+        },
+        {
+          "name": "pending",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "The action is running."
+        },
+        {
+          "name": "spinIcon",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Use with pending when the button's own icon already means the action (refresh, sync): that icon turns from the press, at least one whole turn, and stops on a whole turn; no separate spinner."
         }
       ]
     },
@@ -7765,7 +7994,7 @@
     },
     "CATALOG_ITEM_MIME": {
       "kind": "value",
-      "source": "src/blocks/component-catalog/component-catalog.tsx",
+      "source": "src/blocks/component-catalog/component-catalog-model.ts",
       "props": []
     },
     "CN_AXIS_MINUTES": {
@@ -10347,6 +10576,12 @@
           "required": false,
           "default": "5",
           "description": "How many recent commands to keep and show."
+        },
+        {
+          "name": "onRun",
+          "type": "(commandId: string, selections: StepSelections) => void",
+          "required": false,
+          "description": "Called when the primary button of the last step is pressed, with the command id and the chosen ids per step id; the palette closes after it."
         }
       ]
     },
@@ -10389,6 +10624,12 @@
           "type": "string",
           "required": false,
           "description": "Heading of commands without a group; defaults to none."
+        },
+        {
+          "name": "steps",
+          "type": "Partial<CommandStepsLabels>",
+          "required": false,
+          "description": "Texts of the step pages (badge, count, buttons); English fallbacks for any left out."
         }
       ]
     },
@@ -10443,6 +10684,12 @@
           "type": "number",
           "required": false,
           "description": "How many recent commands to keep and show."
+        },
+        {
+          "name": "onRun",
+          "type": "(commandId: string, selections: StepSelections) => void",
+          "required": false,
+          "description": "Called when the primary button of the last step is pressed, with the command id and the chosen ids per step id; the palette closes after it."
         }
       ]
     },
@@ -10463,6 +10710,54 @@
       "kind": "component",
       "source": "src/primitives/command.tsx",
       "props": []
+    },
+    "CommandStepsLabels": {
+      "kind": "type",
+      "source": "src/patterns/command-steps.tsx",
+      "props": [
+        {
+          "name": "steps",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": "Badge on a command row: \"2 steps\"."
+        },
+        {
+          "name": "selected",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": "Left of the footer: \"2 selected\"."
+        },
+        {
+          "name": "stepOf",
+          "type": "(step: number, total: number, heading?: string) => string",
+          "required": true,
+          "description": "Read out when the step changes: \"Step 2 of 3: Select fields\"."
+        },
+        {
+          "name": "back",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "next",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "run",
+          "type": "string",
+          "required": true,
+          "description": "Primary button on the last step."
+        },
+        {
+          "name": "selectAll",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
     },
     "CompactFormat": {
       "kind": "type",
@@ -10784,6 +11079,13 @@
       "source": "src/blocks/component-catalog/component-catalog.tsx",
       "props": [
         {
+          "name": "variant",
+          "type": "'drawer' | 'menu'",
+          "required": false,
+          "default": "'drawer'",
+          "description": "drawer (default): title, reset, search, category tabs and a grid of thumbnail cards, for a side drawer or sheet."
+        },
+        {
           "name": "items",
           "type": "readonly CatalogItem[]",
           "required": true,
@@ -10811,7 +11113,7 @@
           "name": "onToggle",
           "type": "(id: string, add: boolean) => void",
           "required": true,
-          "description": "Called when a card is clicked: `add` is true for a card not yet in the workspace, false to remove one that is."
+          "description": "Called when a card is clicked: `add` is true for a card not yet in the workspace, false to remove one that is (the menu variant only adds: rows in use are greyed)."
         },
         {
           "name": "onReset",
@@ -12745,6 +13047,11 @@
       "source": "src/patterns/font-catalog.ts",
       "props": []
     },
+    "DEFAULT_PERIODS": {
+      "kind": "value",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
+      "props": []
+    },
     "DEFAULT_RENDERING": {
       "kind": "value",
       "source": "src/patterns/rendering-settings.tsx",
@@ -12753,6 +13060,11 @@
     "DEFAULT_SNAP_POINTS": {
       "kind": "value",
       "source": "src/primitives/splitter-model.ts",
+      "props": []
+    },
+    "DERIVATIVES_KINDS": {
+      "kind": "value",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
       "props": []
     },
     "DITHER_CHART_VARIANTS": {
@@ -15400,6 +15712,439 @@
           "type": "string",
           "required": false,
           "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "DerivativesBoard": {
+      "kind": "component",
+      "source": "src/blocks/derivatives/derivatives-board.tsx",
+      "props": [
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the card."
+        },
+        {
+          "name": "labels",
+          "type": "DerivativesLabels",
+          "required": true,
+          "description": "Texts; required, the package carries no language."
+        },
+        {
+          "name": "onPeriodChange",
+          "type": "(kind: DerivativesKind, period: string) => void",
+          "required": false,
+          "description": "Called with the card's kind and the period just picked."
+        },
+        {
+          "name": "formatAmount",
+          "type": "DerivativesFormats['formatAmount']",
+          "required": false,
+          "description": "Volumes and open interest; defaults to an English compact number."
+        },
+        {
+          "name": "formatPrice",
+          "type": "DerivativesFormats['formatPrice']",
+          "required": false,
+          "description": "Prices and basis; defaults to thousands separators and at most two decimals."
+        },
+        {
+          "name": "formatTime",
+          "type": "DerivativesFormats['formatTime']",
+          "required": false,
+          "description": "A bucket time in milliseconds; defaults to UTC `MM-DD HH:mm`."
+        },
+        {
+          "name": "chartHeight",
+          "type": "number",
+          "required": false,
+          "description": "Height of the plot area in px; 168 by default."
+        },
+        {
+          "name": "data",
+          "type": "{ [K in DerivativesKind]?: DerivativesData[K] | null }",
+          "required": false,
+          "default": "{}",
+          "description": "The series of each card; a card with no entry (or an empty one) shows its own empty state."
+        },
+        {
+          "name": "kinds",
+          "type": "readonly DerivativesKind[]",
+          "required": false,
+          "default": "DERIVATIVES_KINDS",
+          "description": "Which cards to draw and in what order; all six by default."
+        },
+        {
+          "name": "periods",
+          "type": "Partial<Record<DerivativesKind, readonly string[]>>",
+          "required": false,
+          "description": "Period ids each card offers, by kind; the defaults of the card where a kind is missing."
+        },
+        {
+          "name": "period",
+          "type": "Partial<Record<DerivativesKind, string>>",
+          "required": false,
+          "description": "Selected period of each card (controlled), by kind; a kind left out is uncontrolled."
+        },
+        {
+          "name": "defaultPeriod",
+          "type": "Partial<Record<DerivativesKind, string>>",
+          "required": false,
+          "description": "Initial period of each card when uncontrolled, by kind."
+        },
+        {
+          "name": "minCardWidth",
+          "type": "number",
+          "required": false,
+          "default": "360",
+          "description": "Narrowest a card gets before the grid drops a column, in px; 360 by default."
+        }
+      ]
+    },
+    "DerivativesBoardProps": {
+      "kind": "type",
+      "source": "src/blocks/derivatives/derivatives-board.tsx",
+      "props": [
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the card."
+        },
+        {
+          "name": "labels",
+          "type": "DerivativesLabels",
+          "required": true,
+          "description": "Texts; required, the package carries no language."
+        },
+        {
+          "name": "onPeriodChange",
+          "type": "(kind: DerivativesKind, period: string) => void",
+          "required": false,
+          "description": "Called with the card's kind and the period just picked."
+        },
+        {
+          "name": "formatAmount",
+          "type": "DerivativesFormats['formatAmount']",
+          "required": false,
+          "description": "Volumes and open interest; defaults to an English compact number."
+        },
+        {
+          "name": "formatPrice",
+          "type": "DerivativesFormats['formatPrice']",
+          "required": false,
+          "description": "Prices and basis; defaults to thousands separators and at most two decimals."
+        },
+        {
+          "name": "formatTime",
+          "type": "DerivativesFormats['formatTime']",
+          "required": false,
+          "description": "A bucket time in milliseconds; defaults to UTC `MM-DD HH:mm`."
+        },
+        {
+          "name": "chartHeight",
+          "type": "number",
+          "required": false,
+          "description": "Height of the plot area in px; 168 by default."
+        },
+        {
+          "name": "data",
+          "type": "{ [K in DerivativesKind]?: DerivativesData[K] | null }",
+          "required": false,
+          "description": "The series of each card; a card with no entry (or an empty one) shows its own empty state."
+        },
+        {
+          "name": "kinds",
+          "type": "readonly DerivativesKind[]",
+          "required": false,
+          "description": "Which cards to draw and in what order; all six by default."
+        },
+        {
+          "name": "periods",
+          "type": "Partial<Record<DerivativesKind, readonly string[]>>",
+          "required": false,
+          "description": "Period ids each card offers, by kind; the defaults of the card where a kind is missing."
+        },
+        {
+          "name": "period",
+          "type": "Partial<Record<DerivativesKind, string>>",
+          "required": false,
+          "description": "Selected period of each card (controlled), by kind; a kind left out is uncontrolled."
+        },
+        {
+          "name": "defaultPeriod",
+          "type": "Partial<Record<DerivativesKind, string>>",
+          "required": false,
+          "description": "Initial period of each card when uncontrolled, by kind."
+        },
+        {
+          "name": "minCardWidth",
+          "type": "number",
+          "required": false,
+          "description": "Narrowest a card gets before the grid drops a column, in px; 360 by default."
+        }
+      ]
+    },
+    "DerivativesCard": {
+      "kind": "component",
+      "source": "src/blocks/derivatives/derivatives-card.tsx",
+      "props": [
+        {
+          "name": "periods",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Period ids the buttons offer; defaults to 5m / 1h / 1d (7d / 14d for the funding rate)."
+        },
+        {
+          "name": "period",
+          "type": "string",
+          "required": false,
+          "description": "Selected period (controlled)."
+        },
+        {
+          "name": "defaultPeriod",
+          "type": "string",
+          "required": false,
+          "description": "Initial period when uncontrolled; the first of `periods` by default."
+        },
+        {
+          "name": "onPeriodChange",
+          "type": "(kind: DerivativesKind, period: string) => void",
+          "required": false,
+          "description": "Called with the card's kind and the period just picked."
+        },
+        {
+          "name": "labels",
+          "type": "DerivativesLabels",
+          "required": true,
+          "description": "Texts; required, the package carries no language."
+        },
+        {
+          "name": "formatAmount",
+          "type": "DerivativesFormats['formatAmount']",
+          "required": false,
+          "description": "Volumes and open interest; defaults to an English compact number."
+        },
+        {
+          "name": "formatPrice",
+          "type": "DerivativesFormats['formatPrice']",
+          "required": false,
+          "description": "Prices and basis; defaults to thousands separators and at most two decimals."
+        },
+        {
+          "name": "formatTime",
+          "type": "DerivativesFormats['formatTime']",
+          "required": false,
+          "description": "A bucket time in milliseconds; defaults to UTC `MM-DD HH:mm`."
+        },
+        {
+          "name": "chartHeight",
+          "type": "number",
+          "required": false,
+          "description": "Height of the plot area in px; 168 by default."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the card."
+        },
+        {
+          "name": "kind",
+          "type": "K",
+          "required": true,
+          "description": "Which card to draw; it decides the shape of `data`."
+        },
+        {
+          "name": "data",
+          "type": "DerivativesData[K] | null",
+          "required": false,
+          "description": "The series of this card, old to new; missing, empty or all-missing shows the empty state."
+        }
+      ]
+    },
+    "DerivativesCardCommon": {
+      "kind": "type",
+      "source": "src/blocks/derivatives/derivatives-card.tsx",
+      "props": [
+        {
+          "name": "periods",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Period ids the buttons offer; defaults to 5m / 1h / 1d (7d / 14d for the funding rate)."
+        },
+        {
+          "name": "period",
+          "type": "string",
+          "required": false,
+          "description": "Selected period (controlled)."
+        },
+        {
+          "name": "defaultPeriod",
+          "type": "string",
+          "required": false,
+          "description": "Initial period when uncontrolled; the first of `periods` by default."
+        },
+        {
+          "name": "onPeriodChange",
+          "type": "(kind: DerivativesKind, period: string) => void",
+          "required": false,
+          "description": "Called with the card's kind and the period just picked."
+        },
+        {
+          "name": "labels",
+          "type": "DerivativesLabels",
+          "required": true,
+          "description": "Texts; required, the package carries no language."
+        },
+        {
+          "name": "formatAmount",
+          "type": "DerivativesFormats['formatAmount']",
+          "required": false,
+          "description": "Volumes and open interest; defaults to an English compact number."
+        },
+        {
+          "name": "formatPrice",
+          "type": "DerivativesFormats['formatPrice']",
+          "required": false,
+          "description": "Prices and basis; defaults to thousands separators and at most two decimals."
+        },
+        {
+          "name": "formatTime",
+          "type": "DerivativesFormats['formatTime']",
+          "required": false,
+          "description": "A bucket time in milliseconds; defaults to UTC `MM-DD HH:mm`."
+        },
+        {
+          "name": "chartHeight",
+          "type": "number",
+          "required": false,
+          "description": "Height of the plot area in px; 168 by default."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the card."
+        }
+      ]
+    },
+    "DerivativesCardProps": {
+      "kind": "type",
+      "source": "src/blocks/derivatives/derivatives-card.tsx",
+      "props": []
+    },
+    "DerivativesData": {
+      "kind": "type",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
+      "props": [
+        {
+          "name": "openInterestVolume",
+          "type": "readonly OpenInterestVolumePoint[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "fundingRate",
+          "type": "readonly FundingRatePoint[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "takerVolume",
+          "type": "readonly TakerVolumePoint[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "longShortRatio",
+          "type": "readonly LongShortPoint[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "topTraderRatio",
+          "type": "readonly LongShortPoint[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "basis",
+          "type": "readonly BasisPoint[]",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "DerivativesKind": {
+      "kind": "type",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
+      "props": []
+    },
+    "DerivativesLabels": {
+      "kind": "type",
+      "source": "src/blocks/derivatives/derivatives-labels.ts",
+      "props": [
+        {
+          "name": "region",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the board."
+        },
+        {
+          "name": "cards",
+          "type": "Record<DerivativesKind, { title: string; info: string }>",
+          "required": true,
+          "description": "Title and the hint behind the info button of each card."
+        },
+        {
+          "name": "periods",
+          "type": "Record<string, string>",
+          "required": true,
+          "description": "Words of the period buttons, by period id (`1m`, `5m`, `15m`, `1h`, `4h`, `1d`, `7d`, `14d`); an id without a word is shown as is."
+        },
+        {
+          "name": "periodGroup",
+          "type": "(title: string) => string",
+          "required": true,
+          "description": "Accessible name of the period group of one card."
+        },
+        {
+          "name": "infoButton",
+          "type": "(title: string) => string",
+          "required": true,
+          "description": "Accessible name of the info button of one card."
+        },
+        {
+          "name": "series",
+          "type": "{ openInterest: string volume: string rate: string buy: string sell: string long: string short: string ratio: string contract: string index: string basis: string }",
+          "required": true,
+          "description": "Names of the drawn series (legend, tooltip, summary)."
+        },
+        {
+          "name": "separator",
+          "type": "string",
+          "required": true,
+          "description": "Joins the readings in one sentence read aloud (latest values, hover readings), e.g."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Text of a card with no data."
+        },
+        {
+          "name": "plotAria",
+          "type": "(title: string, latest: string) => string",
+          "required": true,
+          "description": "Accessible name of a plot: card title plus the latest values, e.g."
+        },
+        {
+          "name": "noLatest",
+          "type": "string",
+          "required": true,
+          "description": "Said when a card has data but no value of the latest bucket can be read."
         }
       ]
     },
@@ -20985,6 +21730,164 @@
         }
       ]
     },
+    "FloatingWindow": {
+      "kind": "component",
+      "source": "src/blocks/floating-window/floating-window.tsx",
+      "props": [
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": true,
+          "description": "Whether the content is in the small window."
+        },
+        {
+          "name": "onClose",
+          "type": "() => void",
+          "required": false,
+          "description": "Called when the user closes the window (closes the picture-in-picture window, clicks the close button, presses Esc)."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "description": "The subtree."
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Title of the window: the title bar of the in-page layer and its accessible name."
+        },
+        {
+          "name": "placeholder",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Drawn in place of the subtree while it is in the window (a line saying where it went, with a button to bring it back)."
+        },
+        {
+          "name": "width",
+          "type": "number",
+          "required": false,
+          "default": "380",
+          "description": "Width of the window in pixels."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "default": "560",
+          "description": "Height of the window in pixels."
+        },
+        {
+          "name": "inPageOnly",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Use only the in-page layer even when the browser has picture-in-picture (embedded pages, tests)."
+        },
+        {
+          "name": "labels",
+          "type": "FloatingWindowLabels",
+          "required": true,
+          "description": "Accessible names."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "FloatingWindowLabels": {
+      "kind": "type",
+      "source": "src/blocks/floating-window/floating-window.tsx",
+      "props": [
+        {
+          "name": "close",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the close button of the in-page floating layer."
+        },
+        {
+          "name": "move",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the title bar, which drags and moves with the arrow keys."
+        }
+      ]
+    },
+    "FloatingWindowMode": {
+      "kind": "type",
+      "source": "src/blocks/floating-window/floating-window.tsx",
+      "props": []
+    },
+    "FloatingWindowProps": {
+      "kind": "type",
+      "source": "src/blocks/floating-window/floating-window.tsx",
+      "props": [
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": true,
+          "description": "Whether the content is in the small window."
+        },
+        {
+          "name": "onClose",
+          "type": "() => void",
+          "required": false,
+          "description": "Called when the user closes the window (closes the picture-in-picture window, clicks the close button, presses Esc)."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "description": "The subtree."
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Title of the window: the title bar of the in-page layer and its accessible name."
+        },
+        {
+          "name": "placeholder",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Drawn in place of the subtree while it is in the window (a line saying where it went, with a button to bring it back)."
+        },
+        {
+          "name": "width",
+          "type": "number",
+          "required": false,
+          "description": "Width of the window in pixels."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "description": "Height of the window in pixels."
+        },
+        {
+          "name": "inPageOnly",
+          "type": "boolean",
+          "required": false,
+          "description": "Use only the in-page layer even when the browser has picture-in-picture (embedded pages, tests)."
+        },
+        {
+          "name": "labels",
+          "type": "FloatingWindowLabels",
+          "required": true,
+          "description": "Accessible names."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
     "FlowBuilder": {
       "kind": "component",
       "source": "src/blocks/flow-builder/flow-builder.tsx",
@@ -22800,6 +23703,24 @@
           "type": "(point: FundingPoint, rate: string) => string",
           "required": true,
           "description": "Title of one history bar (「11-22 00:00 +0.0100%」)."
+        }
+      ]
+    },
+    "FundingRatePoint": {
+      "kind": "type",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
+      "props": [
+        {
+          "name": "time",
+          "type": "number",
+          "required": true,
+          "description": "Settlement time in milliseconds."
+        },
+        {
+          "name": "rate",
+          "type": "Maybe",
+          "required": true,
+          "description": "Rate in percent (0.01 means 0.01%)."
         }
       ]
     },
@@ -29129,6 +30050,30 @@
         }
       ]
     },
+    "LongShortPoint": {
+      "kind": "type",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
+      "props": [
+        {
+          "name": "time",
+          "type": "number",
+          "required": true,
+          "description": "Bucket time in milliseconds."
+        },
+        {
+          "name": "long",
+          "type": "Maybe",
+          "required": true,
+          "description": "Long side (accounts or positions)."
+        },
+        {
+          "name": "short",
+          "type": "Maybe",
+          "required": true,
+          "description": "Short side, in the same unit as the long side."
+        }
+      ]
+    },
     "MORPH_ICON_VARIANTS": {
       "kind": "value",
       "source": "src/motion/icon/morph-icon.tsx",
@@ -29958,6 +30903,234 @@
         }
       ]
     },
+    "MarketBrowser": {
+      "kind": "component",
+      "source": "src/quotes/market-browser.tsx",
+      "props": [
+        {
+          "name": "categories",
+          "type": "readonly MarketCategory[]",
+          "required": true,
+          "description": "The category tabs, each with its rows."
+        },
+        {
+          "name": "labels",
+          "type": "MarketBrowserLabels",
+          "required": true,
+          "description": "Visible text and accessible names."
+        },
+        {
+          "name": "formatPrice",
+          "type": "FormatPrice",
+          "required": false,
+          "description": "Writes the last price; two decimals when omitted."
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "The selected category id when controlled."
+        },
+        {
+          "name": "defaultValue",
+          "type": "string",
+          "required": false,
+          "description": "The initially selected category id when uncontrolled; the first category when omitted."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called with the category id when the tab changes."
+        },
+        {
+          "name": "onQueryChange",
+          "type": "(query: string) => void",
+          "required": false,
+          "description": "Called with the search word on every keystroke."
+        },
+        {
+          "name": "sort",
+          "type": "MarketSort | null",
+          "required": false,
+          "description": "Sort (controlled); null is the caller's order."
+        },
+        {
+          "name": "onSortChange",
+          "type": "(sort: MarketSort | null) => void",
+          "required": false,
+          "description": "Called with the next sort when the price or change header is clicked."
+        },
+        {
+          "name": "onSelect",
+          "type": "(row: MarketRow) => void",
+          "required": false,
+          "description": "Called with the row when it is clicked or Enter is pressed on it; rows become links when given."
+        },
+        {
+          "name": "onToggleFavorite",
+          "type": "(row: MarketRow, favorite: boolean) => void",
+          "required": false,
+          "description": "Called when a row's star is toggled, with the state it should become."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "MarketBrowserLabels": {
+      "kind": "type",
+      "source": "src/quotes/market-browser.tsx",
+      "props": [
+        {
+          "name": "search",
+          "type": "string",
+          "required": true,
+          "description": "Placeholder and accessible name of the search box."
+        },
+        {
+          "name": "categories",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the category tab strip."
+        },
+        {
+          "name": "list",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the list."
+        },
+        {
+          "name": "columns",
+          "type": "{ symbol: string; last: string; change: string }",
+          "required": true,
+          "description": "Header text of the price and the 24-hour change columns (the symbol column has no sort and uses `symbol`)."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Written when a category has no rows (the favorites tab before anything is starred, say)."
+        },
+        {
+          "name": "noResults",
+          "type": "string",
+          "required": true,
+          "description": "Written when the search word matches nothing in the category."
+        },
+        {
+          "name": "favorite",
+          "type": "(row: MarketRow) => string",
+          "required": true,
+          "description": "Accessible name of a row's star button."
+        }
+      ]
+    },
+    "MarketBrowserProps": {
+      "kind": "type",
+      "source": "src/quotes/market-browser.tsx",
+      "props": [
+        {
+          "name": "categories",
+          "type": "readonly MarketCategory[]",
+          "required": true,
+          "description": "The category tabs, each with its rows."
+        },
+        {
+          "name": "labels",
+          "type": "MarketBrowserLabels",
+          "required": true,
+          "description": "Visible text and accessible names."
+        },
+        {
+          "name": "formatPrice",
+          "type": "FormatPrice",
+          "required": false,
+          "description": "Writes the last price; two decimals when omitted."
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "The selected category id when controlled."
+        },
+        {
+          "name": "defaultValue",
+          "type": "string",
+          "required": false,
+          "description": "The initially selected category id when uncontrolled; the first category when omitted."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called with the category id when the tab changes."
+        },
+        {
+          "name": "onQueryChange",
+          "type": "(query: string) => void",
+          "required": false,
+          "description": "Called with the search word on every keystroke."
+        },
+        {
+          "name": "sort",
+          "type": "MarketSort | null",
+          "required": false,
+          "description": "Sort (controlled); null is the caller's order."
+        },
+        {
+          "name": "onSortChange",
+          "type": "(sort: MarketSort | null) => void",
+          "required": false,
+          "description": "Called with the next sort when the price or change header is clicked."
+        },
+        {
+          "name": "onSelect",
+          "type": "(row: MarketRow) => void",
+          "required": false,
+          "description": "Called with the row when it is clicked or Enter is pressed on it; rows become links when given."
+        },
+        {
+          "name": "onToggleFavorite",
+          "type": "(row: MarketRow, favorite: boolean) => void",
+          "required": false,
+          "description": "Called when a row's star is toggled, with the state it should become."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "MarketCategory": {
+      "kind": "type",
+      "source": "src/quotes/market-browser.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Category id (the tab value)."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Tab text."
+        },
+        {
+          "name": "rows",
+          "type": "readonly MarketRow[]",
+          "required": true,
+          "description": "The rows of this category."
+        }
+      ]
+    },
     "MarketHeatmap": {
       "kind": "component",
       "source": "src/quant/market-heatmap.tsx",
@@ -30529,6 +31702,96 @@
         }
       ]
     },
+    "MarketRow": {
+      "kind": "type",
+      "source": "src/quotes/market-browser.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable row id (used for keys, reordering and enter marks)."
+        },
+        {
+          "name": "symbol",
+          "type": "string",
+          "required": true,
+          "description": "Symbol code (BTCUSDT, 600519)."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "description": "Display name; the symbol is shown when omitted."
+        },
+        {
+          "name": "last",
+          "type": "number",
+          "required": true,
+          "description": "Last price."
+        },
+        {
+          "name": "change",
+          "type": "number",
+          "required": true,
+          "description": "Change amount, signed."
+        },
+        {
+          "name": "changePct",
+          "type": "number",
+          "required": true,
+          "description": "Change as a percentage (1.5 means 1.5%)."
+        },
+        {
+          "name": "favorite",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether the star is on."
+        },
+        {
+          "name": "logoSrc",
+          "type": "string",
+          "required": false,
+          "description": "Logo image of the symbol mark; the surrounding LogoProvider is asked, then letters are drawn, when omitted."
+        },
+        {
+          "name": "venue",
+          "type": "string",
+          "required": false,
+          "description": "Venue (BINANCE, XNAS), passed to the symbol mark."
+        },
+        {
+          "name": "assetClass",
+          "type": "AssetClass",
+          "required": false,
+          "description": "Asset class, passed to the symbol mark."
+        },
+        {
+          "name": "keywords",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Extra words the search matches (aliases, the other language's name)."
+        }
+      ]
+    },
+    "MarketSort": {
+      "kind": "type",
+      "source": "src/quotes/market-browser.tsx",
+      "props": [
+        {
+          "name": "key",
+          "type": "WatchlistSortKey",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "dir",
+          "type": "'asc' | 'desc'",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
     "MatrixOrb": {
       "kind": "component",
       "source": "src/katana/matrix-orb.tsx",
@@ -30661,6 +31924,12 @@
           "description": "Milliseconds to wait before the bars show; defaults to LoadingWait's 500."
         },
         {
+          "name": "minShown",
+          "type": "number",
+          "required": false,
+          "description": "Minimum milliseconds the bars stay once shown, even if the data arrives sooner; defaults to LoadingWait's 500."
+        },
+        {
           "name": "className",
           "type": "string",
           "required": false,
@@ -30721,6 +31990,12 @@
           "description": "Milliseconds to wait before the bars show; defaults to LoadingWait's 500."
         },
         {
+          "name": "minShown",
+          "type": "number",
+          "required": false,
+          "description": "Minimum milliseconds the bars stay once shown, even if the data arrives sooner; defaults to LoadingWait's 500."
+        },
+        {
           "name": "className",
           "type": "string",
           "required": false,
@@ -30779,6 +32054,12 @@
           "type": "number",
           "required": false,
           "description": "Milliseconds to wait before the bars show; defaults to LoadingWait's 500."
+        },
+        {
+          "name": "minShown",
+          "type": "number",
+          "required": false,
+          "description": "Minimum milliseconds the bars stay once shown, even if the data arrives sooner; defaults to LoadingWait's 500."
         },
         {
           "name": "className",
@@ -32520,6 +33801,31 @@
           "description": "Called with the new selected types."
         },
         {
+          "name": "currentSymbol",
+          "type": "string | null",
+          "required": false,
+          "description": "The symbol on screen (`BTC-USDT-SWAP`)."
+        },
+        {
+          "name": "onlyCurrent",
+          "type": "boolean",
+          "required": false,
+          "description": "Show only rows of `currentSymbol` (controlled)."
+        },
+        {
+          "name": "defaultOnlyCurrent",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Initial state of the switch when uncontrolled; off by default."
+        },
+        {
+          "name": "onOnlyCurrentChange",
+          "type": "(onlyCurrent: boolean) => void",
+          "required": false,
+          "description": "Called with the new state of the switch."
+        },
+        {
           "name": "onSelect",
           "type": "(item: MoveItem) => void",
           "required": false,
@@ -32582,6 +33888,12 @@
           "type": "string",
           "required": true,
           "description": ""
+        },
+        {
+          "name": "onlyCurrent",
+          "type": "string",
+          "required": false,
+          "description": "「只看当前品种」开关上的字，例「当前币对」；缺省就不画这个开关（也不按品种筛），传了还要有 currentSymbol 才画。"
         },
         {
           "name": "types",
@@ -32656,6 +33968,30 @@
           "description": "Called with the new selected types."
         },
         {
+          "name": "currentSymbol",
+          "type": "string | null",
+          "required": false,
+          "description": "The symbol on screen (`BTC-USDT-SWAP`)."
+        },
+        {
+          "name": "onlyCurrent",
+          "type": "boolean",
+          "required": false,
+          "description": "Show only rows of `currentSymbol` (controlled)."
+        },
+        {
+          "name": "defaultOnlyCurrent",
+          "type": "boolean",
+          "required": false,
+          "description": "Initial state of the switch when uncontrolled; off by default."
+        },
+        {
+          "name": "onOnlyCurrentChange",
+          "type": "(onlyCurrent: boolean) => void",
+          "required": false,
+          "description": "Called with the new state of the switch."
+        },
+        {
           "name": "onSelect",
           "type": "(item: MoveItem) => void",
           "required": false,
@@ -32720,6 +34056,12 @@
           "type": "string",
           "required": false,
           "description": "Stock code."
+        },
+        {
+          "name": "symbol",
+          "type": "string",
+          "required": false,
+          "description": "Symbol the row belongs to (`BTC-USDT-SWAP`), compared with `currentSymbol` when only the current symbol is shown."
         },
         {
           "name": "type",
@@ -34241,6 +35583,30 @@
           "type": "string",
           "required": false,
           "description": "Text label inside the box on the left (dragging it changes the value like dragging the box); the accessible name still comes from label."
+        }
+      ]
+    },
+    "OpenInterestVolumePoint": {
+      "kind": "type",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
+      "props": [
+        {
+          "name": "time",
+          "type": "number",
+          "required": true,
+          "description": "Bucket time in milliseconds."
+        },
+        {
+          "name": "openInterest",
+          "type": "Maybe",
+          "required": true,
+          "description": "Open interest at the end of the bucket."
+        },
+        {
+          "name": "volume",
+          "type": "Maybe",
+          "required": true,
+          "description": "Volume traded in the bucket."
         }
       ]
     },
@@ -36423,6 +37789,66 @@
         }
       ]
     },
+    "PaletteChecklistStep": {
+      "kind": "type",
+      "source": "src/patterns/command-steps.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Key of this step in the selections passed to onRun."
+        },
+        {
+          "name": "joiner",
+          "type": "string",
+          "required": false,
+          "description": "Word before this step's tags in the header sentence (for example \"in\", \"for\"); written by the caller."
+        },
+        {
+          "name": "heading",
+          "type": "string",
+          "required": false,
+          "description": "Heading above the list of this step."
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false,
+          "description": "Placeholder of the filter box on this step; defaults to the palette's."
+        },
+        {
+          "name": "actionLabel",
+          "type": "string",
+          "required": false,
+          "description": "Text of the primary button on this step; defaults to \"Next\" (or the run text on the last step)."
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether the primary button needs at least one selection."
+        },
+        {
+          "name": "kind",
+          "type": "'checklist'",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "options",
+          "type": "readonly PaletteOption[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "selectAllLabel",
+          "type": "string",
+          "required": false,
+          "description": "Text of the select-all row; defaults to the palette's labels."
+        }
+      ]
+    },
     "PaletteCommand": {
       "kind": "type",
       "source": "src/patterns/command-palette.tsx",
@@ -36464,6 +37890,30 @@
           "description": ""
         },
         {
+          "name": "description",
+          "type": "string",
+          "required": false,
+          "description": "Gray text after the label (plain text is also searched)."
+        },
+        {
+          "name": "meta",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Small badge after the label, for example \"2 steps\"; commands with steps get labels.steps(count) when this is not given."
+        },
+        {
+          "name": "steps",
+          "type": "readonly PaletteStep[]",
+          "required": false,
+          "description": "Steps to walk through before running: selecting the command opens the first step instead of closing the palette."
+        },
+        {
+          "name": "runLabel",
+          "type": "string",
+          "required": false,
+          "description": "Text of the primary button on the last step; defaults to labels.steps.run."
+        },
+        {
           "name": "disabled",
           "type": "boolean",
           "required": false,
@@ -36472,10 +37922,111 @@
         {
           "name": "onSelect",
           "type": "() => void",
+          "required": false,
+          "description": "Called when the command is selected; not used for commands with steps (see onRun on the palette)."
+        }
+      ]
+    },
+    "PaletteCustomStep": {
+      "kind": "type",
+      "source": "src/patterns/command-steps.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Key of this step in the selections passed to onRun."
+        },
+        {
+          "name": "joiner",
+          "type": "string",
+          "required": false,
+          "description": "Word before this step's tags in the header sentence (for example \"in\", \"for\"); written by the caller."
+        },
+        {
+          "name": "heading",
+          "type": "string",
+          "required": false,
+          "description": "Heading above the list of this step."
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false,
+          "description": "Placeholder of the filter box on this step; defaults to the palette's."
+        },
+        {
+          "name": "actionLabel",
+          "type": "string",
+          "required": false,
+          "description": "Text of the primary button on this step; defaults to \"Next\" (or the run text on the last step)."
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether the primary button needs at least one selection."
+        },
+        {
+          "name": "kind",
+          "type": "'custom'",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "tags",
+          "type": "(selected: readonly string[]) => string[]",
+          "required": false,
+          "description": "Header tags for the chosen ids; defaults to the ids themselves."
+        },
+        {
+          "name": "render",
+          "type": "(context: { selected: readonly string[] onSelectedChange: (next: readonly string[]) => void /** What is typed in the filter box. */ search: string }) => ReactNode",
           "required": true,
           "description": ""
         }
       ]
+    },
+    "PaletteOption": {
+      "kind": "type",
+      "source": "src/patterns/command-steps-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "required": false,
+          "description": "Gray text after the label (plain text is also searched)."
+        },
+        {
+          "name": "keywords",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Extra words the filter also matches."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "PaletteStep": {
+      "kind": "type",
+      "source": "src/patterns/command-steps.tsx",
+      "props": []
     },
     "Panel": {
       "kind": "component",
@@ -44860,14 +46411,14 @@
         {
           "name": "on",
           "type": "string",
-          "required": true,
-          "description": ""
+          "required": false,
+          "description": "No longer used: a one-item setting is a Switch, not an on / off segment."
         },
         {
           "name": "off",
           "type": "string",
-          "required": true,
-          "description": ""
+          "required": false,
+          "description": "No longer used: see `on`."
         },
         {
           "name": "reset",
@@ -53533,6 +55084,11 @@
         }
       ]
     },
+    "StepSelections": {
+      "kind": "type",
+      "source": "src/patterns/command-steps-model.ts",
+      "props": []
+    },
     "StepState": {
       "kind": "type",
       "source": "src/ai/plan-actual-model.ts",
@@ -53552,6 +55108,163 @@
       "kind": "type",
       "source": "src/blocks/system-monitor/system-monitor-model.ts",
       "props": []
+    },
+    "StrategyEntry": {
+      "kind": "type",
+      "source": "src/blocks/strategy-launcher/strategy-launcher.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable id passed to onOpen."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Name of the strategy or tool."
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Icon node in a 32px tile; decorative, give it aria-hidden."
+        },
+        {
+          "name": "isNew",
+          "type": "boolean",
+          "required": false,
+          "description": "Draws the New badge after the name."
+        },
+        {
+          "name": "tags",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Short tags under the name (three or four words each at most)."
+        }
+      ]
+    },
+    "StrategyLauncher": {
+      "kind": "component",
+      "source": "src/blocks/strategy-launcher/strategy-launcher.tsx",
+      "props": [
+        {
+          "name": "entries",
+          "type": "readonly StrategyEntry[]",
+          "required": true,
+          "description": "The entry cards, in order."
+        },
+        {
+          "name": "onOpen",
+          "type": "(id: string) => void",
+          "required": true,
+          "description": "Called with the entry id when a card is clicked or opened with Enter or Space."
+        },
+        {
+          "name": "notice",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Risk notice above the cards; nothing is drawn when omitted or after it is closed."
+        },
+        {
+          "name": "onNoticeDismiss",
+          "type": "() => void",
+          "required": false,
+          "description": "Called when the risk notice is closed."
+        },
+        {
+          "name": "tagStyle",
+          "type": "'text' | 'chips'",
+          "required": false,
+          "default": "'text'",
+          "description": "How tags are drawn: joined with \" / \" in one line (default) or as small outlined tags."
+        },
+        {
+          "name": "labels",
+          "type": "StrategyLauncherLabels",
+          "required": true,
+          "description": "Accessible names and the New badge text."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "StrategyLauncherLabels": {
+      "kind": "type",
+      "source": "src/blocks/strategy-launcher/strategy-launcher.tsx",
+      "props": [
+        {
+          "name": "region",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the whole launcher."
+        },
+        {
+          "name": "dismiss",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the risk notice's close button."
+        },
+        {
+          "name": "new",
+          "type": "string",
+          "required": true,
+          "description": "Text of the New badge."
+        }
+      ]
+    },
+    "StrategyLauncherProps": {
+      "kind": "type",
+      "source": "src/blocks/strategy-launcher/strategy-launcher.tsx",
+      "props": [
+        {
+          "name": "entries",
+          "type": "readonly StrategyEntry[]",
+          "required": true,
+          "description": "The entry cards, in order."
+        },
+        {
+          "name": "onOpen",
+          "type": "(id: string) => void",
+          "required": true,
+          "description": "Called with the entry id when a card is clicked or opened with Enter or Space."
+        },
+        {
+          "name": "notice",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Risk notice above the cards; nothing is drawn when omitted or after it is closed."
+        },
+        {
+          "name": "onNoticeDismiss",
+          "type": "() => void",
+          "required": false,
+          "description": "Called when the risk notice is closed."
+        },
+        {
+          "name": "tagStyle",
+          "type": "'text' | 'chips'",
+          "required": false,
+          "description": "How tags are drawn: joined with \" / \" in one line (default) or as small outlined tags."
+        },
+        {
+          "name": "labels",
+          "type": "StrategyLauncherLabels",
+          "required": true,
+          "description": "Accessible names and the New badge text."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
     },
     "StrategyReport": {
       "kind": "component",
@@ -57305,6 +59018,30 @@
       "source": "src/katana/tag.tsx",
       "props": []
     },
+    "TakerVolumePoint": {
+      "kind": "type",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
+      "props": [
+        {
+          "name": "time",
+          "type": "number",
+          "required": true,
+          "description": "Bucket time in milliseconds."
+        },
+        {
+          "name": "buy",
+          "type": "Maybe",
+          "required": true,
+          "description": "Taker buy volume."
+        },
+        {
+          "name": "sell",
+          "type": "Maybe",
+          "required": true,
+          "description": "Taker sell volume."
+        }
+      ]
+    },
     "Task": {
       "kind": "type",
       "source": "src/patterns/task-list-model.ts",
@@ -59807,6 +61544,60 @@
         }
       ]
     },
+    "ToastAction": {
+      "kind": "component",
+      "source": "src/katana/toast.tsx",
+      "props": [
+        {
+          "name": "variant",
+          "type": "\"link\" | \"danger\" | \"default\" | \"primary\" | \"ghost\" | \"icon\"",
+          "required": false,
+          "description": "Visual style: primary is the solid light button, danger uses the danger text color, icon is a borderless 28px icon button."
+        },
+        {
+          "name": "size",
+          "type": "ButtonSize | 'default' | null",
+          "required": false,
+          "description": "Height: sm is 26px, md (default) is 30px, icon is a 28px square."
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "description": "Render the child element itself (a link, a menu trigger) instead of wrapping it in a button."
+        },
+        {
+          "name": "effect",
+          "type": "ButtonEffect",
+          "required": false,
+          "description": "Optional hover effect from SmoothUI: magnetic leans toward the pointer, dot-morph stretches a leading dot into a bar, clip-corners cuts the corners wider."
+        },
+        {
+          "name": "magnetStrength",
+          "type": "number",
+          "required": false,
+          "description": "How far a magnetic button leans: the fraction of the pointer offset it follows (0 to 1)."
+        },
+        {
+          "name": "magnetRadius",
+          "type": "number",
+          "required": false,
+          "description": "Distance in px from the button center within which a magnetic button reacts."
+        },
+        {
+          "name": "pending",
+          "type": "boolean",
+          "required": false,
+          "description": "The action is running."
+        },
+        {
+          "name": "spinIcon",
+          "type": "boolean",
+          "required": false,
+          "description": "Use with pending when the button's own icon already means the action (refresh, sync): that icon turns from the press, at least one whole turn, and stops on a whole turn; no separate spinner."
+        }
+      ]
+    },
     "ToastClear": {
       "kind": "component",
       "source": "src/katana/toast.tsx",
@@ -59853,6 +61644,18 @@
           "description": "Distance in px from the button center within which a magnetic button reacts."
         },
         {
+          "name": "pending",
+          "type": "boolean",
+          "required": false,
+          "description": "The action is running."
+        },
+        {
+          "name": "spinIcon",
+          "type": "boolean",
+          "required": false,
+          "description": "Use with pending when the button's own icon already means the action (refresh, sync): that icon turns from the press, at least one whole turn, and stops on a whole turn; no separate spinner."
+        },
+        {
           "name": "label",
           "type": "string",
           "required": true,
@@ -59864,6 +61667,18 @@
       "kind": "component",
       "source": "src/katana/toast.tsx",
       "props": []
+    },
+    "ToastCountdown": {
+      "kind": "component",
+      "source": "src/katana/toast.tsx",
+      "props": [
+        {
+          "name": "remaining",
+          "type": "number",
+          "required": true,
+          "description": "Time left as a fraction, 1 (just shown) down to 0 (about to close)."
+        }
+      ]
     },
     "ToastDescription": {
       "kind": "component",
@@ -65076,6 +66891,11 @@
       "source": "src/primitives/alert.tsx",
       "props": []
     },
+    "alignedAxes": {
+      "kind": "function",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
+      "props": []
+    },
     "amendDecision": {
       "kind": "function",
       "source": "src/blocks/orders-table/orders-model.ts",
@@ -65228,6 +67048,24 @@
       "kind": "function",
       "source": "src/quant/experiment-model.ts",
       "props": []
+    },
+    "basisOf": {
+      "kind": "function",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
+      "props": [
+        {
+          "name": "contract",
+          "type": "Maybe",
+          "required": true,
+          "description": "Contract price."
+        },
+        {
+          "name": "index",
+          "type": "Maybe",
+          "required": true,
+          "description": "Index price."
+        }
+      ]
     },
     "bestAttempt": {
       "kind": "function",
@@ -66211,16 +68049,16 @@
       "source": "src/lib/copy-image.ts",
       "props": [
         {
-          "name": "background",
-          "type": "string",
-          "required": false,
-          "description": "底色；默认取节点或最近一个有底色的祖先的背景色（图片默认透明，贴进聊天里会变成黑底或白底）。"
-        },
-        {
           "name": "scale",
           "type": "number",
           "required": false,
           "description": "像素倍数；默认 devicePixelRatio（至少 1，最多 3）。"
+        },
+        {
+          "name": "background",
+          "type": "string",
+          "required": false,
+          "description": "底色；默认取节点或最近一个有底色的祖先的背景色（图片默认透明，贴进聊天里会变成黑底或白底）。"
         },
         {
           "name": "embedFonts",
@@ -66338,9 +68176,19 @@
         }
       ]
     },
+    "filterBySymbol": {
+      "kind": "function",
+      "source": "src/cn/move-feed-model.ts",
+      "props": []
+    },
     "filterByTheme": {
       "kind": "function",
       "source": "src/cn/timeline-model.ts",
+      "props": []
+    },
+    "filterMarketRows": {
+      "kind": "function",
+      "source": "src/quotes/market-browser-model.ts",
       "props": []
     },
     "filterMoves": {
@@ -66735,6 +68583,11 @@
       "source": "src/ai/lanes-model.ts",
       "props": []
     },
+    "hasData": {
+      "kind": "function",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
+      "props": []
+    },
     "histogram": {
       "kind": "function",
       "source": "src/blocks/strategy-report/strategy-report-model.ts",
@@ -66809,9 +68662,19 @@
         }
       ]
     },
+    "installTruncationTitles": {
+      "kind": "function",
+      "source": "src/lib/truncation-title.ts",
+      "props": []
+    },
     "isEditableTarget": {
       "kind": "function",
       "source": "src/patterns/hotkeys-model.ts",
+      "props": []
+    },
+    "isFloatingWindowSupported": {
+      "kind": "function",
+      "source": "src/blocks/floating-window/floating-window.tsx",
       "props": []
     },
     "isItm": {
@@ -67308,6 +69171,42 @@
       "kind": "function",
       "source": "src/blocks/rate-limit-planner/rate-limit-model.ts",
       "props": []
+    },
+    "longShare": {
+      "kind": "function",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
+      "props": [
+        {
+          "name": "long",
+          "type": "Maybe",
+          "required": true,
+          "description": "Long side (accounts or positions)."
+        },
+        {
+          "name": "short",
+          "type": "Maybe",
+          "required": true,
+          "description": "Short side, in the same unit as the long side."
+        }
+      ]
+    },
+    "longShortRatioOf": {
+      "kind": "function",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
+      "props": [
+        {
+          "name": "long",
+          "type": "Maybe",
+          "required": true,
+          "description": "Long side (accounts or positions)."
+        },
+        {
+          "name": "short",
+          "type": "Maybe",
+          "required": true,
+          "description": "Short side, in the same unit as the long side."
+        }
+      ]
     },
     "marginLevel": {
       "kind": "function",
@@ -68211,6 +70110,11 @@
         }
       ]
     },
+    "signedBars": {
+      "kind": "function",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
+      "props": []
+    },
     "silvermanBandwidth": {
       "kind": "function",
       "source": "src/quant/ridgeline-model.ts",
@@ -68804,6 +70708,11 @@
         }
       ]
     },
+    "symmetricAxis": {
+      "kind": "function",
+      "source": "src/blocks/derivatives/derivatives-model.ts",
+      "props": []
+    },
     "tableCsv": {
       "kind": "function",
       "source": "src/blocks/data-grid/model.ts",
@@ -69376,6 +71285,11 @@
     "useFlipList": {
       "kind": "function",
       "source": "src/lib/live.ts",
+      "props": []
+    },
+    "useFloatingWindow": {
+      "kind": "function",
+      "source": "src/blocks/floating-window/floating-window.tsx",
       "props": []
     },
     "useHotkeyEntries": {

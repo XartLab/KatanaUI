@@ -81,10 +81,11 @@
   color: var(--k-content-secondary-foreground);
   font-style: normal;
 }
-td[data-tone='up'] {
+/* 限在步进矩阵的表里：以前没加前缀，周期收益表的热力格（td[data-tone]）也被染成涨跌色，红字压红底只剩 1.7:1（axe #190）。 */
+.k-wf-table td[data-tone='up'] {
   color: var(--pnl-up);
 }
-td[data-tone='down'] {
+.k-wf-table td[data-tone='down'] {
   color: var(--pnl-down);
 }
 .k-wf-bar {

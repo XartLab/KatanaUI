@@ -8,6 +8,7 @@
  * 跟它不同：花费与时间的写法都由调用方给（不默认美元）；在跑的格不做流光动画，只着色。纯逻辑在 fan-out-model.ts。包里不带语言。
  */
 import { useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
+import { fillVar } from '../lib/fill.ts'
 import { cn } from '../lib/cn.ts'
 import { Button } from '../primitives/button.tsx'
 import {
@@ -135,7 +136,7 @@ export function FanOutGrid({
         </span>
       </header>
       <span className="k-fan-meter" aria-hidden="true">
-        <b style={{ width: `${(progress * 100).toFixed(2)}%` }} />
+        <b style={fillVar(progress)} />
       </span>
       <ul ref={grid} className="k-fan-grid" aria-label={labels.grid}>
         {tasks.map((task, index) => (

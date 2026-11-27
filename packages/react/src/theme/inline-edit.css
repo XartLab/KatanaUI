@@ -40,7 +40,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   cursor: text;
-  transition: background-color 120ms;
+  transition: background-color var(--dur-hover) var(--ease-hover);
 }
 .k-inedit-display:hover:not(:disabled) {
   background: var(--k-actionable-background-hover);
@@ -101,7 +101,7 @@
 .k-inedit-pencil {
   opacity: 0;
   cursor: pointer;
-  transition: opacity 120ms;
+  transition: opacity var(--dur-hover) var(--ease-hover);
 }
 .k-inedit:hover .k-inedit-pencil,
 .k-inedit:has(.k-inedit-display:focus-visible) .k-inedit-pencil {

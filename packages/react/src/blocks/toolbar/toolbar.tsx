@@ -1,7 +1,13 @@
 // SPDX-License-Identifier: MIT
 import { useRef, type ComponentProps, type ReactElement, type ReactNode, type Ref } from 'react'
 import { cn } from '../../lib/cn.ts'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../primitives/tooltip.tsx'
+import {
+  EnsureTooltipProvider,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../../primitives/tooltip.tsx'
 import { useRovingToolbar } from './use-roving-toolbar.ts'
 
 // 面板头的工具条零件（#1869，原应用 panels/kit/PanelToolbar 的展示部分）：一条 role=toolbar 的容器（整条只占一个 Tab 站，← → Home End 在项间移动，
@@ -22,24 +28,28 @@ export function Toolbar({ label, className, ref, onKeyDown, children, ...rest }:
   const own = useRef<HTMLDivElement | null>(null)
   const roving = useRovingToolbar(own)
   return (
-    <div
-      {...rest}
-      ref={(node) => {
-        own.current = node
-        if (typeof ref === 'function') ref(node)
-        else if (ref) ref.current = node
-      }}
-      role="toolbar"
-      aria-label={label}
-      data-slot="toolbar"
-      className={cn('k-toolbar', className)}
-      onKeyDown={(event) => {
-        roving.onKeyDown(event)
-        onKeyDown?.(event)
-      }}
-    >
-      {children}
-    </div>
+    // 整条工具条共用一个 TooltipProvider：沿着工具条移动，出过提示以后 400ms 内的邻居立即出、原地换字（kubai 025，#251）；
+    // 每个 ToolButton 自带一个 Provider 的话，邻居之间互不知道，每到一个都要重新等 500ms。
+    <TooltipProvider>
+      <div
+        {...rest}
+        ref={(node) => {
+          own.current = node
+          if (typeof ref === 'function') ref(node)
+          else if (ref) ref.current = node
+        }}
+        role="toolbar"
+        aria-label={label}
+        data-slot="toolbar"
+        className={cn('k-toolbar', className)}
+        onKeyDown={(event) => {
+          roving.onKeyDown(event)
+          onKeyDown?.(event)
+        }}
+      >
+        {children}
+      </div>
+    </TooltipProvider>
   )
 }
 
@@ -84,8 +94,7 @@ export function ToolSlot({
   )
 }
 
-// 悬停约 0.5 秒出提示，照 TradingView 工具栏（#720）。提示是图标按钮唯一的文字说明之外的补充：按钮自己带 aria-label。
-const TIP_DELAY_MS = 500
+// 提示时间（500ms 出、400ms 内邻居立即换）统一在 TooltipProvider，这里不另写。提示是图标按钮唯一的文字说明之外的补充：按钮自己带 aria-label。
 
 export function ToolButton({
   label,
@@ -147,7 +156,7 @@ export function ToolButton({
   )
   if (renderTooltip) return renderTooltip(button)
   return (
-    <TooltipProvider delayDuration={TIP_DELAY_MS} skipDelayDuration={0}>
+    <EnsureTooltipProvider>
       <Tooltip disableHoverableContent>
         {/* 禁用的按钮收不到指针事件，提示挂在外面包的一层上（告诉人为什么点不了）。 */}
         <TooltipTrigger asChild>{disabled ? <span className="k-tool-trigger">{button}</span> : button}</TooltipTrigger>
@@ -156,6 +165,6 @@ export function ToolButton({
           {keys ? <> {keys}</> : null}
         </TooltipContent>
       </Tooltip>
-    </TooltipProvider>
+    </EnsureTooltipProvider>
   )
 }

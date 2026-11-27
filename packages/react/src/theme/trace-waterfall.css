@@ -53,7 +53,7 @@
 .k-tw-cols {
   height: 24px;
   border-bottom: var(--hairline);
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-tw-cols > span:nth-child(n + 3) {
@@ -123,7 +123,7 @@
 }
 .k-tw-detail {
   overflow: hidden;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-mono);
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -155,7 +155,7 @@
   position: absolute;
   top: 2px;
   bottom: 2px;
-  border-radius: 1px;
+  border-radius: var(--radius-sm);
 }
 .k-tw-row[data-status='failed'] .k-tw-bar {
   background: var(--k-status-danger-foreground);
@@ -190,7 +190,7 @@
   background: var(--k-container-secondary-background);
 }
 .k-tw-details dt {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-tw-details dd {

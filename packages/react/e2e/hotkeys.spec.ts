@@ -65,8 +65,8 @@ test('command-palette：Ctrl+K 打开（盖过文档站目录的搜索），执�
   await page.keyboard.press('Control+K')
   const palette = page.getByRole('dialog', { name: '命令面板' })
   await expect(palette).toBeVisible()
-  // 目录搜索没接到这一下
-  await expect(page.getByRole('searchbox', { name: '搜索组件与文档' })).not.toBeFocused()
+  // 目录搜索没接到这一下（命令面板是模态对话框，开着时 Radix 给背后的页面挂 aria-hidden，目录的搜索框不在无障碍树里，要 includeHidden 才找得到）
+  await expect(page.getByRole('searchbox', { name: '搜索组件与文档', includeHidden: true })).not.toBeFocused()
   await expect(palette.getByRole('group', { name: '最近' })).toHaveCount(0)
   await page.keyboard.type('主题')
   await page.keyboard.press('Enter')

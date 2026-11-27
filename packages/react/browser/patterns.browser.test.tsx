@@ -53,6 +53,7 @@ import { TimeMachineStackUsage } from '../gallery/usage/TimeMachineStackUsage.ts
 import { TreeViewUsage } from '../gallery/usage/TreeViewUsage.tsx'
 import { OpenFrame } from './open-frame.tsx'
 import { mount } from './render.tsx'
+import { settled } from './settle.ts'
 
 const OPS = [
   { value: 'gt', label: 'greater than' },
@@ -141,6 +142,7 @@ for (const theme of ['graphite', 'console'] as const) {
     await mount(<div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 320 }}>{node}</div>, theme)
     await act?.()
     await settle()
+    await settled()
     await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-${name}`)
   }
   describe(theme, () => {

@@ -142,6 +142,7 @@ export { MiniKCardGrid, type MiniKCardGridProps, type MiniKItem } from './mini-k
 export {
   MOVE_TYPE_TONES,
   clockText,
+  filterBySymbol,
   filterMoves,
   freshIds,
   moveTone,
