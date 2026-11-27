@@ -3,7 +3,29 @@
 import { useState } from 'react'
 import { afterEach, describe, expect, test } from 'vite-plus/test'
 import { userEvent } from 'vite-plus/test/browser'
-import { Avatar, Checkbox, Label, MorphToggle, Progress, RadioGroup, RadioGroupItem, Separator, Switch, Toggle } from '../src/index.ts'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+  Avatar,
+  Checkbox,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+  Label,
+  MorphToggle,
+  Progress,
+  RadioGroup,
+  RadioGroupItem,
+  Separator,
+  Switch,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  Toggle,
+} from '../src/index.ts'
 import { mount } from './render.tsx'
 
 afterEach(() => document.body.replaceChildren())
@@ -148,5 +170,109 @@ describe('Progress / Separator / Avatar', () => {
     const fallback = q('[role="img"]')
     expect(fallback.getAttribute('aria-label')).toBe('张三')
     expect(fallback.textContent).toBe('张')
+  })
+})
+
+describe('Collapsible / Accordion / Tabs', () => {
+  test('Collapsible：回车展开收起，触发钮 aria-expanded 与 data-open 同步，收起后面板卸载', async () => {
+    await mount(
+      <Collapsible>
+        <CollapsibleTrigger>详情</CollapsibleTrigger>
+        <CollapsibleContent>内容</CollapsibleContent>
+      </Collapsible>,
+    )
+    const trigger = q('[data-slot="collapsible-trigger"]')
+    expect(trigger.getAttribute('aria-expanded')).toBe('false')
+    expect(document.querySelector('[data-slot="collapsible-content"]')).toBeNull()
+    await userEvent.tab()
+    await userEvent.keyboard('{Enter}')
+    expect(trigger.getAttribute('aria-expanded')).toBe('true')
+    expect(trigger.hasAttribute('data-open')).toBe(true)
+    expect(q('[data-slot="collapsible-content"]').textContent).toBe('内容')
+    await userEvent.keyboard(' ')
+    expect(trigger.getAttribute('aria-expanded')).toBe('false')
+  })
+
+  test('Accordion single + collapsible：只开一项，Tab 在标题间移动（方向键不再移动，APG 去掉了），值是字符串', async () => {
+    const seen: string[] = []
+    await mount(
+      <Accordion type="single" collapsible defaultValue="a" onValueChange={(v) => seen.push(v)}>
+        <AccordionItem value="a">
+          <AccordionTrigger>甲</AccordionTrigger>
+          <AccordionContent>甲的内容</AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="b">
+          <AccordionTrigger>乙</AccordionTrigger>
+          <AccordionContent>乙的内容</AccordionContent>
+        </AccordionItem>
+      </Accordion>,
+    )
+    const [a, b] = document.querySelectorAll<HTMLElement>('[data-slot="accordion-trigger"]')
+    expect(a?.getAttribute('aria-expanded')).toBe('true')
+    await userEvent.tab()
+    await userEvent.tab()
+    expect(active()).toBe(b)
+    await userEvent.keyboard('{Enter}')
+    expect(seen).toEqual(['b'])
+    expect(a?.getAttribute('aria-expanded')).toBe('false')
+    await userEvent.keyboard('{Enter}')
+    expect(seen).toEqual(['b', ''])
+  })
+
+  test('Accordion multiple：可以同时开多项，值是数组', async () => {
+    const seen: string[][] = []
+    await mount(
+      <Accordion type="multiple" onValueChange={(v) => seen.push(v)}>
+        <AccordionItem value="a">
+          <AccordionTrigger>甲</AccordionTrigger>
+          <AccordionContent>甲的内容</AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="b">
+          <AccordionTrigger>乙</AccordionTrigger>
+          <AccordionContent>乙的内容</AccordionContent>
+        </AccordionItem>
+      </Accordion>,
+    )
+    await userEvent.tab()
+    await userEvent.keyboard('{Enter}{Tab}{Enter}')
+    expect(seen.at(-1)?.toSorted()).toEqual(['a', 'b'])
+  })
+
+  test('Tabs：automatic 方向键移动并选中，manual 只移焦点；选中的带 data-selected，只渲染当前面板', async () => {
+    await mount(
+      <>
+        <Tabs defaultValue="a">
+          <TabsList aria-label="自动">
+            <TabsTrigger value="a">甲</TabsTrigger>
+            <TabsTrigger value="b">乙</TabsTrigger>
+          </TabsList>
+          <TabsContent value="a">甲的内容</TabsContent>
+          <TabsContent value="b">乙的内容</TabsContent>
+        </Tabs>
+        <Tabs defaultValue="c" activationMode="manual">
+          <TabsList aria-label="手动">
+            <TabsTrigger value="c">丙</TabsTrigger>
+            <TabsTrigger value="d">丁</TabsTrigger>
+          </TabsList>
+          <TabsContent value="c">丙的内容</TabsContent>
+          <TabsContent value="d">丁的内容</TabsContent>
+        </Tabs>
+      </>,
+    )
+    await userEvent.tab()
+    await userEvent.keyboard('{ArrowRight}')
+    expect(active()?.textContent).toBe('乙')
+    expect(active()?.hasAttribute('data-selected')).toBe(true)
+    expect(active()?.getAttribute('aria-selected')).toBe('true')
+    expect(document.body.textContent).toContain('乙的内容')
+    expect(document.body.textContent).not.toContain('甲的内容')
+    await userEvent.tab()
+    await userEvent.tab()
+    expect(active()?.textContent).toBe('丙')
+    await userEvent.keyboard('{ArrowRight}')
+    expect(active()?.textContent).toBe('丁')
+    expect(active()?.hasAttribute('data-selected')).toBe(false)
+    await userEvent.keyboard('{Enter}')
+    expect(active()?.hasAttribute('data-selected')).toBe(true)
   })
 })
