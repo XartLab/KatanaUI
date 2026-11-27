@@ -4,7 +4,13 @@ import type { ComponentProps, KeyboardEvent, ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
 import { Button } from '../primitives/button.tsx'
 import { Input } from '../primitives/input.tsx'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../primitives/tooltip.tsx'
+import {
+  EnsureTooltipProvider,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../primitives/tooltip.tsx'
 import { stepDecimal } from '../lib/chart/format/index.ts'
 
 // 十进制字符串框（价格、数量）：值是字符串，不经 JS 数字（决策记录 0014），按品种的最小变动价位或最小下单量走一格。
@@ -16,8 +22,6 @@ import { stepDecimal } from '../lib/chart/format/index.ts'
 
 /** Shift + 方向键走几格。 */
 const SHIFT_STEPS = 10
-/** 悬停多久出按钮的提示：与应用里的图标按钮提示一致。 */
-const TIP_DELAY_MS = 500
 
 /** Texts of DecimalField (the package ships no text). */
 export type DecimalFieldLabels = {
@@ -88,14 +92,14 @@ function StepButton({
   // 禁用的按钮收不到指针事件，提示也就没有意义；直接不包。
   if (disabled) return button
   return (
-    <TooltipProvider delayDuration={TIP_DELAY_MS} skipDelayDuration={0}>
+    <EnsureTooltipProvider>
       <Tooltip disableHoverableContent>
         <TooltipTrigger asChild>{button}</TooltipTrigger>
         <TooltipContent side="bottom" aria-label={label}>
           {label}
         </TooltipContent>
       </Tooltip>
-    </TooltipProvider>
+    </EnsureTooltipProvider>
   )
 }
 
@@ -165,14 +169,15 @@ export function DecimalField({
         ) : null}
       </div>
       {buttons ? (
-        <>
+        // − 与 + 共用一个 Provider：从一个移到另一个，400ms 内立即出（kubai 025，#251）。
+        <TooltipProvider>
           <StepButton label={buttons.decrease} disabled={frozen} onClick={() => nudge(-1)}>
             <Minus aria-hidden="true" />
           </StepButton>
           <StepButton label={buttons.increase} disabled={frozen} onClick={() => nudge(1)}>
             <Plus aria-hidden="true" />
           </StepButton>
-        </>
+        </TooltipProvider>
       ) : null}
     </div>
   )

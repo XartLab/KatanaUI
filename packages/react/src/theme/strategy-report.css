@@ -177,7 +177,7 @@
   position: relative;
   width: 8px;
   height: 18px;
-  border-radius: 1px;
+  border-radius: var(--radius-sm);
   background: var(--ink-400);
 }
 .k-sr-streak[data-result='win'] {
@@ -198,7 +198,7 @@
   width: 8px;
   height: 8px;
   margin-right: 6px;
-  border-radius: 1px;
+  border-radius: var(--radius-sm);
   background: var(--ink-400);
   content: '';
 }

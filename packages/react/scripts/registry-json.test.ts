@@ -20,7 +20,8 @@ interface Item {
 const registry = (await buildRegistry()) as { items: Item[] }
 
 describe('shadcn 注册表清单', () => {
-  it('已提交的 registry.json 与源码一致（加了件没重新生成就红）', async () => {
+  // 重新生成整份注册表，自建机忙时超过默认 5 秒（#190，2026-11-24 run 45319988571 / 45371922684）。
+  it('已提交的 registry.json 与源码一致（加了件没重新生成就红）', { timeout: 30_000 }, async () => {
     expect(readFileSync(`${pkgDir}registry.json`, 'utf8')).toBe(await registryText())
   })
 

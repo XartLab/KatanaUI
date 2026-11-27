@@ -39,8 +39,9 @@
 .k-seasonal-key.is-bold {
   font-weight: 600;
 }
+/* 关掉的年份：字降到次要色、色块只留一圈框；不用透明度（0.45 压到 2.7:1，axe #190）。 */
 .k-seasonal-key[aria-pressed='false'] {
-  opacity: 0.45;
+  color: var(--k-content-secondary-foreground);
 }
 .k-seasonal-key[aria-pressed='false'] > i {
   box-shadow: inset 0 0 0 1px var(--k-content-tertiary-foreground);
@@ -52,7 +53,7 @@
 .k-seasonal-key > i {
   width: 8px;
   height: 8px;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
 }
 .k-seasonal-plotwrap {
   display: flex;
@@ -107,10 +108,10 @@
 .k-seasonal-empty {
   display: grid;
   place-items: center;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-seasonal-source {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }

@@ -81,7 +81,7 @@ export function AnimatedTags({ tags, selected, defaultSelected = [], onChange, l
               </motion.button>
             ))}
           </AnimatePresence>
-          {chosen.length === 0 && <span className="k-text-caption px-(--space-1) text-ink-4">{labels.empty}</span>}
+          {chosen.length === 0 && <span className="k-text-caption px-(--space-1) text-ink-3">{labels.empty}</span>}
         </div>
       </div>
       <div className="flex flex-col gap-(--space-1)">

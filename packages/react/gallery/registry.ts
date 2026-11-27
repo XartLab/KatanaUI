@@ -74,6 +74,8 @@ export const NON_COMPONENT_EXPORTS: readonly string[] = [
   'focusRingInset',
   'InlineOverlays',
   'LOADING_TIMEOUT_MS',
+  // 全局的小工具，不是件：说明在「基础 → 中英排版开关」页（#250）。
+  'installTruncationTitles',
 ]
 
 export const PAGES: readonly DocPage[] = [
@@ -86,13 +88,17 @@ export const PAGES: readonly DocPage[] = [
       '30 高的默认按钮，六种变体与三种尺寸；悬停提亮、按下缩到 0.97，禁用降到 45% 不透明度。颜色只读 actionable（bold = primary、subtle = icon、negative = danger）、content、separable、focused 这几类 characteristic，高度与内距读密度（data-density 的 size-base、size-row、spacing-*）；「主题 × 密度」那三行在 high、medium、low 下各摆一遍。',
     exports: ['Button', 'buttonVariants'],
     propParts: [
-      { part: 'Button', note: '其余属性透传给原生 button；type 默认 button，放进表单不会误提交。' },
+      {
+        part: 'Button',
+        note: '其余属性透传给原生 button；type 默认 button，放进表单不会误提交。pending：动作进行中，满 300ms 才在原地出转圈（出了至少留 500ms），字与宽度不变，期间再按无效但仍可聚焦，aria-busy=true；spinIcon 配 pending，按钮自己的图标就是动作（刷新、同步）时转它自己，至少一整圈、停在整圈上。',
+      },
       { part: 'buttonVariants', note: '返回类名的函数，给不是 button 的元素画成按钮（包着文件输入的 label 之类）。' },
     ],
     states: [
       '默认：4% 白底 8% 白边，悬停提亮，按下缩到 0.97。',
       '尺寸：md（默认，30 高）、sm（26 高、圆角 8、字 11 粗 600）、icon（28 见方，只放图标）；旧名 size="default" 等于 md。',
       '禁用：45% 不透明度，不响应指针。',
+      '进行中（pending）：满 300ms 才出一个小环（有字的按钮画在左内边距里，图标按钮里换掉原图标），出了至少留 500ms；字与宽度不变，不灰，aria-busy，再按无效但键盘与读屏仍能到；300ms 内结束的不出转圈。',
       '焦点：键盘 Tab 到时画 focus-ring 的外框。',
       'effect（改自 SmoothUI，MIT）：magnetic 指针靠近时按钮朝它偏、离开弹回；dot-morph 前面一颗点悬停时拉成竖条；clip-corners 四个角切掉、悬停时切口变大。三种只在有精确指针的设备上动。',
     ],
@@ -101,6 +107,7 @@ export const PAGES: readonly DocPage[] = [
       '图标按钮必须带 aria-label。',
       '不要用颜色以外没有字的危险按钮。',
       'effect 一个界面里最多给一两个主操作用，不要成排；dot-morph 不能与 asChild 同用。',
+      '不要在按钮转圈的同时再盖整页遮罩或顶部进度条：一次等待只留一个指示。',
     ],
     composition: 'Button',
     keys: [
@@ -382,17 +389,21 @@ export const PAGES: readonly DocPage[] = [
     group: 'overlays',
     cardHeight: 152,
     title: 'Tooltip 提示',
-    summary: '悬停或聚焦时出现的短说明，从触发处轻升；默认没有延迟。',
+    summary: '悬停或聚焦时出现的短说明，从触发处轻升；悬停停 500ms 才出，出了以后 400ms 内移到邻居立即出。',
     exports: ['Tooltip', 'TooltipContent', 'TooltipProvider', 'TooltipTrigger', 'tooltipContentClass'],
     propParts: [
-      { part: 'TooltipProvider', note: '其余属性透传给 Radix Tooltip.Provider。' },
+      {
+        part: 'TooltipProvider',
+        note: '悬停时间在这里统一：delayDuration 默认 500，skipDelayDuration 默认 400（导出为 TOOLTIP_DELAY_MS、TOOLTIP_SKIP_MS）；其余属性透传给 Radix Tooltip.Provider。',
+      },
       { part: 'Tooltip', note: '其余属性透传给 Radix Tooltip.Root。' },
       { part: 'TooltipTrigger', note: '其余属性透传给 Radix Tooltip.Trigger。用 asChild 套在按钮上。' },
       { part: 'TooltipContent', note: '其余属性透传给 Radix Tooltip.Content。' },
       { part: 'tooltipContentClass', note: '提示的皮肤类名，应用里自己定位的提示（图表悬停）借它长一个样。' },
     ],
     states: [
-      '触发器静止；悬停或聚焦后浮出提示（默认没有延迟）。',
+      '触发器静止；悬停停满 500ms 浮出提示；聚焦立即浮出。',
+      '出过提示以后 400ms 内移到邻居：立即出、原地换字；离开超过 400ms 再进，重新等 500ms。按下触发器就收，指针离开前不再出。',
       '浮出：最深底 + 1px 分隔线色边 + --k-overlay-tooltip-shadow，没有小箭头。',
       '内容里有键帽（.k-kbd）：压成实心浅色块，字用最深底色。',
       '移开或 Esc：直接消失，不播退场动画（#1849）。',
@@ -503,6 +514,70 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'alert-dialog',
+    group: 'overlays',
+    cardHeight: 334,
+    title: 'AlertDialog 确认对话框',
+    summary:
+      '要用户明确选一个才关的对话框：平仓、撤单、删除这类不能撤回的事。点背板不关，打开时焦点落在「取消」，Esc 关掉（不点任何钮）；样子同 Dialog，Console 下边粗一档。',
+    exports: [
+      'AlertDialog',
+      'AlertDialogAction',
+      'AlertDialogBody',
+      'AlertDialogCancel',
+      'AlertDialogContent',
+      'AlertDialogDescription',
+      'AlertDialogFooter',
+      'AlertDialogHeader',
+      'AlertDialogOverlay',
+      'AlertDialogPortal',
+      'AlertDialogTitle',
+      'AlertDialogTrigger',
+    ],
+    propParts: [
+      { part: 'AlertDialog', note: '其余属性透传给 Radix AlertDialog.Root。' },
+      {
+        part: 'AlertDialogContent',
+        note: 'size：default 560 宽（同 Dialog）、sm 320 宽（一句话说得清的确认）。其余属性透传给 Radix AlertDialog.Content。',
+      },
+      {
+        part: 'AlertDialogAction',
+        note: 'variant：primary（默认）、danger（不能撤回的）、default。画成 Button，点了关闭。',
+      },
+      {
+        part: 'AlertDialogCancel',
+        note: '画成 Button；打开时焦点在它上面。Esc 关掉但不点它，取消要做的事写在 AlertDialog 的 onOpenChange 里。',
+      },
+      {
+        part: 'AlertDialogHeader / AlertDialogBody / AlertDialogFooter',
+        symbol: 'AlertDialogHeader',
+        note: '标题栏（50 高）、正文、按钮栏，纯排版，同 Dialog。',
+      },
+      {
+        part: 'AlertDialogTrigger / AlertDialogTitle / AlertDialogDescription / AlertDialogPortal / AlertDialogOverlay',
+        symbol: 'AlertDialogTrigger',
+        note: '透传 Radix 同名部件。',
+      },
+    ],
+    states: [
+      '收起；打开后焦点落在「取消」，圈在对话框里；关闭后焦点回触发器，没有触发器时回到打开前的元素。',
+      '打开：同 Dialog 的底、阴影与升起动效；Console 下边换成粗一档的分隔色（--k-separable-bold-borderColor），Graphite 下同其它浮层是玻璃边。',
+      '点背板不关：只有「取消」「确认」与 Esc 能关。',
+    ],
+    donts: [
+      '能撤回的操作不要用确认对话框，直接做并给撤销。',
+      '按钮写动作本身（「平仓」「删除」），不要写「确定」「是」。',
+      '要填表、要多步的用 Dialog。',
+    ],
+    composition:
+      'AlertDialog\n  AlertDialogTrigger\n  AlertDialogContent\n    AlertDialogHeader\n      AlertDialogTitle\n    AlertDialogBody\n      AlertDialogDescription\n    AlertDialogFooter\n      AlertDialogCancel\n      AlertDialogAction',
+    keys: [
+      ['Esc', '关闭（不点任何钮，只触发 onOpenChange(false)），焦点回到打开前的元素'],
+      ['Tab / Shift+Tab', '焦点在「取消」与「确认」之间循环，不出去'],
+      ['Enter / Space', '按下拿着焦点的钮'],
+    ],
+  },
+  {
     id: 'dropdown-menu',
     group: 'overlays',
     cardHeight: 314,
@@ -548,7 +623,7 @@ export const PAGES: readonly DocPage[] = [
       {
         part: 'DropdownMenuSub / DropdownMenuSubTrigger / DropdownMenuSubContent',
         symbol: 'DropdownMenuSub',
-        note: '二级菜单。安全三角：斜着朝二级走时路过下一行不误收。',
+        note: '二级菜单。悬停 220ms 开；安全三角：斜着朝二级走时路过下一行不换不闪，停在三角里最多护 1.2s；滑出 360ms 才收。',
       },
       {
         part: 'DropdownMenuLabel / DropdownMenuSeparator / DropdownMenuShortcut / DropdownMenuGroup / DropdownMenuPortal',
@@ -1255,7 +1330,7 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 554,
     title: 'Loading 加载态',
     summary:
-      '加载态的唯一入口：给 pending 等数据，不给 pending 当 Suspense 边界，给 phase 钉在某一段直接画。500ms 内到了什么也不画；超过了出点阵骨架，2s 说「仍在加载」，10s 转琥珀条加重试。',
+      '加载态的唯一入口：给 pending 等数据，不给 pending 当 Suspense 边界，给 phase 钉在某一段直接画。500ms 内到了什么也不画；超过了出点阵骨架，出了至少留 500ms，2s 说「仍在加载」，10s 转琥珀条加重试。',
     exports: ['Loading', 'LoadingBoundary', 'LoadingView'],
     propParts: [
       {
@@ -1270,6 +1345,7 @@ export const PAGES: readonly DocPage[] = [
       '超过 500ms：caption（亮强调色灯 +「加载 <内容> · <来源>」）加点阵骨架；2s：说「仍在加载」。',
       '10s：琥珀条（warn 灯 + 文案 + 重试），骨架留着、降到半透明；没给 onRetry 就没有重试钮。',
       '数据到了：骨架出过的内容用 2px 模糊揭示，没出过的直接出现。',
+      '最短停留：骨架出了至少留 500ms 再交出内容（510ms 到的数据，骨架留到 1000ms）；只管 pending 模式，Suspense 模式没有。',
     ],
     donts: [
       '不要脉冲、不要转圈。',
@@ -1296,7 +1372,7 @@ export const PAGES: readonly DocPage[] = [
       },
     ],
     states: [
-      '加载中：不到 500ms 不露骨架条（不可见层照样占位），超过了才出，快的请求不闪。',
+      '加载中：不到 500ms 不露骨架条（不可见层照样占位），超过了才出，快的请求不闪；出了至少留 minShown（默认 500ms），数据早到也等满再揭示。',
       '骨架：每行文字一条 line-200 的圆角条，图片、按钮、标签各一块，圆角跟随内容；不闪、不脉冲。',
       '数据到了：真内容淡入到骨架的位置，onReveal 调一次；给了 id 的下次进来第一帧就是上次的形状。',
     ],
@@ -2053,13 +2129,15 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 135,
     title: 'Toast 弹出提示',
     summary:
-      '固定在窗口一角的弹出提示：只管样子与读屏语义（live region），条目表、定时、暂停由调用方管（应用里 AlertToasts 配 toast-queue.ts）。进出走 translate 与不透明度的过渡。',
+      '固定在窗口一角的弹出提示：只管样子与读屏语义（live region），条目表、定时、暂停由调用方管（应用里 AlertToasts 配 toast-queue.ts）。进出走 translate 与不透明度的过渡。视口 polite 礼貌播报，warn / danger 单条 role=alert；能撤销的操作配 ToastAction 与可选的 ToastCountdown。',
     exports: [
       'TOAST_EXIT_MS',
       'Toast',
+      'ToastAction',
       'ToastClear',
       'ToastClose',
       'ToastContent',
+      'ToastCountdown',
       'ToastDescription',
       'ToastIcon',
       'ToastText',
@@ -2069,13 +2147,21 @@ export const PAGES: readonly DocPage[] = [
     propParts: [
       {
         part: 'ToastViewport',
-        note: '其余属性透传给 div。role=region、aria-live=assertive：新插进来的条目读屏马上读；aria-label 由调用方给。',
+        note: '其余属性透传给 div。role=region、aria-live=polite：新插进来的条目读屏等空了再读，不打断；aria-label 由调用方给。',
       },
       {
         part: 'Toast',
-        note: '其余属性透传给 div。过渡的起点与终点由 data-starting-style、data-ending-style 给（phase 换的）。tone（Severity）定色条与图标的颜色，neutral 是主文字色色条加强调色图标。',
+        note: '其余属性透传给 div。过渡的起点与终点由 data-starting-style、data-ending-style 给（phase 换的）。tone（Severity）定色条与图标的颜色，neutral 是主文字色色条加强调色图标。tone 为 warn、danger 时这一条自带 role=alert（插入即打断播报），neutral、ok 不带，靠视口礼貌播报；调用方给的 role 排在后面能盖掉。',
       },
       { part: 'ToastClose', note: '其余属性透传给 Button（icon 变体）。' },
+      {
+        part: 'ToastAction',
+        note: '其余属性透传给 Button（ghost、sm）。一个文字钮，如「撤销」，文字由调用方给；强调色字，悬停才有底。',
+      },
+      {
+        part: 'ToastCountdown',
+        note: 'remaining（0 到 1）是剩余时间的比例，1 刚出现、0 要收了，超出范围收进 0 到 1。计时在调用方（toast-queue），包里不计时；建议每 100ms 更新一次，环随比例变短，中间不写秒数。纯装饰，aria-hidden。其余属性透传给 svg。',
+      },
       {
         part: 'ToastClear / ToastIcon / ToastText / ToastTitle / ToastDescription / ToastContent',
         symbol: 'ToastClear',
@@ -2086,18 +2172,21 @@ export const PAGES: readonly DocPage[] = [
       '收起：反向平移淡出，播完（TOAST_EXIT_MS）调用方再摘节点。',
       '多条：按位置叠，两条以上出「全部关掉」。',
       '语气：neutral（默认）、ok、warn、danger，色条与图标取 --k-status-*-foreground；说明文字是 ink-2（console 主题下 ink-3 不到 4.5:1）。',
+      '动作 toast：标题、倒计时环（16px 空心环，随剩余比例变短，中间不写秒数）、一个「撤销」钮、关闭钮并排；撤销以后调用方把同一条改成「已恢复」，约 1.5 秒后收。',
     ],
     donts: [
       '不要把需要用户处理的事只放在弹出提示里，它会自己消失。',
+      '不要事后 toast 一件不能撤销的事：先确认（AlertDialog），或者做成能撤销的再给「撤销」。',
+      '不要把价格告警这类系统消息当 toast 用：它是通知，应进铃下的列表（NotificationBell），toast 只是到达提示。',
       '不要只靠色条说语气：标题里写明（「下单被拒」而不是「出错了」）。',
       '不要在包里写死文案，关闭名与「全部关掉」都由调用方传。',
       '不要自己再做一套计时与队列放进 Toast，那是调用方的事。',
     ],
     composition:
-      'ToastViewport\n  Toast\n    ToastContent\n      ToastIcon\n      ToastText\n        ToastTitle\n        ToastDescription\n      ToastClose\n  ToastClear',
+      'ToastViewport\n  Toast\n    ToastContent\n      ToastIcon\n      ToastText\n        ToastTitle\n        ToastDescription\n      ToastCountdown（可选）\n      ToastAction（可选）\n      ToastClose\n  ToastClear',
     keys: [
-      ['Tab', '走到关闭钮、「全部关掉」'],
-      ['Enter / Space', '关掉这一条或全部'],
+      ['Tab', '走到「撤销」、关闭钮、「全部关掉」'],
+      ['Enter / Space', '撤销，或关掉这一条或全部'],
     ],
   },
   {
@@ -4923,10 +5012,11 @@ export const PAGES: readonly DocPage[] = [
     states: ['默认值：灰度、像素对齐开、字重 0、字号 100%、斜线零关、中英对齐关', '改任一项立刻生效（写在根节点上）'],
     donts: ['不要在件里存值：存盘交给调用方', '不要只在某个面板上改这些属性：渲染设置是整个应用一份'],
     composition:
-      'RenderingSettings\n  行 × 6（名称、说明、ToggleGroup 或 Slider）\n  字体小节\n    行 × 4（界面、汉字、数据字、代码：Select）\n  恢复默认（Button）',
+      'RenderingSettings\n  行 × 6（名称、说明、Switch、ToggleGroup 或 Slider）\n  字体小节\n    行 × 4（界面、汉字、数据字、代码：Select）\n  恢复默认（Button）',
     keys: [
       ['Tab', '按行的次序走过每个控件，最后是恢复默认'],
-      ['← →', '开关与平滑方式（分段切换）里换一段'],
+      ['Space', '开关（像素对齐、斜线零、中英对齐）翻转'],
+      ['Tab', '平滑方式（分段切换）按钮之间走；Enter 或 Space 按下'],
       ['← → / ↑ ↓', '字重、字号滑块走一格（字重 10，字号 5%）；Home / End 到两头'],
       ['Enter / Space', '打开字体下拉；下拉里 ↑ ↓ 选、Enter 确定、Esc 收起'],
     ],
@@ -6512,6 +6602,44 @@ export const PAGES: readonly DocPage[] = [
     keys: [['Tab / Enter', '列头排序、旗标']],
   },
   {
+    id: 'market-browser',
+    group: 'quotes',
+    cardHeight: 430,
+    title: 'MarketBrowser 市场浏览器',
+    summary:
+      '找品种的入口（照 OKX 永续页的「市场」组件，2026-11-26 实测）：一个搜索框、一排分类页签（自选 / 全部 / 主流币……由调用方给，每类带自己的行）、下面是当前分类的列表：星标、徽标、代码与全称、最新价、24h 涨跌。点价格或涨跌的列头排序（升、降、回原顺序）；点行回调 onSelect；点星标回调 onToggleFavorite，不触发 onSelect。搜索在当前分类里按代码、名称与别名找。表的版式、价格尾数闪色、列头排序都沿用 Watchlist，不另写一份；数据与文字全由调用方传，包里没有数据源。',
+    exports: ['MarketBrowser', 'filterMarketRows'],
+    propParts: [
+      {
+        part: 'MarketBrowser',
+        note: 'categories 是 { id, label, rows }[]，「自选」页签就是调用方把 favorite 为真的行放进第一个分类；行是 QuoteRow 加 favorite / logoSrc / venue / assetClass / keywords。labels 必填。sort 与分类 value 可受控也可不受控。',
+      },
+      {
+        part: 'filterMarketRows(rows, query)',
+        symbol: 'filterMarketRows',
+        note: '搜索用的纯函数：代码、名称、别名里含有搜索词（不分大小写）的行。',
+      },
+    ],
+    states: [
+      '当前排序列的列头带 ▲ / ▼，th 的 aria-sort 跟着变；换分类、改搜索词，排序保留。',
+      '星标：没标是描边，标上是实心；常亮，不要等悬停。',
+      '分类里没有行：写 labels.empty；有行但搜索没找到：写 labels.noResults。',
+      '最新价与涨跌变了：只闪变了的尾数与涨跌格（同 Watchlist）。',
+    ],
+    donts: [
+      '不要把「自选」做成包里的特殊页签：它就是第一个分类，行由调用方按 favorite 筛。',
+      '不要传写好的价格字符串：行是数，位数交给 formatPrice。',
+      '不要在包里放数据源或默认分类：分类名由市场决定（永续、现货、股票各不相同）。',
+    ],
+    composition:
+      'MarketBrowser\n  Input（搜索）\n  Tabs · TabsList line（分类，放不下横向滚）\n  table（k-watch）：列头按钮 × 2\n    tr：星标按钮 · SymbolMark · CodeChip · 全称 | FlashPrice | ChangeText',
+    keys: [
+      ['Tab', '搜索框、分类页签、列头、各行、各行的星标，依次走'],
+      ['← →', '在分类页签间移动'],
+      ['Enter', '在行上选品种；在列头上排序；在星标上切星标'],
+    ],
+  },
+  {
     id: 'range-bar',
     group: 'quotes',
     cardHeight: 60,
@@ -8043,7 +8171,7 @@ export const PAGES: readonly DocPage[] = [
       '账户级风控（日亏线、连亏次数）不放进这里。',
     ],
     composition:
-      'OrderTicket\n  ToggleGroup（开仓 / 平仓）\n  Select（保证金模式）· 杠杆框\n  Tabs · TabsList line（限价 / 市价）\n  买栏 · 卖栏（各一份）\n    价格框 · Button（最优价）\n    Select（填法）· 仓位框 · Slider（0–100%）\n    可用 · 可开\n    Checkbox（止盈止损）· Select（出场模板）· 止盈框 · 止损框\n    下单钮 · 锁住原因（locked 时）\n    读数（dl）\n  费率 · Button（计算器）',
+      'OrderTicket\n  ToggleGroup（开仓 / 平仓）\n  ToggleGroup sm（保证金模式）· 杠杆框\n  Tabs · TabsList line（限价 / 市价）\n  买栏 · 卖栏（各一份）\n    价格框 · Button（最优价）\n    Select（填法）· 仓位框 · Slider（0–100%）\n    可用 · 可开\n    Checkbox（止盈止损）· Select（出场模板）· 止盈框 · 止损框\n    下单钮 · 锁住原因（locked 时）\n    读数（dl）\n  费率 · Button（计算器）',
     keys: [
       ['Tab', '开平、保证金模式、杠杆、委托类型，然后买栏从上到下、再卖栏从上到下'],
       ['← →', '在滑杆上按 1% 调仓位'],
@@ -8113,10 +8241,11 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 620,
     title: 'ComponentCatalog 添加组件',
     summary:
-      'PanelTabs 的「+」打开的目录（照 OKX 的「添加组件」抽屉，2026-11-19 实测）：标题与「重置布局」、一句说明、搜索框、类别页签，下面按类别分组的卡片，每张一个缩略图加名字；已在工作区里的打勾，当前品种用不了的置灰并写明原因；卡片可拖（带 CATALOG_ITEM_MIME）。我们加的：搜索（名字与别名）、最前面一组「推荐」：宿主按当前品种与市场包标 recommended，或组件自己声明 pairsWith（适合放在哪种组件旁边），传入 context（当前页签的 kind）后自动推荐，已在用的不再推荐。点卡片回调 onToggle（加或移除）。没给缩略图时按 kind 画一张示意。只是目录本身，放进 Sheet 还是侧栏由宿主定。',
+      'PanelTabs 的「+」打开的目录（照 OKX 的「添加组件」抽屉，2026-11-19 实测）：标题与「重置布局」、一句说明、搜索框、类别页签，下面按类别分组的卡片，每张一个缩略图加名字；已在工作区里的打勾，当前品种用不了的置灰并写明原因；卡片可拖（带 CATALOG_ITEM_MIME）。variant="menu"（2026-11-26，OKX 页签栏「+」垂下来的清单）是紧凑样式：没有标题、搜索与类别页签，每类一个可折叠标题，每行名字加右边的「+」，已添加的与不可用的置灰、悬停或聚焦时用提示说明原因（已添加写 labels.inUse，不可用写条目自带的 unavailable）。我们加的：搜索（名字与别名）、最前面一组「推荐」：宿主按当前品种与市场包标 recommended，或组件自己声明 pairsWith（适合放在哪种组件旁边），传入 context（当前页签的 kind）后自动推荐，已在用的不再推荐。点卡片回调 onToggle（加或移除）。没给缩略图时按 kind 画一张示意。只是目录本身，放进 Sheet 还是侧栏由宿主定。',
     exports: ['ComponentCatalog', 'CATALOG_ITEM_MIME', 'groupCatalog'],
     propParts: [{ part: 'ComponentCatalog' }],
     states: [
+      'variant="menu"：每类一个标题按钮（aria-expanded），点开合；行是名字加「+」，点一行只添加（onToggle(id, true)）；灰的行点了没反应，悬停与键盘聚焦都出提示。',
       '没搜索、没选类别：先「推荐」一组，再按类别各一组；推荐过的不在类别里重复出现。',
       '选了类别：只看这一类，没有「推荐」。',
       '在搜索：按名字与别名筛，不分「推荐」；搜不到写 labels.empty。',
@@ -8127,13 +8256,90 @@ export const PAGES: readonly DocPage[] = [
       '缩略图是示意，不要拿它当真实数据的预览；要真截图由宿主经 thumbnails 传。',
       '不要把「用不了」的项直接藏掉：留着并写原因，用户才知道有这个组件、为什么现在加不了。',
       '「重置布局」是不可撤的，宿主要自己再确认一次（HoldToConfirm 或对话框）。',
+      'menu 样式不要塞缩略图与搜索：要那些用抽屉样式；menu 里组件超过三十个就该换抽屉。',
     ],
     composition:
       'ComponentCatalog\n  标题 · Button（重置布局）\n  Input（搜索）\n  Tabs · TabsList line（类别）\n  分组 · 卡片（button aria-pressed：缩略图 · 名字 · 原因）',
     keys: [
-      ['Tab', '搜索框、类别页签、各卡片，依次走'],
+      ['Tab', '搜索框、类别页签、各卡片，依次走；menu 样式是各分组标题与各行'],
       ['← →', '在类别页签间移动'],
-      ['Enter / 空格', '在卡片上加进工作区或移除'],
+      ['Enter / 空格', '在卡片上加进工作区或移除；menu 样式里在分组标题上开合、在行上添加（灰的行只出提示）'],
+    ],
+  },
+  {
+    id: 'strategy-launcher',
+    group: 'blocks',
+    cardHeight: 420,
+    title: 'StrategyLauncher 策略入口',
+    summary:
+      '一列策略与工具的入口卡（照 OKX 永续页的「工具」组件，2026-11-26 实测）：顶上一条可关的风险提示（文字由调用方给，点关闭钮收起并回调），下面每张卡是图标、名字、可选的「新」角标、标签串（默认用「 / 」连成一行，tagStyle="chips" 画成小标签）、右箭头。点卡回调 onOpen(id)。件只列入口，入口指向什么（下单策略、运行中心、信号）由宿主定，包里不带任何策略。',
+    exports: ['StrategyLauncher'],
+    propParts: [
+      {
+        part: 'StrategyLauncher',
+        note: 'entries 是 { id, name, icon?, isNew?, tags? }[]；labels 必填：整件的读屏名、关闭钮的读屏名、角标文字。notice 不给就没有提示条。',
+      },
+    ],
+    states: [
+      '有 notice：顶上一条 warn 语气的提示条，右上角关闭钮；关了就不再画（件内记住，同时回调 onNoticeDismiss）。',
+      '卡悬停：底色提亮、箭头变主文字色；键盘聚焦画内缩焦点环。',
+      '带 isNew：名字后面一个 ok 语气的小角标。',
+      '没有 icon 的卡：不留图标位，文字顶到左边。',
+    ],
+    donts: [
+      '不要把风险提示写在卡里：它在整列顶上，关掉以后不再回来。',
+      '不要每张卡写超过四个标签：一行放不下就是写多了。',
+      '不要在包里放策略名单：入口全由宿主传。',
+    ],
+    composition:
+      'StrategyLauncher section[aria-label]\n  Alert（warn，role=note）：图标 · 说明 · 关闭钮\n  ul > li > button 卡：图标块 · 名字 + 角标 · 标签串 | 右箭头',
+    keys: [
+      ['Tab', '关闭钮、各张卡，依次走'],
+      ['Enter / 空格', '打开聚焦的卡；在关闭钮上收起提示'],
+    ],
+  },
+  {
+    id: 'floating-window',
+    group: 'blocks',
+    cardHeight: 300,
+    title: 'FloatingWindow 悬浮窗',
+    summary:
+      '把任意子树放进一个置顶的小窗（照 OKX 下单面板的「在悬浮窗中交易」，2026-11-26 实测）：浏览器有 Document Picture-in-Picture（Chrome / Edge 116+）时开真窗口，开窗时复制当前文档的样式表、根元素的 data-theme 与正文底色字色；没有时退成页内可拖的浮层（popover 顶层，标题栏拖动或方向键移动，关闭钮与 Esc 关）。受控：open 与 onClose，配 useFloatingWindow。子树始终渲染进同一个 host 元素、换窗只搬这个元素，所以输入的半截字、滚动位置、组件状态都不丢；关窗回到原处。',
+    exports: ['FloatingWindow', 'useFloatingWindow', 'isFloatingWindowSupported'],
+    propParts: [
+      {
+        part: 'FloatingWindow',
+        note: 'open 受控，用户关窗时回调 onClose，宿主再把 open 设回 false。placeholder 画在原位（窗开着时）。width / height 只在开窗那一刻读。inPageOnly 强制只用页内浮层。',
+      },
+      {
+        part: 'useFloatingWindow(initialOpen?)',
+        symbol: 'useFloatingWindow',
+        note: '返回 { open, supported, show, hide, toggle, props }；props 直接展开到 FloatingWindow 上。',
+      },
+      {
+        part: 'isFloatingWindowSupported()',
+        symbol: 'isFloatingWindowSupported',
+        note: '浏览器现在能不能开真 PiP 窗（每次调用时现读）。',
+      },
+    ],
+    states: [
+      '关着：子树在原处，不画占位。',
+      '开着、浏览器有 PiP：先在原处，窗一开成功就搬进小窗，原位画 placeholder。',
+      '开着、没有 PiP（或开窗被拒：没有刚操作过、已有一个窗）：搬进页内浮层，默认贴右下角 16px，拖过之后用 left / top。',
+      '用户关 PiP 窗、点浮层的关闭钮或在浮层里按 Esc：回调 onClose；宿主设回 open=false，子树回到原处，状态还在。',
+      '主文档切主题：PiP 窗的 data-theme 等根属性跟着同步。',
+    ],
+    donts: [
+      '不要用 key 或条件渲染在窗内外各放一份：子树只传一份，件自己搬 DOM，状态才不丢。',
+      '不要在没有用户操作的时候把 open 设成 true：PiP 要用户刚点过，否则被拒、退到页内浮层。',
+      '开窗之后新加的样式表（懒加载的 CSS）不会跟过去；要用到的样式先在开窗前载入。',
+    ],
+    composition:
+      'FloatingWindow\n  slot（关着时子树的家）· placeholder（窗开着时）\n  页内浮层（popover=manual，role=dialog）：标题栏把手 button · 关闭钮 · 内容区\n  host（子树的容器，在 slot、浮层内容区、PiP 窗 body 之间被搬动）',
+    keys: [
+      ['Tab', '到页内浮层的标题栏把手、关闭钮与子树里的控件'],
+      ['← ↑ → ↓', '焦点在标题栏把手上，移动页内浮层 8px；按住 Shift 32px'],
+      ['Esc', '焦点在页内浮层里，关窗（onClose）'],
     ],
   },
   {
@@ -11212,13 +11418,14 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 520,
     title: 'MoveFeed 异动时间流',
     summary:
-      '盘口异动的流：一行一条，时间 · 名称（带代码）· 类型胶囊 · 数值；按时间从新到旧排，新来的从顶上进（淡入一下，reduced-motion 时不播）。类型胶囊按涨 / 跌 / 量 / 板着色（涨跌读 --pnl-up / --pnl-down 跟 data-updown，量是中性强调，板是警示色），顶上一排类型多选筛（点一个只看它、再点取消，一个都没选是全部，带条数）。点行触发 onSelect 联动个股页，selectedId 标出联动的那一行。随包认识十一种类型（火箭发射、封涨停板、大笔卖出…），也可以传自己的类型表。条目由调用方给。与 NewsFeed（新闻阅读器）、EventTimeline（公司事件）不同。',
+      '盘口异动的流：一行一条，时间 · 名称（带代码）· 类型胶囊 · 数值；按时间从新到旧排，新来的从顶上进（淡入一下，reduced-motion 时不播）。类型胶囊按涨 / 跌 / 量 / 板着色（涨跌读 --pnl-up / --pnl-down 跟 data-updown，量是中性强调，板是警示色），顶上一排类型多选筛（点一个只看它、再点取消，一个都没选是全部，带条数）。点行触发 onSelect 联动个股页，selectedId 标出联动的那一行。随包认识十三种类型（火箭发射、封涨停板、大笔卖出、5 分钟涨幅 / 跌幅…），也可以传自己的类型表。加密市场的用法（#245，照 OKX 的「市场异动」）：条目的 symbol 写币对，传 currentSymbol 就多一个「只看当前品种」开关（onlyCurrent 受控或 defaultOnlyCurrent 不受控），类型文字走 labels.types（「5 分钟涨幅」「15 分钟跌幅」…，没有的窗口用 types 自定）。条目由调用方给。与 NewsFeed（新闻阅读器）、EventTimeline（公司事件）不同。',
     exports: [
       'MoveFeed',
       'MOVE_TYPE_TONES',
       'moveTone',
       'sortFeed',
       'filterMoves',
+      'filterBySymbol',
       'typeCounts',
       'toggleType',
       'moveValue',
@@ -11235,6 +11442,10 @@ export const PAGES: readonly DocPage[] = [
       { part: 'moveTone(type, defs)', note: '纯函数：类型的色调；自定义表优先，不认识的按 volume。' },
       { part: 'sortFeed(items)', note: '纯函数：按时间从新到旧排，同一时刻后传入的在上，写不对的时刻沉底。' },
       { part: 'filterMoves(items, selected)', note: '纯函数：按选中的类型筛，一个都没选是全部。' },
+      {
+        part: 'filterBySymbol(items, symbol)',
+        note: '纯函数：只留属于这个品种的行（symbol，再 code，再 name），不分大小写；symbol 为空不筛。',
+      },
       { part: 'typeCounts(items, defs)', note: '纯函数：各类型的条数，没出现的不列。' },
       { part: 'toggleType(selected, type)', note: '纯函数：切换一个类型的选中状态。' },
       { part: 'moveValue(item)', note: '纯函数：数值的字与方向；取不到写「—」。' },
@@ -11248,6 +11459,7 @@ export const PAGES: readonly DocPage[] = [
       '新条目进来：排到该在的位置，新出现的那一行淡入；首次渲染不播。',
       '数值：百分数带正负号与涨跌色，金额写万 / 亿，取不到写「—」。',
       '给了 onSelect 行是按钮；selectedId 那一行高亮并标 aria-pressed。',
+      '给了 currentSymbol 顶栏多一个「只看当前品种」勾选：勾上只列这个品种的行，类型条数与总条数都按筛后的算；currentSymbol 换了，筛的对象跟着换。',
       '没有条目：写一行空态文字。',
     ],
     donts: [
@@ -11255,10 +11467,11 @@ export const PAGES: readonly DocPage[] = [
       '不要传色值：类型胶囊只靠 tone。',
       '不要在包里取数或轮询：条目由调用方推进来。',
     ],
-    composition: 'MoveFeed\n  顶栏（类型多选筛 · 总条数）\n  ul\n    li（时间 · 名称 + 代码 · 类型胶囊 · 数值）',
+    composition:
+      'MoveFeed\n  顶栏（类型多选筛 · 只看当前品种（可选）· 总条数）\n  ul\n    li（时间 · 名称 + 代码 · 类型胶囊 · 数值）',
     keys: [
       ['Tab', '到类型筛选按钮与行（给了 onSelect 时）'],
-      ['Enter / Space', '切换类型，或选中一行'],
+      ['Enter / Space', '切换类型、勾选「只看当前品种」，或选中一行'],
     ],
   },
   {
@@ -11628,7 +11841,7 @@ export const PAGES: readonly DocPage[] = [
     ],
     states: [
       '改价：点铅笔，价格格换成输入框并全选；Enter 提交（价格没变只关框），Esc 或失焦取消，非法输入标红。',
-      '撤单中：状态标签变警告色，撤单按钮置灰，没有铅笔。',
+      '撤单中：状态标签变警告色，撤单按钮进行中（Button pending：满 300ms 出转圈、再按无效、字与宽不变，不再置灰），没有铅笔。',
       '没传 onCancel / onAmend / onCancelAll 时对应控件不画；空表写 labels.empty。',
     ],
     donts: ['不要在件里等交易所回报：发出回调后由调用方改状态。', '不要做成点一下就提交的改价：回车才提交。'],
@@ -11691,6 +11904,78 @@ export const PAGES: readonly DocPage[] = [
     ],
     composition: 'FundingRate\n  Lcd × 3\n  历史小柱状图',
     keys: [],
+  },
+  {
+    id: 'derivatives-board',
+    group: 'blocks',
+    cardHeight: 520,
+    title: 'DerivativesBoard 交易数据看板',
+    summary:
+      '永续合约的「交易数据」（OKX 永续页，XartLab/KatanaUI#245）：六张卡的网格，每张自己的标题、信息提示与周期按钮。持仓量及成交量（成交量柱在左轴、持仓量线在右轴，两轴共用一套网格）、资金费率（柱按正负着色，零线居中，周期近 7 / 14 天）、主动买卖量（买入在零线上、卖出镜像在零线下）、多空账户比与精英多空趋向（多空 100% 堆叠柱，加多空比折线在右轴）、合约基差（上面合约价与指数价两条线，下面基差柱）。数据按卡由调用方给（时间戳加数值的序列），缺哪张就显示那张的空态，不画假数；没有数的点留缺口，不当零画。周期可受控（period）也可不受控（defaultPeriod），切换只发 onPeriodChange(kind, period)，换数据是调用方的事。悬停或 ← → 扫读出悬停窗。卡可以单独用：DerivativesCard 一个 kind 一张。文字走 labels（必填，包里不带语言；演示用的简体中文那份在 gallery/usage/derivatives-labels-zh.ts）。',
+    exports: [
+      'DerivativesBoard',
+      'DerivativesCard',
+      'DERIVATIVES_KINDS',
+      'DEFAULT_PERIODS',
+      'hasData',
+      'alignedAxes',
+      'symmetricAxis',
+      'longShare',
+      'longShortRatioOf',
+      'basisOf',
+      'signedBars',
+    ],
+    propParts: [
+      {
+        part: 'DerivativesBoard',
+        note: '渲染一个 section；data、periods、period、defaultPeriod 都按 kind 给。kinds 选画哪几张与次序。',
+      },
+      {
+        part: 'DerivativesCard',
+        note: 'kind 决定画法，data 的形状跟着 kind 走（见下面各点的类型）；onPeriodChange 带上 kind。',
+      },
+      {
+        part: 'DerivativesLabels',
+        note: '必填。卡名与信息提示、周期按钮的字、序列名、空态、读屏名与读数之间的分隔符（separator）；包里不带语言，整份由调用方传。',
+      },
+      { part: 'OpenInterestVolumePoint', note: '{ time, openInterest, volume }；缺的值写 null，留缺口。' },
+      { part: 'FundingRatePoint', note: '{ time, rate }；rate 是百分数，0.01 就是 0.01%。' },
+      { part: 'TakerVolumePoint', note: '{ time, buy, sell }；两个都是非负数，卖出由卡镜像到零线下。' },
+      { part: 'LongShortPoint', note: '{ time, long, short }；账户数或持仓量都行，只画比例，多空比是 long / short。' },
+      { part: 'BasisPoint', note: '{ time, contract, index }；基差是两者之差，有一个缺就没有基差柱。' },
+      { part: 'hasData(kind, points)', note: '纯函数：卡有没有东西可画；空、缺、全是缺失值都是没有。' },
+      {
+        part: 'alignedAxes(left, right, count, lockLeft)',
+        note: '纯函数：左右双轴取同样个数的刻度，右轴的字落在左轴的网格线上；lockLeft 时左轴不动（百分比轴不能长过 100）。',
+      },
+      { part: 'symmetricAxis(values, count)', note: '纯函数：以零为中心、盖住最大绝对值的轴，给带符号的柱用。' },
+      { part: 'longShare(point)', note: '纯函数：多头占比 0 到 1；缺值、负数或两边都是零给 null。' },
+      { part: 'longShortRatioOf(point)', note: '纯函数：多空比；空头不是正数给 null。' },
+      { part: 'basisOf(point)', note: '纯函数：合约价减指数价；缺一个给 null。' },
+      { part: 'signedBars(values)', note: '纯函数：带符号的柱：序号、值与方向；缺失值没有柱。' },
+      { part: 'DERIVATIVES_KINDS', note: '六种 kind，次序同 OKX。' },
+      { part: 'DEFAULT_PERIODS', note: '每种卡默认给的周期 id；字由 labels.periods 给。' },
+    ],
+    states: [
+      '周期：每张卡自己一组按钮，选中项高亮；资金费率默认近 7 / 14 天，别的卡 5 分钟 / 1 小时 / 1 天（待核对 OKX 的实际档位，用 periods 改）。',
+      '空态：没给 data、空序列、序列里全是缺失值，这张卡写 labels.empty，高度与有图时一样，别的卡不受影响。',
+      '缺值：折线断开、柱不画，不当零；悬停窗里写「—」。',
+      '悬停或 ← → 扫读：竖线加悬停窗，写时间与这一格各序列的值；Home / End 到头尾，Esc 清掉。',
+      '涨跌色：正资金费率、买入、多头、升水读 --pnl-up，反之读 --pnl-down，随 data-updown 互换；图例与悬停窗写字，不只靠颜色。',
+    ],
+    donts: [
+      '不要在件里取数或轮询：数据与周期由调用方按 onPeriodChange 换。',
+      '不要把缺失值补成 0：传 null。',
+      '不要拿它画单品种的 K 线：用图表包。',
+    ],
+    composition:
+      'DerivativesBoard\n  DerivativesCard × 6（article）\n    标题 · 信息钮（Tooltip）· 周期按钮（ToggleGroup）\n    图例\n    图（面板 × 1–2 · 左右轴 · 十字线与悬停窗 · 时间轴）或 空态',
+    keys: [
+      ['Tab', '到信息钮、周期按钮、图（图是一个停靠点）'],
+      ['← / →', '图上扫读一格；Shift 一次三格'],
+      ['Home / End', '图上到头尾'],
+      ['Esc', '清掉扫读'],
+    ],
   },
   {
     id: 'options-chain',

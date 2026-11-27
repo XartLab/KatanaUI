@@ -1,0 +1,50 @@
+/* SPDX-License-Identifier: MIT */
+/* 市场浏览器 MarketBrowser（#245，对 OKX 永续页的「市场」组件）。表的版式沿用 Watchlist 的 k-watch（theme/watchlist.css），这里只补外壳、分类页签的横向滚动与星标。颜色只读 characteristics。 */
+.k-market {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 8px;
+}
+/* 分类多了横向滚动，不换行也不挤掉页签；滚动条用全局的 4px 原生样式。 */
+.k-market-tabs {
+  max-width: 100%;
+  justify-content: flex-start;
+  overflow-x: auto;
+}
+.k-market-body {
+  min-height: 0;
+  overflow-y: auto;
+}
+/* 星标：16 见方的点击区、图标 14；常驻可见（不像 Watchlist 的旗标悬停才出），没星标是描边、有星标是实心主文字色。 */
+.k-market-star {
+  display: inline-grid;
+  width: 16px;
+  height: 16px;
+  flex: none;
+  padding: 0;
+  place-items: center;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--k-content-secondary-foreground);
+  cursor: pointer;
+}
+.k-market-star:hover {
+  color: var(--k-content-primary-foreground);
+}
+.k-market-star svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+}
+.k-market-star[aria-pressed='true'] {
+  color: var(--k-content-primary-foreground);
+}
+.k-market-star[aria-pressed='true'] svg {
+  fill: currentColor;
+}
+.k-market-list tbody tr.is-link:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}

@@ -20,9 +20,9 @@
   padding: var(--k-tagin-pad) 6px;
   background: var(--k-editable-background);
   border: 1px solid var(--k-editable-borderColor);
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   cursor: text;
-  transition: border-color 120ms;
+  transition: border-color var(--dur-hover) var(--ease-hover);
 }
 .k-tagin[data-size='sm'] .k-tagin-box {
   --k-tagin-pad: 3px;
@@ -39,9 +39,15 @@
 .k-tagin[data-invalid] .k-tagin-box {
   border-color: var(--k-status-danger-foreground);
 }
+/* 禁用：输入框与 × 淡到 0.45（原生 disabled，axe 不量）；标签上的字不用透明度（0.45 压到 3.6:1，axe #190），降一档到 body。 */
 .k-tagin[data-disabled] .k-tagin-box {
   cursor: not-allowed;
+}
+.k-tagin[data-disabled] :is(.k-tagin-input, .k-tagin-remove) {
   opacity: 0.45;
+}
+.k-tagin[data-disabled] .k-tagin-tag {
+  color: var(--k-content-body-foreground);
 }
 .k-tagin-tag {
   display: inline-flex;
@@ -69,6 +75,8 @@
 .k-tagin-text {
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 .k-tagin-remove {
   display: inline-flex;

@@ -114,6 +114,7 @@
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .k-json-hit {
   /* 命中的底：characteristics 里没有「查找命中」的用途变量，先读调色层的 25% 白（回报里列出）。 */
