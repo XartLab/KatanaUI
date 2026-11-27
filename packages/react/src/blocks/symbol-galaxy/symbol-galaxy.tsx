@@ -152,10 +152,14 @@ export function SymbolGalaxy({
     setActiveIn((prev) => ({ ...prev, [group]: next }))
   }
 
-  // 主题或涨跌配色一换，canvas 要重画：色例的色块是从 token 算出来的，监听根元素的属性。
+  // 主题或涨跌配色一换，canvas 要重画：色例的色块是从 token 算出来的。涨跌配色能在任意子树上切，所以连根下面的 data-updown 变化也听（subtree）。
   useEffect(() => {
     const observer = new MutationObserver(() => setTheme((n) => n + 1))
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'data-updown'] })
+    observer.observe(document.documentElement, {
+      attributes: true,
+      subtree: true,
+      attributeFilter: ['data-theme', 'data-updown'],
+    })
     return () => observer.disconnect()
   }, [])
 

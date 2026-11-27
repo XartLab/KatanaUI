@@ -158,10 +158,25 @@ describe('MatrixHeat 发散色阶跟 data-updown（#260）', () => {
     }
   })
 
-  it('tokens.css 在根上 data-updown="cn" 时把 --pnl-up 换成红、--pnl-down 换成绿；默认相反', () => {
-    const cn = /:root\[data-updown='cn'\]\s*\{([^}]*)\}/.exec(tokens)![1]!
+  it('tokens.css：data-updown 在任意元素上生效（cn 红涨、intl 切回），派生的涨跌语义 token 同块重声明', () => {
+    const block = (selector: string) => {
+      const start = tokens.indexOf(`${selector} {`)
+      expect(start, `${selector} 的块`).toBeGreaterThanOrEqual(0)
+      return tokens.slice(start, tokens.indexOf('}', start))
+    }
+    // 子树选择器：只认根（:root[data-updown]）的话，A 股看板与加密货币面板并排时没法各用各的。
+    const cn = block(":root [data-updown='cn']")
+    const intl = block(":root [data-updown='intl']")
     expect(cn).toMatch(/--pnl-up:\s*var\(--signal-red\)/)
     expect(cn).toMatch(/--pnl-down:\s*var\(--signal-green\)/)
+    expect(intl).toMatch(/--pnl-up:\s*var\(--signal-green\)/)
+    expect(intl).toMatch(/--pnl-down:\s*var\(--signal-red\)/)
+    // var() 在声明它的元素上算成定值再继承：派生 token 不在子树里重声明就还是根上的值。
+    for (const derived of ['--k-tone-up-foreground', '--k-tone-down-foreground', '--div-pos', '--div-neg']) {
+      expect(cn, `cn 块里的 ${derived}`).toContain(`${derived}:`)
+      expect(intl, `intl 块里的 ${derived}`).toContain(`${derived}:`)
+    }
+    // 根默认：绿涨。
     expect(/:root\s*\{[^}]*--pnl-up:\s*var\(--signal-green\)/.test(tokens)).toBe(true)
   })
 })

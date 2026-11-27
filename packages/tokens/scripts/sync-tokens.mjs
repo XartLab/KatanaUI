@@ -53,6 +53,9 @@ const THEMES = tokens.color.themes.map((theme) => theme.id).filter((id) => id !=
  * 「红涨绿跌」（#456、决策记录 0019）：data-updown="cn" 时互换的 token 对。每个主题各出一块（-100/-200 档是写死的色值，两个主题不一样），
  * 内容是把一对的值对调；引用型的（pnl-up → signal-green）对调后仍是引用，Graphite 的绿红跟着 Graphite 走。
  * 表示错误、危险的 signal-red 不在里面。
+ * 涨跌约定能在任意子树上切（A 股看板与加密货币面板并排，KATANAview #2164）：块的选择器认 [data-updown='cn'] / [data-updown='intl'] 这个元素本身，
+ * 而不只认根。自定义属性里的 var() 在声明它的元素上就算成定值再往下继承，所以光换 --pnl-up 不够：引用了这四对 token 的派生 token
+ * （--k-tone-up-foreground、--div-pos 这类，递归找）要在同一个块里重声明，才会按子树元素自己的 --pnl-up 重新算。
  */
 const UPDOWN_SWAPS = [
   ['pnl-up', 'pnl-down'],
@@ -87,13 +90,37 @@ const colorValue = (name, theme) => {
   if (!token) throw new Error(`src/tokens.json：UPDOWN_SWAPS 里的 ${name} 不存在`)
   return cssValue(token.value[theme])
 }
-const updown = Object.fromEntries([DEFAULT_THEME, ...THEMES].map((theme) => [theme, []]))
-for (const theme of Object.keys(updown)) {
+// 派生 token：值里引用了换色 token（或别的派生 token）的，递归找到不动点。分主题的值各主题都看一遍。
+const swapped = new Set(UPDOWN_SWAPS.flat())
+const everyToken = [...groups, tokens.foundation, tokens.characteristics].flatMap((group) => group.tokens)
+const derived = new Set()
+for (let grew = true; grew; ) {
+  grew = false
+  for (const token of everyToken) {
+    if (swapped.has(token.name) || derived.has(token.name)) continue
+    const values = token.value && typeof token.value === 'object' ? Object.values(token.value) : [token.value]
+    const refs = values.flatMap((value) => [...String(value).matchAll(/\{([^}]+)\}/g)].map((match) => match[1]))
+    if (!refs.some((name) => swapped.has(name) || derived.has(name))) continue
+    derived.add(token.name)
+    grew = true
+  }
+}
+const tokenValue = (token, theme) => cssValue(token.value && typeof token.value === 'object' ? token.value[theme] : token.value)
+const derivedLines = (theme) =>
+  everyToken.filter((token) => derived.has(token.name)).map((token) => `  --${token.name}: ${tokenValue(token, theme)};`)
+// cn：互换；intl：不互换（原样），用来在 cn 的根下面切回来。两种都带上派生 token。
+const updown = { cn: {}, intl: {} }
+for (const theme of [DEFAULT_THEME, ...THEMES]) {
+  updown.cn[theme] = []
+  updown.intl[theme] = []
   for (const [a, b] of UPDOWN_SWAPS) {
     const [va, vb] = [colorValue(a, theme), colorValue(b, theme)]
     if (va === vb) continue
-    updown[theme].push(`  --${a}: ${vb};`, `  --${b}: ${va};`)
+    updown.cn[theme].push(`  --${a}: ${vb};`, `  --${b}: ${va};`)
+    updown.intl[theme].push(`  --${a}: ${va};`, `  --${b}: ${vb};`)
   }
+  updown.cn[theme].push(...derivedLines(theme))
+  updown.intl[theme].push(...derivedLines(theme))
 }
 // 文字样式表：--text-<档> 是 font 简写的前三项（字重 字号/行高），组件写 font: var(--text-档) var(--font-角色)；
 // --text-<档>-size 给只要字号的地方（继承字重与行高的小件、画布取字号）；有字距的档另出 --text-<档>-tracking。
@@ -143,9 +170,13 @@ for (const theme of THEMES) {
     blocks.push(`:root[data-theme='${theme}'][data-transparency='reduced'] {\n${themed[theme].reduced.join('\n')}\n}`)
 }
 // 涨跌约定块放在主题块之后：选择器的权重相同，后写的赢。
-blocks.push(`:root[data-updown='cn'] {\n${updown[DEFAULT_THEME].join('\n')}\n}`)
-for (const theme of THEMES)
-  blocks.push(`:root[data-theme='${theme}'][data-updown='cn'] {\n${updown[theme].join('\n')}\n}`)
+// 选择器权重要与主题块相同或更高（0,2,0 起）：根上的 [data-updown] 与 :root[data-theme] 同权重，靠写在后面赢；子树上的元素是直接声明，本来就压过继承。
+// intl 在根上不用写（根默认就是不互换的），只在根下面的元素上写。
+for (const theme of [DEFAULT_THEME, ...THEMES]) {
+  const scope = theme === DEFAULT_THEME ? ':root' : `:root[data-theme='${theme}']`
+  blocks.push(`${scope}[data-updown='cn'],\n${scope} [data-updown='cn'] {\n${updown.cn[theme].join('\n')}\n}`)
+  blocks.push(`${scope} [data-updown='intl'] {\n${updown.intl[theme].join('\n')}\n}`)
+}
 const generated = `/* Generated from src/tokens.json + src/motion.tokens.json by scripts/sync-tokens.mjs. Do not edit. */\n${blocks.join('\n')}\n`
 let current = ''
 try {
