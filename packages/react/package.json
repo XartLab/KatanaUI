@@ -124,7 +124,7 @@
     "@a2ui/react": "0.15.0",
     "@a2ui/web_core": "0.15.0",
     "@antithesishq/bombadil": "0.8.0",
-    "@axe-core/playwright": "4.13.0",
+    "@axe-core/playwright": "4.14.1",
     "@chinese-fonts/dyh": "3.0.0",
     "@chinese-fonts/maple-mono-cn": "2.0.0",
     "@fontsource-variable/fira-code": "5.3.0",
