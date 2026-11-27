@@ -6878,22 +6878,28 @@
   font-weight: 500;
 }
 
-.k-rcal .k-cal-cell[data-selection-start], .k-rcal .k-cal-cell[data-selection-end] {
+.k-rcal .k-cal-cell[data-range-start], .k-rcal .k-cal-cell[data-range-end] {
   background: var(--k-selectable-bold-background-selected);
   color: var(--k-selectable-bold-foreground-selected);
   font-weight: 600;
 }
 
-.k-rcal .k-cal-cell[data-selection-start] {
+.k-rcal .k-cal-cell[data-range-start] {
   border-radius: var(--radius-control) 0 0 var(--radius-control);
 }
 
-.k-rcal .k-cal-cell[data-selection-end] {
+.k-rcal .k-cal-cell[data-range-end] {
   border-radius: 0 var(--radius-control) var(--radius-control) 0;
 }
 
-.k-rcal .k-cal-cell[data-selection-start][data-selection-end] {
+.k-rcal .k-cal-cell[data-range-start][data-range-end] {
   border-radius: var(--radius-control);
+}
+
+.k-rcal .k-cal-cell[data-preview]:not([data-range-start], [data-range-end]) {
+  background: var(--k-selectable-bold-background);
+  color: var(--k-content-primary-foreground);
+  border-radius: 0;
 }
 
 .k-tree {
@@ -6917,7 +6923,7 @@
 
 .k-tree-row {
   height: var(--row-base);
-  padding: 0 8px 0 calc(4px + var(--k-tree-level, 0) * 16px);
+  padding: 0 8px 0 calc(4px + (var(--tree-level, 1) - 1) * 16px);
   border-bottom: var(--hairline);
   -webkit-user-select: none;
   user-select: none;
@@ -6926,18 +6932,18 @@
   display: flex;
 }
 
-.k-tree-item[data-hovered] .k-tree-row {
+.k-tree-item:not([data-disabled]) > .k-tree-row:hover {
   background: var(--k-surface-overlay-background);
   color: var(--k-content-primary-foreground);
 }
 
-.k-tree-item[data-selected] .k-tree-row {
+.k-tree-row[data-selected] {
   background: var(--k-surface-sunken-background);
   box-shadow: inset 2px 0 0 var(--k-content-primary-foreground);
   color: var(--k-content-primary-foreground);
 }
 
-.k-tree-item[data-focus-visible] .k-tree-row {
+.k-tree-item:focus-visible > .k-tree-row {
   outline: 2px solid var(--focus-ring);
   outline-offset: -2px;
 }
@@ -7046,17 +7052,17 @@
   align-items: center;
   gap: var(--space-1);
   height: var(--row-tight);
-  padding: 0 6px 0 calc(2px + var(--k-json-level, 0) * 14px);
+  padding: 0 6px 0 calc(2px + (var(--tree-level, 1) - 1) * 14px);
   border-bottom: var(--hairline);
   white-space: nowrap;
   display: flex;
 }
 
-.k-json-item[data-hovered] .k-json-row {
+.k-json-row:hover {
   background: var(--k-surface-overlay-background);
 }
 
-.k-json-item[data-focus-visible] .k-json-row {
+.k-json-item:focus-visible > .k-json-row {
   outline: 2px solid var(--focus-ring);
   outline-offset: -2px;
 }
@@ -11427,7 +11433,7 @@ button.k-sysmon-link-body:focus-visible {
   display: inline-flex;
 }
 
-.k-dt-input[data-focus-within] {
+.k-dt-input:focus-within {
   border-color: var(--k-editable-borderColor-active);
 }
 
@@ -11442,16 +11448,31 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-dt-seg {
+  box-sizing: content-box;
+  field-sizing: content;
   border-radius: var(--radius-sm);
+  width: auto;
+  min-width: 1ch;
+  height: auto;
+  color: inherit;
+  caret-color: var(--ds-c-2xn4aw);
+  font: inherit;
+  text-align: center;
+  background: none;
+  border: 0;
   outline: 0;
   padding: 0 2px;
 }
 
-.k-dt-seg[data-placeholder] {
+.k-dt-seg::placeholder {
   color: var(--k-content-secondary-foreground);
 }
 
-.k-dt-seg[data-focused] {
+.k-dt-seg::selection {
+  background: none;
+}
+
+.k-dt-seg:focus {
   background: var(--k-focused-background);
   color: var(--k-content-primary-foreground);
 }
@@ -11512,13 +11533,14 @@ button.k-sysmon-link-body:focus-visible {
   display: grid;
 }
 
-.k-cal-nav[data-hovered] {
+.k-cal-nav:hover:not([data-disabled]) {
   background: var(--k-actionable-subtle-background-hover);
   color: var(--k-content-primary-foreground);
 }
 
 .k-cal-grid {
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
 .k-cal-grid th {
@@ -11528,19 +11550,21 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-cal-cell {
+  box-sizing: border-box;
   border-radius: var(--radius-control);
   width: 30px;
   height: 28px;
   color: var(--k-content-body-foreground);
   font-variant-numeric: tabular-nums;
+  text-align: center;
+  vertical-align: middle;
   cursor: pointer;
   outline: 0;
-  place-items: center;
-  display: grid;
+  padding: 0;
 }
 
-.k-cal-cell[data-outside-month] {
-  display: none;
+.k-cal-cell[data-outside] {
+  visibility: hidden;
 }
 
 .k-cal-cell[data-disabled], .k-cal-cell[data-unavailable] {
@@ -11548,11 +11572,11 @@ button.k-sysmon-link-body:focus-visible {
   cursor: default;
 }
 
-.k-cal-cell[data-hovered]:not([data-disabled]) {
+.k-cal-cell:hover:not([data-disabled]) {
   background: var(--k-actionable-subtle-background-hover);
 }
 
-.k-cal-cell[data-focus-visible] {
+.k-cal-cell:focus-visible {
   box-shadow: inset 0 0 0 2px var(--k-content-body-foreground);
 }
 
@@ -11560,6 +11584,11 @@ button.k-sysmon-link-body:focus-visible {
   background: var(--k-selectable-bold-background-selected);
   color: var(--k-selectable-bold-foreground-selected);
   font-weight: 600;
+}
+
+.k-dt-seg:placeholder-shown {
+  position: relative;
+  top: -1px;
 }
 
 .k-loading {
@@ -32904,7 +32933,7 @@ button.k-pill-main {
   padding: 4px;
 }
 
-.k-lb[data-focus-visible] {
+.k-lb:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
@@ -32948,7 +32977,7 @@ button.k-pill-main {
   display: flex;
 }
 
-.k-lb-item[data-hovered] {
+.k-lb-item:hover:not([data-disabled]) {
   background: var(--k-selectable-background-hover);
   color: var(--k-content-primary-foreground);
 }
@@ -32958,7 +32987,7 @@ button.k-pill-main {
   color: var(--k-content-primary-foreground);
 }
 
-.k-lb-item[data-focus-visible] {
+.k-lb-item:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: -2px;
 }
@@ -33013,6 +33042,8 @@ button.k-pill-main {
 .k-lb-check {
   opacity: 0;
   flex: none;
+  place-items: center;
+  display: inline-grid;
 }
 
 .k-lb-item[data-selected] .k-lb-check {
@@ -34075,7 +34106,6 @@ button.k-pill-main {
   --k-in-ease: initial;
   --k-in-scale: initial;
   --k-in-y: initial;
-  --k-json-level: initial;
   --k-len: initial;
   --k-live-mix: initial;
   --k-rct-depth: initial;
@@ -34093,7 +34123,6 @@ button.k-pill-main {
   --k-threshold: initial;
   --k-ticker-duration: initial;
   --k-trail-h: initial;
-  --k-tree-level: initial;
   --k-tw-depth: initial;
   --k-weight-adjust: initial;
   --k-zh-measure: initial;
@@ -34132,6 +34161,7 @@ button.k-pill-main {
   --skullet-highlight: initial;
   --stage-t: initial;
   --tl-cols: initial;
+  --tree-level: initial;
   --xy-background-color-props: initial;
   --xy-background-pattern-color-props: initial;
   --xy-minimap-background-color-props: initial;

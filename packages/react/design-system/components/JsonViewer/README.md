@@ -8,7 +8,7 @@
 
 ### JsonViewer
 
-底座是 react-aria-components 的 Tree（角色 treegrid）。value 换了，展开状态重来。不是 JSON 的值（undefined、日期、bigint、循环引用）不抛错：画成看得见的字。
+底座是 UI SDK 的 Tree（角色 tree）。value 换了，展开状态重来。不是 JSON 的值（undefined、日期、bigint、循环引用）不抛错：画成看得见的字。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
@@ -88,7 +88,7 @@ export function JsonViewerUsage() {
 ```
 JsonViewer
   label > input[type=search] + span[role=status]
-  Tree（react-aria）
+  Tree（UI SDK）
     TreeItem × n（递归）：箭头、键名、概要或值
 ```
 

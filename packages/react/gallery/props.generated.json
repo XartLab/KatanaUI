@@ -14156,7 +14156,7 @@
           "name": "locale",
           "type": "string",
           "required": true,
-          "description": "给 react-aria 的语言（日期各段的顺序）：中文界面 zh-CN，英文界面 en-CA。"
+          "description": "给日期各段与日历的语言（顺序）：中文界面 zh-CN，英文界面 en-CA。"
         },
         {
           "name": "className",
@@ -14222,7 +14222,7 @@
           "name": "locale",
           "type": "string",
           "required": true,
-          "description": "给 react-aria 的语言（日期各段的顺序）：中文界面 zh-CN，英文界面 en-CA。"
+          "description": "给日期各段与日历的语言（顺序）：中文界面 zh-CN，英文界面 en-CA。"
         },
         {
           "name": "className",
@@ -14313,7 +14313,7 @@
           "name": "locale",
           "type": "string",
           "required": true,
-          "description": "Locale for react-aria: zh-CN or en-CA, both year-month-day."
+          "description": "Locale for the date and time segments: zh-CN or en-CA, both year-month-day."
         }
       ]
     },
@@ -14397,7 +14397,7 @@
           "name": "locale",
           "type": "string",
           "required": true,
-          "description": "Locale for react-aria: zh-CN or en-CA, both year-month-day."
+          "description": "Locale for the date and time segments: zh-CN or en-CA, both year-month-day."
         }
       ]
     },
@@ -62816,7 +62816,7 @@
           "type": "string",
           "required": false,
           "default": "'zh-CN'",
-          "description": "Locale for react-aria (month names, week start): zh-CN by default."
+          "description": "Locale for month names and week start: zh-CN by default."
         },
         {
           "name": "className",
@@ -62924,7 +62924,7 @@
           "name": "locale",
           "type": "string",
           "required": false,
-          "description": "Locale for react-aria (month names, week start): zh-CN by default."
+          "description": "Locale for month names and week start: zh-CN by default."
         },
         {
           "name": "className",
