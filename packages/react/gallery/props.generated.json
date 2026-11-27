@@ -1,6 +1,16 @@
 {
   "$comment": "生成文件（pnpm docs:props）：各导出的自有 props，取自 TS 类型与 JSDoc，不手改。继承来的 DOM / Radix 属性不列。",
   "exports": {
+    "ACTIVITY_LEVELS": {
+      "kind": "value",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": []
+    },
+    "ACTIVITY_PAGE_WEEKS": {
+      "kind": "value",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": []
+    },
     "ARCADE_SPRITES": {
       "kind": "value",
       "source": "src/katana/arcade-pixel-sprites.ts",
@@ -267,6 +277,259 @@
           "type": "AccountEquityLabels",
           "required": true,
           "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "ActivityCell": {
+      "kind": "type",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": [
+        {
+          "name": "date",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "count",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "level",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "col",
+          "type": "number",
+          "required": true,
+          "description": "在第几周（列）、星期几（行），都从 0 起。"
+        },
+        {
+          "name": "row",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "ActivityGridModel": {
+      "kind": "type",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": [
+        {
+          "name": "cols",
+          "type": "number",
+          "required": true,
+          "description": "几周（列）。"
+        },
+        {
+          "name": "rows",
+          "type": "readonly (readonly ActivityCell[])[]",
+          "required": true,
+          "description": "先按行（星期）再按列（周）排好，跟 role=grid 的读序一致。"
+        },
+        {
+          "name": "cells",
+          "type": "readonly ActivityCell[]",
+          "required": true,
+          "description": "按日期从旧到新。"
+        },
+        {
+          "name": "months",
+          "type": "readonly { col: number; month: number }[]",
+          "required": true,
+          "description": "每个月第一天所在的列（含区间起点那一列），月份从 0 起（一月是 0）。"
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": true,
+          "description": "区间里单日最大的次数（固定上限时是那个上限）。"
+        },
+        {
+          "name": "cuts",
+          "type": "readonly number[]",
+          "required": true,
+          "description": "分位数模式的切点；给了固定 max 走线性档位时是空数组。"
+        }
+      ]
+    },
+    "AgentActivity": {
+      "kind": "component",
+      "source": "src/blocks/agent-drawer/agent-activity.tsx",
+      "props": [
+        {
+          "name": "days",
+          "type": "readonly AgentActivityDay[]",
+          "required": true,
+          "description": "Runs per day; days that are missing count as no runs."
+        },
+        {
+          "name": "from",
+          "type": "string",
+          "required": false,
+          "description": "First day shown (YYYY-MM-DD); defaults to the earliest day in days."
+        },
+        {
+          "name": "to",
+          "type": "string",
+          "required": false,
+          "description": "Last day shown (YYYY-MM-DD); defaults to the latest day in days."
+        },
+        {
+          "name": "weekStart",
+          "type": "0 | 1",
+          "required": false,
+          "default": "1",
+          "description": "Which weekday a column starts on (0 Sunday, 1 Monday)."
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "description": "Count that fills the top shade."
+        },
+        {
+          "name": "monthLabels",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Twelve month names, January first; written above the first column of each month."
+        },
+        {
+          "name": "weekdayLabels",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Seven weekday names indexed like JavaScript (0 is Sunday); written for Monday, Wednesday and Friday, and used as each row's accessible name."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the grid."
+        },
+        {
+          "name": "describe",
+          "type": "(cell: { date: string; count: number }) => string",
+          "required": true,
+          "description": "The whole sentence for one day, read by screen readers and written in the readout line (\"11-03 ran 12 times\")."
+        },
+        {
+          "name": "legend",
+          "type": "{ less: string; more: string }",
+          "required": false,
+          "description": "Legend ends; without it no legend is drawn."
+        },
+        {
+          "name": "idle",
+          "type": "ReactNode",
+          "required": false,
+          "description": "What the readout line says when no cell is hovered or focused (a total, say)."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "AgentActivityDay": {
+      "kind": "type",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": [
+        {
+          "name": "date",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "count",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "AgentActivityProps": {
+      "kind": "type",
+      "source": "src/blocks/agent-drawer/agent-activity.tsx",
+      "props": [
+        {
+          "name": "days",
+          "type": "readonly AgentActivityDay[]",
+          "required": true,
+          "description": "Runs per day; days that are missing count as no runs."
+        },
+        {
+          "name": "from",
+          "type": "string",
+          "required": false,
+          "description": "First day shown (YYYY-MM-DD); defaults to the earliest day in days."
+        },
+        {
+          "name": "to",
+          "type": "string",
+          "required": false,
+          "description": "Last day shown (YYYY-MM-DD); defaults to the latest day in days."
+        },
+        {
+          "name": "weekStart",
+          "type": "0 | 1",
+          "required": false,
+          "description": "Which weekday a column starts on (0 Sunday, 1 Monday)."
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "description": "Count that fills the top shade."
+        },
+        {
+          "name": "monthLabels",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Twelve month names, January first; written above the first column of each month."
+        },
+        {
+          "name": "weekdayLabels",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Seven weekday names indexed like JavaScript (0 is Sunday); written for Monday, Wednesday and Friday, and used as each row's accessible name."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the grid."
+        },
+        {
+          "name": "describe",
+          "type": "(cell: { date: string; count: number }) => string",
+          "required": true,
+          "description": "The whole sentence for one day, read by screen readers and written in the readout line (\"11-03 ran 12 times\")."
+        },
+        {
+          "name": "legend",
+          "type": "{ less: string; more: string }",
+          "required": false,
+          "description": "Legend ends; without it no legend is drawn."
+        },
+        {
+          "name": "idle",
+          "type": "ReactNode",
+          "required": false,
+          "description": "What the readout line says when no cell is hovered or focused (a total, say)."
         },
         {
           "name": "className",
@@ -656,6 +919,372 @@
           "description": "Extra class name on the root."
         }
       ]
+    },
+    "AgentDrawer": {
+      "kind": "component",
+      "source": "src/blocks/agent-drawer/agent-drawer.tsx",
+      "props": [
+        {
+          "name": "name",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Agent name."
+        },
+        {
+          "name": "description",
+          "type": "ReactNode",
+          "required": false,
+          "description": "One line about it."
+        },
+        {
+          "name": "status",
+          "type": "AgentStatus",
+          "required": true,
+          "description": "Whether the agent is running, paused or disabled."
+        },
+        {
+          "name": "tags",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Tags, as text."
+        },
+        {
+          "name": "trigger",
+          "type": "{ kind: AgentTrigger; detail?: string }",
+          "required": true,
+          "description": "How it starts; detail is the schedule or the rule (\"weekdays 08:30\")."
+        },
+        {
+          "name": "owner",
+          "type": "{ name: string; avatar?: string; initials?: string }",
+          "required": true,
+          "description": "Who is responsible."
+        },
+        {
+          "name": "created",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Creation date, formatted by the caller."
+        },
+        {
+          "name": "metrics",
+          "type": "readonly AgentMetric[]",
+          "required": false,
+          "description": "Metric cards at the top of the usage page."
+        },
+        {
+          "name": "activity",
+          "type": "Pick< AgentActivityProps, 'days' | 'from' | 'to' | 'weekStart' | 'max' | 'monthLabels' | 'weekdayLabels' | 'describe' | 'idle' >",
+          "required": true,
+          "description": "Activity grid data and sentence writer; see AgentActivity."
+        },
+        {
+          "name": "runs",
+          "type": "readonly AgentRecentRun[]",
+          "required": true,
+          "description": "Recent runs, newest first."
+        },
+        {
+          "name": "onOpenRun",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called with the run id when a row is clicked or gets Enter; without it the rows are plain text."
+        },
+        {
+          "name": "formatTime",
+          "type": "(at: number) => string",
+          "required": true,
+          "description": "How a run's start is written (\"6m ago\"); the component does not read the clock."
+        },
+        {
+          "name": "formatDuration",
+          "type": "(ms: number) => string",
+          "required": true,
+          "description": "How a duration in milliseconds is written."
+        },
+        {
+          "name": "configure",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Content of the Configure tab; without it there is no such tab."
+        },
+        {
+          "name": "history",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Content of the History tab; without it there is no such tab."
+        },
+        {
+          "name": "tab",
+          "type": "AgentDrawerTab",
+          "required": false,
+          "description": "Current tab (controlled)."
+        },
+        {
+          "name": "defaultTab",
+          "type": "AgentDrawerTab",
+          "required": false,
+          "default": "'usage'",
+          "description": "Tab at first (uncontrolled); defaults to usage."
+        },
+        {
+          "name": "onTabChange",
+          "type": "(tab: AgentDrawerTab) => void",
+          "required": false,
+          "description": "Called when the tab changes."
+        },
+        {
+          "name": "footer",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Actions pinned at the bottom (notify me, pause agent); the component runs none of them."
+        },
+        {
+          "name": "renderTitle",
+          "type": "(props: { className: string; children: ReactNode }) => ReactNode",
+          "required": false,
+          "description": "Writes the title element; inside a Sheet pass `(props) => <SheetTitle {...props} />` so the dialog is named by it."
+        },
+        {
+          "name": "renderDescription",
+          "type": "(props: { className: string; children: ReactNode }) => ReactNode",
+          "required": false,
+          "description": "Writes the description element; inside a Sheet pass `(props) => <SheetDescription {...props} />`."
+        },
+        {
+          "name": "labels",
+          "type": "AgentDrawerLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "AgentDrawerLabels": {
+      "kind": "type",
+      "source": "src/blocks/agent-drawer/agent-drawer.tsx",
+      "props": [
+        {
+          "name": "properties",
+          "type": "{ status: string; tags: string; trigger: string; owner: string; created: string }",
+          "required": true,
+          "description": "Names of the properties."
+        },
+        {
+          "name": "statuses",
+          "type": "Record<AgentStatus, string>",
+          "required": true,
+          "description": "The three statuses as words."
+        },
+        {
+          "name": "triggers",
+          "type": "Record<AgentTrigger, string>",
+          "required": true,
+          "description": "The four triggers as words."
+        },
+        {
+          "name": "results",
+          "type": "Record<AgentRunResult, string>",
+          "required": true,
+          "description": "The four run results as words."
+        },
+        {
+          "name": "tabs",
+          "type": "{ list: string; usage: string; configure: string; history: string }",
+          "required": true,
+          "description": "Tab names and the accessible name of the tab list."
+        },
+        {
+          "name": "activity",
+          "type": "string",
+          "required": true,
+          "description": "Heading above the activity grid."
+        },
+        {
+          "name": "activityGrid",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the activity grid."
+        },
+        {
+          "name": "legend",
+          "type": "{ less: string; more: string }",
+          "required": true,
+          "description": "Ends of the activity legend."
+        },
+        {
+          "name": "recentRuns",
+          "type": "string",
+          "required": true,
+          "description": "Heading above the recent runs."
+        },
+        {
+          "name": "noRuns",
+          "type": "string",
+          "required": true,
+          "description": "Line when there are no runs."
+        },
+        {
+          "name": "metrics",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the metric cards."
+        }
+      ]
+    },
+    "AgentDrawerProps": {
+      "kind": "type",
+      "source": "src/blocks/agent-drawer/agent-drawer.tsx",
+      "props": [
+        {
+          "name": "name",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Agent name."
+        },
+        {
+          "name": "description",
+          "type": "ReactNode",
+          "required": false,
+          "description": "One line about it."
+        },
+        {
+          "name": "status",
+          "type": "AgentStatus",
+          "required": true,
+          "description": "Whether the agent is running, paused or disabled."
+        },
+        {
+          "name": "tags",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Tags, as text."
+        },
+        {
+          "name": "trigger",
+          "type": "{ kind: AgentTrigger; detail?: string }",
+          "required": true,
+          "description": "How it starts; detail is the schedule or the rule (\"weekdays 08:30\")."
+        },
+        {
+          "name": "owner",
+          "type": "{ name: string; avatar?: string; initials?: string }",
+          "required": true,
+          "description": "Who is responsible."
+        },
+        {
+          "name": "created",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Creation date, formatted by the caller."
+        },
+        {
+          "name": "metrics",
+          "type": "readonly AgentMetric[]",
+          "required": false,
+          "description": "Metric cards at the top of the usage page."
+        },
+        {
+          "name": "activity",
+          "type": "Pick< AgentActivityProps, 'days' | 'from' | 'to' | 'weekStart' | 'max' | 'monthLabels' | 'weekdayLabels' | 'describe' | 'idle' >",
+          "required": true,
+          "description": "Activity grid data and sentence writer; see AgentActivity."
+        },
+        {
+          "name": "runs",
+          "type": "readonly AgentRecentRun[]",
+          "required": true,
+          "description": "Recent runs, newest first."
+        },
+        {
+          "name": "onOpenRun",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called with the run id when a row is clicked or gets Enter; without it the rows are plain text."
+        },
+        {
+          "name": "formatTime",
+          "type": "(at: number) => string",
+          "required": true,
+          "description": "How a run's start is written (\"6m ago\"); the component does not read the clock."
+        },
+        {
+          "name": "formatDuration",
+          "type": "(ms: number) => string",
+          "required": true,
+          "description": "How a duration in milliseconds is written."
+        },
+        {
+          "name": "configure",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Content of the Configure tab; without it there is no such tab."
+        },
+        {
+          "name": "history",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Content of the History tab; without it there is no such tab."
+        },
+        {
+          "name": "tab",
+          "type": "AgentDrawerTab",
+          "required": false,
+          "description": "Current tab (controlled)."
+        },
+        {
+          "name": "defaultTab",
+          "type": "AgentDrawerTab",
+          "required": false,
+          "description": "Tab at first (uncontrolled); defaults to usage."
+        },
+        {
+          "name": "onTabChange",
+          "type": "(tab: AgentDrawerTab) => void",
+          "required": false,
+          "description": "Called when the tab changes."
+        },
+        {
+          "name": "footer",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Actions pinned at the bottom (notify me, pause agent); the component runs none of them."
+        },
+        {
+          "name": "renderTitle",
+          "type": "(props: { className: string; children: ReactNode }) => ReactNode",
+          "required": false,
+          "description": "Writes the title element; inside a Sheet pass `(props) => <SheetTitle {...props} />` so the dialog is named by it."
+        },
+        {
+          "name": "renderDescription",
+          "type": "(props: { className: string; children: ReactNode }) => ReactNode",
+          "required": false,
+          "description": "Writes the description element; inside a Sheet pass `(props) => <SheetDescription {...props} />`."
+        },
+        {
+          "name": "labels",
+          "type": "AgentDrawerLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "AgentDrawerTab": {
+      "kind": "type",
+      "source": "src/blocks/agent-drawer/agent-drawer.tsx",
+      "props": []
     },
     "AgentFleet": {
       "kind": "component",
@@ -1111,6 +1740,48 @@
           "type": "string",
           "required": false,
           "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "AgentMetric": {
+      "kind": "type",
+      "source": "src/blocks/agent-drawer/agent-drawer.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Value as text, formatted by the caller (\"155\")."
+        },
+        {
+          "name": "unit",
+          "type": "string",
+          "required": false,
+          "description": "Small text after the value (\"hours\")."
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Icon before the label; decorative."
+        },
+        {
+          "name": "delta",
+          "type": "{ text: string; tone: Severity }",
+          "required": false,
+          "description": "Change versus the last period, written by the caller (\"+8%\"), with the tone it should wear (more time saved is ok, more cost is warn)."
         }
       ]
     },
@@ -1763,6 +2434,48 @@
         }
       ]
     },
+    "AgentRecentRun": {
+      "kind": "type",
+      "source": "src/blocks/agent-drawer/agent-drawer.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "actor",
+          "type": "string",
+          "required": true,
+          "description": "Who or what started it: a person's name, or the source (\"price breakout\")."
+        },
+        {
+          "name": "trigger",
+          "type": "AgentTrigger",
+          "required": false,
+          "description": "How it started; shows the trigger's icon before the name."
+        },
+        {
+          "name": "result",
+          "type": "AgentRunResult",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "startedAt",
+          "type": "number",
+          "required": true,
+          "description": "Start time in milliseconds; written by formatTime."
+        },
+        {
+          "name": "durationMs",
+          "type": "number",
+          "required": false,
+          "description": "How long it took in milliseconds; a run still going has none."
+        }
+      ]
+    },
     "AgentResolution": {
       "kind": "type",
       "source": "src/blocks/agent-tree/agent-tree-model.ts",
@@ -1876,6 +2589,11 @@
         }
       ]
     },
+    "AgentRunResult": {
+      "kind": "type",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": []
+    },
     "AgentRunStatus": {
       "kind": "type",
       "source": "src/blocks/agent-tree/agent-tree-model.ts",
@@ -1910,6 +2628,16 @@
           "description": "Duration in milliseconds."
         }
       ]
+    },
+    "AgentStatus": {
+      "kind": "type",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": []
+    },
+    "AgentTone": {
+      "kind": "type",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": []
     },
     "AgentTotals": {
       "kind": "type",
@@ -2193,6 +2921,11 @@
           "description": "Extra class name on the root."
         }
       ]
+    },
+    "AgentTrigger": {
+      "kind": "type",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": []
     },
     "AiApproval": {
       "kind": "component",
@@ -66592,6 +67325,61 @@
       "source": "src/blocks/data-grid/layout-model.ts",
       "props": []
     },
+    "activityCuts": {
+      "kind": "function",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": []
+    },
+    "activityGrid": {
+      "kind": "function",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": [
+        {
+          "name": "from",
+          "type": "string",
+          "required": false,
+          "description": "First day (YYYY-MM-DD); defaults to the earliest day in days."
+        },
+        {
+          "name": "to",
+          "type": "string",
+          "required": false,
+          "description": "Last day (YYYY-MM-DD); defaults to the latest day in days."
+        },
+        {
+          "name": "weekStart",
+          "type": "0 | 1",
+          "required": false,
+          "description": "Which weekday a column starts on (0 Sunday, 1 Monday)."
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "description": "Count that fills the top shade; defaults to the largest day in range."
+        }
+      ]
+    },
+    "activityLevel": {
+      "kind": "function",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": []
+    },
+    "activityLevelByCuts": {
+      "kind": "function",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": []
+    },
+    "activityMax": {
+      "kind": "function",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": []
+    },
+    "activityTotal": {
+      "kind": "function",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": []
+    },
     "agentElapsed": {
       "kind": "function",
       "source": "src/blocks/agent-tree/agent-tree-model.ts",
@@ -66609,6 +67397,11 @@
           "description": "Start in milliseconds."
         }
       ]
+    },
+    "agentStatusTone": {
+      "kind": "function",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": []
     },
     "agentTag": {
       "kind": "function",
@@ -68347,6 +69140,11 @@
       "source": "src/blocks/symbol-galaxy/galaxy-model.ts",
       "props": []
     },
+    "initialsOf": {
+      "kind": "function",
+      "source": "src/blocks/agent-drawer/agent-drawer.tsx",
+      "props": []
+    },
     "inputVariants": {
       "kind": "function",
       "source": "src/primitives/input.tsx",
@@ -69049,6 +69847,11 @@
       "source": "src/motion/text/text-morph.tsx",
       "props": []
     },
+    "moveActivity": {
+      "kind": "function",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": []
+    },
     "moveCause": {
       "kind": "function",
       "source": "src/blocks/root-cause-tree/root-cause-model.ts",
@@ -69491,6 +70294,11 @@
       "source": "src/patterns/command-palette.tsx",
       "props": []
     },
+    "recentFrom": {
+      "kind": "function",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": []
+    },
     "relativeChange": {
       "kind": "function",
       "source": "src/quant/experiment-model.ts",
@@ -69645,6 +70453,11 @@
           "description": "Change as a percentage (1.5 means 1.5%)."
         }
       ]
+    },
+    "runResultTone": {
+      "kind": "function",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": []
     },
     "runningCounts": {
       "kind": "function",

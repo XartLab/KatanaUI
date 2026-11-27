@@ -204,7 +204,7 @@
   min-width: 0;
   padding: var(--space-3);
   border: 1px solid var(--k-separable-secondary-borderColor);
-  border-radius: 8px;
+  border-radius: var(--radius-overlay);
   background: var(--k-container-secondary-background);
 }
 .k-ad-metric-head {
@@ -245,7 +245,7 @@
   min-width: 0;
   padding: var(--space-3);
   border: 1px solid var(--k-separable-secondary-borderColor);
-  border-radius: 8px;
+  border-radius: var(--radius-overlay);
   background: var(--k-container-secondary-background);
 }
 .k-ad-scroller {
@@ -363,7 +363,7 @@
   padding: 0;
   list-style: none;
   border: 1px solid var(--k-separable-secondary-borderColor);
-  border-radius: 8px;
+  border-radius: var(--radius-overlay);
   background: var(--k-container-secondary-background);
   overflow: hidden;
 }
@@ -431,7 +431,7 @@
   margin: 0;
   padding: var(--space-3);
   border: 1px dashed var(--k-separable-secondary-borderColor);
-  border-radius: 8px;
+  border-radius: var(--radius-overlay);
   color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
