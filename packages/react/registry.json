@@ -1641,7 +1641,7 @@
       "name": "cascade-model",
       "type": "registry:ui",
       "title": "Cascade Model",
-      "description": "CommandDialog 加「最近」分组：选过的命令放最前（去重、最多 5 条），没输入时显示；记录可受控、存 localStorage 或只在页内存。照 TradingView 的 Ctrl/Cmd+K 快速搜索。",
+      "description": "CommandDialog 加「最近」分组：选过的命令放最前（去重、最多 5 条），没输入时显示；记录可受控、存 localStorage 或只在页内存。照 TradingView 的 Ctrl/Cmd+K 快速搜索。行可带灰色说明与「2 步」这类徽标；命令声明 steps 后，选中它面板不关、进步骤页（头部句子、多选清单、脚栏），交互借 Jamie Merrill 的 Command menu。",
       "files": [
         {
           "path": "src/primitives/cascade-model.ts",
@@ -3623,9 +3623,12 @@
       "name": "command-palette",
       "type": "registry:component",
       "title": "Command Palette",
-      "description": "CommandDialog 加「最近」分组：选过的命令放最前（去重、最多 5 条），没输入时显示；记录可受控、存 localStorage 或只在页内存。照 TradingView 的 Ctrl/Cmd+K 快速搜索。",
+      "description": "CommandDialog 加「最近」分组：选过的命令放最前（去重、最多 5 条），没输入时显示；记录可受控、存 localStorage 或只在页内存。照 TradingView 的 Ctrl/Cmd+K 快速搜索。行可带灰色说明与「2 步」这类徽标；命令声明 steps 后，选中它面板不关、进步骤页（头部句子、多选清单、脚栏），交互借 Jamie Merrill 的 Command menu。",
       "registryDependencies": [
         "@katana/command",
+        "@katana/command-steps",
+        "@katana/command-steps-model",
+        "@katana/tag",
         "@katana/use-persisted-state"
       ],
       "files": [
@@ -3633,6 +3636,42 @@
           "path": "src/patterns/command-palette.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/command-palette.tsx"
+        }
+      ]
+    },
+    {
+      "name": "command-steps-model",
+      "type": "registry:lib",
+      "title": "Command Steps Model",
+      "description": "CommandPalette 多步命令的纯逻辑：按输入筛选选项、勾选与全选三态、头部标签折叠、步骤退一步时选择怎么清。",
+      "files": [
+        {
+          "path": "src/patterns/command-steps-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/patterns/command-steps-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "command-steps",
+      "type": "registry:component",
+      "title": "Command Steps",
+      "description": "CommandPalette 的步骤页：头部句子（命令名加已选标签）、筛选框、多选清单（role=checkbox，全选三态）或调用方的内容、脚栏（已选数、返回、主操作）。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/command-steps-model",
+        "@katana/menu-parts",
+        "@katana/tag"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/command-steps.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/command-steps.tsx"
         }
       ]
     },

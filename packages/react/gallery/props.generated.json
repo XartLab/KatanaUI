@@ -10576,6 +10576,12 @@
           "required": false,
           "default": "5",
           "description": "How many recent commands to keep and show."
+        },
+        {
+          "name": "onRun",
+          "type": "(commandId: string, selections: StepSelections) => void",
+          "required": false,
+          "description": "Called when the primary button of the last step is pressed, with the command id and the chosen ids per step id; the palette closes after it."
         }
       ]
     },
@@ -10618,6 +10624,12 @@
           "type": "string",
           "required": false,
           "description": "Heading of commands without a group; defaults to none."
+        },
+        {
+          "name": "steps",
+          "type": "Partial<CommandStepsLabels>",
+          "required": false,
+          "description": "Texts of the step pages (badge, count, buttons); English fallbacks for any left out."
         }
       ]
     },
@@ -10672,6 +10684,12 @@
           "type": "number",
           "required": false,
           "description": "How many recent commands to keep and show."
+        },
+        {
+          "name": "onRun",
+          "type": "(commandId: string, selections: StepSelections) => void",
+          "required": false,
+          "description": "Called when the primary button of the last step is pressed, with the command id and the chosen ids per step id; the palette closes after it."
         }
       ]
     },
@@ -10692,6 +10710,54 @@
       "kind": "component",
       "source": "src/primitives/command.tsx",
       "props": []
+    },
+    "CommandStepsLabels": {
+      "kind": "type",
+      "source": "src/patterns/command-steps.tsx",
+      "props": [
+        {
+          "name": "steps",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": "Badge on a command row: \"2 steps\"."
+        },
+        {
+          "name": "selected",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": "Left of the footer: \"2 selected\"."
+        },
+        {
+          "name": "stepOf",
+          "type": "(step: number, total: number, heading?: string) => string",
+          "required": true,
+          "description": "Read out when the step changes: \"Step 2 of 3: Select fields\"."
+        },
+        {
+          "name": "back",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "next",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "run",
+          "type": "string",
+          "required": true,
+          "description": "Primary button on the last step."
+        },
+        {
+          "name": "selectAll",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
     },
     "CompactFormat": {
       "kind": "type",
@@ -37723,6 +37789,66 @@
         }
       ]
     },
+    "PaletteChecklistStep": {
+      "kind": "type",
+      "source": "src/patterns/command-steps.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Key of this step in the selections passed to onRun."
+        },
+        {
+          "name": "joiner",
+          "type": "string",
+          "required": false,
+          "description": "Word before this step's tags in the header sentence (for example \"in\", \"for\"); written by the caller."
+        },
+        {
+          "name": "heading",
+          "type": "string",
+          "required": false,
+          "description": "Heading above the list of this step."
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false,
+          "description": "Placeholder of the filter box on this step; defaults to the palette's."
+        },
+        {
+          "name": "actionLabel",
+          "type": "string",
+          "required": false,
+          "description": "Text of the primary button on this step; defaults to \"Next\" (or the run text on the last step)."
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether the primary button needs at least one selection."
+        },
+        {
+          "name": "kind",
+          "type": "'checklist'",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "options",
+          "type": "readonly PaletteOption[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "selectAllLabel",
+          "type": "string",
+          "required": false,
+          "description": "Text of the select-all row; defaults to the palette's labels."
+        }
+      ]
+    },
     "PaletteCommand": {
       "kind": "type",
       "source": "src/patterns/command-palette.tsx",
@@ -37764,6 +37890,30 @@
           "description": ""
         },
         {
+          "name": "description",
+          "type": "string",
+          "required": false,
+          "description": "Gray text after the label (plain text is also searched)."
+        },
+        {
+          "name": "meta",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Small badge after the label, for example \"2 steps\"; commands with steps get labels.steps(count) when this is not given."
+        },
+        {
+          "name": "steps",
+          "type": "readonly PaletteStep[]",
+          "required": false,
+          "description": "Steps to walk through before running: selecting the command opens the first step instead of closing the palette."
+        },
+        {
+          "name": "runLabel",
+          "type": "string",
+          "required": false,
+          "description": "Text of the primary button on the last step; defaults to labels.steps.run."
+        },
+        {
           "name": "disabled",
           "type": "boolean",
           "required": false,
@@ -37772,10 +37922,111 @@
         {
           "name": "onSelect",
           "type": "() => void",
+          "required": false,
+          "description": "Called when the command is selected; not used for commands with steps (see onRun on the palette)."
+        }
+      ]
+    },
+    "PaletteCustomStep": {
+      "kind": "type",
+      "source": "src/patterns/command-steps.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Key of this step in the selections passed to onRun."
+        },
+        {
+          "name": "joiner",
+          "type": "string",
+          "required": false,
+          "description": "Word before this step's tags in the header sentence (for example \"in\", \"for\"); written by the caller."
+        },
+        {
+          "name": "heading",
+          "type": "string",
+          "required": false,
+          "description": "Heading above the list of this step."
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false,
+          "description": "Placeholder of the filter box on this step; defaults to the palette's."
+        },
+        {
+          "name": "actionLabel",
+          "type": "string",
+          "required": false,
+          "description": "Text of the primary button on this step; defaults to \"Next\" (or the run text on the last step)."
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether the primary button needs at least one selection."
+        },
+        {
+          "name": "kind",
+          "type": "'custom'",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "tags",
+          "type": "(selected: readonly string[]) => string[]",
+          "required": false,
+          "description": "Header tags for the chosen ids; defaults to the ids themselves."
+        },
+        {
+          "name": "render",
+          "type": "(context: { selected: readonly string[] onSelectedChange: (next: readonly string[]) => void /** What is typed in the filter box. */ search: string }) => ReactNode",
           "required": true,
           "description": ""
         }
       ]
+    },
+    "PaletteOption": {
+      "kind": "type",
+      "source": "src/patterns/command-steps-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "required": false,
+          "description": "Gray text after the label (plain text is also searched)."
+        },
+        {
+          "name": "keywords",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Extra words the filter also matches."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "PaletteStep": {
+      "kind": "type",
+      "source": "src/patterns/command-steps.tsx",
+      "props": []
     },
     "Panel": {
       "kind": "component",
@@ -54832,6 +55083,11 @@
           "description": "Time past the planned duration (0 when on time or early)."
         }
       ]
+    },
+    "StepSelections": {
+      "kind": "type",
+      "source": "src/patterns/command-steps-model.ts",
+      "props": []
     },
     "StepState": {
       "kind": "type",
