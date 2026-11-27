@@ -3,12 +3,13 @@ import { spawnSync } from 'node:child_process'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { afterAll, describe, expect, it } from 'vitest'
 // @ts-expect-error 纯 JS 脚本，没有类型声明
 import * as cov from './shot-coverage.mjs'
 
 const { browserTestPlan, changedLines, parseTests, GRAPHITE_ALL, ranAnyShot, gitDiffOf, shotExternalChanged } = cov
-const pkgDir = new URL('..', import.meta.url).pathname
+const pkgDir = fileURLToPath(new URL('..', import.meta.url))
 const FILE = 'browser/x.browser.test.tsx'
 const tmps: string[] = []
 afterAll(() => tmps.forEach((d) => rmSync(d, { recursive: true, force: true })))
@@ -128,13 +129,13 @@ describe('browserTestPlan（#201：改截图测试不再整套跑）', () => {
   it('1：test 之外的行（import、describe 内的 hook、最后一个 test 之后）→ 该文件全部名字，不算到上一个 test 上', () => {
     for (const line of [1, 4, 12]) {
       const p = plan(BASIC, hunk(line))
-      expect([...p.names].sort()).toEqual(['kbd', 'tag'])
+      expect([...p.names].sort((a, b) => a.localeCompare(b))).toEqual(['kbd', 'tag'])
       expect(p.fileWide.has(FILE)).toBe(true)
     }
   })
   it('1：落在两个 test 之间的空行也算 test 之外', () => {
     const text = "test('a', () => {\n})\n\ntest('b', () => {\n})"
-    expect([...plan(text, hunk(3)).names].sort()).toEqual(['a', 'b'])
+    expect([...plan(text, hunk(3)).names].sort((a, b) => a.localeCompare(b))).toEqual(['a', 'b'])
   })
   it('1：认不出的写法 → 整个文件跑（whole），不只截一个别的件', () => {
     for (const body of ["test.each([1])('r %s', () => 1)", "test(\n 'n',\n () => 1)", 'test(`${t}-x`, () => 1)']) {
@@ -151,7 +152,7 @@ describe('browserTestPlan（#201：改截图测试不再整套跑）', () => {
     expect(p.whole.has(FILE)).toBe(true)
   })
   it('2：未跟踪的新文件（diff 为空串）→ 全部名字', () => {
-    expect([...plan(BASIC, '').names].sort()).toEqual(['kbd', 'tag'])
+    expect([...plan(BASIC, '').names].sort((a, b) => a.localeCompare(b))).toEqual(['kbd', 'tag'])
   })
   it('3：skip / todo 的不算名字；改动只落在它们上 → skippedOnly，不报错也不截', () => {
     const text = [
@@ -173,13 +174,13 @@ describe('browserTestPlan（#201：改截图测试不再整套跑）', () => {
   it('4：纯删除删掉第一个 test 上方的 hook → 整个文件（不只截第一个 test）', () => {
     // 删掉第 4 行的 beforeEach：-4 +3,0，两边是 describe 行与（空行后的）kbd
     const p = plan(BASIC, '@@ -4 +3,0 @@\n-  beforeEach(() => reset())')
-    expect([...p.names].sort()).toEqual(['kbd', 'tag'])
+    expect([...p.names].sort((a, b) => a.localeCompare(b))).toEqual(['kbd', 'tag'])
     expect(p.fileWide.has(FILE)).toBe(true)
   })
   it('4：删掉夹在两个 test 之间的 hook（两侧邻居都在 test 里）也是整个文件', () => {
     const text = "test('a', () => {\n})\ntest('b', () => {\n})"
     const p = plan(text, '@@ -3 +2,0 @@\n-  afterEach(x)')
-    expect([...p.names].sort()).toEqual(['a', 'b'])
+    expect([...p.names].sort((a, b) => a.localeCompare(b))).toEqual(['a', 'b'])
     expect(p.fileWide.has(FILE)).toBe(true) // 是「整个文件」，不是碰巧邻居两个
   })
   it('4：删除落在同一个 test 里面 → 只那个 test', () => {
