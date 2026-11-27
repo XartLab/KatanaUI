@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { ChevronRight, Search } from 'lucide-react'
-import { useId, useMemo, useState, type CSSProperties } from 'react'
-import { Button as AriaButton, Collection, Tree, TreeItem, TreeItemContent } from 'react-aria-components'
+import { useId, useMemo, useState } from 'react'
+import { Tree, TreeGroup, TreeItem, TreeItemIndicator, TreeItemLabel } from '@ui-sdk/react/tree'
 import { cn } from '../lib/cn.ts'
 import {
   buildNodes,
@@ -14,7 +14,7 @@ import {
 } from './json-viewer-model.ts'
 
 // 功能参照 Arc JSON viewer（uiarc.dev，2026-11-14 读：折叠加搜索），实现原创；外观在 theme/json-viewer.css。
-// 用途：原始消息、Agent 调用结果、连接调试。行为底座是 react-aria-components 的 Tree（treegrid 角色，↑↓ 走，→ 展开，← 收起），
+// 用途：原始消息、Agent 调用结果、连接调试。行为底座是 UI SDK 的 Tree（@ui-sdk/react/tree，Apache-2.0，#263 从 react-aria 换来；tree 角色，↑↓ 走，→ 展开，← 收起），
 // 查找：键名与叶子的字里含查询词的节点高亮，祖先自动展开；查找期间命中的祖先保持展开（收不掉），清空查询后恢复你自己展开的样子。
 // 只读：不编辑、不复制（要复制用 CodeBlock 的复制钮）。
 
@@ -54,52 +54,38 @@ function Highlighted({ text, query }: { text: string; query: string }) {
 
 function renderNode(node: JsonNode, query: string, labels: JsonViewerLabels, hits: ReadonlySet<string>) {
   const container = node.kind === 'object' || node.kind === 'array'
+  const branch = container && node.children.length > 0
   return (
-    <TreeItem
-      id={node.id}
-      textValue={node.key ?? summary(node)}
-      hasChildItems={container && node.children.length > 0}
-      className="k-json-item"
-    >
-      <TreeItemContent>
-        {({ isExpanded, level }) => (
-          <div
-            className="k-json-row"
-            data-kind={node.kind}
-            data-expanded={isExpanded || undefined}
-            data-hit={hits.has(node.id) || undefined}
-            style={{ '--k-json-level': level - 1 } as CSSProperties}
-          >
-            {container && node.children.length > 0 ? (
-              <AriaButton slot="chevron" className="k-json-chevron">
-                <ChevronRight size={12} aria-hidden />
-              </AriaButton>
-            ) : (
-              <span className="k-json-chevron" aria-hidden="true" />
-            )}
-            {node.kind === 'more' ? (
-              <span className="k-json-more">{labels.more(node.hidden)}</span>
-            ) : (
-              <>
-                {node.key !== null && (
-                  <span className="k-json-key">
-                    <Highlighted text={node.key} query={query} />
-                  </span>
-                )}
-                {node.key !== null && <span className="k-json-colon">:</span>}
-                {container ? (
-                  <span className="k-json-summary">{summary(node)}</span>
-                ) : (
-                  <span className="k-json-value">
-                    <Highlighted text={node.text} query={query} />
-                  </span>
-                )}
-              </>
-            )}
-          </div>
+    <TreeItem key={node.id} value={node.id} label={node.key ?? summary(node)} className="k-json-item" branch={branch}>
+      <TreeItemLabel className="k-json-row" data-kind={node.kind} data-hit={hits.has(node.id) || undefined}>
+        {branch ? (
+          <TreeItemIndicator className="k-json-chevron">
+            <ChevronRight size={12} aria-hidden />
+          </TreeItemIndicator>
+        ) : (
+          <span className="k-json-chevron" aria-hidden="true" />
         )}
-      </TreeItemContent>
-      <Collection items={node.children}>{(child) => renderNode(child, query, labels, hits)}</Collection>
+        {node.kind === 'more' ? (
+          <span className="k-json-more">{labels.more(node.hidden)}</span>
+        ) : (
+          <>
+            {node.key !== null && (
+              <span className="k-json-key">
+                <Highlighted text={node.key} query={query} />
+              </span>
+            )}
+            {node.key !== null && <span className="k-json-colon">:</span>}
+            {container ? (
+              <span className="k-json-summary">{summary(node)}</span>
+            ) : (
+              <span className="k-json-value">
+                <Highlighted text={node.text} query={query} />
+              </span>
+            )}
+          </>
+        )}
+      </TreeItemLabel>
+      {branch && <TreeGroup>{node.children.map((child) => renderNode(child, query, labels, hits))}</TreeGroup>}
     </TreeItem>
   )
 }
@@ -142,19 +128,16 @@ export function JsonViewer({
       <Tree
         aria-label={label}
         className="k-json-tree"
-        items={[root]}
-        // 行的内容读 query、hits、labels：RAC 的动态集合按 item 缓存行，这些变了要告诉它。
-        dependencies={[query, hits, labels]}
-        selectionMode="none"
-        expandedKeys={expanded}
+        mode="none"
+        expanded={[...expanded]}
         onExpandedChange={(keys) => {
           // 查找期间被强制展开的祖先不记进用户的展开状态：清空查询后回到用户自己展开的样子。
-          const next = new Set([...keys].map(String))
+          const next = new Set(keys)
           if (searching) for (const id of ancestors) if (!state.open.has(id)) next.delete(id)
           setState({ root, open: next })
         }}
       >
-        {(node) => renderNode(node, query, labels, hits)}
+        {renderNode(root, query, labels, hits)}
       </Tree>
     </div>
   )

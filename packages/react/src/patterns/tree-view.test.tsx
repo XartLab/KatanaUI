@@ -22,16 +22,17 @@ const ITEMS: readonly TreeNode[] = [
 const html = (props: Partial<Parameters<typeof TreeView>[0]> = {}) =>
   renderToStaticMarkup(<TreeView label="品种分类" items={ITEMS} {...props} />)
 
+// 一项（role=treeitem）的开标签：从标签文字往前找最近的 treeitem。
 const rowOf = (markup: string, label: string) => {
   const at = markup.indexOf(`>${label}<`)
-  const start = markup.lastIndexOf('role="row"', at)
-  return markup.slice(markup.lastIndexOf('<', start), at)
+  const start = markup.lastIndexOf('role="treeitem"', at)
+  return markup.slice(markup.lastIndexOf('<', start), markup.indexOf('>', start))
 }
 
 describe('TreeView', () => {
-  it('是带读屏名的 treegrid；收起时只画顶层，有子项的行带展开按钮', () => {
+  it('是带读屏名的 tree；收起时只画顶层，有子项的行带展开按钮', () => {
     const markup = html()
-    expect(markup).toContain('role="treegrid"')
+    expect(markup).toContain('role="tree"')
     expect(markup).toContain('aria-label="品种分类"')
     expect(markup).toContain('A 股')
     expect(markup).toContain('未分类')
@@ -39,15 +40,15 @@ describe('TreeView', () => {
     expect(rowOf(markup, 'A 股')).toContain('aria-expanded="false"')
     // 没有子项的行没有 aria-expanded。
     expect(rowOf(markup, '未分类')).not.toContain('aria-expanded')
-    expect(markup.match(/slot="chevron"/g)?.length).toBe(2)
+    expect(markup.match(/data-slot="tree-indicator"/g)?.length).toBe(2)
   })
 
-  it('defaultExpandedKeys 展开后画出子项，层级写进 --k-tree-level 与 aria-level', () => {
+  it('defaultExpandedKeys 展开后画出子项，层级写进 --tree-level 与 aria-level', () => {
     const markup = html({ defaultExpandedKeys: ['cn'] })
     expect(markup).toContain('沪市')
     expect(rowOf(markup, 'A 股')).toContain('aria-expanded="true"')
     expect(rowOf(markup, '沪市')).toContain('aria-level="2"')
-    expect(markup).toContain('--k-tree-level:1')
+    expect(markup).toContain('--tree-level:1')
   })
 
   it('数量画在字后面；禁用的项带 aria-disabled', () => {

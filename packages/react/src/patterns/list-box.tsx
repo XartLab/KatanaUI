@@ -5,20 +5,19 @@
  * 用处：选账户、选布局、选数据源、给自选分组挑品种这类「挑了以后马上驱动下一步」的地方（Salt ListBox 的用法页，2026-11-23 读）；
  * TradingView 的布局列表、自选清单列表也是这种常驻的可选列表（主会话实看，出处页待核对）。
  * 结构照 Salt ListBox / Option / OptionGroup（@salt-ds/core，Apache-2.0；只取结构与用法，没有搬代码）；
- * 行为底座是 react-aria-components 的 ListBox（listbox 角色，↑ ↓ / Home / End 移动，打字跳到以它开头的项，Space / Enter 选，
+ * 行为底座是 UI SDK 的 Listbox（@ui-sdk/react/listbox，Apache-2.0，#263 从 react-aria 换来；listbox 角色，↑ ↓ / Home / End 移动，打字跳到以它开头的项，Space / Enter 选，
  * 多选时 Shift + 方向键连选、Ctrl + A 全选；按 W3C ARIA APG 的 Listbox 模式），焦点与选中都不自己写。
  * 单选不许选空（点已选的那一项不取消，同 APG 单选 listbox）；多选点一项切换。文字全由调用方传，包里没有语言。皮肤在 ../theme/list-box.css。
  */
+import {
+  Listbox as UiListbox,
+  ListboxGroup,
+  ListboxGroupLabel,
+  ListboxItem,
+  ListboxItemIndicator,
+} from '@ui-sdk/react/listbox'
 import { Check } from 'lucide-react'
 import type { CSSProperties, ReactNode } from 'react'
-import {
-  Header,
-  ListBox as AriaListBox,
-  ListBoxItem,
-  ListBoxSection,
-  Text,
-  type Selection,
-} from 'react-aria-components'
 import { cn } from '../lib/cn.ts'
 
 /** One option of a ListBox. */
@@ -70,35 +69,38 @@ export type ListBoxProps = {
 
 const isGroup = (item: ListBoxOption | ListBoxGroup): item is ListBoxGroup => 'options' in item
 
-const toIds = (keys: Selection): string[] => (keys === 'all' ? [] : [...keys].map(String))
-
-function renderOption(option: ListBoxOption) {
+function renderOption(option: ListBoxOption, onAction?: (id: string) => void) {
   return (
-    <ListBoxItem
+    <ListboxItem
       key={option.id}
-      id={option.id}
-      textValue={option.label}
-      isDisabled={option.disabled}
+      value={option.id}
+      label={option.label}
+      disabled={option.disabled}
       className="k-lb-item"
+      // Enter 或双击「激活」这一项（打开布局、切账户）；选中本身由 UI SDK 管。
+      onDoubleClick={onAction ? () => !option.disabled && onAction(option.id) : undefined}
+      onKeyDown={
+        onAction
+          ? (event) => {
+              if (event.key === 'Enter' && !option.disabled) onAction(option.id)
+            }
+          : undefined
+      }
     >
       {option.icon ? <span className="k-lb-icon">{option.icon}</span> : null}
       <span className="k-lb-text">
-        <Text slot="label" className="k-lb-label">
-          {option.label}
-        </Text>
-        {option.description ? (
-          <Text slot="description" className="k-lb-desc">
-            {option.description}
-          </Text>
-        ) : null}
+        <span className="k-lb-label">{option.label}</span>
+        {option.description ? <span className="k-lb-desc">{option.description}</span> : null}
       </span>
       {option.trailing !== undefined ? <span className="k-lb-trailing">{option.trailing}</span> : null}
-      <Check className="k-lb-check" size={14} aria-hidden />
-    </ListBoxItem>
+      <ListboxItemIndicator keepMounted className="k-lb-check">
+        <Check size={14} aria-hidden />
+      </ListboxItemIndicator>
+    </ListboxItem>
   )
 }
 
-/** A list of options on the page (role listbox), on react-aria's ListBox. */
+/** A list of options on the page (role listbox), on the UI SDK Listbox. */
 export function ListBox({
   items,
   label,
@@ -113,31 +115,54 @@ export function ListBox({
   className,
 }: ListBoxProps) {
   const style: CSSProperties | undefined = maxHeight === undefined ? undefined : { maxHeight }
+  const common = {
+    'aria-label': label,
+    'data-bordered': bordered || undefined,
+    className: cn('k-lb', className),
+    style,
+    // 给了 onAction：点一项只选这一项（Ctrl / Shift 才扩选），方向键跟着选（selection follows focus）；不给：点一项切换，方向键只移焦点。
+    activation: onAction ? ('automatic' as const) : ('manual' as const),
+    children: items.map((item) =>
+      isGroup(item) ? (
+        <ListboxGroup key={item.id} className="k-lb-group">
+          <ListboxGroupLabel className="k-lb-header">{item.title}</ListboxGroupLabel>
+          {item.options.map((option) => renderOption(option, onAction))}
+        </ListboxGroup>
+      ) : (
+        renderOption(item, onAction)
+      ),
+    ),
+  }
+  // 没有项：空态不放进 listbox（里面只许有 option 与 group，UI SDK 的规矩，axe 的 aria-required-children 也查这条），外框照旧，角色退成 group。
+  if (items.length === 0)
+    return (
+      <div
+        role="group"
+        aria-label={label}
+        data-bordered={bordered || undefined}
+        className={cn('k-lb', className)}
+        style={style}
+      >
+        {emptyLabel ? <div className="k-lb-empty">{emptyLabel}</div> : null}
+      </div>
+    )
+  // 值的形状随单选 / 多选变：单选是一个 id 或 null，多选是 id 数组；对外一律是 id 数组。
+  if (selectionMode === 'multiple')
+    return (
+      <UiListbox
+        {...common}
+        multiple
+        value={value ? [...value] : undefined}
+        defaultValue={defaultValue ? [...defaultValue] : undefined}
+        onValueChange={onValueChange ? (next) => onValueChange(next) : undefined}
+      />
+    )
   return (
-    <AriaListBox
-      aria-label={label}
-      data-bordered={bordered || undefined}
-      className={cn('k-lb', className)}
-      style={style}
-      selectionMode={selectionMode}
-      selectionBehavior={onAction ? 'replace' : 'toggle'}
-      disallowEmptySelection={selectionMode === 'single'}
-      selectedKeys={value ? new Set(value) : undefined}
-      defaultSelectedKeys={defaultValue ? new Set(defaultValue) : undefined}
-      onSelectionChange={onValueChange ? (keys) => onValueChange(toIds(keys)) : undefined}
-      onAction={onAction ? (key) => onAction(String(key)) : undefined}
-      renderEmptyState={emptyLabel ? () => <div className="k-lb-empty">{emptyLabel}</div> : undefined}
-    >
-      {items.map((item) =>
-        isGroup(item) ? (
-          <ListBoxSection key={item.id} id={item.id} className="k-lb-group">
-            <Header className="k-lb-header">{item.title}</Header>
-            {item.options.map(renderOption)}
-          </ListBoxSection>
-        ) : (
-          renderOption(item)
-        ),
-      )}
-    </AriaListBox>
+    <UiListbox
+      {...common}
+      value={value ? (value[0] ?? null) : undefined}
+      defaultValue={defaultValue ? (defaultValue[0] ?? null) : undefined}
+      onValueChange={onValueChange ? (next) => onValueChange(next === null ? [] : [next]) : undefined}
+    />
   )
 }

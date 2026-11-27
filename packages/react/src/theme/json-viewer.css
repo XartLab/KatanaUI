@@ -59,14 +59,14 @@
   align-items: center;
   gap: var(--space-1);
   height: var(--row-tight);
-  padding: 0 6px 0 calc(2px + var(--k-json-level, 0) * 14px);
+  padding: 0 6px 0 calc(2px + (var(--tree-level, 1) - 1) * 14px);
   border-bottom: var(--hairline);
   white-space: nowrap;
 }
-.k-json-item[data-hovered] .k-json-row {
+.k-json-row:hover {
   background: var(--k-surface-overlay-background);
 }
-.k-json-item[data-focus-visible] .k-json-row {
+.k-json-item:focus-visible > .k-json-row {
   outline: 2px solid var(--focus-ring);
   outline-offset: -2px;
 }

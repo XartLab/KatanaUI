@@ -1926,16 +1926,16 @@ for (const theme of THEMES) {
       await expect(estimate).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
     })
 
-    test('JSON 查看器：树是 treegrid，→ 展开 ← 收起；查找命中高亮、祖先自动展开，命中数在 role=status 里', async ({
+    test('JSON 查看器：树是 tree，→ 展开 ← 收起；查找命中高亮、祖先自动展开，命中数在 role=status 里', async ({
       page,
     }) => {
       await open(page, theme, 'json-viewer')
       const area = section(page, 'json-viewer')
-      const tree = area.getByRole('treegrid', { name: '消息' })
+      const tree = area.getByRole('tree', { name: '消息' })
       await expect(tree).toBeVisible()
       // 默认只开根：orders 是收着的，里面的 FILL-0231 看不见。
       await expect(tree.getByText('FILL-0231')).toHaveCount(0)
-      const orders = tree.getByRole('row', { name: /orders/ }).first()
+      const orders = tree.getByRole('treeitem', { name: /orders/ }).first()
       await orders.focus()
       await page.keyboard.press('ArrowRight')
       await expect(orders).toHaveAttribute('aria-expanded', 'true')
@@ -2023,7 +2023,7 @@ for (const theme of THEMES) {
       const area = section(page, 'date-time-input')
       const shown = area.locator('[data-gallery-datetime]')
       await expect(shown).toHaveText('2026-11-14 09:30')
-      const input = area.locator('.k-dt-date .k-dt-input').first()
+      const input = area.locator('.k-dt-date.k-dt-input').first()
       // .k-dt-input（ui.css 618-632）：30 高 · 内边 0 8 · 4% 白底 8% 白边 · 圆角；sm（:640-644）26 高 · 内边 0 6。
       // 圆角：旧值写死 6；#256（kubai 004）起 --radius-control（Graphite 6、Console 7）。
       await expect(input).toHaveCSS('height', '30px')
@@ -2049,7 +2049,7 @@ for (const theme of THEMES) {
         await token(page, '--ink-100'),
       )
       await cal
-        .getByRole('button', { name: /12月20日/ })
+        .getByRole('gridcell', { name: /12月20日/ })
         .first()
         .click()
       await expect(cal).toHaveCount(0)
@@ -9925,16 +9925,19 @@ for (const theme of THEMES) {
   test(`TreeView（${theme}）：→ 展开 ← 收起、↑↓ 走、点行选中写回 value、Enter 激活、禁用项不能选`, async ({ page }) => {
     await open(page, theme, 'tree-view')
     const area = section(page, 'tree-view')
-    const tree = area.getByRole('treegrid', { name: '品种分类' })
-    const row = (name: string) => tree.getByRole('row', { name, exact: true })
+    const tree = area.getByRole('tree', { name: '品种分类' })
+    // 项的名字取行里的字，带着数量（「港股 1」），所以按开头认。
+    const row = (name: string) => tree.getByRole('treeitem', { name: new RegExp(`^${name}`) })
+    // 点要点在行（TreeItemLabel）上：展开的项的正中是它的子项。
+    const label = (name: string) => row(name).locator('[data-slot="tree-label"]').first()
     const picked = area.locator('[data-gallery-tree]')
     // 默认展开 A 股与主板，沪市选中
     await expect(row('沪市')).toHaveAttribute('aria-selected', 'true')
     await expect(picked).toHaveText('cn-sh')
     await expect(row('港股')).toHaveAttribute('aria-expanded', 'false')
-    await expect(tree.getByRole('row', { name: '主板' })).toHaveCount(1)
+    await expect(tree.getByRole('treeitem', { name: '主板' })).toHaveCount(1)
     // 点一行：选中它（给了 onAction，点行是「选中这一行」）
-    await row('科创板').click()
+    await label('科创板').click()
     await expect(row('科创板')).toHaveAttribute('aria-selected', 'true')
     await expect(row('沪市')).toHaveAttribute('aria-selected', 'false')
     await expect(picked).toHaveText('cn-star')
@@ -9943,9 +9946,9 @@ for (const theme of THEMES) {
     await expect(row('港股')).toBeFocused()
     await page.keyboard.press('ArrowRight')
     await expect(row('港股')).toHaveAttribute('aria-expanded', 'true')
-    await expect(tree.getByRole('row', { name: '主板' })).toHaveCount(2)
+    await expect(tree.getByRole('treeitem', { name: '主板' })).toHaveCount(2)
     await page.keyboard.press('ArrowDown')
-    await expect(tree.getByRole('row', { name: '主板' }).nth(1)).toBeFocused()
+    await expect(tree.getByRole('treeitem', { name: '主板' }).nth(1)).toBeFocused()
     await page.keyboard.press('ArrowLeft')
     await expect(row('港股')).toBeFocused()
     await page.keyboard.press('ArrowLeft')
@@ -9954,9 +9957,9 @@ for (const theme of THEMES) {
     await page.keyboard.press('Enter')
     await expect(area.locator('[data-gallery-tree-open]')).toHaveText('hk')
     // 禁用项：展开加密后点永续，选中不变
-    await row('加密').click()
+    await label('加密').click()
     await page.keyboard.press('ArrowRight')
-    await row('永续').click({ force: true })
+    await label('永续').click({ force: true })
     await expect(row('永续')).toHaveAttribute('aria-disabled', 'true')
     await expect(picked).toHaveText('crypto')
   })
