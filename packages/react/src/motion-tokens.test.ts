@@ -100,6 +100,12 @@ const LAYOUT_ALLOW: { file: string; property: string; reason: string }[] = [
     reason: 'AttributionBars 的零轴条带点阵纹理（k-dotfill），scale 会把点拉伸；clip-path 又会让 e2e 量不到条长，待定',
   },
   { file: 'attribution-bars.css', property: 'width', reason: '同上' },
+  {
+    file: 'proximity-highlight.css',
+    property: 'height',
+    reason:
+      '接近度悬停（#224）：一块底色在行间滑动，位置走 translate，高度跟着目标行的高度变（行高不一，scale 会把圆角拉歪）；只在悬停的列表里、一块元素',
+  },
 ]
 
 describe('动效只读 token', () => {

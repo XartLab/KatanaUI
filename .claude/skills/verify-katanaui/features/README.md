@@ -44,6 +44,7 @@
 | [Toast 弹出提示](toast.md) | 还没有流程（手走） | 视口 polite、warn / danger 单条 alert、弹出与叠放、带倒计时环与「撤销」的动作 toast |
 | [加载状态：Loading 最短停留与 Button 进行中](loading.md) | 还没有流程（手走） | 骨架出了至少留 500ms、500ms 内到的不出骨架；按钮 300ms 后出转圈、至少留 500ms、宽度不变、进行中再按无效、刷新钮转整圈 |
 | [Tabs 页签](tabs.md) | `drive tabs` | 点页签换内容、底块跟随、方向键切换、禁用页签 |
+| [Omnibox 万能框](omnibox.md) | `drive omnibox` | 页签与计数、AAPL 变标签与退格、问句收起与回车去问、行尾提示、预览卡、Ctrl+回车新标签 |
 | [MarketBrowser 市场浏览器](market-browser.md) | `drive market-browser` | 点列头排序（升 / 降 / 取消）、搜索与无结果提示、星标进自选且不选品种、点行与 Enter 选品种 |
 | [StrategyLauncher 策略入口](strategy-launcher.md) | `drive strategy-launcher` | 点卡、Enter / 空格打开、键盘逐张走、关风险提示 |
 | [FloatingWindow 悬浮窗](floating-window.md) | `drive floating-window` | 开页内浮层、拖与方向键移动、Esc 关、状态不丢；真 PiP 路径手点验收 |

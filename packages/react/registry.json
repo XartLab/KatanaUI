@@ -509,6 +509,11 @@
           "target": "~/src/katana/ui/theme/number-input.css"
         },
         {
+          "path": "src/theme/omnibox.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/omnibox.css"
+        },
+        {
           "path": "src/theme/options-chain.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/options-chain.css"
@@ -582,6 +587,11 @@
           "path": "src/theme/price-tag.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/price-tag.css"
+        },
+        {
+          "path": "src/theme/proximity-highlight.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/proximity-highlight.css"
         },
         {
           "path": "src/theme/quantile-layers.css",
@@ -1134,6 +1144,19 @@
           "path": "src/lib/overlay.tsx",
           "type": "registry:lib",
           "target": "~/src/katana/ui/lib/overlay.tsx"
+        }
+      ]
+    },
+    {
+      "name": "proximity-highlight",
+      "type": "registry:lib",
+      "title": "Proximity Highlight",
+      "description": "一块高亮底色在列表或菜单的行间平滑滑动，而不是逐行亮灭；指针划过行间的缝与容器内边时底色不灭，快速划过不抖（取最近的行，带 2px 迟滞）。没有指针时跟当前行（键盘高亮）。位置写在元素 style 上，不走 React 状态。万能框用它，菜单与列表也能用。",
+      "files": [
+        {
+          "path": "src/lib/proximity-highlight.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/proximity-highlight.ts"
         }
       ]
     },
@@ -4503,6 +4526,36 @@
           "path": "src/patterns/view-switcher.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/view-switcher.tsx"
+        }
+      ]
+    },
+    {
+      "name": "omnibox",
+      "type": "registry:component",
+      "title": "Omnibox",
+      "description": "品种、命令、页面、插件、问 AI 的统一入口，IDE 式工作台的主入口：分类页签带计数；空查询列「最近」（可清除）与各类前几条，占位轮播示例查询；选中对象（品种、策略）不直接打开、变成输入框里的标签，结果换成对它的操作，空输入退格删标签回全局；输入像问句时结果收起、右侧提示换成「问 ↵」；高亮行行尾显示回车动作，⌘/Ctrl+↵ 新标签打开；高亮的对象行浮出预览卡；高亮底色在行间滑动。结果异步（AbortSignal）。交互借 Jamie Merrill 的搜索系列（2026-11-24 看的录屏帧），样子是我们的。",
+      "dependencies": [
+        "cmdk@1.1.1",
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/command",
+        "@katana/dialog",
+        "@katana/focus",
+        "@katana/hotkeys-model",
+        "@katana/proximity-highlight"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/omnibox/omnibox-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/omnibox/omnibox-model.ts"
+        },
+        {
+          "path": "src/patterns/omnibox/omnibox.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/omnibox/omnibox.tsx"
         }
       ]
     },

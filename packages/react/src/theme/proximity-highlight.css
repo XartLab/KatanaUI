@@ -1,0 +1,24 @@
+/* SPDX-License-Identifier: MIT */
+/* 接近度悬停的底色元素（lib/proximity-highlight.ts，#224）：绝对定位在 position: relative 的容器里，位置与高度由钩子写在 style 上（translate、height、width），
+   这里只管长相与过渡；过渡无条件写（产品不跟系统的「减少动态效果」，theme/motion.css 头部）。
+   要换色：在容器上设 --k-proximity-background（默认 --k-selectable-subtle-background-hover）、--k-proximity-radius（默认 --radius-inner，与菜单、列表里的行同角）。 */
+.k-proximity-highlight {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  border-radius: var(--k-proximity-radius, var(--radius-inner));
+  background: var(--k-proximity-background, var(--k-selectable-subtle-background-hover));
+  opacity: 0;
+  pointer-events: none;
+  &[data-visible='true'] {
+    opacity: 1;
+  }
+  transition:
+    translate var(--dur-snappy) var(--ease-snappy),
+    height var(--dur-snappy) var(--ease-snappy),
+    opacity var(--dur-hover) var(--ease-hover);
+  &[data-instant] {
+    transition-duration: 0s;
+  }
+}

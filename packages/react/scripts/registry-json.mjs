@@ -218,6 +218,14 @@ function collectItems() {
   for (const f of listDir('src/patterns').filter(isCode)) {
     add(f.replace(/\.[^.]+$/, ''), f.endsWith('.tsx') ? 'registry:component' : 'registry:lib', [`src/patterns/${f}`])
   }
+  // #224 万能框：patterns/ 下的子目录，组件与它的纯函数合成一项一起装。
+  add(
+    'omnibox',
+    'registry:component',
+    listDir('src/patterns/omnibox')
+      .filter((f) => /\.tsx?$/.test(f) && !/\.test\./.test(f))
+      .map((f) => `src/patterns/omnibox/${f}`),
+  )
   // quotes/：行情套件（G4 从 katana、quant、patterns 收拢）：带 JSX 的是 component，纯函数（模型、涨跌三态）是 lib。
   for (const f of listDir('src/quotes').filter((f) => isCode(f) && f !== 'index.ts'))
     add(f.replace(/\.[^.]+$/, ''), f.endsWith('.tsx') ? 'registry:component' : 'registry:lib', [`src/quotes/${f}`])

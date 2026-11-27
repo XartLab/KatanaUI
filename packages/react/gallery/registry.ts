@@ -4827,6 +4827,96 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'omnibox',
+    group: 'overlays',
+    cardHeight: 150,
+    title: 'Omnibox 万能框',
+    summary:
+      '品种、命令、页面、插件、问 AI 的统一入口，IDE 式工作台的主入口：分类页签带计数；空查询列「最近」（可清除）与各类前几条，占位轮播示例查询；选中对象（品种、策略）不直接打开、变成输入框里的标签，结果换成对它的操作，空输入退格删标签回全局；输入像问句时结果收起、右侧提示换成「问 ↵」；高亮行行尾显示回车动作，⌘/Ctrl+↵ 新标签打开；高亮的对象行浮出预览卡；高亮底色在行间滑动。结果异步（AbortSignal）。交互借 Jamie Merrill 的搜索系列（2026-11-24 看的录屏帧），样子是我们的。',
+    exports: ['Omnibox', 'OmniboxDialog', 'detectIntent', 'createIntentDetector'],
+    propParts: [
+      {
+        part: 'Omnibox',
+        note: '面板本体，可以直接摆进页里。底座是 Command（cmdk），过滤关掉，行的先后照 onQuery 返回的；类别、作用域、最近都能受控。',
+      },
+      {
+        part: 'OmniboxDialog',
+        note: 'Dialog 的 bare 皮：顶部 12dvh、宽 min(640px, 100vw−24px)。选中命令、页面与提问后默认关上（keepOpen 留着），对象变成标签时不关；每次打开重新挂载面板。',
+      },
+      {
+        part: 'detectIntent(text, options?)',
+        symbol: 'detectIntent',
+        note: '默认的意图判定：问号结尾、疑问词开头、「吗 / 呢」收尾、超过 minLength（24）个字或 minWords（6）个词，返回 true。纯函数。',
+      },
+      {
+        part: 'createIntentDetector(options?)',
+        symbol: 'createIntentDetector',
+        note: '做一个带阈值的判定函数，传给 detectIntent 属性。',
+      },
+    ],
+    states: [
+      '空查询：先「最近」（有记录时，可清除），再每类前 perCategory（默认 4）条，多的给一行「显示全部 N」（点它切到那一类的页签）。',
+      '有查询：各类分组，命中段加粗提亮；页签上写每类条数；Tab 与空输入里的 ← → 切页签。',
+      '作用域：选中对象行后输入框里出标签（带 ×），页签收起，结果是调用方按对象类型给的动作；空输入退格或点 × 删标签。',
+      '问句：强意图（问号、疑问词）收起结果区（inert）、右侧写「问 ↵」，回车调 onAsk(文字, 作用域)；只是够长的弱意图要等搜索确实没有结果才收起（长品种名不误判）；问句模式仍在后台搜，有结果时出「改为搜索」（或按 ↓）；没有任何结果时回车也去问。没给 onAsk 或 labels.ask 就不判定。',
+      '回车与结果：结果没回来按的回车先记着，结果到了且作用域、查询、页签都没变才生效；换页签、方向键、改字都作废。× 上按 Enter / 空格是删标签。禁用行不亮。',
+      '高亮行：底色是一块在行间滑动的元素；行尾 meta 换成回车动作（运行 / 打开 / 查看选项），按住 ⌘/Ctrl 时变「新标签打开」。',
+      '预览：高亮的对象行停约 140ms 后，面板右侧（放不下换左侧，都放不下就不出）浮出调用方渲染的预览卡。',
+      '输入法组字中：回车、Esc、退格、意图切换、搜索都不触发，组字结束才认最终的字。',
+      '动效不跟系统的「减少动态效果」（产品底线，theme/motion.css 头部）：占位只转 1 轮、悬停暂停、输入后消失；高亮滑动与问句收起照常。',
+    ],
+    donts: [
+      '不要在包里写搜索逻辑、行情或文案：onQuery、预览、动作都由调用方给。',
+      '不要把必须读到的信息只放进预览卡：它不给读屏读，触屏也没有悬停。',
+      '不要拿它换掉 CommandPalette 的「最近的命令」或 SymbolSearch 的市场分段：只要命令用 CommandPalette，只找品种用 SymbolSearch。',
+      '不要在 onQuery 里再按页签过滤：页签在本地按 item.category 分、数条数，onQuery 返回各类的结果就行。',
+    ],
+    composition:
+      'OmniboxDialog（Dialog bare）\n  Omnibox（Command）\n    输入行：搜索图标 · 作用域标签（× 按钮）· cmdk 输入框（combobox）· 占位轮播 · 「问 ↵」\n    页签（tablist，每类带数量）\n    CommandList（listbox）\n      接近度高亮（useProximityHighlight）\n      CommandGroup「最近」（含清除选项）\n      CommandGroup × 类别（行 · 「显示全部 N」）\n    底栏键位提示\n  预览卡\n  role=status（结果个数、作用域变化）',
+    keys: [
+      ['↑ ↓', '在结果间移动高亮（首尾循环）'],
+      ['Enter', '命令与页面：回调 onSelect；对象：变成作用域标签；问句：回调 onAsk'],
+      ['⌘/Ctrl + Enter', '对高亮行直接回调 onSelect，info.newTab 为 true（新标签打开由调用方做）'],
+      ['Tab / Shift+Tab', '下一个 / 上一个页签（首尾相接）'],
+      ['← →', '输入框为空且没有标签时切页签；有字时是移光标'],
+      ['Backspace', '输入框为空时删掉作用域标签，回到全局'],
+      ['Esc', '关闭对话框，焦点回到打开前的地方；输入法组字中不关'],
+    ],
+  },
+  {
+    id: 'proximity-highlight',
+    group: 'layout',
+    cardHeight: 220,
+    title: 'useProximityHighlight 接近度悬停',
+    summary:
+      '一块高亮底色在列表或菜单的行间平滑滑动，而不是逐行亮灭；指针划过行间的缝与容器内边时底色不灭，快速划过不抖（取最近的行，带 2px 迟滞）。没有指针时跟当前行（键盘高亮）。位置写在元素 style 上，不走 React 状态。万能框用它，菜单与列表也能用。',
+    exports: ['useProximityHighlight', 'nearestRow'],
+    propParts: [
+      {
+        part: 'useProximityHighlight(containerRef, options)',
+        symbol: 'useProximityHighlight',
+        note: '返回 highlightRef：把它挂在容器里第一个子元素（className="k-proximity-highlight"、aria-hidden）上；容器要 position: relative，行要 position: relative 盖在它上面。',
+      },
+      {
+        part: 'nearestRow(rects, y, options?)',
+        symbol: 'nearestRow',
+        note: '指针 y 落在哪一行的纯函数：行里就是它，缝里取最近的，离得超过 reach 算没有；current 离上下沿不超过 hysteresis 时不换。',
+      },
+    ],
+    states: [
+      '指针在容器里：底色在最近的行上，换行时滑过去；第一次出现直接落在行上，不从别处滑来。',
+      '指针离开：回到当前行（activeSelector 给的，比如 cmdk 的 aria-selected 行），没有就收起。',
+      '指针在行间的缝里：底色回到当前行，不停在「最近的行」上，免得高亮的行与回车选中的行不是同一行；禁用的行不亮。',
+    ],
+    donts: [
+      '不要再给行写悬停底色：行自己的悬停与选中底色要改成透明，不然两层叠在一起。',
+      '不要把它放进 role=listbox 以外又没有 aria-hidden 的位置：底色元素是纯装饰，要带 aria-hidden（listbox 里再加 role="presentation"）。',
+    ],
+    composition:
+      'container（position: relative）\n  div.k-proximity-highlight（highlightRef，aria-hidden）\n  行 × N（position: relative）',
+    keys: [],
+  },
+  {
     id: 'toolbar',
     group: 'blocks',
     cardHeight: 150,
