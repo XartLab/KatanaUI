@@ -1,53 +1,55 @@
 // SPDX-License-Identifier: MIT
-// 功能地图 features/markdown.md：模型回话照常排版、角标槽画进去；HTML、图片、非 http(s) 链接被拦下；文档模式的锚点与相对链接。
+// 功能地图 features/markdown.md：模型回话的安全渲染（HTML 当字、图片写说明、外链新标签页、角标槽）
+// 与文档模式（标题带锚点、认得的相对链接交给 onOpenLink、不认得的只留文字）。
 export default {
-  title: 'Markdown 安全正文：渲染与拦截',
+  title: 'Markdown：回话渲染与帮助文档',
   page: 'markdown',
   async run({ page, section, step, expect, aria }) {
-    const reply = section.locator('[data-gallery-markdown="reply"] [data-slot="markdown"]')
-    const doc = section.locator('[data-gallery-markdown="doc"] [data-slot="markdown"]')
+    const reply = section.locator('[data-gallery-markdown="reply"]')
+    const doc = section.locator('[data-gallery-markdown="doc"]')
     const opened = section.locator('[data-gallery-markdown-opened]')
+    const root = (locator) => locator.locator('[data-slot="markdown"]')
 
-    await step('回话：粗体、列表、表格、行内代码照常画，两个引用小标画在列表项里', async () => {
-      await expect(reply.locator('strong').first()).toHaveText('结论')
-      const items = reply.getByRole('list').first().getByRole('listitem')
-      await expect(items).toHaveCount(2)
-      await expect(items.nth(0).getByRole('button', { name: '财新 1' })).toBeVisible()
-      await expect(items.nth(1).getByRole('button', { name: '上交所 2' })).toBeVisible()
-      const table = reply.getByRole('table')
-      await expect(table.getByRole('row')).toHaveCount(3)
-      await expect(table.getByRole('row').first()).toHaveText(/指标\s*今日\s*5 日/)
-      await expect(table.getByRole('cell', { name: '-3.2 亿' })).toBeVisible()
-      await expect(reply.locator('code')).toHaveText('katana quote 600519')
+    await step('打开 Markdown 页：两段演示都在，回话里的粗体、列表、表格、代码照常画', async () => {
+      const md = root(reply)
+      await expect(md.locator('strong').first()).toHaveText('结论')
+      expect(await md.locator('li').count()).toBe(2)
+      await expect(md.locator('table')).toContainText('涨跌幅')
+      await expect(md.locator('code').first()).toHaveText('katana quote 600519')
       await aria(reply, 'markdown-reply.aria.yml')
       return {
-        items: (await items.allInnerTexts()).map((t) => t.trim()),
-        rows: await table.getByRole('row').count(),
-        code: await reply.locator('code').innerText(),
+        bold: await md.locator('strong').first().innerText(),
+        listItems: await md.locator('li').count(),
+        table: (await md.locator('table').innerText()).split('\n')[0] ?? '',
+        code: await md.locator('code').first().innerText(),
       }
     })
-    await step(
-      '拦截：模型写的 <script> 原样当字、页上没有 script 元素；图片只写「[图片：日线截图]」、不取图',
-      async () => {
-        await expect(reply.getByText("<script>alert('模型写的 HTML 只当字')</script>", { exact: true })).toBeVisible()
-        await expect(reply.locator('script')).toHaveCount(0)
-        await expect(reply.locator('img')).toHaveCount(0)
-        await expect(reply.getByText('[图片：日线截图]', { exact: true })).toBeVisible()
-        // 页上任何地方都没去取演示里那张图。
-        const fetched = await page.evaluate(() =>
-          performance.getEntriesByType('resource').some((r) => r.name.includes('example.com/chart.png')),
-        )
-        expect(fetched).toBe(false)
-        return {
-          scripts: await reply.locator('script').count(),
-          imgs: await reply.locator('img').count(),
-          imageText: await reply.locator('.k-md-image').innerText(),
-          chartFetched: fetched,
-        }
-      },
-    )
-    await step('外链「上交所披露」：只认 https，新标签页打开、不带来源（不点，不出站）', async () => {
-      const link = reply.getByRole('link', { name: '上交所披露' })
+    await step('角标槽：占位符的位置画出了调用方给的引用小标', async () => {
+      const slots = root(reply).locator('.k-md-slot')
+      expect(await slots.count()).toBe(2)
+      for (const slot of await slots.all()) {
+        await expect(slot.locator('[data-slot="web-search-citation"]')).toHaveCount(1)
+      }
+      return {
+        slots: await slots.count(),
+        citations: (await root(reply).locator('[data-slot="web-search-chip"]').allInnerTexts()).map((t) => t.trim()),
+      }
+    })
+    await step('不渲染 HTML：脚本成了字，页上没有 script 元素', async () => {
+      const md = root(reply)
+      await expect(md.locator('script')).toHaveCount(0)
+      await expect(md.locator('img')).toHaveCount(0)
+      expect(await md.innerText()).toContain("<script>alert('模型写的 HTML 只当字')</script>")
+      return { scripts: await md.locator('script').count(), imgs: await md.locator('img').count() }
+    })
+    await step('不画图片：图片只写说明，地址不出现在页上', async () => {
+      const md = root(reply)
+      await expect(md.locator('.k-md-image')).toHaveText('[图片：日线截图]')
+      expect(await md.innerText()).not.toContain('example.com')
+      return { imageText: await md.locator('.k-md-image').innerText() }
+    })
+    await step('外链：只认 http(s)，在新标签页打开且不带来源', async () => {
+      const link = root(reply).getByRole('link', { name: '上交所披露' })
       await expect(link).toHaveAttribute('href', 'https://www.sse.com.cn')
       await expect(link).toHaveAttribute('target', '_blank')
       await expect(link).toHaveAttribute('rel', 'noopener noreferrer')
@@ -57,27 +59,32 @@ export default {
         rel: await link.getAttribute('rel'),
       }
     })
-    await step('文档模式：标题带锚点；认得的「设置」是站内链接，不认得的「开发者文档」只留文字', async () => {
-      await expect(doc.getByRole('heading', { level: 1, name: '快速上手' })).toHaveAttribute('data-anchor', '快速上手')
-      await expect(doc.getByRole('heading', { level: 2, name: '下单 F9' })).toHaveAttribute('data-anchor', '下单-f9')
-      const settings = doc.getByRole('link', { name: '设置' })
-      await expect(settings).toHaveAttribute('href', '#')
-      await expect(settings).toHaveAttribute('data-target', 'settings.md')
-      await expect(doc.getByRole('link', { name: '开发者文档' })).toHaveCount(0)
-      await expect(doc.getByText('开发者文档', { exact: false })).toBeVisible()
+
+    await step('帮助文档：标题带锚点，认得的相对链接写成 data-target', async () => {
+      const md = root(doc)
+      await expect(md.locator('h1[data-anchor="快速上手"]')).toHaveCount(1)
+      await expect(md.locator('h2[data-anchor="下单-f9"]')).toHaveCount(1)
+      const setting = md.getByRole('link', { name: '设置' })
+      await expect(setting).toHaveAttribute('data-target', 'settings.md')
       await aria(doc, 'markdown-doc.aria.yml')
       return {
-        links: (await doc.getByRole('link').allInnerTexts()).map((t) => t.trim()),
-        anchors: await doc.locator('[data-anchor]').evaluateAll((els) => els.map((e) => e.getAttribute('data-anchor'))),
+        anchors: await md.locator('h1[data-anchor], h2[data-anchor]').count(),
+        settingsTarget: await setting.getAttribute('data-target'),
       }
     })
-    await step('点「设置」：交给页面回调，回显「点了：settings.md」，地址不跳', async () => {
-      await expect(opened).toHaveText('点了：（还没点）')
+    await step('点认得的相对链接：不跳页，交给 onOpenLink，回显写它的返回值', async () => {
       const before = page.url()
-      await doc.getByRole('link', { name: '设置' }).click()
-      await expect(opened).toHaveText('点了：settings.md')
+      await root(doc).getByRole('link', { name: '设置' }).click()
+      await expect(opened).toContainText('点了：settings.md')
       expect(page.url()).toBe(before)
-      return { opened: await opened.innerText(), url: page.url() }
+      return { opened: (await opened.innerText()).trim(), url: page.url() }
+    })
+    await step('不认得的相对链接只留文字，不留死链', async () => {
+      const md = root(doc)
+      await expect(md.getByRole('link', { name: '开发者文档' })).toHaveCount(0)
+      expect(await md.locator('a').count()).toBe(1)
+      expect(await md.innerText()).toContain('开发者文档')
+      return { links: await md.locator('a').count(), keepsText: (await md.innerText()).includes('开发者文档') }
     })
   },
 }

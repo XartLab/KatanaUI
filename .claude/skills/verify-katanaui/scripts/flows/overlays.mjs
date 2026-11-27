@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 // 功能地图 features/overlays.md：弹层（Popover）与对话框（Dialog）的开、关、Esc，焦点回到触发处；
-// 再到 #/news-feed 验弹层滚动即关（#125 / #135）：页面滚、装着锚点的容器滚都关，不相干的容器滚不关。
+// 外加「滚动即关」：页面或装着锚点的容器一滚就关，浮层自己里面滚、侧栏滚不关（#125）。
 export default {
-  title: '弹出层：Popover 与 Dialog 的开关与 Esc，弹层滚动即关',
+  title: '弹出层：Popover 与 Dialog 的开关、Esc 与滚动即关',
   page: 'popover',
   async run({ page, section, step, expect, aria }) {
     const focused = () =>
@@ -71,74 +71,54 @@ export default {
       return { dialogs: await page.getByRole('dialog').count(), focus: await focused() }
     })
 
-    // 子功能 popover-scroll-close：#/popover 页在 1500 高的视口里滚不动，换到 #/news-feed。
-    // 那页上「News panel」里的新闻流（news-frame）在页面里；「宽 1000px」那张（news-split）装在一个能横向滚的外框里。
-    // 开弹层一律用 el.click()：Playwright 的 click 被 sticky 顶栏挡住时会自己再滚一次页面，那一下就会把弹层关掉。
-    const feedNav = page.getByRole('navigation', { name: '文档目录' }).locator('a.k-sidenav-link[href="#/news-feed"]')
-    const feedArea = page.locator('[data-gallery="news-feed"]').first()
-    const frame = feedArea.getByTestId('news-frame')
-    const split = feedArea.getByTestId('news-split')
-    const frameFacet = frame.getByRole('button', { name: '市场', exact: true })
-    const splitFacet = split.getByRole('button', { name: '市场', exact: true })
+    // 滚动即关（#125）：新闻流上的「添加过滤」是一处真的非模态浮层，锚点在长页面里，滚一下就该关。
+    // 开浮层一律用 DOM 点击：Playwright 的 click 在目标被顶栏挡住时会自己再滚一次页面，那一下滚动本身就会关浮层。
+    const openFacet = () =>
+      page.evaluate(() => {
+        const add = document.querySelector('[data-slot="news-facet-add"]')
+        if (!add) return false
+        add.scrollIntoView({ block: 'center' })
+        add.click()
+        return true
+      })
     const openPop = page.locator('[data-slot="popover-content"][data-state="open"]')
-    const scrolls = async () => ({
-      pageY: Math.round(await page.evaluate(() => window.scrollY)),
-      splitX: Math.round(await split.evaluate((el) => el.scrollLeft)),
+    await step('换到 NewsFeed，DOM 点开「添加过滤」：浮层开着', async () => {
+      await page.getByRole('navigation', { name: '文档目录' }).locator('a.k-sidenav-link[href="#/news-feed"]').click()
+      await page.locator('[data-gallery="news-feed"]').first().waitFor()
+      expect(await openFacet()).toBe(true)
+      await expect(openPop).toHaveCount(1)
+      return { popovers: await openPop.count() }
     })
-
-    await step(
-      '目录里点 NewsFeed，鼠标放在页上的说明文字上，用 el.click() 开「News panel」里的「市场」过滤：弹层打开',
-      async () => {
-        await feedNav.click()
-        await feedArea.waitFor()
-        // 先把鼠标放好再开弹层：开着时再 hover，Playwright 可能自己滚页面。
-        await feedArea.getByText('演示数据（标题与来源都是虚构的', { exact: false }).hover()
-        await frameFacet.evaluate((el) => el.click())
-        await expect(openPop).toHaveCount(1)
-        await expect(frameFacet).toHaveAttribute('aria-expanded', 'true')
-        return { popovers: await openPop.count(), ...(await scrolls()) }
-      },
-    )
-    await step('往下滚滚轮：页面滚了，弹层关', async () => {
-      const before = await scrolls()
-      await page.mouse.wheel(0, 300)
-      await expect.poll(async () => (await scrolls()).pageY).toBeGreaterThan(before.pageY)
+    // 1100×1500 下侧栏与新闻列表都没长过一屏、滚不动；压到 1100×800 才有真的滚动容器（见 features/overlays.md）。
+    await step('压到 1100×800：侧栏高过一屏，滚它不关浮层', async () => {
+      await page.setViewportSize({ width: 1100, height: 800 })
+      const side = page.locator('.k-sidenav-scroll')
+      const before = await side.evaluate((el) => el.scrollTop)
+      await side.evaluate((el) => el.scrollTop += 200)
+      await page.waitForTimeout(200)
+      const after = await side.evaluate((el) => el.scrollTop)
+      expect(after).toBeGreaterThan(before)
+      await expect(openPop).toHaveCount(1)
+      return { sideScrollTop: { before, after }, popovers: await openPop.count() }
+    })
+    await step('页面滚一下：浮层关掉，不跟着锚点滚出屏幕', async () => {
+      const before = await page.evaluate(() => window.scrollY)
+      // 滚轮要落在没有自己滚动条的地方：移到正文右侧的空白处（左边 420 是面板，再往右是 .gal-main 的底色）。
+      await page.mouse.move(900, 600)
+      await page.mouse.wheel(0, 600)
       await expect(openPop).toHaveCount(0)
-      await expect(frameFacet).toHaveAttribute('aria-expanded', 'false')
-      return { before, after: await scrolls(), popovers: await openPop.count() }
+      const after = await page.evaluate(() => window.scrollY)
+      expect(after).toBeGreaterThan(before)
+      return { scrollY: { before, after } }
     })
-    await step(
-      '鼠标移到「宽 1000px」外框上，再开「News panel」的「市场」，横向滚：外框滚了、页面没滚，锚点不在这个外框里，弹层不关',
-      async () => {
-        await split.hover()
-        await frameFacet.evaluate((el) => el.click())
-        await expect(openPop).toHaveCount(1)
-        const before = await scrolls()
-        await page.mouse.wheel(200, 0)
-        await expect.poll(async () => (await scrolls()).splitX).toBeGreaterThan(before.splitX)
-        // 滚动事件晚一帧到：等一会儿再看弹层还在。
-        await page.waitForTimeout(300)
-        await expect(openPop).toHaveCount(1)
-        const after = await scrolls()
-        expect(after.pageY).toBe(before.pageY)
-        await page.keyboard.press('Escape')
-        await expect(openPop).toHaveCount(0)
-        return { before, after, stillOpen: true }
-      },
-    )
-    await step('开「宽 1000px」那张里的「市场」，同一处横向滚回去：装着锚点的外框滚了、页面没滚，弹层关', async () => {
-      await splitFacet.evaluate((el) => el.click())
+    await step('滚过以后再开：浮层在，不会刚开就被上一次滚动关掉', async () => {
+      expect(await openFacet()).toBe(true)
       await expect(openPop).toHaveCount(1)
       await page.waitForTimeout(300)
       await expect(openPop).toHaveCount(1)
-      const before = await scrolls()
-      await page.mouse.wheel(-150, 0)
-      await expect.poll(async () => (await scrolls()).splitX).toBeLessThan(before.splitX)
+      await page.keyboard.press('Escape')
       await expect(openPop).toHaveCount(0)
-      await expect(splitFacet).toHaveAttribute('aria-expanded', 'false')
-      const after = await scrolls()
-      expect(after.pageY).toBe(before.pageY)
-      return { before, after, popovers: await openPop.count() }
+      return { popovers: await openPop.count() }
     })
   },
 }

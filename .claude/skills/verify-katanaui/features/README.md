@@ -1,7 +1,7 @@
 # KatanaUI 功能地图
 
 从用户视角记文档站上组件的行为：是什么、怎么找到、怎么用 `kui.mjs` 走、看到什么算成功。实现细节不写在这里，走的时候现查。
-第一版（2026-11-23，main `c9634db`）只收 main 上已有、有行为可以驱动的四个件；别的件走到了再加，照同一个格式。
+第一版（2026-11-23，main `c9634db`）收 main 上已有、有行为可以驱动的四个件；订单簿、Markdown 与「弹出层滚动即关」合进 main（#140、#133、#135）以后补上，现在是六个流程。
 
 ## 基线
 
@@ -40,22 +40,24 @@
 | [DataGrid 数据表](data-grid.md) | `drive data-grid` | 点表头排序（升 / 降 / 取消）、窄容器按优先级收列与「+N cols」展开收起 |
 | [OrderTicket 下单面板](order-ticket.md) | `drive order-ticket` | 两栏算数、改杠杆、超可用报错、止盈止损模板、按风险算张数、开仓与平仓 |
 | [DerivativesBoard 交易数据看板与加密异动](derivatives-board.md) | 还没有流程（手走） | 六张卡的周期按钮、悬停与键盘扫读、信息提示、空态，MoveFeed 的「只看当前品种」与 5 分钟涨幅 / 跌幅 |
-| [弹出层](overlays.md) | `drive overlays` | Popover 与 Dialog 的点开、Esc 关、点外面关、焦点回到触发处；Popover 滚页面或滚装着触发钮的容器就关、滚不相干的容器不关 |
+| [弹出层](overlays.md) | `drive overlays` | Popover 与 Dialog 的点开、Esc 关、点外面关、焦点回到触发处；「滚动即关」：页面滚就关、侧栏滚不关、滚过后再开不关 |
+| [订单簿](orderbook.md) | `drive orderbook` | 买卖 / 只看买 / 只看卖三种模式、按 tick 合并档位、点一行给回调、占比相加恰好 100 |
+| [Markdown 安全正文](markdown.md) | `drive markdown` | 回话渲染、HTML 当字、图片只写说明、外链新标签页、角标槽、文档模式的锚点与相对链接 |
 | [Toast 弹出提示](toast.md) | 还没有流程（手走） | 视口 polite、warn / danger 单条 alert、弹出与叠放、带倒计时环与「撤销」的动作 toast |
 | [加载状态：Loading 最短停留与 Button 进行中](loading.md) | 还没有流程（手走） | 骨架出了至少留 500ms、500ms 内到的不出骨架；按钮 300ms 后出转圈、至少留 500ms、宽度不变、进行中再按无效、刷新钮转整圈 |
 | [Tabs 页签](tabs.md) | `drive tabs` | 点页签换内容、底块跟随、方向键切换、禁用页签 |
+| [TradingView 小组件四件](tv-widgets.md) | `drive tv-widgets` | SymbolInfo 报价与区间、SymbolOverview 页签 / 读数 / 区间 / percent 叠图、CrossRates 点格与键盘与热力、CompanyProfile 展开收起与空态 |
 | [MarketBrowser 市场浏览器](market-browser.md) | `drive market-browser` | 点列头排序（升 / 降 / 取消）、搜索与无结果提示、星标进自选且不选品种、点行与 Enter 选品种 |
 | [StrategyLauncher 策略入口](strategy-launcher.md) | `drive strategy-launcher` | 点卡、Enter / 空格打开、键盘逐张走、关风险提示 |
 | [FloatingWindow 悬浮窗](floating-window.md) | `drive floating-window` | 开页内浮层、拖与方向键移动、Esc 关、状态不丢；真 PiP 路径手点验收 |
 | [ComponentCatalog menu 样式](component-catalog.md) | `drive component-catalog` | 分组折叠、点行添加、灰行点不动、悬停与聚焦出原因、推荐一组 |
-| [盘口三件](orderbook.md) | `drive orderbook` | 订单簿买卖两侧与三种模式、合并档位、占比条与累计、点价；深度图键盘与鼠标读数；成交明细逐笔与聚合 |
-| [Markdown 安全正文](markdown.md) | `drive markdown` | 粗体、列表、表格、代码与引用小标的渲染；HTML、图片被拦，外链新标签页；文档模式的锚点与相对链接 |
-| [TradingView 小组件四件](tv-widgets.md) | `drive tv-widgets` | SymbolInfo 报价与区间、SymbolOverview 页签 / 读数 / 区间 / percent 叠图、CrossRates 点格与键盘与热力、CompanyProfile 展开收起与空态 |
 | [对照 Salt 补的七件](salt-gaps.md) | 还没有流程（手走） | Pill 改与删、SystemStatus 关闭、Calendar 选日与不可选日、ListBox 单选与多选、Link / Card / Panel 的样子 |
 
 ## 待补
 
-这几个件还没合进 main，合并以后照同一格式补上：
+三件（订单簿、Markdown、弹出层滚动即关）已随 #140、#133、#135 合进 main，地图与流程见上表。走查里撞到的两个走不到的路径记在各自地图的 Gotchas：订单簿的空簿状态（演示数据始终有档位）、弹出层自己里面滚（文档站上的浮层都装不满一屏）。
+
+还差一件，补法同上：
 
 | 件 | 等哪个 PR | 合并后要补什么 |
 | --- | --- | --- |
@@ -66,4 +68,4 @@
 | 日期 | 提交 | 走了哪些 | 结果 | 记录 |
 | --- | --- | --- | --- | --- |
 | 2026-11-23 | `c9634db` | 四条全走 | 全部 PASS | XartLab/KatanaUI#143 |
-| 2026-11-23 | `3ecfbf6` | 新补的 `orderbook`、`markdown`、`tv-widgets`，加了 `popover-scroll-close` 的 `overlays` | 四条全部 PASS（10 / 5 / 11 / 11 步）；每条各改坏一处组件代码都在对应那步变红，已还原 | XartLab/KatanaUI#143 |
+| 2026-11-23 | `ca45f81` | 六条全走（含新增的订单簿、Markdown、滚动即关） | 全部 PASS | XartLab/KatanaUI#143 |
