@@ -305,6 +305,16 @@ const blocks: GuidanceMap = {
       '品种标签是按钮，读屏名取自品种文字。',
     ],
   },
+  'doc-reader': {
+    aliases: ['Filing reader', 'Document viewer', 'Annual report reader', 'PDF reader'],
+    use: ['读公告、年报、招股书这类长文：按目录跳、在文中查找、按段引用给智能体或对话。'],
+    avoid: ['短讯与快讯用 news-feed 与 news-reader。', '件不解析 PDF：宿主先把原文抽成标题与段落。'],
+    a11y: [
+      '整块是带名字的 section；目录是 nav，查找框有 label，命中数用 aria-live 念出来。',
+      '查找框里 Enter 下一个、Shift+Enter 上一个、Esc 清空。',
+      '引用钮悬停或聚焦时出现，有读屏名；当前命中块左侧一条竖线，不只靠高亮色。',
+    ],
+  },
   'news-feed': {
     aliases: ['Activity feed', 'Ticker', 'Newsfeed', 'Live stream'],
     use: [

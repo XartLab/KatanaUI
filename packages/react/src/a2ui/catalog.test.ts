@@ -739,6 +739,97 @@ const EXAMPLES: Record<string, Record<string, unknown>> = {
     labels: { list: 'Peers', prev: 'Previous', next: 'Next', compare: 'Select to compare', add: 'Add {symbol}' },
     onSelect: { event: { name: 'peer.select' } },
   },
+  KatanaStatementTable: {
+    items: [
+      { id: 'rev', label: 'Revenue' },
+      { id: 'net', label: 'Net income', kind: 'total' },
+    ],
+    periods: [
+      { id: 'q1', label: 'Q1' },
+      { id: 'q2', label: 'Q2' },
+    ],
+    values: { rev: { q1: 100, q2: { value: 110, revision: 2, note: 'restated' } }, net: { q1: 10, q2: null } },
+    periodsPerYear: 4,
+    valueFormat: { style: 'compact' },
+    labels: wordsOf('KatanaStatementTable'),
+  },
+  KatanaCompsTable: {
+    rows: [
+      { id: 'a', symbol: 'AAA', subject: true, values: { pe: 20 } },
+      { id: 'b', symbol: 'BBB', values: { pe: null } },
+    ],
+    metrics: [
+      { id: 'pe', label: 'PE', group: 'val', better: 'lower', format: { style: 'number', digits: 1, unit: 'x' } },
+    ],
+    groups: [{ id: 'val', label: 'Valuation' }],
+    labels: wordsOf('KatanaCompsTable'),
+  },
+  KatanaValuationBand: {
+    prices: [10, 11, null, 12],
+    multiples: [10, 12, -1, 14],
+    xLabels: ['a', 'b', 'c', 'd'],
+    multipleFormat: { style: 'number', digits: 1 },
+    labels: {
+      chart: 'PE band',
+      actions: CHART_ACTIONS,
+      table: 'Table',
+      x: 'Date',
+      price: 'Price',
+      multiple: 'PE',
+      band: 'P{q} {level}',
+      percentile: 'Now P{p}',
+      empty: 'No usable multiple',
+    },
+  },
+  KatanaCompanyProfile: {
+    name: 'Example Corp',
+    facts: [
+      { id: 'sector', label: 'Sector', value: 'Technology' },
+      { id: 'employees', label: 'Employees' },
+    ],
+    description: 'Makes things.',
+    labels: { more: 'More', less: 'Less', empty: 'No profile' },
+  },
+  KatanaKpiChart: {
+    title: 'Revenue',
+    label: 'Revenue and margin',
+    value: '1.2B',
+    delta: 3.4,
+    labels: ['Q1', 'Q2', 'Q3'],
+    series: [
+      { key: 'rev', label: 'Revenue', values: [1, 1.1, null] },
+      { key: 'margin', label: 'Margin', values: [0.3, 0.32, 0.31], format: { style: 'percent' } },
+    ],
+    scale: 'normalized',
+    emptyText: 'No data',
+  },
+  KatanaSeasonalChart: {
+    years: [
+      {
+        year: 2025,
+        points: [
+          { day: 0, pct: 0 },
+          { day: 30, pct: 2.5 },
+        ],
+      },
+    ],
+    highlight: 2025,
+    labels: {
+      chart: 'Seasonality',
+      legend: 'Years',
+      months: ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+      empty: 'No years',
+    },
+  },
+  KatanaDocReader: {
+    title: 'Annual report',
+    blocks: [
+      { id: 'h', kind: 'heading', level: 1, text: 'Overview' },
+      { id: 'p', kind: 'paragraph', text: 'Revenue grew.' },
+    ],
+    labels: wordsOf('KatanaDocReader'),
+    onCite: { event: { name: 'doc.cite' } },
+  },
   KatanaFlowGauges: {
     gauges: [
       { kind: 'pressure', id: 'g1', title: 'Market pressure 1m', value: 62, valueText: '+62' },

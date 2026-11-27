@@ -27,6 +27,7 @@
 @import './theme/json-viewer.css';
 @import './theme/event-timeline.css';
 @import './theme/news-feed.css';
+@import './theme/doc-reader.css';
 @import './theme/strategy-report.css';
 @import './theme/param-scatter.css';
 @import './theme/flow-sankey.css';
@@ -82,6 +83,9 @@
 @import './theme/underwater-chart.css';
 @import './theme/mae-mfe-scatter.css';
 @import './theme/period-returns-table.css';
+@import './theme/statement-table.css';
+@import './theme/comps-table.css';
+@import './theme/valuation-band.css';
 @import './theme/param-surface-heatmap.css';
 @import './theme/walk-forward-matrix.css';
 @import './theme/robustness-gate.css';

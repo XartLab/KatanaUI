@@ -335,3 +335,24 @@ export {
 } from '../quotes/company-profile.tsx'
 export { SeasonalChart, type SeasonalChartLabels, type SeasonalChartProps } from './seasonal-chart.tsx'
 export { seasonalSeries, type SeasonalPoint, type SeasonalYear } from './seasonal-model.ts'
+// 投研三件（KATANAview #2395）：财务报表表、同业对比表、估值带。前两件是 DataGrid 的预设，第三件复用 QuantileLayers 的坐标与读数。
+export {
+  StatementTable,
+  type StatementItem,
+  type StatementItemKind,
+  type StatementMode,
+  type StatementPeriod,
+  type StatementTableLabels,
+  type StatementTableProps,
+  type StatementValue,
+  type StatementValues,
+} from './statement-table.tsx'
+export {
+  CompsTable,
+  type CompsBetter,
+  type CompsMetric,
+  type CompsRow,
+  type CompsTableLabels,
+  type CompsTableProps,
+} from './comps-table.tsx'
+export { ValuationBand, type ValuationBandLabels, type ValuationBandProps } from './valuation-band.tsx'

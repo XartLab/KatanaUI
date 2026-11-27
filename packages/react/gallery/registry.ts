@@ -5123,6 +5123,51 @@ export const PAGES: readonly DocPage[] = [
     keys: [['Tab', '在操作与品种胶囊间移动']],
   },
   {
+    id: 'doc-reader',
+    group: 'blocks',
+    cardHeight: 520,
+    title: 'DocReader 文档阅读器',
+    summary:
+      '读长文（公告、年报、招股书，KATANAview #2395）：左边目录（标题块抽出来，点了滚到那一节），上边查找（命中数、上一个 / 下一个、命中字高亮），正文一块一块排，悬停或聚焦一段右侧出引用钮，点了把这一块交给宿主（宿主拼 kref: 给智能体）。activeId 给了就滚到那一块并标出来。件不取数、不解析 PDF：宿主把原文抽成块交进来。块用 content-visibility 省排版，不做虚拟滚动（查找与锚点要全部块在 DOM 里）。功能参照 PDF 阅读器的目录与查找。',
+    exports: ['DocReader'],
+    props: [
+      {
+        part: 'DocReader',
+        note: '文字全由 props 传。',
+        rows: [
+          { name: 'title / meta', type: 'string', desc: '标题与下一行元信息。' },
+          {
+            name: 'blocks',
+            type: 'DocBlock[]',
+            desc: "{ id, kind: 'heading' | 'paragraph', text, level }；id 稳定，宿主拿它拼引用。",
+          },
+          { name: 'activeId', type: 'string', desc: '滚到这一块并标出来（从引用点回来时用）。' },
+          { name: 'onCite', type: '(block) => void', desc: '引用钮；不给不画。' },
+          { name: 'hideOutline', type: 'boolean', default: 'false', desc: '窄格子里不画目录。' },
+          { name: 'height', type: 'number', default: '560', desc: '整块高度。' },
+          {
+            name: 'labels',
+            type: 'DocReaderLabels',
+            desc: '读屏名、目录、查找、命中计数、上一个 / 下一个、引用、空态。',
+          },
+        ],
+      },
+    ],
+    states: [
+      '默认：目录加正文。',
+      '查找：命中字高亮，当前命中块左侧竖线，计数「3 / 12」；没找到写一行字。',
+      '引用：悬停或聚焦一段右侧出钮。',
+      '没有块：空态。',
+    ],
+    donts: ['不要在件里解析 PDF 或取数。', '不要用虚拟滚动：查找与锚点要全部块在 DOM 里。'],
+    composition: 'DocReader\n  头（标题 · 元信息 · 查找条）\n  目录 | 正文（块 · 引用钮）\n  来源行',
+    keys: [
+      ['Enter / Shift+Enter', '在查找框里：下一个 / 上一个命中'],
+      ['Esc', '在查找框里：清空'],
+      ['Tab', '目录项、正文、引用钮'],
+    ],
+  },
+  {
     id: 'news-feed',
     group: 'blocks',
     cardHeight: 560,
@@ -7341,6 +7386,164 @@ export const PAGES: readonly DocPage[] = [
       ['Tab', '进表，停在一格上'],
       ['方向键', '在格间走'],
       ['Home / End', '到行首 / 行尾'],
+    ],
+  },
+  {
+    id: 'statement-table',
+    group: 'quant',
+    cardHeight: 560,
+    title: 'StatementTable 财务报表表',
+    summary:
+      '三张报表的科目 × 期间表（KATANAview #2395）：科目成树，层级靠缩进与字重（小计加粗、合计上方一条细线），父科目能折叠；期间从早到晚做列，容器放不下时先收起最早的几期、最新一期最后收；工具条切原值 / 同比 / 环比，给了频率就再切季 / 年 / TTM（数据由调用方换，件不聚合）。更正过的格右上一个中性小点，悬停写第几版。表本身是 DataGrid：科目列粘左，复制与导出是原数。功能参照 TradingView 品种页 Financials 与 Koyfin FA。',
+    exports: ['StatementTable'],
+    props: [
+      {
+        part: 'StatementTable',
+        note: '件只认科目的 parent 与 kind，不认科目名；数与文字全由 props 传。',
+        rows: [
+          {
+            name: 'items',
+            type: 'StatementItem[]',
+            desc: '科目：id、label、parent（父科目 id）、kind（line / subtotal / total）。次序就是显示次序。',
+          },
+          { name: 'periods', type: '{ id, label }[]', desc: '期间，从早到晚；id 是 values 里的键。' },
+          {
+            name: 'values',
+            type: 'Record<科目, Record<期间, number | null | { value, revision, note }>>',
+            desc: 'revision > 1 的格画更正标记。缺的格写「—」。',
+          },
+          { name: 'periodsPerYear', type: 'number', default: '4', desc: '同比往前比几列：季报 4、年报 1。' },
+          {
+            name: 'formatValue',
+            type: '(value, item) => string',
+            default: 'compact',
+            desc: '原值的写法（亿、万由调用方定）。',
+          },
+          {
+            name: 'mode / onModeChange',
+            type: "'value' | 'yoy' | 'qoq'",
+            default: 'value',
+            desc: '口径；不给受控用内部状态。',
+          },
+          {
+            name: 'frequencies / frequency / onFrequencyChange',
+            type: '{ id, label }[]',
+            desc: '频率开关（季 / 年 / TTM）；给了才画，换数据由调用方做。',
+          },
+          { name: 'defaultCollapsed', type: 'string[]', desc: '一开始收起的科目 id。' },
+          { name: 'labels', type: 'StatementTableLabels', desc: '表名、列头、开关、折叠钮读屏名、更正提示、空态。' },
+        ],
+      },
+    ],
+    states: [
+      '默认：原值，全部展开。',
+      '同比 / 环比：格里写带符号的百分比，涨跌色只给变化率；分母为 0、缺数或前面没有可比期写「—」。',
+      '收起父科目：子科目不显示，导出的是看得见的行（跟 DataGrid 一致）。',
+      '更正过的格：右上 4px 中性小点，悬停写第几版与说明（更正是事实，不是错误，不用警示色）。',
+      '没有科目：空态一行字。',
+    ],
+    donts: [
+      '不要画格子线：块与块之间靠细线和留白。',
+      '不要用框表示层级：缩进与字重就够。',
+      '不要在件里算 TTM 或年报：频率开关只发回调，数据由调用方换。',
+      '不要把更正标成红色或警示色。',
+    ],
+    composition: 'StatementTable\n  工具条（原值/同比/环比 · 季/年/TTM）\n  DataGrid（科目列粘左 · 期间列）\n  来源行',
+    keys: [
+      ['Tab', '进表；折叠钮可聚焦'],
+      ['Enter / Space', '在折叠钮上：展开或收起'],
+      ['方向键', '在格间走（DataGrid）'],
+    ],
+  },
+  {
+    id: 'comps-table',
+    group: 'quant',
+    cardHeight: 480,
+    title: 'CompsTable 同业对比表',
+    summary:
+      '一行一家公司、一列一个指标的同业对比（KATANAview #2395）：本公司置顶、左侧一条竖线并写「本公司」，排序时不动；表尾中位数、均值两行（对全部行算原数）；每格按相对中位数好多少着强度底色，方向由指标的 better 定（PE 越低越好），没写方向的只写数不着色。指标分组用表上方的列集页签切换（估值 / 增长 / 盈利）。表本身是 DataGrid，页签是 ColumnSetTabs。功能参照 Koyfin Comps 与 Bloomberg RV。',
+    exports: ['CompsTable'],
+    props: [
+      {
+        part: 'CompsTable',
+        note: '数与文字全由 props 传；颜色只由 token 给。',
+        rows: [
+          { name: 'rows', type: 'CompsRow[]', desc: 'id、symbol、name、subject（本公司）、values（指标 id → 数）。' },
+          {
+            name: 'metrics',
+            type: 'CompsMetric[]',
+            desc: 'id、label、sub（口径小字）、group、better（higher / lower）、format、width。',
+          },
+          { name: 'groups', type: '{ id, label }[]', desc: '列集页签；第一组默认选中。不给就一次显示全部列。' },
+          {
+            name: 'labels',
+            type: 'CompsTableLabels',
+            desc: '表名、公司列头、页签读屏名、中位数、均值、本公司、空态。',
+          },
+        ],
+      },
+    ],
+    states: [
+      '默认：第一组列，原次序，本公司在最上。',
+      '按列排序：本公司仍在最上，其余按这一列，没数的排最后。',
+      '缺数的格写「—」，不进中位数与均值。',
+      '没写 better 的指标：只写数，不着色（字段语义推不出不自动给方向）。',
+    ],
+    donts: [
+      '不要给本公司行换底色：底色留给好坏强度。',
+      '不要猜指标的好坏方向。',
+      '不要用表尾的中位数去算底色以外的东西：底色是相对中位数，表尾写的是原数。',
+    ],
+    composition:
+      'CompsTable\n  列集页签（估值/增长/盈利）\n  DataGrid（公司列粘左 · 指标列 · 表尾中位数 / 均值）\n  来源行',
+    keys: [
+      ['Tab', '进页签、进表'],
+      ['方向键', '在页签间、格间走'],
+      ['Enter', '在列头上：排序'],
+    ],
+  },
+  {
+    id: 'valuation-band',
+    group: 'quant',
+    cardHeight: 420,
+    title: 'ValuationBand 估值带',
+    summary:
+      '价格线叠估值分位带（PE / PB Band，KATANAview #2395）：每条带 = 当期每股盈利 × 历史分位倍数（默认 10 / 25 / 50 / 75 / 90），最外两档之间一层很淡的面不盖住价格线；带线是中性灰浓度，越近中位越亮，价格线 2px 主墨色；右上读出当前分位与当前倍数。负倍数（亏损期）不进分布，那一段带线断开。坐标、十字线、LCD 读数与表格视图同 QuantileLayers。参照理杏仁、Wind 的 PE Band（只取画法）。',
+    exports: ['ValuationBand'],
+    props: [
+      {
+        part: 'ValuationBand',
+        note: '数与文字全由 props 传；颜色只用语义 token，不用涨跌色。',
+        rows: [
+          { name: 'prices', type: '(number | null)[]', desc: '价格序列。' },
+          { name: 'multiples', type: '(number | null)[]', desc: '与 prices 同长的估值倍数；负数与空不进分布。' },
+          {
+            name: 'quantiles',
+            type: 'number[]',
+            default: '[0.1, 0.25, 0.5, 0.75, 0.9]',
+            desc: '分位档（0..1，从低到高）。',
+          },
+          { name: 'formatPrice / formatMultiple / formatX', type: 'function', desc: '价格、倍数、横轴的写法。' },
+          { name: 'labels', type: 'ValuationBandLabels', desc: '读屏名、图右上三件、表头、带名、当前分位、空态。' },
+          { name: 'title / source', type: 'ReactNode', desc: '标题与来源行。' },
+        ],
+      },
+    ],
+    states: [
+      '默认：价格线、五条带、淡面，右上当前分位。',
+      '扫读：十字线与 LCD 读数列价格、倍数与各带的价位。',
+      '亏损期：带线断开，价格线照画。',
+      '没有可用倍数：空态一行字，不画图。',
+      '表格视图：同一份数写成表。',
+    ],
+    donts: ['不要用涨跌色画带：带只表示估值档位，不是涨跌。', '不要把负倍数算进分位。', '不要让面盖住价格线。'],
+    composition:
+      'ValuationBand\n  头（标题 · 当前分位读数 · 图右上三件）\n  图（淡面 · 带线 · 价格线 · 尾标）\n  表格视图 · 来源行',
+    keys: [
+      ['Tab', '进图'],
+      ['← →', '逐点扫读'],
+      ['Shift + ← →', '跳三点'],
+      ['Esc', '清除扫读点'],
     ],
   },
   {

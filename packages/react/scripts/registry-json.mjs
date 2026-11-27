@@ -20,6 +20,13 @@ const TARGET_ROOT = '~/src/katana/ui'
  * 有页的件，说明读页数据（gallery/registry.ts 的 PAGES.summary），这里不写第二份。
  */
 const INTERNAL = {
+  'doc-reader-model':
+    'DocReader 的纯逻辑：从块里抽目录、按关键词找命中块、把一段字切成命中与非命中的片段（不分大小写）。',
+  'statement-model':
+    'StatementTable 的纯逻辑：科目树按先序排可见行（收起的父科目不带子孙，缺父或成环的当顶层）、同比环比的变化率（分母取绝对值）。',
+  'comps-model': 'CompsTable 的纯逻辑：中位数、按 better 方向算相对中位数的好坏与着色量程、本公司置顶的排序。',
+  'valuation-band-model':
+    'ValuationBand 的纯逻辑：正倍数的历史分位（线性插值）、按分位倍数折回价格的带线、当前倍数的分位。',
   'tag-input-model':
     'TagInput 的纯逻辑：草稿与粘贴的拆分（逗号、分号、换行、制表符）、判重（不分大小写）、校验与上限，以及键盘在标签之间怎么走。',
   'tag-combobox-model':
@@ -292,6 +299,7 @@ function collectItems() {
       'status-bar',
       'workspace-tabs',
       'news-feed',
+      'doc-reader',
       'decision-queue',
       'hypothesis-ledger',
       'system-monitor',

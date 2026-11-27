@@ -88,6 +88,13 @@ export type {
   WatchRow,
 } from './hypothesis-ledger/hypothesis-ledger-model.ts'
 export { NewsFeed, type NewsFeedLabels, type NewsFeedProps } from './news-feed/news-feed.tsx'
+export {
+  DocReader,
+  type DocBlock,
+  type DocOutlineItem,
+  type DocReaderLabels,
+  type DocReaderProps,
+} from './doc-reader/doc-reader.tsx'
 export type { NewsFacet, NewsItem, NewsSymbol } from './news-feed/news-feed-model.ts'
 export {
   NewsReader,

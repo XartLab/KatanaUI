@@ -11135,6 +11135,240 @@
         }
       ]
     },
+    "CompsBetter": {
+      "kind": "type",
+      "source": "src/quant/comps-model.ts",
+      "props": []
+    },
+    "CompsMetric": {
+      "kind": "type",
+      "source": "src/quant/comps-table.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "sub",
+          "type": "string",
+          "required": false,
+          "description": "表头第二行的小字（口径：TTM、FY2026E）。"
+        },
+        {
+          "name": "group",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "better",
+          "type": "CompsBetter",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "format",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "width",
+          "type": "number",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "CompsRow": {
+      "kind": "type",
+      "source": "src/quant/comps-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "symbol",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "subject",
+          "type": "boolean",
+          "required": false,
+          "description": "本公司：置顶、高亮，不参与排序。"
+        },
+        {
+          "name": "values",
+          "type": "Readonly<Record<string, number | null | undefined>>",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "CompsTable": {
+      "kind": "component",
+      "source": "src/quant/comps-table.tsx",
+      "props": [
+        {
+          "name": "rows",
+          "type": "readonly CompsRow[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "metrics",
+          "type": "readonly CompsMetric[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "groups",
+          "type": "readonly { id: string; label: string }[]",
+          "required": false,
+          "description": "列集页签：给了就画，一组一个；第一组默认选中。"
+        },
+        {
+          "name": "labels",
+          "type": "CompsTableLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "maxHeight",
+          "type": "number",
+          "required": false,
+          "default": "520",
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "CompsTableLabels": {
+      "kind": "type",
+      "source": "src/quant/comps-table.tsx",
+      "props": [
+        {
+          "name": "table",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "symbol",
+          "type": "string",
+          "required": true,
+          "description": "公司那一列的列头。"
+        },
+        {
+          "name": "groups",
+          "type": "string",
+          "required": true,
+          "description": "列集页签那一行的读屏名。"
+        },
+        {
+          "name": "median",
+          "type": "string",
+          "required": true,
+          "description": "表尾两行的行名。"
+        },
+        {
+          "name": "mean",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "subject",
+          "type": "string",
+          "required": true,
+          "description": "本公司那一行的标记字（「本公司」），读屏也念。"
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "CompsTableProps": {
+      "kind": "type",
+      "source": "src/quant/comps-table.tsx",
+      "props": [
+        {
+          "name": "rows",
+          "type": "readonly CompsRow[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "metrics",
+          "type": "readonly CompsMetric[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "groups",
+          "type": "readonly { id: string; label: string }[]",
+          "required": false,
+          "description": "列集页签：给了就画，一组一个；第一组默认选中。"
+        },
+        {
+          "name": "labels",
+          "type": "CompsTableLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "maxHeight",
+          "type": "number",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
     "ConnectedScatter": {
       "kind": "component",
       "source": "src/quant/connected-scatter.tsx",
@@ -16722,6 +16956,254 @@
         {
           "name": "payAt",
           "type": "number",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "DocBlock": {
+      "kind": "type",
+      "source": "src/blocks/doc-reader/doc-reader-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "kind",
+          "type": "'heading' | 'paragraph'",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "text",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "level",
+          "type": "number",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "DocOutlineItem": {
+      "kind": "type",
+      "source": "src/blocks/doc-reader/doc-reader-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "text",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "level",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "DocReader": {
+      "kind": "component",
+      "source": "src/blocks/doc-reader/doc-reader.tsx",
+      "props": [
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "meta",
+          "type": "string",
+          "required": false,
+          "description": "标题下一行（「2026-04-28 · 年度报告 · 128 页」），调用方写好。"
+        },
+        {
+          "name": "blocks",
+          "type": "readonly DocBlock[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "labels",
+          "type": "DocReaderLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "activeId",
+          "type": "string",
+          "required": false,
+          "description": "滚到这一块并标出来。"
+        },
+        {
+          "name": "onCite",
+          "type": "(block: DocBlock) => void",
+          "required": false,
+          "description": "点了「引用」：拿到这一块。不给就不画引用钮。"
+        },
+        {
+          "name": "hideOutline",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "不画目录（窄格子里）。"
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "default": "560",
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "DocReaderLabels": {
+      "kind": "type",
+      "source": "src/blocks/doc-reader/doc-reader.tsx",
+      "props": [
+        {
+          "name": "reader",
+          "type": "string",
+          "required": true,
+          "description": "整个阅读器的读屏名。"
+        },
+        {
+          "name": "outline",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "search",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "matches",
+          "type": "(current: number, total: number) => string",
+          "required": true,
+          "description": "命中计数（「3 / 12」）。"
+        },
+        {
+          "name": "noMatch",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "previous",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "next",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "cite",
+          "type": "string",
+          "required": true,
+          "description": "引用钮的读屏名与提示（「引用这一段」）。"
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "DocReaderProps": {
+      "kind": "type",
+      "source": "src/blocks/doc-reader/doc-reader.tsx",
+      "props": [
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "meta",
+          "type": "string",
+          "required": false,
+          "description": "标题下一行（「2026-04-28 · 年度报告 · 128 页」），调用方写好。"
+        },
+        {
+          "name": "blocks",
+          "type": "readonly DocBlock[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "labels",
+          "type": "DocReaderLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "activeId",
+          "type": "string",
+          "required": false,
+          "description": "滚到这一块并标出来。"
+        },
+        {
+          "name": "onCite",
+          "type": "(block: DocBlock) => void",
+          "required": false,
+          "description": "点了「引用」：拿到这一块。不给就不画引用钮。"
+        },
+        {
+          "name": "hideOutline",
+          "type": "boolean",
+          "required": false,
+          "description": "不画目录（窄格子里）。"
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
           "required": false,
           "description": ""
         }
@@ -54333,6 +54815,340 @@
         }
       ]
     },
+    "StatementItem": {
+      "kind": "type",
+      "source": "src/quant/statement-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "parent",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "kind",
+          "type": "StatementItemKind",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "StatementItemKind": {
+      "kind": "type",
+      "source": "src/quant/statement-model.ts",
+      "props": []
+    },
+    "StatementMode": {
+      "kind": "type",
+      "source": "src/quant/statement-model.ts",
+      "props": []
+    },
+    "StatementPeriod": {
+      "kind": "type",
+      "source": "src/quant/statement-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "StatementTable": {
+      "kind": "component",
+      "source": "src/quant/statement-table.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly StatementItem[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "periods",
+          "type": "readonly StatementPeriod[]",
+          "required": true,
+          "description": "期间，从早到晚。"
+        },
+        {
+          "name": "values",
+          "type": "StatementValues",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "labels",
+          "type": "StatementTableLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "periodsPerYear",
+          "type": "number",
+          "required": false,
+          "default": "4",
+          "description": "一年几期：季报 4、年报 1；同比往前比这么多列。默认 4。"
+        },
+        {
+          "name": "formatValue",
+          "type": "(value: number, item: StatementItem) => string",
+          "required": false,
+          "description": "原值怎么写；默认 compact（K / M / B）。"
+        },
+        {
+          "name": "mode",
+          "type": "StatementMode",
+          "required": false,
+          "description": "显示哪种数；不给用内部状态（默认原值）。"
+        },
+        {
+          "name": "onModeChange",
+          "type": "(mode: StatementMode) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "frequencies",
+          "type": "readonly { id: F; label: string }[]",
+          "required": false,
+          "description": "频率开关（季 / 年 / TTM）：给了就画，选中哪个由调用方控制并换 periods 与 values。"
+        },
+        {
+          "name": "frequency",
+          "type": "F",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onFrequencyChange",
+          "type": "(frequency: F) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "defaultCollapsed",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "一开始收起的科目。"
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": false,
+          "description": "来源一行。"
+        },
+        {
+          "name": "maxHeight",
+          "type": "number",
+          "required": false,
+          "default": "560",
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "StatementTableLabels": {
+      "kind": "type",
+      "source": "src/quant/statement-table.tsx",
+      "props": [
+        {
+          "name": "table",
+          "type": "string",
+          "required": true,
+          "description": "表的读屏名。"
+        },
+        {
+          "name": "item",
+          "type": "string",
+          "required": true,
+          "description": "科目列的列头。"
+        },
+        {
+          "name": "modeGroup",
+          "type": "string",
+          "required": true,
+          "description": "原值 / 同比 / 环比开关的读屏名与三个字。"
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "yoy",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "qoq",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "frequencyGroup",
+          "type": "string",
+          "required": false,
+          "description": "频率开关的读屏名（给了 frequencies 才画）。"
+        },
+        {
+          "name": "collapse",
+          "type": "(item: StatementItem) => string",
+          "required": true,
+          "description": "折叠钮的读屏名（「收起 营业收入」）。"
+        },
+        {
+          "name": "expand",
+          "type": "(item: StatementItem) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "revised",
+          "type": "(revision: number, note?: string) => string",
+          "required": true,
+          "description": "更正标记的提示（第几版）。"
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "没有科目时写什么。"
+        }
+      ]
+    },
+    "StatementTableProps": {
+      "kind": "type",
+      "source": "src/quant/statement-table.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly StatementItem[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "periods",
+          "type": "readonly StatementPeriod[]",
+          "required": true,
+          "description": "期间，从早到晚。"
+        },
+        {
+          "name": "values",
+          "type": "StatementValues",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "labels",
+          "type": "StatementTableLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "periodsPerYear",
+          "type": "number",
+          "required": false,
+          "description": "一年几期：季报 4、年报 1；同比往前比这么多列。默认 4。"
+        },
+        {
+          "name": "formatValue",
+          "type": "(value: number, item: StatementItem) => string",
+          "required": false,
+          "description": "原值怎么写；默认 compact（K / M / B）。"
+        },
+        {
+          "name": "mode",
+          "type": "StatementMode",
+          "required": false,
+          "description": "显示哪种数；不给用内部状态（默认原值）。"
+        },
+        {
+          "name": "onModeChange",
+          "type": "(mode: StatementMode) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "frequencies",
+          "type": "readonly { id: F; label: string }[]",
+          "required": false,
+          "description": "频率开关（季 / 年 / TTM）：给了就画，选中哪个由调用方控制并换 periods 与 values。"
+        },
+        {
+          "name": "frequency",
+          "type": "F",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onFrequencyChange",
+          "type": "(frequency: F) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "defaultCollapsed",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "一开始收起的科目。"
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": false,
+          "description": "来源一行。"
+        },
+        {
+          "name": "maxHeight",
+          "type": "number",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "StatementValue": {
+      "kind": "type",
+      "source": "src/quant/statement-model.ts",
+      "props": []
+    },
+    "StatementValues": {
+      "kind": "type",
+      "source": "src/quant/statement-model.ts",
+      "props": []
+    },
     "StatusBar": {
       "kind": "component",
       "source": "src/blocks/status-bar/status-bar.tsx",
@@ -64457,6 +65273,248 @@
         {
           "name": "onIndexChange",
           "type": "(index: number | null) => void",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "ValuationBand": {
+      "kind": "component",
+      "source": "src/quant/valuation-band.tsx",
+      "props": [
+        {
+          "name": "prices",
+          "type": "readonly (number | null)[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "multiples",
+          "type": "readonly (number | null)[]",
+          "required": true,
+          "description": "与 prices 同长的估值倍数序列（PE 或 PB）。"
+        },
+        {
+          "name": "quantiles",
+          "type": "readonly number[]",
+          "required": false,
+          "default": "DEFAULT_BAND_QUANTILES",
+          "description": "分位档（0..1，从低到高）；默认 10 / 25 / 50 / 75 / 90。"
+        },
+        {
+          "name": "labels",
+          "type": "ValuationBandLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "formatPrice",
+          "type": "(value: number) => ChartValueText",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "formatMultiple",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "formatX",
+          "type": "(index: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "source",
+          "type": "ReactNode",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "default": "240",
+          "description": ""
+        },
+        {
+          "name": "onExport",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onFullscreen",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "ValuationBandLabels": {
+      "kind": "type",
+      "source": "src/quant/valuation-band.tsx",
+      "props": [
+        {
+          "name": "chart",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "actions",
+          "type": "ChartActionsLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "table",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "x",
+          "type": "string",
+          "required": true,
+          "description": "表格第一列（横轴）的表头。"
+        },
+        {
+          "name": "price",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "multiple",
+          "type": "string",
+          "required": true,
+          "description": "倍数的名字（PE、PB）。"
+        },
+        {
+          "name": "band",
+          "type": "(q: number, level: number | null) => string",
+          "required": true,
+          "description": "一条带的名字（「P25 · 18.2x」）。"
+        },
+        {
+          "name": "percentile",
+          "type": "(p: number) => string",
+          "required": true,
+          "description": "当前分位的读数（「当前分位 P63」）。"
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "没有可用倍数时写什么。"
+        }
+      ]
+    },
+    "ValuationBandProps": {
+      "kind": "type",
+      "source": "src/quant/valuation-band.tsx",
+      "props": [
+        {
+          "name": "prices",
+          "type": "readonly (number | null)[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "multiples",
+          "type": "readonly (number | null)[]",
+          "required": true,
+          "description": "与 prices 同长的估值倍数序列（PE 或 PB）。"
+        },
+        {
+          "name": "quantiles",
+          "type": "readonly number[]",
+          "required": false,
+          "description": "分位档（0..1，从低到高）；默认 10 / 25 / 50 / 75 / 90。"
+        },
+        {
+          "name": "labels",
+          "type": "ValuationBandLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "formatPrice",
+          "type": "(value: number) => ChartValueText",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "formatMultiple",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "formatX",
+          "type": "(index: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "source",
+          "type": "ReactNode",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onExport",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onFullscreen",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
           "required": false,
           "description": ""
         }

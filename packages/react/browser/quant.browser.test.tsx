@@ -20,6 +20,9 @@ import { VintageSeriesUsage } from '../gallery/usage/VintageSeriesUsage.tsx'
 import { MaeMfeScatterUsage } from '../gallery/usage/MaeMfeScatterUsage.tsx'
 import { ParamSurfaceHeatmapUsage } from '../gallery/usage/ParamSurfaceHeatmapUsage.tsx'
 import { PeriodReturnsTableUsage } from '../gallery/usage/PeriodReturnsTableUsage.tsx'
+import { StatementTableUsage } from '../gallery/usage/StatementTableUsage.tsx'
+import { CompsTableUsage } from '../gallery/usage/CompsTableUsage.tsx'
+import { ValuationBandUsage } from '../gallery/usage/ValuationBandUsage.tsx'
 import { RobustnessGateUsage } from '../gallery/usage/RobustnessGateUsage.tsx'
 import { UnderwaterChartUsage } from '../gallery/usage/UnderwaterChartUsage.tsx'
 import { WalkForwardMatrixUsage } from '../gallery/usage/WalkForwardMatrixUsage.tsx'
@@ -41,6 +44,9 @@ const items: Record<string, React.ReactNode> = {
   'mae-mfe-scatter': <MaeMfeScatterUsage />,
   'underwater-chart': <UnderwaterChartUsage />,
   'period-returns-table': <PeriodReturnsTableUsage />,
+  'statement-table': <StatementTableUsage />,
+  'comps-table': <CompsTableUsage />,
+  'valuation-band': <ValuationBandUsage />,
   'param-surface-heatmap': <ParamSurfaceHeatmapUsage />,
   'walk-forward-matrix': <WalkForwardMatrixUsage />,
   'robustness-gate': <RobustnessGateUsage />,
