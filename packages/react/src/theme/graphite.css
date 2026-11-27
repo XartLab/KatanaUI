@@ -29,9 +29,11 @@
     [data-slot='menubar-content'],
     [data-slot='select-content'],
     [data-slot='hover-card-content'],
-    [data-slot='dialog-content']
+    [data-slot='dialog-content'],
+    [data-slot='alert-dialog-content']
   ) {
   border-color: var(--glass-edge);
+  /* Graphite 下对话框与浮层同为 --radius-overlay（8）：这条盖掉了对话框自己的 --radius-dialog（14，Console 与 Sheet、搜索窗仍用它）。改前就是这样，#251 只写明、没改（待用户确认要不要让 Graphite 的对话框也取 14）。 */
   border-radius: var(--radius-overlay);
   background: var(--glass-bg);
   -webkit-backdrop-filter: var(--glass-blur);

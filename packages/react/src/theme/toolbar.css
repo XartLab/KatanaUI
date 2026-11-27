@@ -55,7 +55,7 @@
   height: 28px;
   padding: 0 6px;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   background: transparent;
   color: var(--k-content-body-foreground);
   font: var(--text-data) var(--font-sans);
@@ -63,8 +63,8 @@
   white-space: nowrap;
   cursor: pointer;
   transition:
-    color 0.2s,
-    background-color 0.15s,
+    color var(--dur-hover) var(--ease-hover),
+    background-color var(--dur-hover) var(--ease-hover),
     transform 0.14s cubic-bezier(0.23, 1, 0.32, 1);
 }
 .k-tool:hover:not(:disabled) {

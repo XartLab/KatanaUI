@@ -16,8 +16,8 @@
   cursor: ew-resize;
   touch-action: pan-y;
   transition:
-    border-color 0.12s,
-    background-color 0.12s;
+    border-color var(--dur-hover) var(--ease-hover),
+    background-color var(--dur-hover) var(--ease-hover);
 }
 .k-num:hover {
   background: var(--k-editable-bold-background-hover);

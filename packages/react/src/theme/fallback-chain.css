@@ -85,10 +85,10 @@
 }
 .k-fc-row[data-status='skipped'],
 .k-fc-row[data-status='waiting'] {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
 }
 .k-fc-level {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-num-small);
   text-align: right;
 }
@@ -103,7 +103,7 @@
   color: var(--k-content-primary-foreground);
 }
 .k-fc-name small {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-mono);
 }
 .k-fc-state {

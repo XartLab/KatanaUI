@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Button } from '../../src/index.ts'
 import { DataGrid, type GridColumn, type GridColumnLayout } from '../../src/blocks/index.ts'
 import {
+  cnLabelsZh,
   AuctionStep,
   FlowRace,
   MiniKCardGrid,
@@ -13,6 +14,7 @@ import {
   type Candle,
   type FlowSeries,
   type MiniKItem,
+  type MoveFeedLabels,
   type MoveItem,
   type Seat,
 } from '../../src/cn/index.ts'
@@ -285,7 +287,26 @@ const PUSHED: readonly Omit<MoveItem, 'id' | 'time'>[] = [
   { name: '示例新丙', code: '300203', type: 'dive', value: -5.2 },
 ]
 
+// 加密例子（#245，照 OKX「市场异动」）：币对、时间与涨跌幅都是编的。
+const COIN_MOVES: readonly MoveItem[] = [
+  { id: 'k1', time: '10:00:05', name: 'BTC-USDT', symbol: 'BTC-USDT-SWAP', type: 'rise5m', value: 1.24 },
+  { id: 'k2', time: '10:01:12', name: 'ETH-USDT', symbol: 'ETH-USDT-SWAP', type: 'fall5m', value: -2.38 },
+  { id: 'k3', time: '10:02:40', name: 'SOL-USDT', symbol: 'SOL-USDT-SWAP', type: 'rise5m', value: 3.05 },
+  { id: 'k4', time: '10:04:21', name: 'BTC-USDT', symbol: 'BTC-USDT-SWAP', type: 'fall5m', value: -1.06 },
+  { id: 'k5', time: '10:06:03', name: 'DOGE-USDT', symbol: 'DOGE-USDT-SWAP', type: 'rise5m', value: 4.7 },
+  { id: 'k6', time: '10:07:48', name: 'BTC-USDT', symbol: 'BTC-USDT-SWAP', type: 'rise15m', value: 2.11 },
+  { id: 'k7', time: '10:09:30', name: 'ETH-USDT', symbol: 'ETH-USDT-SWAP', type: 'rise5m', value: 1.87 },
+]
+const COIN_TYPES = [{ key: 'rise15m', label: '15 分钟涨幅', tone: 'up' as const }]
+const COIN_LABELS: MoveFeedLabels = {
+  ...cnLabelsZh.moveFeed,
+  region: '市场异动',
+  types: { ...cnLabelsZh.moveFeed.types, rise15m: '15 分钟涨幅' },
+  onlyCurrent: '当前币对',
+}
+
 export function MoveFeedDemo() {
+  const [symbol, setSymbol] = useState('BTC-USDT-SWAP')
   const [items, setItems] = useState<readonly MoveItem[]>(MOVES)
   const [picked, setPicked] = useState<string | null>(null)
   const push = () =>
@@ -312,6 +333,26 @@ export function MoveFeedDemo() {
           selectedId={items.find((item) => `${item.code} ${item.name}` === picked)?.id ?? null}
           onSelect={(item) => setPicked(`${item.code} ${item.name}`)}
         />
+      </div>
+      <p className="gal-note">
+        加密市场（照 OKX「市场异动」）：条目的 symbol 写币对，传 currentSymbol 就多一个「只看当前品种」勾选； 类型文字走
+        labels.types（5 分钟涨幅 / 跌幅随包，15 分钟涨幅用 types 自定）。下面切换「当前品种」，勾选的筛选对象跟着换。
+      </p>
+      <Row>
+        {['BTC-USDT-SWAP', 'ETH-USDT-SWAP'].map((id) => (
+          <Button
+            key={id}
+            size="sm"
+            variant={symbol === id ? 'primary' : 'default'}
+            aria-pressed={symbol === id}
+            onClick={() => setSymbol(id)}
+          >
+            {id}
+          </Button>
+        ))}
+      </Row>
+      <div className="gal-wide" data-testid="move-feed-crypto" style={{ maxWidth: 560 }}>
+        <MoveFeed items={COIN_MOVES} types={COIN_TYPES} currentSymbol={symbol} labels={COIN_LABELS} />
       </div>
     </>
   )

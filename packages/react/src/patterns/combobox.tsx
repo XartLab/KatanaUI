@@ -56,7 +56,7 @@ function ComboboxContent({
       align="start"
       sideOffset={2}
       className={cn(
-        'w-[max(var(--radix-popover-trigger-width),220px)] overflow-hidden rounded-[7px] border-(color:--k-overlay-compact-borderColor) p-0 shadow-(--k-overlay-compact-shadow)',
+        'w-[max(var(--radix-popover-trigger-width),220px)] overflow-hidden rounded-[var(--radius-overlay)] border-(color:--k-overlay-compact-borderColor) p-0 shadow-(--k-overlay-compact-shadow)',
         className,
       )}
       {...props}

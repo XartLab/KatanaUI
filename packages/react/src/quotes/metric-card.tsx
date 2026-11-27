@@ -8,6 +8,7 @@
 // 读数壳（2026-11-18，体检 §1）：MetricCard 是报价类读数卡的共用壳，字段统一 label / value / unit / changePct（+ 多段 changes）；
 // variant="tile" 是原来的 SparkTile（KPI 瓦片，metric-tile.tsx，DOM 与样子照旧），SparkTile 留作兼容的旧名。数值一格两种外观共用 ReadoutValue。
 import { createContext, useContext, useState, type AriaAttributes, type ReactNode } from 'react'
+import { fillVar } from '../lib/fill.ts'
 import { cn } from '../lib/cn.ts'
 import { ToggleGroup, ToggleGroupItem } from '../primitives/toggle-group.tsx'
 import { ChangeText } from './change-text.tsx'
@@ -154,9 +155,7 @@ function StageBand({ stages, current }: { stages: readonly MetricStage[]; curren
             }}
           />
         ))}
-        {mark !== null ? (
-          <b className="k-metric-mark" style={{ left: `${Math.min(100, Math.max(0, mark))}%` }} />
-        ) : null}
+        {mark !== null ? <b className="k-metric-mark" style={fillVar(Math.min(100, Math.max(0, mark)) / 100)} /> : null}
       </div>
       <div className="k-metric-stage-names">
         <span>{stages[0]!.label}</span>

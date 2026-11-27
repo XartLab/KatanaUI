@@ -68,6 +68,8 @@
 @import './theme/quote-table.css';
 @import './theme/fonts.css';
 @import './theme/rendering.css';
+/* 中英排版开关（#250）：权重为 0 的默认值，排在渲染之后、各件样式之前，件自己的规则照旧压得过它。 */
+@import './theme/typesetting.css';
 @import './theme/side-nav.css';
 @import './theme/chart-kit.css';
 @import './theme/brush-chart.css';
@@ -119,6 +121,7 @@
 @import './theme/orders-table.css';
 @import './theme/account-equity.css';
 @import './theme/funding-rate.css';
+@import './theme/derivatives.css';
 @import './theme/options-chain.css';
 @import './theme/net-buy-bar.css';
 @import './theme/order-book.css';
@@ -133,6 +136,9 @@
 @import './theme/peer-cards.css';
 @import './theme/key-stats.css';
 @import './theme/watchlist.css';
+@import './theme/market-browser.css';
+@import './theme/strategy-launcher.css';
+@import './theme/floating-window.css';
 @import './theme/ticker-tape.css';
 @import './theme/refresh-control.css';
 @import './theme/metric-card.css';

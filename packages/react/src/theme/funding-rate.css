@@ -58,7 +58,7 @@
   left: 0;
   right: 0;
   min-height: 1px;
-  border-radius: 1px;
+  border-radius: var(--radius-sm);
   background: var(--k-content-secondary-foreground);
 }
 .k-fund-bar[data-tone='up'] > i {
