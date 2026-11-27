@@ -395,7 +395,8 @@ export function OrderTicket({
   const [takeProfitText, setTakeProfitText] = useState(initialExits?.takeProfit ?? '')
   const [stopLossText, setStopLossText] = useState(initialExits?.stopLoss ?? '')
   const [templateId, setTemplateId] = useState('')
-  const [exitUnit, setExitUnit] = useState<ExitUnit>('price')
+  // 止盈、止损各自选填法（照 OKX：单位在各自框上的下拉里），止盈按收益率、止损按价格这类组合都行。
+  const [exitUnits, setExitUnits] = useState<Record<'tp' | 'sl', ExitUnit>>({ tp: 'price', sl: 'price' })
   const [triggerPrice, setTriggerPrice] = useState<TriggerPriceType | undefined>(triggerPriceTypes?.[0])
   const ids = useId()
   const format = ticketFormat(locale, instrument.tickSize, instrument.lotSize)
@@ -429,7 +430,7 @@ export function OrderTicket({
       unit === 'price' ||
       (labels.exitUnits?.[unit] && !(unit === 'pnl' && mode === 'risk') && !(unit === 'roe' && !levered)),
   )
-  const unit: ExitUnit = unitOptions.includes(exitUnit) ? exitUnit : 'price'
+  const unitOf = (kind: 'tp' | 'sl'): ExitUnit => (unitOptions.includes(exitUnits[kind]) ? exitUnits[kind] : 'price')
   // 先不带止盈止损算一遍拿入场价与张数（盈亏额换算要用），再按单位给两个方向各换出触发价。
   const bare: Record<OrderSide, SideFigures> = { buy: figuresFor('buy', input), sell: figuresFor('sell', input) }
   const exitPriceOf = (kind: 'tp' | 'sl', side: OrderSide) =>
@@ -438,7 +439,7 @@ export function OrderTicket({
           kind,
           side,
           value: parseAmount(kind === 'tp' ? takeProfitText : stopLossText),
-          unit,
+          unit: unitOf(kind),
           entry: bare[side].price,
           leverage: levered ? leverage : 1,
           contracts: bare[side].sizing.contracts,
@@ -474,7 +475,7 @@ export function OrderTicket({
     const entry = figures[defaultSide].price
     if (!template || !(entry > 0)) return
     // 模板填的是价格：单位切回价格，免得把价格当百分比读。
-    setExitUnit('price')
+    setExitUnits({ tp: 'price', sl: 'price' })
     const sign = defaultSide === 'buy' ? 1 : -1
     setTakeProfitText(template.takeProfit ? toTick(entry * (1 + sign * template.takeProfit), instrument.tickSize) : '')
     setStopLossText(template.stopLoss ? toTick(entry * (1 - sign * template.stopLoss), instrument.tickSize) : '')
@@ -765,8 +766,8 @@ export function OrderTicket({
       </Tabs>
 
       {closing ? null : (
-        // 止盈止损（用户 2026-11-27：方的勾选框丑、排版要重新设计）：标题行右边是拨动开关；展开后一排单位分段、
-        // 止盈与止损各一个框（标签在框内左边，单位在框内右边，不占框外的行），框下一行按方向写换出来的触发价，最底下触发价类型与托管方式。
+        // 止盈止损（用户 2026-11-27：方的勾选框丑、排版要重新设计）：标题行右边是拨动开关；展开后
+        // 止盈与止损各一个框（标签在框内左边，填法下拉在框内右边，各自选，不占框外的行），框下一行按方向写换出来的触发价，最底下触发价类型与托管方式。
         <div className="mt-[14px] flex flex-col gap-[10px] border-t border-(color:--k-separable-bold-borderColor) pt-[10px]">
           <div className="flex h-7 items-center justify-between gap-2">
             <label htmlFor={exitsSwitchId} className="k-text-data cursor-pointer font-semibold text-ink">
@@ -802,37 +803,15 @@ export function OrderTicket({
           </div>
           {exitsShown ? (
             <div id={exitsId} className="flex flex-col gap-[10px]">
-              {unitOptions.length > 1 ? (
-                <ToggleGroup
-                  data-slot="ticket-exit-unit"
-                  aria-label={labels.exitUnit ?? labels.exits}
-                  fullWidth
-                  value={unit}
-                  onValueChange={(value) => {
-                    if (!value) return
-                    setExitUnit(value as ExitUnit)
-                    setTakeProfitText('')
-                    setStopLossText('')
-                  }}
-                  className="box-border h-7 gap-0 rounded-[var(--radius-control)] border-0 bg-(--ticket-group) p-[3px]"
-                >
-                  {unitOptions.map((value) => (
-                    <ToggleGroupItem
-                      key={value}
-                      value={value}
-                      className="k-text-data h-full rounded-[var(--radius-inner)] font-normal text-ink-3 data-[state=on]:bg-(--ticket-field-hover) data-[state=on]:font-medium data-[state=on]:text-ink"
-                    >
-                      {value === 'price' ? (labels.exitUnits?.price ?? quote) : labels.exitUnits?.[value]}
-                    </ToggleGroupItem>
-                  ))}
-                </ToggleGroup>
-              ) : null}
               {(['tp', 'sl'] as const).map((kind) => {
                 const id = kind === 'tp' ? takeProfitId : stopLossId
                 const text = kind === 'tp' ? takeProfitText : stopLossText
                 // 框下只写换出来的触发价（按价格填时不写，框里就是）；预计盈亏在下面的明细里有，这里不重复（同屏同一个数只出现一次）。
                 const estimates = sides.map((side) => ({ side, price: exitPriceOf(kind, side) }))
+                const unit = unitOf(kind)
                 const shown = unit !== 'price' && text !== '' && estimates.some((item) => item.price > 0)
+                const unitLabel = (value: ExitUnit) =>
+                  value === 'price' ? (labels.exitUnits?.price ?? quote) : (labels.exitUnits?.[value] ?? value)
                 return (
                   <div key={kind} className="flex flex-col gap-[4px]">
                     <BoxInput
@@ -840,7 +819,35 @@ export function OrderTicket({
                       label={kind === 'tp' ? labels.takeProfit : labels.stopLoss}
                       slot={kind === 'tp' ? 'ticket-take-profit' : 'ticket-stop-loss'}
                       prefix={kind === 'tp' ? labels.takeProfit : labels.stopLoss}
-                      suffix={unit === 'price' || unit === 'pnl' ? quote : '%'}
+                      suffix={
+                        unitOptions.length > 1 ? (
+                          <Select
+                            value={unit}
+                            onValueChange={(value) => {
+                              setExitUnits((current) => ({ ...current, [kind]: value as ExitUnit }))
+                              if (kind === 'tp') setTakeProfitText('')
+                              else setStopLossText('')
+                            }}
+                          >
+                            <SelectTrigger
+                              aria-label={`${kind === 'tp' ? labels.takeProfit : labels.stopLoss} · ${labels.exitUnit ?? labels.exits}`}
+                              data-slot={`ticket-${kind}-unit`}
+                              className="k-text-data h-6 w-auto min-w-0 gap-1 rounded-none border-0 bg-transparent px-0 font-normal text-ink-2"
+                            >
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent align="end">
+                              {unitOptions.map((value) => (
+                                <SelectItem key={value} value={value}>
+                                  {unitLabel(value)}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          quote
+                        )
+                      }
                       invalid={
                         kind === 'sl' &&
                         sides.every((side) => {
