@@ -7,9 +7,6 @@
   gap: 12px;
   min-width: 0;
   padding: 14px 16px;
-  border: 1px solid var(--k-separable-tertiary-borderColor);
-  border-radius: var(--radius-control);
-  background: var(--k-surface-base-background);
   color: var(--k-content-primary-foreground);
   font: var(--text-body) var(--font-sans);
 }
@@ -76,6 +73,6 @@
 .k-profile-empty,
 .k-profile-source {
   margin: 0;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }

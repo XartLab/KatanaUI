@@ -2,11 +2,15 @@
 // 侧栏导航（2026-11-17，用户：「为什么我们的没法跟 Rare UI 左侧栏一样」）：照 rareui.com 组件站左栏的结构与手感（同日在用户 Chrome 里实测），实现原创。
 // - 分组：小号大写组名，组内一列链接；没选中的字淡（ink-300），悬停变亮，当前项最亮。
 // - 轨迹：每组左边一条 1px 虚线从组顶走到「当前项」的中线，再用一个 6px 半径的弯钩拐进那一项；悬停另一项时，同样的轨迹以淡色画到悬停项。
-//   轨迹的 top / height 走 200ms 过渡，切换当前项时会「滑」过去（不跟系统的减少动态效果，产品底线）。
-// - 搜索：顶上一个过滤框，⌘K / Ctrl+K 聚焦；只按标题与关键词过滤，没有命中的组整组隐藏。
+//   轨迹的位置（--k-trail-h）走 translate 的 200ms 过渡，切换当前项时会「滑」过去（不跟系统的减少动态效果，产品底线）。
+// - 搜索：顶上一个过滤框，Mod+K（Mac 是 ⌘K，别处 Ctrl+K）聚焦；只按标题与关键词过滤，没有命中的组整组隐藏。
+//   快捷键经 useHotkeys 登记在注册表里（#87 第 2 条）：只认这一个组合（Ctrl+Shift+K 不拦），快捷键总览里列得出来；
+//   页上别的地方要用 Mod+K（命令面板）时，在更近的注册表或非 global 作用域里登记，就盖过它。
 // 件不管路由：items 给 href，当前项由调用方传 current。
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
+import { useHotkeyRegistry, useHotkeys } from './hotkeys.tsx'
+import { comboKeys, normalizeCombo } from './hotkeys-model.ts'
 
 export type SideNavItem = {
   id: string
@@ -40,6 +44,8 @@ export type SideNavProps = {
   searchLabel?: string
   /** @deprecated Use `labels.empty`; kept for one version. */
   emptyLabel?: string
+  /** Shortcut that focuses the search box, registered with useHotkeys (Mod is ⌘ on Mac, Ctrl elsewhere); null for none. Defaults to Mod+K. */
+  searchHotkey?: string | null
   'aria-label'?: string
 }
 
@@ -49,8 +55,8 @@ type Trail = { height: number } | null
 function TrailMark({ kind, mark }: { kind: 'hover' | 'active'; mark: (node: HTMLSpanElement | null) => void }) {
   return (
     <span ref={mark} className="k-sidenav-trail" data-kind={kind} style={{ opacity: 0 }} aria-hidden="true">
-      <span className="k-sidenav-line" style={{ height: 0 }} />
-      <svg className="k-sidenav-hook" width="12" height="7" viewBox="0 0 12 7" fill="none" style={{ top: -6 }}>
+      <span className="k-sidenav-line" />
+      <svg className="k-sidenav-hook" width="12" height="7" viewBox="0 0 12 7" fill="none">
         <path d="M0.5 0a6 6 0 0 0 6 6H12" stroke="currentColor" strokeDasharray="2 2" />
       </svg>
     </span>
@@ -59,12 +65,10 @@ function TrailMark({ kind, mark }: { kind: 'hover' | 'active'; mark: (node: HTML
 
 function paint(mark: HTMLSpanElement | null, trail: Trail) {
   if (!mark) return
-  const line = mark.firstElementChild as HTMLElement | null
-  const hook = mark.lastElementChild as SVGElement | null
   mark.style.opacity = trail ? '1' : '0'
   if (!trail) return
-  if (line) line.style.height = `${trail.height}px`
-  if (hook) hook.style.top = `${trail.height}px`
+  // 线与钩都读轨迹容器上的 --k-trail-h（px），用 translate 移动，不对 height / top 做过渡。
+  mark.style.setProperty('--k-trail-h', `${trail.height}px`)
 }
 
 function Group({ group, current }: { group: SideNavGroup; current?: string }) {
@@ -140,24 +144,35 @@ export function SideNav({
   labels,
   searchLabel = labels?.search,
   emptyLabel = labels?.empty,
+  searchHotkey = 'Mod+K',
   ...rest
 }: SideNavProps) {
   const [query, setQuery] = useState('')
   const input = useRef<HTMLInputElement>(null)
   const scroller = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!searchLabel) return
-    const onKey = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
-        event.preventDefault()
-        input.current?.focus()
-        input.current?.select()
-      }
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [searchLabel])
+  const { platform } = useHotkeyRegistry()
+  const hotkeyId = `side-nav-search${useId()}`
+  const hotkey = searchLabel && searchHotkey ? searchHotkey : null
+  useHotkeys(
+    hotkey
+      ? [
+          {
+            id: hotkeyId,
+            combo: hotkey,
+            label: searchLabel!,
+            allowInInput: true,
+            handler: () => {
+              input.current?.focus()
+              input.current?.select()
+            },
+          },
+        ]
+      : [],
+  )
+  // 输入框右端的按键提示照平台写：Mac 是 ⌘K，别处 Ctrl+K。
+  const hotkeyText = hotkey
+    ? comboKeys(normalizeCombo(hotkey, platform), platform).join(platform === 'mac' ? '' : '+')
+    : null
 
   // 当前项滚进可视区（只在 current 变了时）。
   useEffect(() => {
@@ -208,7 +223,7 @@ export function SideNav({
               }
             }}
           />
-          <kbd aria-hidden="true">⌘K</kbd>
+          {hotkeyText ? <kbd aria-hidden="true">{hotkeyText}</kbd> : null}
         </div>
       ) : null}
       <div ref={scroller} className="k-sidenav-scroll">

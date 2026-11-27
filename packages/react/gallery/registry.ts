@@ -74,6 +74,8 @@ export const NON_COMPONENT_EXPORTS: readonly string[] = [
   'focusRingInset',
   'InlineOverlays',
   'LOADING_TIMEOUT_MS',
+  // 全局的小工具，不是件：说明在「基础 → 中英排版开关」页（#250）。
+  'installTruncationTitles',
 ]
 
 export const PAGES: readonly DocPage[] = [
@@ -86,13 +88,17 @@ export const PAGES: readonly DocPage[] = [
       '30 高的默认按钮，六种变体与三种尺寸；悬停提亮、按下缩到 0.97，禁用降到 45% 不透明度。颜色只读 actionable（bold = primary、subtle = icon、negative = danger）、content、separable、focused 这几类 characteristic，高度与内距读密度（data-density 的 size-base、size-row、spacing-*）；「主题 × 密度」那三行在 high、medium、low 下各摆一遍。',
     exports: ['Button', 'buttonVariants'],
     propParts: [
-      { part: 'Button', note: '其余属性透传给原生 button；type 默认 button，放进表单不会误提交。' },
+      {
+        part: 'Button',
+        note: '其余属性透传给原生 button；type 默认 button，放进表单不会误提交。pending：动作进行中，满 300ms 才在原地出转圈（出了至少留 500ms），字与宽度不变，期间再按无效但仍可聚焦，aria-busy=true；spinIcon 配 pending，按钮自己的图标就是动作（刷新、同步）时转它自己，至少一整圈、停在整圈上。',
+      },
       { part: 'buttonVariants', note: '返回类名的函数，给不是 button 的元素画成按钮（包着文件输入的 label 之类）。' },
     ],
     states: [
       '默认：4% 白底 8% 白边，悬停提亮，按下缩到 0.97。',
       '尺寸：md（默认，30 高）、sm（26 高、圆角 8、字 11 粗 600）、icon（28 见方，只放图标）；旧名 size="default" 等于 md。',
       '禁用：45% 不透明度，不响应指针。',
+      '进行中（pending）：满 300ms 才出一个小环（有字的按钮画在左内边距里，图标按钮里换掉原图标），出了至少留 500ms；字与宽度不变，不灰，aria-busy，再按无效但键盘与读屏仍能到；300ms 内结束的不出转圈。',
       '焦点：键盘 Tab 到时画 focus-ring 的外框。',
       'effect（改自 SmoothUI，MIT）：magnetic 指针靠近时按钮朝它偏、离开弹回；dot-morph 前面一颗点悬停时拉成竖条；clip-corners 四个角切掉、悬停时切口变大。三种只在有精确指针的设备上动。',
     ],
@@ -101,6 +107,7 @@ export const PAGES: readonly DocPage[] = [
       '图标按钮必须带 aria-label。',
       '不要用颜色以外没有字的危险按钮。',
       'effect 一个界面里最多给一两个主操作用，不要成排；dot-morph 不能与 asChild 同用。',
+      '不要在按钮转圈的同时再盖整页遮罩或顶部进度条：一次等待只留一个指示。',
     ],
     composition: 'Button',
     keys: [
@@ -382,17 +389,21 @@ export const PAGES: readonly DocPage[] = [
     group: 'overlays',
     cardHeight: 152,
     title: 'Tooltip 提示',
-    summary: '悬停或聚焦时出现的短说明，从触发处轻升；默认没有延迟。',
+    summary: '悬停或聚焦时出现的短说明，从触发处轻升；悬停停 500ms 才出，出了以后 400ms 内移到邻居立即出。',
     exports: ['Tooltip', 'TooltipContent', 'TooltipProvider', 'TooltipTrigger', 'tooltipContentClass'],
     propParts: [
-      { part: 'TooltipProvider', note: '其余属性透传给 Radix Tooltip.Provider。' },
+      {
+        part: 'TooltipProvider',
+        note: '悬停时间在这里统一：delayDuration 默认 500，skipDelayDuration 默认 400（导出为 TOOLTIP_DELAY_MS、TOOLTIP_SKIP_MS）；其余属性透传给 Radix Tooltip.Provider。',
+      },
       { part: 'Tooltip', note: '其余属性透传给 Radix Tooltip.Root。' },
       { part: 'TooltipTrigger', note: '其余属性透传给 Radix Tooltip.Trigger。用 asChild 套在按钮上。' },
       { part: 'TooltipContent', note: '其余属性透传给 Radix Tooltip.Content。' },
       { part: 'tooltipContentClass', note: '提示的皮肤类名，应用里自己定位的提示（图表悬停）借它长一个样。' },
     ],
     states: [
-      '触发器静止；悬停或聚焦后浮出提示（默认没有延迟）。',
+      '触发器静止；悬停停满 500ms 浮出提示；聚焦立即浮出。',
+      '出过提示以后 400ms 内移到邻居：立即出、原地换字；离开超过 400ms 再进，重新等 500ms。按下触发器就收，指针离开前不再出。',
       '浮出：最深底 + 1px 分隔线色边 + --k-overlay-tooltip-shadow，没有小箭头。',
       '内容里有键帽（.k-kbd）：压成实心浅色块，字用最深底色。',
       '移开或 Esc：直接消失，不播退场动画（#1849）。',
@@ -503,6 +514,70 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'alert-dialog',
+    group: 'overlays',
+    cardHeight: 334,
+    title: 'AlertDialog 确认对话框',
+    summary:
+      '要用户明确选一个才关的对话框：平仓、撤单、删除这类不能撤回的事。点背板不关，打开时焦点落在「取消」，Esc 关掉（不点任何钮）；样子同 Dialog，Console 下边粗一档。',
+    exports: [
+      'AlertDialog',
+      'AlertDialogAction',
+      'AlertDialogBody',
+      'AlertDialogCancel',
+      'AlertDialogContent',
+      'AlertDialogDescription',
+      'AlertDialogFooter',
+      'AlertDialogHeader',
+      'AlertDialogOverlay',
+      'AlertDialogPortal',
+      'AlertDialogTitle',
+      'AlertDialogTrigger',
+    ],
+    propParts: [
+      { part: 'AlertDialog', note: '其余属性透传给 Radix AlertDialog.Root。' },
+      {
+        part: 'AlertDialogContent',
+        note: 'size：default 560 宽（同 Dialog）、sm 320 宽（一句话说得清的确认）。其余属性透传给 Radix AlertDialog.Content。',
+      },
+      {
+        part: 'AlertDialogAction',
+        note: 'variant：primary（默认）、danger（不能撤回的）、default。画成 Button，点了关闭。',
+      },
+      {
+        part: 'AlertDialogCancel',
+        note: '画成 Button；打开时焦点在它上面。Esc 关掉但不点它，取消要做的事写在 AlertDialog 的 onOpenChange 里。',
+      },
+      {
+        part: 'AlertDialogHeader / AlertDialogBody / AlertDialogFooter',
+        symbol: 'AlertDialogHeader',
+        note: '标题栏（50 高）、正文、按钮栏，纯排版，同 Dialog。',
+      },
+      {
+        part: 'AlertDialogTrigger / AlertDialogTitle / AlertDialogDescription / AlertDialogPortal / AlertDialogOverlay',
+        symbol: 'AlertDialogTrigger',
+        note: '透传 Radix 同名部件。',
+      },
+    ],
+    states: [
+      '收起；打开后焦点落在「取消」，圈在对话框里；关闭后焦点回触发器，没有触发器时回到打开前的元素。',
+      '打开：同 Dialog 的底、阴影与升起动效；Console 下边换成粗一档的分隔色（--k-separable-bold-borderColor），Graphite 下同其它浮层是玻璃边。',
+      '点背板不关：只有「取消」「确认」与 Esc 能关。',
+    ],
+    donts: [
+      '能撤回的操作不要用确认对话框，直接做并给撤销。',
+      '按钮写动作本身（「平仓」「删除」），不要写「确定」「是」。',
+      '要填表、要多步的用 Dialog。',
+    ],
+    composition:
+      'AlertDialog\n  AlertDialogTrigger\n  AlertDialogContent\n    AlertDialogHeader\n      AlertDialogTitle\n    AlertDialogBody\n      AlertDialogDescription\n    AlertDialogFooter\n      AlertDialogCancel\n      AlertDialogAction',
+    keys: [
+      ['Esc', '关闭（不点任何钮，只触发 onOpenChange(false)），焦点回到打开前的元素'],
+      ['Tab / Shift+Tab', '焦点在「取消」与「确认」之间循环，不出去'],
+      ['Enter / Space', '按下拿着焦点的钮'],
+    ],
+  },
+  {
     id: 'dropdown-menu',
     group: 'overlays',
     cardHeight: 314,
@@ -548,7 +623,7 @@ export const PAGES: readonly DocPage[] = [
       {
         part: 'DropdownMenuSub / DropdownMenuSubTrigger / DropdownMenuSubContent',
         symbol: 'DropdownMenuSub',
-        note: '二级菜单。安全三角：斜着朝二级走时路过下一行不误收。',
+        note: '二级菜单。悬停 220ms 开；安全三角：斜着朝二级走时路过下一行不换不闪，停在三角里最多护 1.2s；滑出 360ms 才收。',
       },
       {
         part: 'DropdownMenuLabel / DropdownMenuSeparator / DropdownMenuShortcut / DropdownMenuGroup / DropdownMenuPortal',
@@ -893,6 +968,10 @@ export const PAGES: readonly DocPage[] = [
     composition: 'FlagMark（button | span）\n  FlagGlyph（svg 燕尾旗）\nFlagFilter（group）\n  按钮 × n（旗 + 个数）',
     keys: [
       ['Enter / Space', '在旗上：插上 / 拔掉（DataGrid 里旗不进 Tab 顺序，键盘走行菜单）'],
+      [
+        'Alt+Enter',
+        '（DataGrid 演示）给键盘所在的行插旗 / 拔旗：照 TradingView 自选表，调用方用 useHotkeys 登记、作用在 onCursorChange 给的行上',
+      ],
       ['Tab', '在过滤按钮间移动；Enter 切换过滤'],
     ],
   },
@@ -1004,7 +1083,10 @@ export const PAGES: readonly DocPage[] = [
     composition: 'HotkeysProvider（可省）\n  组件 × n（useHotkeys 登记）\n注册表（window keydown → 匹配 → handler）',
     keys: [
       ['Mod+/', '（演示）打开快捷键总览'],
-      ['Mod+Shift+P', '（演示）打开命令面板；文档站目录的搜索占着 Mod+K（连带 Mod+Shift+K）'],
+      [
+        'Mod+K',
+        '（演示）打开命令面板（照 TradingView）；演示的注册表挂在 document 上，先于文档站目录搜索（window 上的默认注册表）接到这一下',
+      ],
       ['Alt+R', '（演示）图表作用域：重置图表；在输入框里不触发'],
     ],
   },
@@ -1014,24 +1096,26 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 420,
     title: 'ShortcutSheet 快捷键总览',
     summary:
-      '按作用域分组列出注册表里现在的快捷键，可搜索，冲突标出来，可接 ShortcutRecorder 改键。照 TradingView 的 Keyboard shortcuts 面板（Ctrl/Cmd+/）。件只是内容，放进 Dialog 或侧栏由调用方定。',
+      '按作用域分组列出注册表里现在的快捷键，可搜索，冲突标出来，可接 ShortcutRecorder 改键。照 TradingView 的 Keyboard shortcuts 面板（Ctrl/Cmd+/）：分节默认收起，点节名展开；搜索时命中的节自动展开。件只是内容，放进 Dialog 或侧栏由调用方定。',
     exports: ['ShortcutSheet'],
     propParts: [
       {
         part: 'ShortcutSheet',
-        note: '读 useHotkeyEntries；文案（搜索、空态、或、冲突、作用域名、改键用的录键文案）全由调用方传。',
+        note: '读 useHotkeyEntries；文案（搜索、空态、或、冲突、作用域名、改键用的录键文案）全由调用方传。defaultOpenScopes 给一开始就展开的节，其余收起。',
       },
     ],
     states: [
-      '搜索：按名字、作用域、按键过滤；没有匹配显示空态。',
+      '收起（默认）：只有节名，三角朝右；点了展开，三角转下。',
+      '搜索：按名字、作用域、按键过滤，命中的节都展开（节名钮这时不可点），没命中的节不出；清空回到用户展开过的样子；没有匹配显示空态。',
       '冲突：名字下一行 warn 色小字。',
       '改键：每行是 ShortcutRecorder。',
     ],
     donts: ['不要自己另写一份快捷键清单：总览读注册表，跟实际生效的一致。'],
     composition:
-      'ShortcutSheet\n  搜索框\n  section × 作用域\n    h3\n    ul\n      li（名字 | Kbd 或 ShortcutRecorder）',
+      'ShortcutSheet\n  搜索框\n  section × 作用域\n    h3 > button（aria-expanded，展开 / 收起）\n    ul（展开时）\n      li（名字 | Kbd 或 ShortcutRecorder）',
     keys: [
-      ['打字', '在搜索框里过滤'],
+      ['打字', '在搜索框里过滤（命中的节自动展开）'],
+      ['Enter / Space', '在节名上：展开 / 收起这一节'],
       ['Tab', '（改键时）在各行的录键框之间移动'],
     ],
   },
@@ -1246,7 +1330,7 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 554,
     title: 'Loading 加载态',
     summary:
-      '加载态的唯一入口：给 pending 等数据，不给 pending 当 Suspense 边界，给 phase 钉在某一段直接画。500ms 内到了什么也不画；超过了出点阵骨架，2s 说「仍在加载」，10s 转琥珀条加重试。',
+      '加载态的唯一入口：给 pending 等数据，不给 pending 当 Suspense 边界，给 phase 钉在某一段直接画。500ms 内到了什么也不画；超过了出点阵骨架，出了至少留 500ms，2s 说「仍在加载」，10s 转琥珀条加重试。',
     exports: ['Loading', 'LoadingBoundary', 'LoadingView'],
     propParts: [
       {
@@ -1261,6 +1345,7 @@ export const PAGES: readonly DocPage[] = [
       '超过 500ms：caption（亮强调色灯 +「加载 <内容> · <来源>」）加点阵骨架；2s：说「仍在加载」。',
       '10s：琥珀条（warn 灯 + 文案 + 重试），骨架留着、降到半透明；没给 onRetry 就没有重试钮。',
       '数据到了：骨架出过的内容用 2px 模糊揭示，没出过的直接出现。',
+      '最短停留：骨架出了至少留 500ms 再交出内容（510ms 到的数据，骨架留到 1000ms）；只管 pending 模式，Suspense 模式没有。',
     ],
     donts: [
       '不要脉冲、不要转圈。',
@@ -1287,7 +1372,7 @@ export const PAGES: readonly DocPage[] = [
       },
     ],
     states: [
-      '加载中：不到 500ms 不露骨架条（不可见层照样占位），超过了才出，快的请求不闪。',
+      '加载中：不到 500ms 不露骨架条（不可见层照样占位），超过了才出，快的请求不闪；出了至少留 minShown（默认 500ms），数据早到也等满再揭示。',
       '骨架：每行文字一条 line-200 的圆角条，图片、按钮、标签各一块，圆角跟随内容；不闪、不脉冲。',
       '数据到了：真内容淡入到骨架的位置，onReveal 调一次；给了 id 的下次进来第一帧就是上次的形状。',
     ],
@@ -2044,13 +2129,15 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 135,
     title: 'Toast 弹出提示',
     summary:
-      '固定在窗口一角的弹出提示：只管样子与读屏语义（live region），条目表、定时、暂停由调用方管（应用里 AlertToasts 配 toast-queue.ts）。进出走 translate 与不透明度的过渡。',
+      '固定在窗口一角的弹出提示：只管样子与读屏语义（live region），条目表、定时、暂停由调用方管（应用里 AlertToasts 配 toast-queue.ts）。进出走 translate 与不透明度的过渡。视口 polite 礼貌播报，warn / danger 单条 role=alert；能撤销的操作配 ToastAction 与可选的 ToastCountdown。',
     exports: [
       'TOAST_EXIT_MS',
       'Toast',
+      'ToastAction',
       'ToastClear',
       'ToastClose',
       'ToastContent',
+      'ToastCountdown',
       'ToastDescription',
       'ToastIcon',
       'ToastText',
@@ -2060,13 +2147,21 @@ export const PAGES: readonly DocPage[] = [
     propParts: [
       {
         part: 'ToastViewport',
-        note: '其余属性透传给 div。role=region、aria-live=assertive：新插进来的条目读屏马上读；aria-label 由调用方给。',
+        note: '其余属性透传给 div。role=region、aria-live=polite：新插进来的条目读屏等空了再读，不打断；aria-label 由调用方给。',
       },
       {
         part: 'Toast',
-        note: '其余属性透传给 div。过渡的起点与终点由 data-starting-style、data-ending-style 给（phase 换的）。tone（Severity）定色条与图标的颜色，neutral 是主文字色色条加强调色图标。',
+        note: '其余属性透传给 div。过渡的起点与终点由 data-starting-style、data-ending-style 给（phase 换的）。tone（Severity）定色条与图标的颜色，neutral 是主文字色色条加强调色图标。tone 为 warn、danger 时这一条自带 role=alert（插入即打断播报），neutral、ok 不带，靠视口礼貌播报；调用方给的 role 排在后面能盖掉。',
       },
       { part: 'ToastClose', note: '其余属性透传给 Button（icon 变体）。' },
+      {
+        part: 'ToastAction',
+        note: '其余属性透传给 Button（ghost、sm）。一个文字钮，如「撤销」，文字由调用方给；强调色字，悬停才有底。',
+      },
+      {
+        part: 'ToastCountdown',
+        note: 'remaining（0 到 1）是剩余时间的比例，1 刚出现、0 要收了，超出范围收进 0 到 1。计时在调用方（toast-queue），包里不计时；建议每 100ms 更新一次，环随比例变短，中间不写秒数。纯装饰，aria-hidden。其余属性透传给 svg。',
+      },
       {
         part: 'ToastClear / ToastIcon / ToastText / ToastTitle / ToastDescription / ToastContent',
         symbol: 'ToastClear',
@@ -2077,18 +2172,21 @@ export const PAGES: readonly DocPage[] = [
       '收起：反向平移淡出，播完（TOAST_EXIT_MS）调用方再摘节点。',
       '多条：按位置叠，两条以上出「全部关掉」。',
       '语气：neutral（默认）、ok、warn、danger，色条与图标取 --k-status-*-foreground；说明文字是 ink-2（console 主题下 ink-3 不到 4.5:1）。',
+      '动作 toast：标题、倒计时环（16px 空心环，随剩余比例变短，中间不写秒数）、一个「撤销」钮、关闭钮并排；撤销以后调用方把同一条改成「已恢复」，约 1.5 秒后收。',
     ],
     donts: [
       '不要把需要用户处理的事只放在弹出提示里，它会自己消失。',
+      '不要事后 toast 一件不能撤销的事：先确认（AlertDialog），或者做成能撤销的再给「撤销」。',
+      '不要把价格告警这类系统消息当 toast 用：它是通知，应进铃下的列表（NotificationBell），toast 只是到达提示。',
       '不要只靠色条说语气：标题里写明（「下单被拒」而不是「出错了」）。',
       '不要在包里写死文案，关闭名与「全部关掉」都由调用方传。',
       '不要自己再做一套计时与队列放进 Toast，那是调用方的事。',
     ],
     composition:
-      'ToastViewport\n  Toast\n    ToastContent\n      ToastIcon\n      ToastText\n        ToastTitle\n        ToastDescription\n      ToastClose\n  ToastClear',
+      'ToastViewport\n  Toast\n    ToastContent\n      ToastIcon\n      ToastText\n        ToastTitle\n        ToastDescription\n      ToastCountdown（可选）\n      ToastAction（可选）\n      ToastClose\n  ToastClear',
     keys: [
-      ['Tab', '走到关闭钮、「全部关掉」'],
-      ['Enter / Space', '关掉这一条或全部'],
+      ['Tab', '走到「撤销」、关闭钮、「全部关掉」'],
+      ['Enter / Space', '撤销，或关掉这一条或全部'],
     ],
   },
   {
@@ -2109,8 +2207,8 @@ export const PAGES: readonly DocPage[] = [
         note: '返回 { toast, report, dismiss, pause, resume }：report(结果或 Promise) 插一条新的（新 key，读屏会再读），默认 2400ms 后收；pause / resume 接到 CopyToast 的 onPause / onResume，指针或焦点在上面时不收。',
       },
       {
-        part: 'copyImage(node, { filename?, background?, scale?, noDownload? })',
-        note: '拍 node（ChartActions 交来的是图的 figure）：逐元素抄计算样式、canvas 换成图片，放进 SVG foreignObject 画到 canvas 上，转 PNG；data-copy-image="skip" 的元素（工具条）不进图。默认倍数 devicePixelRatio（1–3），底色取最近一个不透明的祖先背景。',
+        part: 'copyImage(node, { filename?, background?, scale?, noDownload?, embedFonts? })',
+        note: '拍 node（ChartActions 交来的是图的 figure）：逐元素抄计算样式、canvas 换成图片，放进 SVG foreignObject 画到 canvas 上，转 PNG；data-copy-image="skip" 的元素（工具条）不进图。默认倍数 devicePixelRatio（1–3），底色取最近一个不透明的祖先背景。图里用到的同源网页字体内嵌成 data URL（#87，embedFonts 默认 true），拍出来字形跟页面一致。',
       },
       {
         part: 'copyText(text) / canCopyImage() / elementToPng(node)',
@@ -3185,7 +3283,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'meter',
     group: 'quant',
-    cardHeight: 607,
+    cardHeight: 645,
     title: 'Meter 仪表',
     summary:
       '横向仪表，三种形态：条（进度、负载、敞口）、刻度（0 到 100 的读数带指针）、同步率条（带齿分段加琥珀评估刻度与右侧大百分比）；限额板传预警线与硬限，越线自己换色；颜色只传 tone。',
@@ -3208,7 +3306,7 @@ export const PAGES: readonly DocPage[] = [
             name: 'tone',
             type: 'SeverityExt',
             default: "'accent'",
-            desc: '进行中 accent（橙）、健康 ok（绿）、受限或越界 warn（琥珀）、弱势 danger（红）、停用 off / neutral。',
+            desc: '进行中 accent（橙）、健康 ok（绿）、受限或越界 warn（琥珀）、弱势 danger（红）、中性 neutral（有数、不表态，中性墨色填充）、停用 off。',
           },
           {
             name: 'display',
@@ -3237,7 +3335,7 @@ export const PAGES: readonly DocPage[] = [
       'gauge：34px 凹槽、中线、底部 0/25/50/75/100 刻度，指针带光；弱势用 danger（红）。',
       'sync：14px 带齿条，右侧大百分比（display-dense 字），琥珀刻度是评估点。',
       'warn：条与数转琥珀，条体脉冲一次；off：全部转灰。',
-      'tone 是 SeverityExt（G6）：neutral 画法同 off（没有判断就不着色）。',
+      'tone 是 SeverityExt（G6）：neutral 是中性档（#178），填充与指针用中性墨色 --k-status-neutral-foreground，名字与数照常，不像 off 那样全部转灰。',
       '限额：线下照传入的 tone；达到预警线（等于也算）转琥珀并脉冲一次，达到硬限转红再脉冲一次；根上 data-state 是 normal / warn / breach。',
     ],
     donts: [
@@ -4091,6 +4189,7 @@ export const PAGES: readonly DocPage[] = [
       '键盘所在行：焦点环；排序列：表头带升降箭头。',
       '只读（interactive=false）：table 语义，表头不是按钮。',
       '子行：有子行的行带 aria-expanded（true 摊开、false 收起）；没有子行的行没有这个属性，按 → 没反应。',
+      '分节（rowSection）：标题行跨满整行，左端三角收起 / 展开（collapsedSections 受控或 defaultCollapsedSections 不受控），写这一节的行数，sectionAggregates 按列写组内汇总（对齐到列下，聚合同表尾 summary），sectionSummary 是靠右的自由槽；表尾 summary 只算数据行；收起的节只留标题行，挪它时藏着的行跟着走。按列排序时标题行不参与排序，各节里的行在节内排（照 TradingView 自选表）。',
       'custom 列没有 text 时复制与导出是空字；有按钮的格子别指望整行点击。',
       '列优先级（standard 与 hero 分量，有表头）：可见列放不下容器时按 GridColumn.priority 从低到高收起（没写的按声明顺序，第一列 1、第二列 2……），至少留两列，固定在左边的列不收；表头右端出「+N 列」胶囊（文案 texts.moreColumns，默认英文 +N cols），点了切成横向滚动、显示全部列，胶囊变 texts.collapseColumns，再点收起。出胶囊时表头与数据行在右端让出它的宽度，不盖住最后一列（stretch 的表，保留的列撑满的是容器宽减胶囊宽）。状态只在组件里，不存；容器变宽放得下了胶囊就消失。只影响显示：复制与导出仍是全部可见列。compact 分量与不画表头的表不走这一套；collapseColumns={false} 关掉，一直横向滚动。',
     ],
@@ -4107,7 +4206,8 @@ export const PAGES: readonly DocPage[] = [
     keys: [
       ['↑ / ↓', '移一行；Home / End 到头尾'],
       ['Enter', '打开键盘所在的行（onOpen）'],
-      ['→ / ←', '展开 / 收起键盘所在行的子行（renderSubRow）'],
+      ['→ / ←', '展开 / 收起键盘所在行的子行（renderSubRow）；在分节标题行上展开 / 收起这一节'],
+      ['Enter（分节标题行）', '收起 / 展开这一节'],
       ['Shift / Ctrl 点击', '选一段 / 点选加减'],
       ['Esc', '清掉选择（右键菜单开着时归菜单）'],
       ['列头右键', '列头菜单：排序、固定、隐藏、左右移、重置列'],
@@ -4166,7 +4266,16 @@ export const PAGES: readonly DocPage[] = [
     title: 'useUndoStack 撤销与重做',
     summary:
       '通用的撤销 / 重做栈：存整份快照，值由调用方定。push 带 kind，同种操作在 800ms 内合并成一步（拖一次滑块只撤一次）；最多 100 步；可选绑定 Mod+Z 撤销、Mod+Shift+Z 与 Ctrl+Y 重做。用于列布局、行序、分组这类「拖错了」的恢复，不进存档。',
-    exports: ['useUndoStack', 'undoInit', 'undoPush', 'undoBack', 'undoForward', 'undoKeyOf'],
+    exports: [
+      'useUndoStack',
+      'undoInit',
+      'undoPush',
+      'undoBack',
+      'undoForward',
+      'undoKeyOf',
+      'useUndoHotkeys',
+      'undoHotkeyBindings',
+    ],
     propParts: [
       {
         part: 'useUndoStack(initial, { limit?, mergeMs?, hotkeys? })',
@@ -4180,6 +4289,10 @@ export const PAGES: readonly DocPage[] = [
         part: 'undoKeyOf(event, isMac)',
         note: '一次按键是 undo、redo 还是 null：Mac 上 ⌘Z / ⇧⌘Z，别处 Ctrl+Z / Ctrl+Shift+Z / Ctrl+Y；带 Alt 的不算。',
       },
+      {
+        part: 'useUndoHotkeys(stack, { labels, scope?, enabled?, id? })',
+        note: '用了 useHotkeys 注册表的面板用它（#87）：把同一套组合（Mod+Z；Mod+Shift+Z，非 Mac 加 Ctrl+Y）登记成两条，快捷键总览里列得出、能改键、一起查冲突；这时不开 useUndoStack 的 hotkeys。enabled 接面板的焦点，面板没焦点时键留给别处。undoHotkeyBindings(stack, options, platform) 是它的纯函数版。',
+      },
     ],
     states: [
       '没有可撤：canUndo=false，撤销钮 disabled。',
@@ -4189,7 +4302,7 @@ export const PAGES: readonly DocPage[] = [
     donts: [
       '不要把它存进 localStorage：历史只活在这一次打开里（存档用 usePersistedState 存当前值）。',
       '不要每次按键都 push 不带 kind：连续输入要给 kind 合并，否则撤一次只退一个字。',
-      '不要在两个地方同时绑 Mod+Z：用了 useHotkeys 注册表就关掉这里的 hotkeys。',
+      '不要在两个地方同时绑 Mod+Z：用了 useHotkeys 注册表就关掉这里的 hotkeys，改用 useUndoHotkeys。',
     ],
     composition: 'useUndoStack\n  { past[], present, future[] }\n  键盘：Mod+Z · Mod+Shift+Z · Ctrl+Y（可选）',
     keys: [
@@ -4197,6 +4310,38 @@ export const PAGES: readonly DocPage[] = [
       ['Mod+Shift+Z', '重做'],
       ['Ctrl+Y', '重做（非 Mac）'],
     ],
+  },
+  {
+    id: 'link-group',
+    group: 'blocks',
+    cardHeight: 260,
+    title: 'useLinkGroup 联动组',
+    summary:
+      '同一联动组的件共用品种、周期、十字线时刻、可见区间（#22 G8）：自选点一行，同组的图换品种；一张图上移动十字线，同组的图跟着画。照 TradingView 多图布局的同步（品种、周期、十字线、时间、日期区间）与自选联动。组 id 一般是面板头色点的 LinkGroup（A–D），null 不联动。纯 context，不带宿主、不存盘。',
+    exports: ['useLinkGroup', 'LinkGroupProvider', 'createLinkHub', 'useLinkHub', 'LINK_FIELDS'],
+    propParts: [
+      {
+        part: 'useLinkGroup(group, { fields?, initial? })',
+        note: '返回 [状态, 改]：状态是 { symbol?, interval?, crosshairTime?, range? }，改是合并几个字段。group 为 null 时不联动，状态只在这个件里（initial 起头）；联动时组里没设过的字段取 initial（件自己的默认品种、周期）。fields 只订阅这几个字段：十字线一直在变，只订阅 symbol 的自选不跟着重画。',
+      },
+      {
+        part: 'createLinkHub(initial?) / LinkGroupProvider / useLinkHub',
+        note: '联动表：get、set（值没变的字段不算改，什么都没变不通知；range 按 from / to 比）、select（订阅的字段没变时返回同一个对象）、subscribe（回调拿到改了哪些字段）。没有 Provider 时整个应用一张默认表；测试、多窗口、要隔开两套联动时自己建一张包上。',
+      },
+    ],
+    states: [
+      '联动：同组的件读写同一份状态，一边改另一边马上跟。',
+      '不联动（group 为 null）：件自己记，跟谁都不同步；面板头的色点画熄灭的环。',
+      '换组：读到新组的状态；新组没设过的字段用 initial。',
+    ],
+    donts: [
+      '不要把十字线时刻存进存档：它只活在指针移动的这一会儿（离开图写 null）。',
+      '不要让只关心品种的件订阅全部字段：十字线每帧都在变，会跟着重画。',
+      '不要拿它传下单参数：联动只管看什么，不管交易（下单走执行网关）。',
+    ],
+    composition:
+      'LinkGroupProvider（可省）\n  件 × n（useLinkGroup(组, 字段)）\n联动表：组 → { symbol, interval, crosshairTime, range }',
+    keys: [],
   },
   {
     id: 'empty-state',
@@ -4546,7 +4691,7 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 520,
     title: 'SideNav 侧栏导航',
     summary:
-      '分组的侧栏导航：组名小号大写；没选中的字淡，悬停变亮，当前项最亮。每组左边一条 1px 虚线从组顶走到当前项、用 6px 弯钩拐进去，悬停另一项时以淡色画一条到悬停项，切换时 200ms 滑过去。顶上过滤框（⌘K / Ctrl+K 聚焦，Enter 打开第一项，Esc 清空），底部淡出。照 rareui.com 组件站左栏（2026-11-17 实测），实现原创。件不管路由：链接给 href，当前项由调用方传。轨迹颜色走 --k-sidenav-trail，默认品牌橙。',
+      '分组的侧栏导航：组名小号大写；没选中的字淡，悬停变亮，当前项最亮。每组左边一条 1px 虚线从组顶走到当前项、用 6px 弯钩拐进去，悬停另一项时以淡色画一条到悬停项，切换时 200ms 滑过去。顶上过滤框（Mod+K 聚焦：经 useHotkeys 登记在快捷键注册表里，只认这一个组合、Ctrl+Shift+K 不拦，页上别处登记了 Mod+K 就让给它；searchHotkey 改键或给 null 关掉；Enter 打开第一项，Esc 清空），底部淡出。照 rareui.com 组件站左栏（2026-11-17 实测），实现原创。件不管路由：链接给 href，当前项由调用方传。轨迹颜色走 --k-sidenav-trail，默认品牌橙。',
     exports: ['SideNav'],
     props: [
       {
@@ -4576,7 +4721,7 @@ export const PAGES: readonly DocPage[] = [
     donts: ['不要一组放太多项：超过二十来项拆组', '不要把轨迹颜色设成跟正文一样亮：它是指引，不是内容'],
     composition: 'SideNav\n  头部（header）\n  过滤框\n  分组 × n（组名、轨迹、链接）\n  底部（footer）',
     keys: [
-      ['⌘K / Ctrl+K', '聚焦过滤框'],
+      ['Mod+K（Mac 是 ⌘K，别处 Ctrl+K）', '聚焦过滤框（经快捷键注册表；searchHotkey 可改）'],
       ['Enter', '在过滤框里：打开第一项'],
       ['Esc', '在过滤框里：清空'],
     ],
@@ -4842,10 +4987,11 @@ export const PAGES: readonly DocPage[] = [
     states: ['默认值：灰度、像素对齐开、字重 0、字号 100%、斜线零关、中英对齐关', '改任一项立刻生效（写在根节点上）'],
     donts: ['不要在件里存值：存盘交给调用方', '不要只在某个面板上改这些属性：渲染设置是整个应用一份'],
     composition:
-      'RenderingSettings\n  行 × 6（名称、说明、ToggleGroup 或 Slider）\n  字体小节\n    行 × 4（界面、汉字、数据字、代码：Select）\n  恢复默认（Button）',
+      'RenderingSettings\n  行 × 6（名称、说明、Switch、ToggleGroup 或 Slider）\n  字体小节\n    行 × 4（界面、汉字、数据字、代码：Select）\n  恢复默认（Button）',
     keys: [
       ['Tab', '按行的次序走过每个控件，最后是恢复默认'],
-      ['← →', '开关与平滑方式（分段切换）里换一段'],
+      ['Space', '开关（像素对齐、斜线零、中英对齐）翻转'],
+      ['Tab', '平滑方式（分段切换）按钮之间走；Enter 或 Space 按下'],
       ['← → / ↑ ↓', '字重、字号滑块走一格（字重 10，字号 5%）；Home / End 到两头'],
       ['Enter / Space', '打开字体下拉；下拉里 ↑ ↓ 选、Enter 确定、Esc 收起'],
     ],
@@ -5500,6 +5646,124 @@ export const PAGES: readonly DocPage[] = [
       ['Shift + 方向 / PageDown PageUp', '早 / 晚一小时'],
       ['Home / End', '最早（now 或窗口开始）/ 最晚'],
       ['Delete', '删掉这个任务，焦点到下一个'],
+    ],
+  },
+  {
+    id: 'scheduled-runs',
+    group: 'blocks',
+    cardHeight: 470,
+    title: 'ScheduledRuns 定时运行',
+    summary:
+      '一周的定时任务（回补、新闻、因子重算）按「天 × 时段」排，每个时段一份额度（数据源配额、Agent 会话用量），一格最多 maxPerSession 张卡、格子等高。左边是待排栈，右边是周格子；自动模式按栈的次序从当前时段往后填，放不下就拆成几块（每块不小于 minPiece），手动模式栈里的不排、订好的与挪过的不动。卡能拖；键盘 Space 拿起、方向键瞄准（←→ 前后一天，↑↓ 上下一个时段）、Space 放下、Esc 放回，Enter 开合详情，每一步底栏播报有没有空位。过去的时段变淡、不收卡、里面的卡不能挪；当前时段顶上一道红线。功能参照 affectUI 的 Scheduled Runs（affectui.com/components/scheduled-runs，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）；没有 Agent 头像筛选与循环演示。演示数据是示例。',
+    exports: ['ScheduledRuns', 'buildSchedule', 'canDrop', 'moveSlot'],
+    propParts: [
+      { part: 'ScheduledRuns', note: '件里记着用户挪过的块；onMove 把每次挪动交给调用方保存。模式受控或不受控。' },
+      { part: 'buildSchedule', note: '纯函数：订好的与挪过的先占位，栈里的按模式自动填（会拆）或留在栈里。' },
+      { part: 'canDrop', note: '纯函数：不是过去、卡数没满、额度够。' },
+      { part: 'moveSlot', note: '纯函数：拿着卡时方向键对准的格。' },
+    ],
+    states: [
+      '订好的：实线卡。自动排进去的：虚线卡；拆开的写块号（1/2）。',
+      '拿着：卡描强调色边，对准的格有空位描强调色、没有空位描 danger 虚线。',
+      '过去的格：变淡，里面的卡写「已过」，不能拿起。',
+      '当前格：顶上一道 danger 色线。',
+      '每格底下一道细条是这格已用的额度。',
+      '栈空：写 stackEmpty。',
+    ],
+    donts: [
+      '不要拿它看一天里请求的峰值：用 RateLimitPlanner。',
+      '不要拿它盯正在跑的任务：用 AgentQueue。',
+      '不要在件里写死额度：limit 由调用方从配置读。',
+    ],
+    composition:
+      'ScheduledRuns\n  头（标题 · 小注 · ToggleGroup 自动 / 手动）\n  栈（待排的卡）\n  周格子（天头 · 时段头 · 每格 group：额度细条 · 卡）\n  提示 · 播报',
+    keys: [
+      ['Tab', '先栈里的卡，再一天一天走格子里的卡'],
+      ['Space', '拿起；拿着时放下'],
+      ['← →（拿着）', '前一天 / 后一天'],
+      ['↑ ↓（拿着）', '同一天的上一个 / 下一个时段'],
+      ['Esc', '放回原处；没拿着时收起详情'],
+      ['Enter', '开合这张卡的详情'],
+    ],
+  },
+  {
+    id: 'agent-queue',
+    group: 'blocks',
+    cardHeight: 440,
+    title: 'AgentQueue 任务队列',
+    summary:
+      '抓取 / 回补任务的队列：四列从左到右是排队（高优先在前）、工位（并发槽，每槽一个在跑的任务，进度条，被限流时 warn 色倒计时）、完成、失败；头上四个数（排队超过 backpressure 变 warn 色），给了回调才有暂停 / 继续与并发步进（− N +）。下面是最近 window 毫秒的积压深度图（从任务记录推出来）与一道背压虚线，旁边写成字的摘要（现在、峰值、平均）。点一个任务或 Enter 钉住详情（排了多久、跑了多久、第几次、错误），里面有「提到最前」「取消」。件不走钟：now 由调用方给。功能参照 affectUI 的 Agent Queue（affectui.com/components/agent-queue，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）；没有任务在区之间滑动的动画，详情是内嵌区。演示数据是示例。',
+    exports: ['AgentQueue', 'depthSummary', 'queueDepth', 'queueOrder', 'workerSlots'],
+    propParts: [
+      {
+        part: 'AgentQueue',
+        note: '钉住的任务受控或不受控（openId / defaultOpenId）；暂停、并发、提到最前、取消都是给了回调才出现。',
+      },
+      { part: 'queueOrder', note: '纯函数：排队的次序，高优先在前，同级按入队早晚。' },
+      { part: 'workerSlots', note: '纯函数：在跑的按开始早晚占槽，空槽是 null。' },
+      { part: 'queueDepth', note: '纯函数：一段时间里每一刻在排队的个数。' },
+      { part: 'depthSummary', note: '纯函数：现在、峰值、平均。' },
+    ],
+    states: [
+      '排队：写排了多久；高优先的标小字。',
+      '在跑：中性色进度条；被限流时条与字 warn 色，写倒计时。',
+      '空槽：虚线框写 idle。',
+      '失败：写错误，danger 色。',
+      '背压：排队数超过 backpressure 时 warn 色，深度图上有虚线。',
+      '暂停：按钮 aria-pressed 为真，写 resume。',
+    ],
+    donts: [
+      '不要拿它看几个 Agent 随时间的分工：用 AgentLanes。',
+      '不要拿它分析一次请求的耗时：用 TraceWaterfall。',
+      '不要让件自己走钟：now 由调用方按自己的节奏给。',
+    ],
+    composition:
+      'AgentQueue\n  头（标题 · 队列名 · dl 四个数 · Button 暂停 · 步进 group）\n  四列（排队 ol · 工位 ol · 完成 ul · 失败 ul；每个任务一个按钮）\n  region（详情 dl · Button × 2）\n  figure（深度图 svg · 摘要）\n  播报',
+    keys: [
+      ['Tab', '进任务列表（一个停点），再到详情里的按钮'],
+      ['↑ ↓ / ← →', '在跑的、排队的、失败的、完成的依次走'],
+      ['Home / End', '第一个 / 最后一个'],
+      ['Enter / Space', '钉住或放开这个任务的详情'],
+      ['Esc', '收起详情，焦点回到任务'],
+    ],
+  },
+  {
+    id: 'cost-waterfall',
+    group: 'blocks',
+    cardHeight: 420,
+    title: 'CostWaterfall 花费瀑布',
+    summary:
+      '一次 Agent 会话的钱和 token 花在哪：每一步（模型调用、工具调用、子 Agent）按调用次序一行，条从前面各步的累计处起、长度是这一步的花费或 token，最后一行的条尾就是合计；负的花费是抵扣，条往回走。子 Agent 可折叠，它的数是自己的加子步的（不用预先加）。头一行写会话状态与合计；花费 / token 切换；「最贵一步」一键跳过去（展开上级、打开详情、聚焦）。每行写名字、种类、模型、量、时长、输入输出 token；Enter 打开详情（提示与回答，或工具的输入与输出，错误）。不复用 AttributionBars：它按大小排序、折「其他」、零轴对称（组件卡明写不用瀑布），这里要守调用次序与累计基线；复用的是 TraceWaterfall 的树键盘 moveSpan、series 色与 niceTicks。功能参照 affectUI 的 Cost Waterfall（affectui.com/components/cost-waterfall，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）。演示数据是示例。',
+    exports: ['CostWaterfall', 'costRows', 'priciestStep', 'stepTotals'],
+    propParts: [
+      { part: 'CostWaterfall', note: '模式、折叠、打开的详情都可受控；金额、token、时长的写法由调用方给。' },
+      { part: 'costRows', note: '纯函数：按折叠展开成可见行，每行带累计轴上的起止。' },
+      { part: 'priciestStep', note: '纯函数：叶子里最贵的一步与它的上级。' },
+      { part: 'stepTotals', note: '纯函数：一步连同子步的花费、token 与时长。' },
+    ],
+    states: [
+      '完成：条是种类色；子 Agent 的条淡一些（盖住它的子步）。',
+      '进行中：条带斜纹；头里写进行中（warn 色）。',
+      '失败：条 danger 色，详情里写错误。',
+      '抵扣：负花费，条是 ok 色虚线框、往回走。',
+      '最贵一步：条外一圈 warn 描边。',
+      '窄于 720px 藏输入输出两列；窄于 520px 条换到第二行。',
+    ],
+    donts: [
+      '不要拿它看耗时：用 TraceWaterfall。',
+      '不要拿它看几天、几周的用量与预算：用 Meter 或 AiContextMeter。',
+      '不要预先把子步的数加到子 Agent 上：件会再加一次。',
+    ],
+    composition:
+      'CostWaterfall\n  头（标题 · 任务 · 状态与合计）\n  ToggleGroup（花费 / token）· Button 最贵一步\n  列头（步骤 · 累计轴刻度 · 量 · 时长 · 输入 · 输出）\n  tree（每行 treeitem：折叠箭头 · 种类 · 名字 · 模型 · 条 · 数）\n  region（详情：pre 提示 / 回答 · 错误）',
+    keys: [
+      ['Tab', '切换、最贵一步、步骤树（一个停点）、详情里的长文本框'],
+      ['↑ ↓', '上一行 / 下一行'],
+      ['→', '收着的子 Agent 先展开，展开的到第一个子'],
+      ['←', '展开的先收起，否则回上级'],
+      ['Home / End', '第一行 / 最后一行'],
+      ['Enter / Space', '打开或收起这一步的详情'],
+      ['Esc', '收起详情，焦点回到这一行'],
     ],
   },
   {
@@ -6245,7 +6509,16 @@ export const PAGES: readonly DocPage[] = [
     title: 'Watchlist 自选列表',
     summary:
       '照 TradingView 右侧自选栏（2026-11-15 实测）：列 Symbol / Last / Chg / Chg%，行首小旗标与字母圆徽标；最新价变动时只有变了的尾数闪涨跌色、约 1 秒落回；点列头排序（升序、降序、回原顺序）。价格怎么写由 formatPrice 定，数与文字由调用方传。',
-    exports: ['Watchlist', 'changedTail', 'nextSort', 'sortRows', 'plainPrice', 'rowTone'],
+    exports: [
+      'Watchlist',
+      'changedTail',
+      'nextSort',
+      'sortRows',
+      'plainPrice',
+      'rowTone',
+      'parseSymbolList',
+      'formatSymbolList',
+    ],
     props: [
       {
         part: 'Watchlist',
@@ -6283,6 +6556,11 @@ export const PAGES: readonly DocPage[] = [
       },
       { part: 'changedTail(prev, next)', note: '新旧价格文字从哪一位开始不同：返回 { head, tail }。', rows: [] },
       { part: 'nextSort / sortRows', note: '列头点击的循环与排序，纯函数。', rows: [] },
+      {
+        part: 'parseSymbolList(text) / formatSymbolList(entries)',
+        note: '自选表的 .txt 导入导出（#22，照 TradingView 自选「上传 .txt：带交易所前缀、逗号分隔」，帮助中心 2026-11-23 读）：项是 EXCHANGE:SYMBOL（转大写，重复的只收一次），###节名 是分节（TradingView 导出文件的写法，页面没写，待核对）；逗号与换行都能分。认不出的项（没前缀、有空格）原样进 unknown，由调用方列给用户，不静默丢。',
+        rows: [],
+      },
     ],
     states: [
       '最新价变大：变了的尾数起闪涨色；变小闪跌色；约 1 秒落回原色。',
@@ -6297,6 +6575,44 @@ export const PAGES: readonly DocPage[] = [
     composition:
       'Watchlist table\n  thead：列头按钮 × 4\n  tbody tr：旗标 · SymbolMark · 代码 | 最新价（尾数闪色）| 涨跌额 | 涨跌幅',
     keys: [['Tab / Enter', '列头排序、旗标']],
+  },
+  {
+    id: 'market-browser',
+    group: 'quotes',
+    cardHeight: 430,
+    title: 'MarketBrowser 市场浏览器',
+    summary:
+      '找品种的入口（照 OKX 永续页的「市场」组件，2026-11-26 实测）：一个搜索框、一排分类页签（自选 / 全部 / 主流币……由调用方给，每类带自己的行）、下面是当前分类的列表：星标、徽标、代码与全称、最新价、24h 涨跌。点价格或涨跌的列头排序（升、降、回原顺序）；点行回调 onSelect；点星标回调 onToggleFavorite，不触发 onSelect。搜索在当前分类里按代码、名称与别名找。表的版式、价格尾数闪色、列头排序都沿用 Watchlist，不另写一份；数据与文字全由调用方传，包里没有数据源。',
+    exports: ['MarketBrowser', 'filterMarketRows'],
+    propParts: [
+      {
+        part: 'MarketBrowser',
+        note: 'categories 是 { id, label, rows }[]，「自选」页签就是调用方把 favorite 为真的行放进第一个分类；行是 QuoteRow 加 favorite / logoSrc / venue / assetClass / keywords。labels 必填。sort 与分类 value 可受控也可不受控。',
+      },
+      {
+        part: 'filterMarketRows(rows, query)',
+        symbol: 'filterMarketRows',
+        note: '搜索用的纯函数：代码、名称、别名里含有搜索词（不分大小写）的行。',
+      },
+    ],
+    states: [
+      '当前排序列的列头带 ▲ / ▼，th 的 aria-sort 跟着变；换分类、改搜索词，排序保留。',
+      '星标：没标是描边，标上是实心；常亮，不要等悬停。',
+      '分类里没有行：写 labels.empty；有行但搜索没找到：写 labels.noResults。',
+      '最新价与涨跌变了：只闪变了的尾数与涨跌格（同 Watchlist）。',
+    ],
+    donts: [
+      '不要把「自选」做成包里的特殊页签：它就是第一个分类，行由调用方按 favorite 筛。',
+      '不要传写好的价格字符串：行是数，位数交给 formatPrice。',
+      '不要在包里放数据源或默认分类：分类名由市场决定（永续、现货、股票各不相同）。',
+    ],
+    composition:
+      'MarketBrowser\n  Input（搜索）\n  Tabs · TabsList line（分类，放不下横向滚）\n  table（k-watch）：列头按钮 × 2\n    tr：星标按钮 · SymbolMark · CodeChip · 全称 | FlashPrice | ChangeText',
+    keys: [
+      ['Tab', '搜索框、分类页签、列头、各行、各行的星标，依次走'],
+      ['← →', '在分类页签间移动'],
+      ['Enter', '在行上选品种；在列头上排序；在星标上切星标'],
+    ],
   },
   {
     id: 'range-bar',
@@ -7820,6 +8136,8 @@ export const PAGES: readonly DocPage[] = [
       '市价：价格框灰掉写 labels.marketPrice，按对手价（买看卖一、卖看买一）算。',
       '没给 maxLeverage（现货、A 股）：杠杆与保证金模式不显示，保证金与强平价两行不显示，等于「按金额买」。',
       'stopCustody=local：止盈止损栏右上写「本机触发」并用警示色；venue 写「交易所托管」。',
+      '受控价格（price / onPriceChange，#176）：两栏的价格框显示 price 里各自那一份，打字或点最优价回调 onPriceChange(字, 方向)；没给的一栏照旧自己管，defaultPrice 是不受控时一开始的字。订单簿点一档时调用方把两栏都写成这档价。',
+      'locked（#176）：两个下单钮都灰掉（disabled），lockedReason 写在钮下、警示色加锁形图标，钮经 aria-describedby 读到它；面板照样算数，填的数都留着。',
     ],
     donts: [
       '不要在面板里取账户或下单：数据由调用方传，onSubmit 里走自己的执行网关。',
@@ -7828,7 +8146,7 @@ export const PAGES: readonly DocPage[] = [
       '账户级风控（日亏线、连亏次数）不放进这里。',
     ],
     composition:
-      'OrderTicket\n  ToggleGroup（开仓 / 平仓）\n  Select（保证金模式）· 杠杆框\n  Tabs · TabsList line（限价 / 市价）\n  买栏 · 卖栏（各一份）\n    价格框 · Button（最优价）\n    Select（填法）· 仓位框 · Slider（0–100%）\n    可用 · 可开\n    Checkbox（止盈止损）· Select（出场模板）· 止盈框 · 止损框\n    下单钮\n    读数（dl）\n  费率 · Button（计算器）',
+      'OrderTicket\n  ToggleGroup（开仓 / 平仓）\n  ToggleGroup sm（保证金模式）· 杠杆框\n  Tabs · TabsList line（限价 / 市价）\n  买栏 · 卖栏（各一份）\n    价格框 · Button（最优价）\n    Select（填法）· 仓位框 · Slider（0–100%）\n    可用 · 可开\n    Checkbox（止盈止损）· Select（出场模板）· 止盈框 · 止损框\n    下单钮 · 锁住原因（locked 时）\n    读数（dl）\n  费率 · Button（计算器）',
     keys: [
       ['Tab', '开平、保证金模式、杠杆、委托类型，然后买栏从上到下、再卖栏从上到下'],
       ['← →', '在滑杆上按 1% 调仓位'],
@@ -7898,10 +8216,11 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 620,
     title: 'ComponentCatalog 添加组件',
     summary:
-      'PanelTabs 的「+」打开的目录（照 OKX 的「添加组件」抽屉，2026-11-19 实测）：标题与「重置布局」、一句说明、搜索框、类别页签，下面按类别分组的卡片，每张一个缩略图加名字；已在工作区里的打勾，当前品种用不了的置灰并写明原因；卡片可拖（带 CATALOG_ITEM_MIME）。我们加的：搜索（名字与别名）、最前面一组「推荐」：宿主按当前品种与市场包标 recommended，或组件自己声明 pairsWith（适合放在哪种组件旁边），传入 context（当前页签的 kind）后自动推荐，已在用的不再推荐。点卡片回调 onToggle（加或移除）。没给缩略图时按 kind 画一张示意。只是目录本身，放进 Sheet 还是侧栏由宿主定。',
+      'PanelTabs 的「+」打开的目录（照 OKX 的「添加组件」抽屉，2026-11-19 实测）：标题与「重置布局」、一句说明、搜索框、类别页签，下面按类别分组的卡片，每张一个缩略图加名字；已在工作区里的打勾，当前品种用不了的置灰并写明原因；卡片可拖（带 CATALOG_ITEM_MIME）。variant="menu"（2026-11-26，OKX 页签栏「+」垂下来的清单）是紧凑样式：没有标题、搜索与类别页签，每类一个可折叠标题，每行名字加右边的「+」，已添加的与不可用的置灰、悬停或聚焦时用提示说明原因（已添加写 labels.inUse，不可用写条目自带的 unavailable）。我们加的：搜索（名字与别名）、最前面一组「推荐」：宿主按当前品种与市场包标 recommended，或组件自己声明 pairsWith（适合放在哪种组件旁边），传入 context（当前页签的 kind）后自动推荐，已在用的不再推荐。点卡片回调 onToggle（加或移除）。没给缩略图时按 kind 画一张示意。只是目录本身，放进 Sheet 还是侧栏由宿主定。',
     exports: ['ComponentCatalog', 'CATALOG_ITEM_MIME', 'groupCatalog'],
     propParts: [{ part: 'ComponentCatalog' }],
     states: [
+      'variant="menu"：每类一个标题按钮（aria-expanded），点开合；行是名字加「+」，点一行只添加（onToggle(id, true)）；灰的行点了没反应，悬停与键盘聚焦都出提示。',
       '没搜索、没选类别：先「推荐」一组，再按类别各一组；推荐过的不在类别里重复出现。',
       '选了类别：只看这一类，没有「推荐」。',
       '在搜索：按名字与别名筛，不分「推荐」；搜不到写 labels.empty。',
@@ -7912,13 +8231,90 @@ export const PAGES: readonly DocPage[] = [
       '缩略图是示意，不要拿它当真实数据的预览；要真截图由宿主经 thumbnails 传。',
       '不要把「用不了」的项直接藏掉：留着并写原因，用户才知道有这个组件、为什么现在加不了。',
       '「重置布局」是不可撤的，宿主要自己再确认一次（HoldToConfirm 或对话框）。',
+      'menu 样式不要塞缩略图与搜索：要那些用抽屉样式；menu 里组件超过三十个就该换抽屉。',
     ],
     composition:
       'ComponentCatalog\n  标题 · Button（重置布局）\n  Input（搜索）\n  Tabs · TabsList line（类别）\n  分组 · 卡片（button aria-pressed：缩略图 · 名字 · 原因）',
     keys: [
-      ['Tab', '搜索框、类别页签、各卡片，依次走'],
+      ['Tab', '搜索框、类别页签、各卡片，依次走；menu 样式是各分组标题与各行'],
       ['← →', '在类别页签间移动'],
-      ['Enter / 空格', '在卡片上加进工作区或移除'],
+      ['Enter / 空格', '在卡片上加进工作区或移除；menu 样式里在分组标题上开合、在行上添加（灰的行只出提示）'],
+    ],
+  },
+  {
+    id: 'strategy-launcher',
+    group: 'blocks',
+    cardHeight: 420,
+    title: 'StrategyLauncher 策略入口',
+    summary:
+      '一列策略与工具的入口卡（照 OKX 永续页的「工具」组件，2026-11-26 实测）：顶上一条可关的风险提示（文字由调用方给，点关闭钮收起并回调），下面每张卡是图标、名字、可选的「新」角标、标签串（默认用「 / 」连成一行，tagStyle="chips" 画成小标签）、右箭头。点卡回调 onOpen(id)。件只列入口，入口指向什么（下单策略、运行中心、信号）由宿主定，包里不带任何策略。',
+    exports: ['StrategyLauncher'],
+    propParts: [
+      {
+        part: 'StrategyLauncher',
+        note: 'entries 是 { id, name, icon?, isNew?, tags? }[]；labels 必填：整件的读屏名、关闭钮的读屏名、角标文字。notice 不给就没有提示条。',
+      },
+    ],
+    states: [
+      '有 notice：顶上一条 warn 语气的提示条，右上角关闭钮；关了就不再画（件内记住，同时回调 onNoticeDismiss）。',
+      '卡悬停：底色提亮、箭头变主文字色；键盘聚焦画内缩焦点环。',
+      '带 isNew：名字后面一个 ok 语气的小角标。',
+      '没有 icon 的卡：不留图标位，文字顶到左边。',
+    ],
+    donts: [
+      '不要把风险提示写在卡里：它在整列顶上，关掉以后不再回来。',
+      '不要每张卡写超过四个标签：一行放不下就是写多了。',
+      '不要在包里放策略名单：入口全由宿主传。',
+    ],
+    composition:
+      'StrategyLauncher section[aria-label]\n  Alert（warn，role=note）：图标 · 说明 · 关闭钮\n  ul > li > button 卡：图标块 · 名字 + 角标 · 标签串 | 右箭头',
+    keys: [
+      ['Tab', '关闭钮、各张卡，依次走'],
+      ['Enter / 空格', '打开聚焦的卡；在关闭钮上收起提示'],
+    ],
+  },
+  {
+    id: 'floating-window',
+    group: 'blocks',
+    cardHeight: 300,
+    title: 'FloatingWindow 悬浮窗',
+    summary:
+      '把任意子树放进一个置顶的小窗（照 OKX 下单面板的「在悬浮窗中交易」，2026-11-26 实测）：浏览器有 Document Picture-in-Picture（Chrome / Edge 116+）时开真窗口，开窗时复制当前文档的样式表、根元素的 data-theme 与正文底色字色；没有时退成页内可拖的浮层（popover 顶层，标题栏拖动或方向键移动，关闭钮与 Esc 关）。受控：open 与 onClose，配 useFloatingWindow。子树始终渲染进同一个 host 元素、换窗只搬这个元素，所以输入的半截字、滚动位置、组件状态都不丢；关窗回到原处。',
+    exports: ['FloatingWindow', 'useFloatingWindow', 'isFloatingWindowSupported'],
+    propParts: [
+      {
+        part: 'FloatingWindow',
+        note: 'open 受控，用户关窗时回调 onClose，宿主再把 open 设回 false。placeholder 画在原位（窗开着时）。width / height 只在开窗那一刻读。inPageOnly 强制只用页内浮层。',
+      },
+      {
+        part: 'useFloatingWindow(initialOpen?)',
+        symbol: 'useFloatingWindow',
+        note: '返回 { open, supported, show, hide, toggle, props }；props 直接展开到 FloatingWindow 上。',
+      },
+      {
+        part: 'isFloatingWindowSupported()',
+        symbol: 'isFloatingWindowSupported',
+        note: '浏览器现在能不能开真 PiP 窗（每次调用时现读）。',
+      },
+    ],
+    states: [
+      '关着：子树在原处，不画占位。',
+      '开着、浏览器有 PiP：先在原处，窗一开成功就搬进小窗，原位画 placeholder。',
+      '开着、没有 PiP（或开窗被拒：没有刚操作过、已有一个窗）：搬进页内浮层，默认贴右下角 16px，拖过之后用 left / top。',
+      '用户关 PiP 窗、点浮层的关闭钮或在浮层里按 Esc：回调 onClose；宿主设回 open=false，子树回到原处，状态还在。',
+      '主文档切主题：PiP 窗的 data-theme 等根属性跟着同步。',
+    ],
+    donts: [
+      '不要用 key 或条件渲染在窗内外各放一份：子树只传一份，件自己搬 DOM，状态才不丢。',
+      '不要在没有用户操作的时候把 open 设成 true：PiP 要用户刚点过，否则被拒、退到页内浮层。',
+      '开窗之后新加的样式表（懒加载的 CSS）不会跟过去；要用到的样式先在开窗前载入。',
+    ],
+    composition:
+      'FloatingWindow\n  slot（关着时子树的家）· placeholder（窗开着时）\n  页内浮层（popover=manual，role=dialog）：标题栏把手 button · 关闭钮 · 内容区\n  host（子树的容器，在 slot、浮层内容区、PiP 窗 body 之间被搬动）',
+    keys: [
+      ['Tab', '到页内浮层的标题栏把手、关闭钮与子树里的控件'],
+      ['← ↑ → ↓', '焦点在标题栏把手上，移动页内浮层 8px；按住 Shift 32px'],
+      ['Esc', '焦点在页内浮层里，关窗（onClose）'],
     ],
   },
   {
@@ -8642,6 +9038,389 @@ export const PAGES: readonly DocPage[] = [
     composition:
       'PlanVsActual\n  头（标题 · dl 计划完成与推算完成 · 推移）\n  ol（每步一行：名字 · 状态 · 轨道（计划框 · 实际条 · 超时段 · 推算框 · now）· 时长）',
     keys: [],
+  },
+  {
+    id: 'agent-recap',
+    group: 'ai',
+    cardHeight: 420,
+    title: 'AgentRecap 离开期间回顾',
+    summary:
+      '隔夜或离开几小时回来，后台 Agent 做了什么：上面一条离开期间的分布（每段几件、每件一个点；装饰，对读屏隐藏，卡里都有），下面三列：要你拍板、失败、做完，列头写总数（含超出 limit 的）。每张卡写状态字、时间、标题、小注、数量与动作：要你的有查看与主动作（批准），失败的有查看与重试，做完的有查看与撤销。动作可以返回 Promise：等的时候写「处理中」，失败退回原状；做完换成状态字加撤销，撤销后可重做。悬停或聚焦一张卡，分布上它的点变亮。卡等高。主动作只把人的决定回调出去，件不替人做。功能参照 affectUI 的 Agent Recap（affectui.com/components/agent-recap，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）；不做开场回放动画。演示数据是示例。',
+    exports: ['AgentRecap', 'recapBuckets', 'recapCounts', 'recapLanes'],
+    propParts: [
+      {
+        part: 'AgentRecap',
+        note: 'since 与 until 由调用方给（不在渲染里取时间）；onAction / onUndo / onRedo 可返回 Promise。',
+      },
+      { part: 'recapLanes', note: '纯函数：按类分开，每类新的在前。' },
+      { part: 'recapCounts', note: '纯函数：各类的个数。' },
+      { part: 'recapBuckets', note: '纯函数：since 到 until 等分，每段几件。' },
+    ],
+    states: [
+      '要你：状态字 warn 色，主动作是 primary 按钮。',
+      '失败：状态字 danger 色，主动作是重试。',
+      '做完：状态字 ok 色，有撤销（给了 onUndo）。',
+      '处理中：按钮写 working，aria-busy，仍可聚焦。',
+      '已处理 / 已撤销：状态字换成 doneLabel（或 acted）/ undone，按钮换成撤销 / 重做。',
+      '某列没有：写 empty。',
+    ],
+    donts: [
+      '不要拿它盯正在跑的：用 RunningNow 或 AgentLanes。',
+      '不要拿它当完整的变更记录：它只摘离开期间的几件。',
+      '不要在聊天里放三列：对话里用 AwaySummary。',
+    ],
+    composition:
+      'AgentRecap（section，标题命名）\n  分布 svg（每段柱 · 每件一个点）· 起止钟点\n  三列 section（列头与总数 · ul 卡：状态字 · time · 标题 · 小注与数量 · Button × 2）\n  播报',
+    keys: [
+      ['Tab', '一张一张走卡里的按钮：先查看，再主动作或撤销 / 重做'],
+      ['Enter / Space', '执行；做完焦点移到撤销，撤销后回到动作'],
+    ],
+  },
+  {
+    id: 'away-summary',
+    group: 'ai',
+    cardHeight: 300,
+    title: 'AwaySummary 离开摘要',
+    summary:
+      '回到对话或面板时的一张小卡：头一行写离开了多久（或从几点起，由调用方的 heading 写）与各类计数；下面一行一件：状态字（要你 / 失败 / 做完）、标题、小注、一个动作（默认决定 / 重试 / 打开，可改字，action 给 null 不要）。要你的排最前、失败其次、做完最后；超过 limit 的收进「再看 n 件」。「知道了」或 Esc 把卡折成一行分隔条，点分隔条再展开、焦点回到上次用的动作。动作可以返回 Promise，等的时候写「处理中」。行等高。件不走钟：now 由调用方给。功能参照 affectUI 的 Away Summary（affectui.com/components/away-summary，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）。演示数据是示例。',
+    exports: ['AwaySummary', 'recapOrder'],
+    propParts: [
+      {
+        part: 'AwaySummary',
+        note: '折叠受控或不受控（collapsed / defaultCollapsed）；onDismiss 让调用方记下「看过了」。',
+      },
+      { part: 'recapOrder', note: '纯函数：要你的在前、失败其次、做完最后，同类新的在前。' },
+    ],
+    states: [
+      '展开：标题、计数、清单与底栏。',
+      '折起：只剩一行分隔条（aria-expanded 为假），折起的内容不在焦点里。',
+      '处理中：这一行的按钮写 working，仍可聚焦。',
+      '超出 limit：底栏有「再看 n 件」，展开后焦点到第一个新行的动作。',
+      '窄于 420px：计数换到标题下，长标题截断（title 里有全文）。',
+    ],
+    donts: [
+      '不要拿它放整夜的回顾与分布图：用 AgentRecap。',
+      '不要拿它批一个高风险动作：用 AiApproval 或 DecisionQueue（按住确认）。',
+    ],
+    composition:
+      'AwaySummary（section，标题命名）\n  头（标题 · 计数）\n  ul（每行：状态字 · 标题与小注 · Button）\n  底栏（再看 n 件 · 知道了）\n  折起时：button 分隔条',
+    keys: [
+      ['Tab', '按清单次序走每行的动作，再到「再看」「知道了」'],
+      ['Enter / Space', '执行；「知道了」折起并把焦点放到分隔条'],
+      ['Esc', '折起，焦点到分隔条；点分隔条展开、焦点回到上次用的动作'],
+    ],
+  },
+  {
+    id: 'running-now',
+    group: 'ai',
+    cardHeight: 120,
+    title: 'RunningNow 正在跑',
+    summary:
+      '标题栏或状态栏上的一颗胶囊，写「3 个在跑 · 2 个要你」（有要你的前面的点是 warn 色）；点开是任务清单，每行写进度环、标题、当前步与「第几 / 共几步」，一个图标钮：在跑的暂停、暂停的继续、要你的打开；点行本身也打开。行的次序不跟着状态变、行固定 52px；底下可选「打开任务」。很窄时胶囊只写数字（读屏名仍是全文）。弹层是我们的 Popover。功能参照 affectUI 的 Running Now（affectui.com/components/running-now，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）。演示数据是示例。',
+    exports: ['RunningNow', 'runningCounts'],
+    propParts: [
+      { part: 'RunningNow', note: '弹层开合受控或不受控（open / defaultOpen）；暂停、继续、打开都是给了回调才出钮。' },
+      { part: 'runningCounts', note: '纯函数：各状态的个数。' },
+    ],
+    states: [
+      '有要你的：胶囊前的点 warn 色，那一行进度环 warn 色、右上一个小点。',
+      '没有任务：点是灰的，写 summary 给的空闲文字。',
+      '完成：进度环 ok 色、满圈，没有钮。',
+      '很窄（容器窄于 360px）：胶囊只写 short。',
+    ],
+    donts: [
+      '不要把它当任务管理页：清单只是一眼看；全部任务给 onOpenAll。',
+      '不要拿它看几个 Agent 的分工：用 AgentLanes。',
+    ],
+    composition:
+      'RunningNow\n  button 胶囊（点 · 全文 · 数字版）\n  Popover（ul：每行 button（进度环 · 标题与当前步 · 步数）· 图标 Button）· 底栏 Button\n  播报',
+    keys: [
+      ['Enter / Space / ↓', '在胶囊上：打开清单并聚焦第一行'],
+      ['↑ ↓', '行与行之间'],
+      ['Home / End', '第一行 / 最后一行'],
+      ['Tab', '这一行的钮，再到下一行'],
+      ['Esc', '关上，焦点回胶囊'],
+    ],
+  },
+  {
+    id: 'agent-lanes',
+    group: 'ai',
+    cardHeight: 260,
+    title: 'AgentLanes 多 Agent 泳道',
+    summary:
+      '几个 Agent 并行时，每个 Agent 一条泳道：左边头像缩写、名字、模型与标签（空闲 / 要你），右边最近 span 毫秒的时间轴上画它的任务块（完成中性、在跑斜纹、等人 warn、失败 danger），没结束的长到 now。一个 Agent 交给另一个时，从交出那一块的结束处画一道竖线到接手的泳道。点块或 Enter 打开：等人的块弹出问题与「批准」「拒绝」（焦点先到批准），别的块写做了什么、用了哪些工具、交给谁，给了 onOpen 有「打开」。头上写几个块等人（读屏会播）。件不走钟：now 由调用方给。批准与拒绝只回调人的决定；不给回调时件自己改块的状态（批准接着跑、拒绝算失败），只为文档站演示。功能参照 affectUI 的 Agent Lanes（affectui.com/components/agent-lanes，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）。演示数据是示例。',
+    exports: ['AgentLanes', 'agentTag', 'blockSpan', 'handoffLinks'],
+    propParts: [
+      { part: 'AgentLanes', note: '窗口默认 30 分钟；时间写法由 formatTime 给。' },
+      { part: 'blockSpan', note: '纯函数：块在窗口里的位置，窗口外是 null。' },
+      { part: 'agentTag', note: '纯函数：泳道的标签（要你 / 在忙 / 空闲）。' },
+      { part: 'handoffLinks', note: '纯函数：交接线的位置与起止泳道。' },
+    ],
+    states: [
+      '完成：中性实心块。在跑：斜纹块，长到 now。',
+      '等人：warn 色块，泳道标签写「要你」，头上计数。',
+      '失败：danger 色块。',
+      '空闲：这个 Agent 没有在跑也没有等人，泳道标签写 idle。',
+      '窄于 520px：名字列只留头像。',
+    ],
+    donts: [
+      '不要拿它排将来的任务：它只看最近的窗口，排程用 ScheduledRuns。',
+      '不要拿它看一次运行的步骤：用 PlanVsActual 或 AiTaskList。',
+      '不要拿它看一个 Agent 分给很多 worker：用 FanOutGrid。',
+    ],
+    composition:
+      'AgentLanes\n  头（标题 · 等人计数 status）\n  轴（起 · 中 · now）\n  每条泳道（头像 · 名字与模型 · 标签 · ul 块：Popover 触发按钮）\n  交接线 svg',
+    keys: [
+      ['Tab', '一条泳道一条泳道地走每个块'],
+      ['Enter / Space', '打开这个块；等人的块弹出批准 / 拒绝'],
+      ['Esc', '关上弹层，焦点回到块'],
+    ],
+  },
+  {
+    id: 'fan-out-grid',
+    group: 'ai',
+    cardHeight: 260,
+    title: 'FanOutGrid 分发网格',
+    summary:
+      '一个 Agent 把一件大活（给 300 只票补资金流、给 240 篇研报打标签）拆给很多 worker，每个子任务一格，按状态着色：排队灰、在跑强调色、重试 warn、成功 ok、失败 danger。头一行写任务、进度、剩余时间（没跑完的 × 跑完的平均耗时 ÷ 并行数）与花费合计；悬停或聚焦一格，下面写它的 worker、耗时、第几次、结果与错误，Enter 钉住。底下一排状态计数是开关钮（一次亮一种，其余格变淡），有失败的出「重试失败的」。进度每过一成播报一次。功能参照 affectUI 的 Fan-out Grid（affectui.com/components/fan-out-grid，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）；花费写法由调用方给，在跑的格不做流光动画。演示数据是示例。',
+    exports: ['FanOutGrid', 'fanCounts', 'fanEta', 'fanProgress'],
+    propParts: [
+      { part: 'FanOutGrid', note: '格子按 tasks 的次序摆；onSelect 收到钉住的任务或 null。' },
+      { part: 'fanCounts', note: '纯函数：各状态的个数。' },
+      { part: 'fanProgress', note: '纯函数：跑完（含失败）的占比。' },
+      { part: 'fanEta', note: '纯函数：剩余时间，估不出来是 null。' },
+    ],
+    states: [
+      '排队：轨道色。在跑：强调色。重试：warn。成功：ok。失败：danger。',
+      '钉住：格子一圈焦点色，aria-pressed 为真。',
+      '只看一种：那个计数钮按下，其余格降到 25%。',
+      '有失败：底栏出「重试失败的」（给了 onRetry）。',
+    ],
+    donts: [
+      '不要拿它看几个 Agent 各干什么：用 AgentLanes。',
+      '不要拿它看一个队列的积压：用 AgentQueue。',
+      '不要只靠格子颜色：详情与计数都写成字。',
+    ],
+    composition:
+      'FanOutGrid\n  头（标题 · 任务 · 进度 · 剩余 · 花费）· 进度细条\n  ul（每格一个按钮）\n  详情一行（aria-describedby）\n  底栏（计数开关 group · Button 重试）\n  播报',
+    keys: [
+      ['Tab', '进格子（一个停点），再到计数开关与重试'],
+      ['← →', '前一格 / 后一格'],
+      ['↑ ↓', '上一行 / 下一行'],
+      ['Home / End', '第一格 / 最后一格'],
+      ['Enter / Space', '钉住或放开这一格的详情'],
+      ['Esc', '放开钉住的格'],
+    ],
+  },
+  {
+    id: 'smart-recommendation',
+    group: 'ai',
+    cardHeight: 220,
+    title: 'SmartRecommendation 建议卡',
+    summary:
+      'Agent 给一个建议（options 的第一项是推荐）：写理由、来源与置信度（0–3 格，旁边写成字，不只靠格子）；「其他选项」是一个单选菜单，换了就显示那一项；「采用」把人选的回调出去，之后换成「已采用」与「撤销」。标题本身是开合钮（aria-expanded），默认展开。模型输出只是带来源的建议，人接受才生效，件不替人采用。菜单是我们的 DropdownMenu。功能参照 affectUI 的 Smart Recommendation（affectui.com/components/smart-recommendation，2026-11-23 读；页上标 MIT，这里也只学功能，代码原创）。演示数据是示例。',
+    exports: ['SmartRecommendation', 'clampSignal'],
+    propParts: [
+      { part: 'SmartRecommendation', note: '采用与撤销都只回调，状态由件记着；理由与来源由调用方给。' },
+      { part: 'clampSignal', note: '纯函数：置信度夹到 0–3 的整数。' },
+    ],
+    states: [
+      '默认：推荐项带「推荐」小标，置信度按级点亮。',
+      '换了一项：显示那一项的理由与置信度，没有「推荐」小标。',
+      '已采用：ok 色「已采用」加撤销，菜单与采用钮收起。',
+      '收起：只剩标题。',
+    ],
+    donts: [
+      '不要在没有明显更好的一项时用：把几项并排给人比（ExperimentCard）。',
+      '不要拿它批下单这种高风险动作：用 AiApproval（按住确认）。',
+    ],
+    composition:
+      'SmartRecommendation\n  h4 > button（开合）\n  内容（选中项 · 推荐小标 · 理由 · 来源 · 置信度格与字）\n  动作（DropdownMenu 单选 · Button 采用 / 已采用 · Button 撤销）',
+    keys: [
+      ['Enter / Space', '在标题上开合；在「其他选项」上打开菜单；在「采用」上采用'],
+      ['↑ ↓', '菜单里换一项'],
+      ['Esc', '关上菜单'],
+    ],
+  },
+  {
+    id: 'decision-tree',
+    group: 'ai',
+    cardHeight: 320,
+    title: 'DecisionTree 决策树',
+    summary:
+      'Agent 走到岔口要人拍板（清洗规则、回补范围、调仓幅度）：左边问题、背景、Agent 名与风险标（高 / 中）；中间两到四个分支挂在一道轨上（编号 1–4，Agent 倾向的那支标出来、轨线强调色）；每个分支右边是它的后果，一行一条，有风险的打标，聚焦或悬停（或按 F 依次跳过去）看注释与出处。最后一支是「其他…」：写一句指示，Enter 发出、Shift+Enter 换行，onChoose 返回的回话写在下面。选了分支这个决定就离开清单，接着看下一个；←→（或 K / J）在待定的决定之间走。件只回调人的选择，Agent 不会因为倾向某支就自动执行。功能参照 affectUI 的 Decision Tree（affectui.com/components/decision-tree，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）；没有命令式句柄。演示数据是示例。',
+    exports: ['DecisionTree'],
+    propParts: [{ part: 'DecisionTree', note: 'onChoose 收到分支或指示；对指示可返回（Promise 的）回话字符串。' }],
+    states: [
+      'Agent 倾向：那支按钮是 primary，下面写 agentPick，轨线强调色。',
+      '风险：高 danger、中 warn 的小标在 Agent 名后。',
+      '有风险的后果：前面一个 warn 色「!」、虚下划线，聚焦或悬停出注释。',
+      '其他…展开：标了名的输入框与发出钮；回话写在下面。',
+      '没有待定的：写 empty。',
+    ],
+    donts: [
+      '不要拿它问只有是 / 否的问题：用 DecisionQueue 或 AiApproval。',
+      '不要拿它审做完的活：用 AgentRecap。',
+      '不要超过四个分支：拆成两个决定。',
+    ],
+    composition:
+      'DecisionTree\n  头（标题 · 上一个 · 位置 · 下一个）\n  问题（问题 · 背景 · Agent 名与模型 · 风险标）\n  ol 分支（Button 编号与名字 · 倾向小标 · 后果 ul：打标的带 tooltip）· 其他…（textarea · Button 发出 · 回话）\n  播报',
+    keys: [
+      ['1–4', '选这个分支；分支数加一打开「其他…」'],
+      ['Enter', '在「其他…」里发出；Shift+Enter 换行'],
+      ['← → / K J', '上一个 / 下一个决定'],
+      ['F', '跳到下一条有风险的后果，看它的注释'],
+      ['Esc', '关上「其他…」或注释'],
+    ],
+  },
+  {
+    id: 'flow-builder',
+    group: 'blocks',
+    cardHeight: 520,
+    title: 'FlowBuilder 流程编排',
+    summary:
+      '一条自动化（收盘后拉数据 → 条件 → 发提醒 / 交给 Agent）自上而下摆在一块定高、两向滚动、拖空白处平移的画布上，打开时居中。第一步总是触发；每条线上一个「+」，点开是调用方给的模板菜单（流程为空时是「加触发」与触发模板）；条件步分出几条有名字的路并排画、最后汇回主线。步骤可在自己那一列里上下挪（Alt+↑↓）、删（Backspace；删条件步时第一条路的步骤留在原处）、撤销（Ctrl/⌘+Z）；选中一步回调 onSelect，检查器由调用方开。给了 onRun 且至少两步时出「测试运行」，跑的时候换成「停止」；每步的状态与开始、结束时间由调用方的 run 给，在跑的步写它的 note，整条路都跳过的变淡。件不取时间：耗时量到调用方给的 now。底座没用 Whiteboard：这里是有结构的流程（一个触发、分出的路汇回），结构由数据保证，键盘按读的次序走；自由连线的图用 Whiteboard。功能参照 affectUI 的 Flow Builder（affectui.com/components/flow-builder，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）。演示数据是示例。',
+    exports: ['FlowBuilder', 'flowElapsed', 'flowOrder', 'insertStep', 'moveStep', 'removeStep'],
+    propParts: [
+      { part: 'FlowBuilder', note: 'steps 受控或 defaultSteps 不受控，每次改动 onStepsChange 回整份新列表。' },
+      { part: 'flowOrder', note: '纯函数：读的次序（键盘上下走的次序）。' },
+      { part: 'insertStep', note: '纯函数：在插入点放一步；最外层插不到触发前面。' },
+      { part: 'removeStep', note: '纯函数：删一步，返回新列表与该聚焦的那一步；触发后面还有步骤时返回 null。' },
+      { part: 'moveStep', note: '纯函数：在自己那一列里上下挪一格，挪不动返回 null。' },
+      { part: 'flowElapsed', note: '纯函数：一步跑了多久（量到 now）。' },
+    ],
+    states: [
+      '空：只有一个虚线框的「加触发」。',
+      '选中：卡片焦点色边、选中底色，aria-pressed 为真。',
+      '在跑：强调色边，第二行换成 note、强调色，右边写耗时。',
+      '通过：图标 ok 色。失败：danger 边与图标。跳过：整张卡 45%；整条路都跳过时路名与步骤 40%。',
+      '窄于 480px：卡缩到 168px，两条路仍并排，耗时不写。',
+    ],
+    donts: [
+      '不要拿它画自由连线的图：用 Whiteboard。',
+      '不要拿它审 Agent 跑之前的计划：用 AiTaskList 或 PlanVsActual。',
+      '不要拿它回看跑过的：用 TraceWaterfall。',
+    ],
+    composition:
+      'FlowBuilder\n  头（名字 · Button 撤销 · Button 测试运行 / 停止）\n  画布 region\n    列：步骤 button（图标 · 名字 · detail 或 note · 耗时）· 「+」DropdownMenu（模板项）\n    条件步：短竖线 · 并排的路（路名 · 列 · 尾线）\n  键位说明（aria-describedby）· 播报',
+    keys: [
+      ['Tab', '依次走步骤与「+」'],
+      ['↑ ↓ / ← →', '按读的次序到上一步 / 下一步（含路里的）'],
+      ['Home / End', '第一步 / 最后一步'],
+      ['Enter / Space', '选中或取消这一步；在「+」上打开模板菜单'],
+      ['Alt+↑ / Alt+↓', '在自己那一列里上挪 / 下挪'],
+      ['Backspace / Delete', '删这一步，焦点去它前面那一步'],
+      ['Ctrl+Z / ⌘+Z', '撤销上一次改动'],
+      ['Esc', '关菜单；再按清掉选中'],
+    ],
+  },
+  {
+    id: 'agent-tree',
+    group: 'ai',
+    cardHeight: 380,
+    title: 'AgentTree Agent 树',
+    summary:
+      '一次多 Agent 运行里，编排 Agent 派生子 Agent、子 Agent 再派生，画成一棵卡片树：每张卡写名字、模型、状态、任务（前面一排工具小方块，多于 4 个摆 3 个加 +N）、花费（有子的写整个分支的花费）与耗时；排队与停下的卡和通向它的线变淡。头一行合计几个 Agent、在跑、要你、失败与总花费（读屏会播）。宽于 560px 时第一层子 Agent 在根下面并排，再往下挂在各自的父下面；窄了每层往里缩。要你、失败与带步骤的卡 Enter 或点开小窗：步骤清单、问题或失败原因、「批准 / 拒绝」「重试 / 不管了」（给了 onResolve）。件不取时间（在跑的耗时量到调用方给的 now）；回答只回调人的决定，状态由调用方的数据改。树的键盘复用 TraceWaterfall 的 moveSpan。功能参照 affectUI 的 Agent Tree（affectui.com/components/agent-tree，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）。演示数据是示例。',
+    exports: ['AgentTree', 'agentElapsed', 'agentTotals', 'branchCost', 'visibleAgents'],
+    propParts: [
+      { part: 'AgentTree', note: '收起的分支 collapsed 受控或 defaultCollapsed 不受控；花费与时间写法由调用方给。' },
+      { part: 'branchCost', note: '纯函数：分支花费（自己加整棵子树，不是有限数字的不算）。' },
+      { part: 'agentElapsed', note: '纯函数：耗时，没结束量到 now；开始在将来算 0。' },
+      { part: 'agentTotals', note: '纯函数：几个 Agent、在跑、要你、失败、做完与花费。' },
+      { part: 'visibleAgents', note: '纯函数：按收起的分支展开成可见行（读的次序）。' },
+    ],
+    states: [
+      '在跑：状态字强调色。做完：ok。要你：warn 边与字。失败：danger 边与字。',
+      '排队、停了：卡 55%，通向它的线变虚。',
+      '收起：chevron 朝右，aria-expanded 为假，子卡不画。',
+      '小窗：步骤清单（每步一个状态点）、问题或失败原因、回答钮（给了 onResolve）。',
+      '窄于 560px：每层往里缩 20px，线在左边。',
+    ],
+    donts: [
+      '不要拿它看几个 Agent 随时间的分工：用 AgentLanes。',
+      '不要拿它看几个并行的主 Agent：用 AgentFleet。',
+      '不要拿它看常驻的小组与上下文：用 AgentCrew。',
+    ],
+    composition:
+      'AgentTree\n  头（标题 · 合计 status）\n  ul tree\n    li treeitem（卡：chevron · 名字 · 模型 · 状态 · 工具小方块 · 任务 · 花费 · 耗时；Popover 小窗）\n      ul group（子 Agent）\n  键位说明',
+    keys: [
+      ['Tab', '进树（一个停点）'],
+      ['↑ ↓', '上一张 / 下一张卡'],
+      ['→', '收着的先展开，展开的到第一个子'],
+      ['←', '展开的先收起，否则回父'],
+      ['Home / End', '第一张 / 最后一张'],
+      ['Enter', '选中这张卡；要你、失败、带步骤的打开小窗'],
+      ['Space', '有子的收起或展开，没子的同 Enter'],
+      ['Esc', '关小窗，焦点回卡'],
+    ],
+  },
+  {
+    id: 'agent-fleet',
+    group: 'ai',
+    cardHeight: 400,
+    title: 'AgentFleet Agent 总览',
+    summary:
+      '几个主 Agent 同时跑（盘后研究、风控巡检、回补数据），左边一列主卡：状态环（子 Agent 做完的占比）、一句说明（调用方由合计写）、任务、整个分支的花费与耗时。点主卡在右边打开它的子 Agent 树，再点收起（open 受控或 defaultOpen，缺省打开第一个）；窄于 640px 树落到那张卡下面、把下面的卡往下推。头一行合计整个 Agent 群（读屏会播）。打开的树就是 AgentTree 的树：卡、键盘、要你与失败的小窗都一样。件不取时间；回答只回调人的决定。主卡本身是展开钮，钮里不再放「回答」快捷钮，回答在树里。功能参照 affectUI 的 Agent Fleet（affectui.com/components/agent-fleet，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）。演示数据是示例。',
+    exports: ['AgentFleet'],
+    propParts: [
+      { part: 'AgentFleet', note: '主 Agent 与子 Agent 用 AgentTree 同一个 RunAgent 类型；ring 收到子孙的合计。' },
+    ],
+    states: [
+      '打开：主卡焦点色边与选中底色，aria-expanded 为真，右边是它的树。',
+      '环：按主 Agent 的状态着色（在跑强调色、要你 warn、失败 danger、做完 ok），弧长是做完的占比。',
+      '排队、停了：主卡 55%。',
+      '没有子 Agent：打开后写 noSubAgents。',
+      '窄于 640px：一列，树在打开的那张卡下面。',
+    ],
+    donts: [
+      '不要拿它看一次编排的整棵树：用 AgentTree。',
+      '不要拿它看时间上的先后：用 AgentLanes。',
+      '不要拿它分派任务：它只看，不派。',
+    ],
+    composition:
+      'AgentFleet\n  头（标题 · 合计 status）\n  group\n    button 主卡（环 · 名字 · 模型 · 状态 · 说明 · 工具 · 任务 · 花费 · 耗时）\n    region 打开的树（AgentTree 的树）',
+    keys: [
+      ['Tab', '进主卡（一个停点），再到打开的树'],
+      ['↑ ↓', '上一个 / 下一个主 Agent'],
+      ['Home / End', '第一个 / 最后一个主 Agent'],
+      ['Enter / Space', '打开或收起这个主 Agent 的树'],
+      ['树里', '同 AgentTree'],
+    ],
+  },
+  {
+    id: 'agent-crew',
+    group: 'ai',
+    cardHeight: 420,
+    title: 'AgentCrew 多角色小组',
+    summary:
+      '一个主 Agent 带一组常驻的子 Agent（研究员、风控、撰稿……），所有成员一直摆着：每张卡写名字、模型、状态（在忙 / 空闲 / 暂停 / 要你 / 做完 / 失败）、正在做什么与上下文条（到 80% 变 warn、95% 变 danger；给了上限写「136k / 200k」），卡下一行写工具与最近交接。宽于 560px 子 Agent 在主 Agent 下面并排，第三层起小一号。新交接（handoffs 里新出现的 id）到达时，接手的卡从进来的那一边升起一层底色再淡掉，读屏播报谁交给谁；打开时已有的不亮。点卡或 Enter 打开详情：任务、模型、用时、花费、token、工具、最近交接与引导动作（留言总在；在忙可暂停、停止；暂停可继续；要你可批准、拒绝；失败可重试），只回调 onSteer。给了 projects 时标题换成项目切换。件不取时间。功能参照 affectUI 的 Agent Crew（affectui.com/components/agent-crew，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）；交接灯不沿连线走，详情用居中的 Dialog。演示数据是示例。',
+    exports: ['AgentCrew', 'crewContextLevel', 'steerActions'],
+    propParts: [
+      { part: 'AgentCrew', note: '花费、时长、token 的写法都由调用方给；onSteer 收到动作与留言。' },
+      { part: 'crewContextLevel', note: '纯函数：上下文占比的档（ok / warn / danger）。' },
+      { part: 'steerActions', note: '纯函数：这个状态下能用哪些引导动作。' },
+    ],
+    states: [
+      '在忙：状态字强调色。要你：warn 边与字。失败：danger 边与字。',
+      '上下文：ok 中性灰，≥ 80% warn，≥ 95% danger；数字跟着变色。',
+      '交接到达：接手的卡升起一层强调色的底，900ms 淡掉（时长待定）。',
+      '换项目：卡片轻升进场。',
+      '第三层：卡 52px，不画上下文条。',
+    ],
+    donts: [
+      '不要拿它看来来去去、各有花费与审批的子 Agent：用 AgentTree。',
+      '不要拿它看一个 Agent 的步骤：用 AiTaskList。',
+      '不要拿它看 Agent 之间的整段对话：用 AiConversation。',
+    ],
+    composition:
+      'AgentCrew\n  头（标题或项目 Select · 在忙与要你）\n  ul tree\n    li treeitem（卡：名字 · 模型 · 状态 · 在做什么 · 上下文条；卡下：工具 · 最近交接）\n      ul group\n  Dialog 详情（dl 事实 · 引导 Button · 留言 Textarea）\n  播报',
+    keys: [
+      ['Tab', '进小组（一个停点），再到项目切换'],
+      ['↑ ↓ / ← →', '按读的次序到上一张 / 下一张卡'],
+      ['Home / End', '主 Agent / 最后一张'],
+      ['Enter / Space', '打开详情'],
+      ['Esc', '先收起留言框，再关详情，焦点回卡'],
+    ],
   },
   {
     id: 'avatar',
@@ -10614,13 +11393,14 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 520,
     title: 'MoveFeed 异动时间流',
     summary:
-      '盘口异动的流：一行一条，时间 · 名称（带代码）· 类型胶囊 · 数值；按时间从新到旧排，新来的从顶上进（淡入一下，reduced-motion 时不播）。类型胶囊按涨 / 跌 / 量 / 板着色（涨跌读 --pnl-up / --pnl-down 跟 data-updown，量是中性强调，板是警示色），顶上一排类型多选筛（点一个只看它、再点取消，一个都没选是全部，带条数）。点行触发 onSelect 联动个股页，selectedId 标出联动的那一行。随包认识十一种类型（火箭发射、封涨停板、大笔卖出…），也可以传自己的类型表。条目由调用方给。与 NewsFeed（新闻阅读器）、EventTimeline（公司事件）不同。',
+      '盘口异动的流：一行一条，时间 · 名称（带代码）· 类型胶囊 · 数值；按时间从新到旧排，新来的从顶上进（淡入一下，reduced-motion 时不播）。类型胶囊按涨 / 跌 / 量 / 板着色（涨跌读 --pnl-up / --pnl-down 跟 data-updown，量是中性强调，板是警示色），顶上一排类型多选筛（点一个只看它、再点取消，一个都没选是全部，带条数）。点行触发 onSelect 联动个股页，selectedId 标出联动的那一行。随包认识十三种类型（火箭发射、封涨停板、大笔卖出、5 分钟涨幅 / 跌幅…），也可以传自己的类型表。加密市场的用法（#245，照 OKX 的「市场异动」）：条目的 symbol 写币对，传 currentSymbol 就多一个「只看当前品种」开关（onlyCurrent 受控或 defaultOnlyCurrent 不受控），类型文字走 labels.types（「5 分钟涨幅」「15 分钟跌幅」…，没有的窗口用 types 自定）。条目由调用方给。与 NewsFeed（新闻阅读器）、EventTimeline（公司事件）不同。',
     exports: [
       'MoveFeed',
       'MOVE_TYPE_TONES',
       'moveTone',
       'sortFeed',
       'filterMoves',
+      'filterBySymbol',
       'typeCounts',
       'toggleType',
       'moveValue',
@@ -10637,6 +11417,10 @@ export const PAGES: readonly DocPage[] = [
       { part: 'moveTone(type, defs)', note: '纯函数：类型的色调；自定义表优先，不认识的按 volume。' },
       { part: 'sortFeed(items)', note: '纯函数：按时间从新到旧排，同一时刻后传入的在上，写不对的时刻沉底。' },
       { part: 'filterMoves(items, selected)', note: '纯函数：按选中的类型筛，一个都没选是全部。' },
+      {
+        part: 'filterBySymbol(items, symbol)',
+        note: '纯函数：只留属于这个品种的行（symbol，再 code，再 name），不分大小写；symbol 为空不筛。',
+      },
       { part: 'typeCounts(items, defs)', note: '纯函数：各类型的条数，没出现的不列。' },
       { part: 'toggleType(selected, type)', note: '纯函数：切换一个类型的选中状态。' },
       { part: 'moveValue(item)', note: '纯函数：数值的字与方向；取不到写「—」。' },
@@ -10650,6 +11434,7 @@ export const PAGES: readonly DocPage[] = [
       '新条目进来：排到该在的位置，新出现的那一行淡入；首次渲染不播。',
       '数值：百分数带正负号与涨跌色，金额写万 / 亿，取不到写「—」。',
       '给了 onSelect 行是按钮；selectedId 那一行高亮并标 aria-pressed。',
+      '给了 currentSymbol 顶栏多一个「只看当前品种」勾选：勾上只列这个品种的行，类型条数与总条数都按筛后的算；currentSymbol 换了，筛的对象跟着换。',
       '没有条目：写一行空态文字。',
     ],
     donts: [
@@ -10657,11 +11442,134 @@ export const PAGES: readonly DocPage[] = [
       '不要传色值：类型胶囊只靠 tone。',
       '不要在包里取数或轮询：条目由调用方推进来。',
     ],
-    composition: 'MoveFeed\n  顶栏（类型多选筛 · 总条数）\n  ul\n    li（时间 · 名称 + 代码 · 类型胶囊 · 数值）',
+    composition:
+      'MoveFeed\n  顶栏（类型多选筛 · 只看当前品种（可选）· 总条数）\n  ul\n    li（时间 · 名称 + 代码 · 类型胶囊 · 数值）',
     keys: [
       ['Tab', '到类型筛选按钮与行（给了 onSelect 时）'],
-      ['Enter / Space', '切换类型，或选中一行'],
+      ['Enter / Space', '切换类型、勾选「只看当前品种」，或选中一行'],
     ],
+  },
+  {
+    id: 'range-scrubber',
+    group: 'cn',
+    cardHeight: 260,
+    title: 'RangeScrubber 区间时间轴',
+    summary:
+      '一条 09:30–15:00 的交易时段轴（午休不占宽度，中间一条竖虚线是 11:30/13:00，每半小时一根刻度），在上面拖出一个时段，调用方拿它去算板块与个股的区间涨幅、净额、强度并排序（功能参照开盘啦「区间统计」，交互照 TradingView 图表底部的区间选择）。按住选区中间整段平移，按两端改起止，按在选区外近的那个把手跳过去；「近 N 分钟」快捷钮从现在往回数交易分钟；口径切换（涨幅 / 净额 / 强度，键名由调用方给）。「现在」之后的时段盖一层斜纹、选不进去。背景柱（每分钟成交额之类）可不给，选区里的亮、外面的暗。回调给的是时刻：起点正好在午休那一点写 13:00，终点写 11:30。',
+    exports: [
+      'RangeScrubber',
+      'scrubIndex',
+      'scrubClock',
+      'scrubNow',
+      'scrubRange',
+      'scrubRangeOf',
+      'shiftRange',
+      'presetRange',
+      'scrubBars',
+      'SCRUB_TICKS',
+      'SCRUB_LUNCH',
+    ],
+    propParts: [
+      {
+        part: 'RangeScrubber',
+        note: '渲染一个 section：读数行（时段 · 快捷钮 · 口径）、轴、刻度。时段可受控也可不受控。',
+      },
+      { part: 'ScrubPoint', note: '一根背景柱：time（这一段的起点时刻）与 value（取不到是 null）。' },
+      {
+        part: 'scrubIndex(clock)',
+        note: '纯函数：时刻 → 轴上第几个交易分钟（0 到 240），午休贴到 11:30，竞价与盘后返回 null。',
+      },
+      { part: 'scrubClock(index, side)', note: '纯函数：交易分钟 → HH:MM；午休那一点起点写 13:00、终点写 11:30。' },
+      { part: 'scrubNow(now)', note: '纯函数：「现在」在轴上的位置；不给是全天。' },
+      {
+        part: 'scrubRange(range, now) / scrubRangeOf(value, now)',
+        note: '纯函数：两端排好、夹在 0 到 now 之间；后者从时刻读。',
+      },
+      { part: 'shiftRange(range, delta, now)', note: '纯函数：整段平移，宽度不变，撞边就停。' },
+      { part: 'presetRange(minutes, now)', note: '纯函数：从 now 往回数 N 个交易分钟，不早于 09:30。' },
+      { part: 'scrubBars(points)', note: '纯函数：背景柱的位置与相对高度，每根画到下一个点。' },
+      {
+        part: 'SCRUB_TICKS / SCRUB_LUNCH',
+        note: '常量：每半小时一根的刻度（整点与午休是大刻度）与午休那一点（120）。',
+      },
+    ],
+    states: [
+      '默认：开盘到现在整段选中；读数写起止时刻与交易分钟数。',
+      '拖把手：改起点或终点，两把手不交叉；拖选区中间：整段平移。',
+      '按在选区外：近的那个把手跳到这里，接着拖。',
+      '给了 now：之后的时段盖斜纹，把手与选区都过不去。',
+      '选区正好等于某个「近 N 分钟」：那个快捷钮标按下。',
+      '没给 presets / metrics：读数行只有时段。',
+    ],
+    donts: [
+      '不要按钟表时间拉开午休：轴是 240 个交易分钟。',
+      '不要在包里算区间涨幅、净额或强度：口径与排序由调用方做，件只给时段与口径键。',
+      '不要拿它选日期：跨日用 TradingDatePicker 或 DateRangePicker。',
+    ],
+    composition:
+      'RangeScrubber\n  读数行（起止 · 分钟数）· 快捷钮 ToggleGroup · 口径 ToggleGroup\n  轴（背景柱 · 午休虚线 · 未到斜纹 · 选区 · 两个 role=slider 把手）\n  刻度（每半小时，整点写字）',
+    keys: [
+      ['← →', '把手移一分钟'],
+      ['PageUp / PageDown', '把手移十分钟'],
+      ['Home / End', '把手去 09:30 / 现在'],
+      ['Tab', '在把手、快捷钮、口径之间移动'],
+    ],
+  },
+  {
+    id: 'auction-bar-cell',
+    group: 'cn',
+    cardHeight: 300,
+    title: 'AuctionBarCell 竞价量比条',
+    summary:
+      '表格里的一格（放进 DataGrid 列的 cell）：一条细轨，实心段是今日竞价额，一根竖刻度是昨日同期竞价额（量比的分母，实心过了刻度就是比昨天多），轨下一条涨色细线是涨停委买额；右边写量比（两位小数，≥ 1 加亮）。09:25 撮合之前（09:15–09:25 是虚拟匹配）整格变淡、字写「未出结果」。满刻度 max 给一列共用的一把，行与行就能比长短；不给按这一格里最大的。功能参照开盘啦「竞价」与「竞价涨停委买」，条的画法是我们定的。',
+    exports: ['AuctionBarCell', 'auctionRatio', 'auctionPending', 'auctionBarShares'],
+    propParts: [
+      { part: 'AuctionBarCell', note: '渲染一个 span（role=img，读屏名写全竞价额、昨日同期、量比与涨停委买）。' },
+      { part: 'auctionRatio(amount, previous)', note: '纯函数：量比；昨日取不到或不是正数返回 null。排序用它。' },
+      { part: 'auctionPending(time)', note: '纯函数：时刻早于 09:25 返回 true。' },
+      {
+        part: 'auctionBarShares(amount, previous, limitBid, max)',
+        note: '纯函数：三段长度（0 到 1），取不到的是 null。',
+      },
+    ],
+    states: [
+      '结果出了：量比两位小数；≥ 1（比昨日同期多）加亮加粗。',
+      '09:25 之前：整格变淡，字写「未出结果」，读屏名前面补一句。',
+      '给了 limitBid：轨下画一条涨色细线（跟 data-updown）。',
+      '昨日取不到：量比写「—」，不画刻度。',
+    ],
+    donts: [
+      '不要一行一把满刻度去比行与行：一列传同一个 max。',
+      '不要拿它画竞价价格：价格怎么走用 AuctionStep 或 DataGrid 的 auctionStep 列。',
+      '不要在包里取竞价数据：金额由调用方给。',
+    ],
+    composition: 'AuctionBarCell\n  轨（今日竞价额实心段 · 昨日同期刻度 · 涨停委买细线）\n  量比读数 / 未出结果',
+    keys: [],
+  },
+  {
+    id: 'threshold-gap',
+    group: 'cn',
+    cardHeight: 300,
+    title: 'ThresholdGap 异动阈值差读数',
+    summary:
+      '一只票一行：上面是 Meter 的条（累计偏离值的绝对值对阈值，阈值是硬限红线、预警线是琥珀细线，越线条跟着变色），名字后面跟偏离口径的小字；下面是档位标签（监控中 / 临近 / 已触发 / 监管期结束）与「差 0.04%」「超出 1.20%」，末尾可放一句备注（监管期到哪天）。功能参照开盘啦「异动提醒」：列表显示离阈值差多少、已触发、监管期结束分开标。阈值与预警线是交易所规则与调用方的口径，包里不带；偏离值由调用方算好（百分点，可正可负，按绝对值比）。',
+    exports: ['ThresholdGap', 'thresholdGap', 'thresholdState'],
+    propParts: [
+      { part: 'ThresholdGap', note: '渲染一个 div：Meter（role=meter）加底行。' },
+      { part: 'thresholdGap(value, threshold)', note: '纯函数：阈值 − |偏离值|；正数是还差，负数是超出。排序用它。' },
+      { part: 'thresholdState(value, threshold, warnAt, ended)', note: '纯函数：档位；偏离值取不到返回 null。' },
+    ],
+    states: [
+      '监控中：条是中性灰，写「差 x%」。',
+      '临近（达到预警线）：条与「差 x%」转琥珀，标签「临近」。',
+      '已触发（达到阈值）：条转红，写「超出 x%」。',
+      '监管期结束（ended）：不再按线变色，阈值只留一根刻度，标签描边。',
+      '偏离值取不到：写「暂无数据」，不出档位标签。',
+    ],
+    donts: ['不要在包里写死阈值：各板块规则不同，由调用方传。', '不要用它显示涨跌幅本身：它只说离规则阈值还差多少。'],
+    composition:
+      'ThresholdGap\n  Meter（名字 · 偏离口径 · 偏离值，阈值红线 · 预警线）\n  底行（档位 Tag · 差 x% / 超出 x% · 备注）',
+    keys: [],
   },
   {
     id: 'layout-rules',
@@ -10908,7 +11816,7 @@ export const PAGES: readonly DocPage[] = [
     ],
     states: [
       '改价：点铅笔，价格格换成输入框并全选；Enter 提交（价格没变只关框），Esc 或失焦取消，非法输入标红。',
-      '撤单中：状态标签变警告色，撤单按钮置灰，没有铅笔。',
+      '撤单中：状态标签变警告色，撤单按钮进行中（Button pending：满 300ms 出转圈、再按无效、字与宽不变，不再置灰），没有铅笔。',
       '没传 onCancel / onAmend / onCancelAll 时对应控件不画；空表写 labels.empty。',
     ],
     donts: ['不要在件里等交易所回报：发出回调后由调用方改状态。', '不要做成点一下就提交的改价：回车才提交。'],
@@ -10971,6 +11879,78 @@ export const PAGES: readonly DocPage[] = [
     ],
     composition: 'FundingRate\n  Lcd × 3\n  历史小柱状图',
     keys: [],
+  },
+  {
+    id: 'derivatives-board',
+    group: 'blocks',
+    cardHeight: 520,
+    title: 'DerivativesBoard 交易数据看板',
+    summary:
+      '永续合约的「交易数据」（OKX 永续页，XartLab/KatanaUI#245）：六张卡的网格，每张自己的标题、信息提示与周期按钮。持仓量及成交量（成交量柱在左轴、持仓量线在右轴，两轴共用一套网格）、资金费率（柱按正负着色，零线居中，周期近 7 / 14 天）、主动买卖量（买入在零线上、卖出镜像在零线下）、多空账户比与精英多空趋向（多空 100% 堆叠柱，加多空比折线在右轴）、合约基差（上面合约价与指数价两条线，下面基差柱）。数据按卡由调用方给（时间戳加数值的序列），缺哪张就显示那张的空态，不画假数；没有数的点留缺口，不当零画。周期可受控（period）也可不受控（defaultPeriod），切换只发 onPeriodChange(kind, period)，换数据是调用方的事。悬停或 ← → 扫读出悬停窗。卡可以单独用：DerivativesCard 一个 kind 一张。文字走 labels（必填，包里不带语言；演示用的简体中文那份在 gallery/usage/derivatives-labels-zh.ts）。',
+    exports: [
+      'DerivativesBoard',
+      'DerivativesCard',
+      'DERIVATIVES_KINDS',
+      'DEFAULT_PERIODS',
+      'hasData',
+      'alignedAxes',
+      'symmetricAxis',
+      'longShare',
+      'longShortRatioOf',
+      'basisOf',
+      'signedBars',
+    ],
+    propParts: [
+      {
+        part: 'DerivativesBoard',
+        note: '渲染一个 section；data、periods、period、defaultPeriod 都按 kind 给。kinds 选画哪几张与次序。',
+      },
+      {
+        part: 'DerivativesCard',
+        note: 'kind 决定画法，data 的形状跟着 kind 走（见下面各点的类型）；onPeriodChange 带上 kind。',
+      },
+      {
+        part: 'DerivativesLabels',
+        note: '必填。卡名与信息提示、周期按钮的字、序列名、空态、读屏名与读数之间的分隔符（separator）；包里不带语言，整份由调用方传。',
+      },
+      { part: 'OpenInterestVolumePoint', note: '{ time, openInterest, volume }；缺的值写 null，留缺口。' },
+      { part: 'FundingRatePoint', note: '{ time, rate }；rate 是百分数，0.01 就是 0.01%。' },
+      { part: 'TakerVolumePoint', note: '{ time, buy, sell }；两个都是非负数，卖出由卡镜像到零线下。' },
+      { part: 'LongShortPoint', note: '{ time, long, short }；账户数或持仓量都行，只画比例，多空比是 long / short。' },
+      { part: 'BasisPoint', note: '{ time, contract, index }；基差是两者之差，有一个缺就没有基差柱。' },
+      { part: 'hasData(kind, points)', note: '纯函数：卡有没有东西可画；空、缺、全是缺失值都是没有。' },
+      {
+        part: 'alignedAxes(left, right, count, lockLeft)',
+        note: '纯函数：左右双轴取同样个数的刻度，右轴的字落在左轴的网格线上；lockLeft 时左轴不动（百分比轴不能长过 100）。',
+      },
+      { part: 'symmetricAxis(values, count)', note: '纯函数：以零为中心、盖住最大绝对值的轴，给带符号的柱用。' },
+      { part: 'longShare(point)', note: '纯函数：多头占比 0 到 1；缺值、负数或两边都是零给 null。' },
+      { part: 'longShortRatioOf(point)', note: '纯函数：多空比；空头不是正数给 null。' },
+      { part: 'basisOf(point)', note: '纯函数：合约价减指数价；缺一个给 null。' },
+      { part: 'signedBars(values)', note: '纯函数：带符号的柱：序号、值与方向；缺失值没有柱。' },
+      { part: 'DERIVATIVES_KINDS', note: '六种 kind，次序同 OKX。' },
+      { part: 'DEFAULT_PERIODS', note: '每种卡默认给的周期 id；字由 labels.periods 给。' },
+    ],
+    states: [
+      '周期：每张卡自己一组按钮，选中项高亮；资金费率默认近 7 / 14 天，别的卡 5 分钟 / 1 小时 / 1 天（待核对 OKX 的实际档位，用 periods 改）。',
+      '空态：没给 data、空序列、序列里全是缺失值，这张卡写 labels.empty，高度与有图时一样，别的卡不受影响。',
+      '缺值：折线断开、柱不画，不当零；悬停窗里写「—」。',
+      '悬停或 ← → 扫读：竖线加悬停窗，写时间与这一格各序列的值；Home / End 到头尾，Esc 清掉。',
+      '涨跌色：正资金费率、买入、多头、升水读 --pnl-up，反之读 --pnl-down，随 data-updown 互换；图例与悬停窗写字，不只靠颜色。',
+    ],
+    donts: [
+      '不要在件里取数或轮询：数据与周期由调用方按 onPeriodChange 换。',
+      '不要把缺失值补成 0：传 null。',
+      '不要拿它画单品种的 K 线：用图表包。',
+    ],
+    composition:
+      'DerivativesBoard\n  DerivativesCard × 6（article）\n    标题 · 信息钮（Tooltip）· 周期按钮（ToggleGroup）\n    图例\n    图（面板 × 1–2 · 左右轴 · 十字线与悬停窗 · 时间轴）或 空态',
+    keys: [
+      ['Tab', '到信息钮、周期按钮、图（图是一个停靠点）'],
+      ['← / →', '图上扫读一格；Shift 一次三格'],
+      ['Home / End', '图上到头尾'],
+      ['Esc', '清掉扫读'],
+    ],
   },
   {
     id: 'options-chain',

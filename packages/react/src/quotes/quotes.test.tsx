@@ -47,8 +47,8 @@ describe('迷你图', () => {
 
 describe('进度条', () => {
   it('位置按 share 画，越界按边；null 不画填充；取不到换弱色', () => {
-    expect(renderToStaticMarkup(<GaugeBar label="a" value="1" share={0.72} />)).toContain('style="width:72%"')
-    expect(renderToStaticMarkup(<GaugeBar label="a" value="1" share={3} />)).toContain('style="width:100%"')
+    expect(renderToStaticMarkup(<GaugeBar label="a" value="1" share={0.72} />)).toContain('style="--fill:0.72"')
+    expect(renderToStaticMarkup(<GaugeBar label="a" value="1" share={3} />)).toContain('style="--fill:1"')
     const missing = renderToStaticMarkup(<GaugeBar label="a" value="无" unavailable share={null} />)
     expect(missing).not.toContain('k-gauge-fill')
     expect(missing).toContain('k-gauge-value is-unavailable')
@@ -88,7 +88,7 @@ describe('进度条的分段（#109）', () => {
     expect(odd.match(/flex-grow:0/g)).toHaveLength(2)
     expect(odd).not.toContain('k-gauge-legend')
     const single = renderToStaticMarkup(<GaugeBar label="a" value="1" share={0.5} />)
-    expect(single).toContain('style="width:50%"')
+    expect(single).toContain('style="--fill:0.5"')
     expect(single).not.toContain('data-segmented')
   })
 })
@@ -167,7 +167,7 @@ describe('区间条', () => {
     const html = renderToStaticMarkup(<RangeBar low={10} high={20} value={15} label="区间" />)
     expect(html).toContain('role="meter"')
     expect(html).toContain('aria-valuenow="15"')
-    expect(html).toContain('left:50%')
+    expect(html).toContain('data-slot="range-mark" style="--fill:0.5"')
     expect(renderToStaticMarkup(<RangeBar low={10} high={10} value={10} label="区间" />)).not.toContain('k-range-mark')
   })
 })

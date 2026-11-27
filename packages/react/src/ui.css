@@ -67,6 +67,8 @@
 @import './theme/quote-table.css';
 @import './theme/fonts.css';
 @import './theme/rendering.css';
+/* 中英排版开关（#250）：权重为 0 的默认值，排在渲染之后、各件样式之前，件自己的规则照旧压得过它。 */
+@import './theme/typesetting.css';
 @import './theme/side-nav.css';
 @import './theme/chart-kit.css';
 @import './theme/brush-chart.css';
@@ -91,6 +93,17 @@
 @import './theme/fallback-chain.css';
 @import './theme/rate-limit-planner.css';
 @import './theme/plan-vs-actual.css';
+@import './theme/scheduled-runs.css';
+@import './theme/agent-queue.css';
+@import './theme/cost-waterfall.css';
+@import './theme/agent-recap.css';
+@import './theme/running-now.css';
+@import './theme/agent-lanes.css';
+@import './theme/fan-out-grid.css';
+@import './theme/decision-tree.css';
+@import './theme/flow-builder.css';
+@import './theme/agent-org.css';
+@import './theme/agent-crew.css';
 @import './theme/uptime-bars.css';
 @import './theme/range-histogram-slider.css';
 @import './theme/ridgeline.css';
@@ -107,6 +120,7 @@
 @import './theme/orders-table.css';
 @import './theme/account-equity.css';
 @import './theme/funding-rate.css';
+@import './theme/derivatives.css';
 @import './theme/options-chain.css';
 @import './theme/net-buy-bar.css';
 @import './theme/order-book.css';
@@ -121,6 +135,9 @@
 @import './theme/peer-cards.css';
 @import './theme/key-stats.css';
 @import './theme/watchlist.css';
+@import './theme/market-browser.css';
+@import './theme/strategy-launcher.css';
+@import './theme/floating-window.css';
 @import './theme/ticker-tape.css';
 @import './theme/refresh-control.css';
 @import './theme/metric-card.css';
@@ -141,6 +158,9 @@
 @import './theme/cn-flow.css';
 @import './theme/cn-mini-k.css';
 @import './theme/cn-move.css';
+@import './theme/cn-range-scrubber.css';
+@import './theme/cn-auction-bar.css';
+@import './theme/cn-threshold-gap.css';
 @import './theme/row-actions.css';
 @import './theme/flag-mark.css';
 @import './theme/spark-tile.css';

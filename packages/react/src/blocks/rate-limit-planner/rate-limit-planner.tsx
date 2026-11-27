@@ -112,7 +112,10 @@ export function RateLimitPlanner({
   const yAt = (value: number) => CHART_H - (value / top) * CHART_H
   const xAt = (minutes: number) => (minutes / span) * PLOT_W
   const area = `M0,${CHART_H}${curve
-    .map((value, i) => `L${xAt(i * CURVE_STEP).toFixed(2)},${yAt(value).toFixed(2)}H${xAt((i + 1) * CURVE_STEP).toFixed(2)}`)
+    .map(
+      (value, i) =>
+        `L${xAt(i * CURVE_STEP).toFixed(2)},${yAt(value).toFixed(2)}H${xAt((i + 1) * CURVE_STEP).toFixed(2)}`,
+    )
     .join('')}V${CHART_H}Z`
   const percent = (minutes: number) => `${((minutes / span) * 100).toFixed(3)}%`
   const ticks = [0, 0.25, 0.5, 0.75, 1].map((q) => Math.round(span * q))

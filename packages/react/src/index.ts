@@ -18,6 +18,20 @@ export { Switcher, type SwitcherProps } from './layout/switcher.tsx'
 
 export { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './primitives/accordion.tsx'
 export { Alert, AlertDescription, AlertTitle, alertVariants } from './primitives/alert.tsx'
+export {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogBody,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
+  AlertDialogPortal,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from './primitives/alert-dialog.tsx'
 export { Button, buttonVariants, type ButtonSize } from './primitives/button.tsx'
 export {
   Card,
@@ -193,6 +207,7 @@ export {
   truncateText,
   wrapText,
 } from './lib/text-measure.ts'
+export { installTruncationTitles } from './lib/truncation-title.ts'
 export {
   LIVE_ENTER_MS,
   LIVE_FLASH_GAP_MS,
@@ -236,6 +251,8 @@ export {
   type RowContextMenuProps,
   type SymbolMenuInput,
 } from './quotes/row-actions.tsx'
+// 自选表的文本导入导出（#22）：逗号分隔、带交易所前缀，###节名是分节。
+export { formatSymbolList, parseSymbolList, type ParsedSymbolList, type SymbolListEntry } from './quotes/symbol-list.ts'
 export {
   QuoteTable,
   type LegacyQuoteRow,
@@ -244,6 +261,15 @@ export {
   type QuoteTableProps,
   type QuoteTableRow,
 } from './quotes/quote-table.tsx'
+export {
+  MarketBrowser,
+  type MarketBrowserLabels,
+  type MarketBrowserProps,
+  type MarketCategory,
+  type MarketRow,
+  type MarketSort,
+} from './quotes/market-browser.tsx'
+export { filterMarketRows } from './quotes/market-browser-model.ts'
 export { plainPrice, rowTone, type FormatPrice, type QuoteRow } from './quotes/quote-row.ts'
 export { CodeChip, CodeName, CompactValue, UnitValue } from './quotes/cell-type.tsx'
 export {
@@ -315,6 +341,7 @@ export {
   type HotkeyPlatform,
 } from './patterns/hotkeys-model.ts'
 export { ShortcutSheet, type ShortcutSheetLabels, type ShortcutSheetProps } from './patterns/shortcut-sheet.tsx'
+export { undoHotkeyBindings, useUndoHotkeys, type UndoHotkeysOptions } from './patterns/use-undo-hotkeys.ts'
 export {
   CommandPalette,
   pushRecent,
@@ -341,9 +368,11 @@ export {
 export {
   TOAST_EXIT_MS,
   Toast,
+  ToastAction,
   ToastClear,
   ToastClose,
   ToastContent,
+  ToastCountdown,
   ToastDescription,
   ToastIcon,
   ToastText,
@@ -460,6 +489,18 @@ export {
   type UndoStackOptions,
   type UndoState,
 } from './lib/use-undo-stack.ts'
+
+// 联动组（#22 G8）：同组的件共用品种、周期、十字线、可见区间。
+export {
+  LINK_FIELDS,
+  LinkGroupProvider,
+  createLinkHub,
+  useLinkGroup,
+  useLinkHub,
+  type LinkField,
+  type LinkGroupState,
+  type LinkHub,
+} from './lib/link-group.tsx'
 
 // 分割线（#1901）：一条 role=separator 的线，键盘、拖动、吸附、双击复位；工作区的格子分割线用它。
 export { Splitter, type SplitterProps } from './primitives/splitter.tsx'
@@ -623,6 +664,45 @@ export {
   type StepProjection,
   type StepState,
 } from './ai/plan-actual-model.ts'
+// 参照 affectUI 补的第二批 Agent 件（KATANAview #1908，实现原创）：离开期间回顾与摘要、正在跑、多 Agent 泳道、分发网格、建议卡、决策树。
+export { AgentRecap, type AgentRecapLabels, type AgentRecapProps, type RecapAction } from './ai/agent-recap.tsx'
+export { AwaySummary, type AwaySummaryLabels, type AwaySummaryProps } from './ai/away-summary.tsx'
+export { recapBuckets, recapCounts, recapLanes, recapOrder, type RecapEvent, type RecapKind } from './ai/recap-model.ts'
+export {
+  RunningNow,
+  runningCounts,
+  type RunningNowLabels,
+  type RunningNowProps,
+  type RunningTask,
+  type RunningTaskState,
+} from './ai/running-now.tsx'
+export { AgentLanes, type AgentLanesLabels, type AgentLanesProps } from './ai/agent-lanes.tsx'
+export {
+  agentTag,
+  blockSpan,
+  handoffLinks,
+  type LaneAgent,
+  type LaneTask,
+  type LaneTaskStatus,
+} from './ai/lanes-model.ts'
+export { FanOutGrid, type FanOutGridLabels, type FanOutGridProps } from './ai/fan-out-grid.tsx'
+export { fanCounts, fanEta, fanProgress, type FanTask, type FanTaskStatus } from './ai/fan-out-model.ts'
+export {
+  SmartRecommendation,
+  clampSignal,
+  type RecommendationOption,
+  type SmartRecommendationLabels,
+  type SmartRecommendationProps,
+} from './ai/smart-recommendation.tsx'
+export {
+  DecisionTree,
+  type Decision,
+  type DecisionChoice,
+  type DecisionEffect,
+  type DecisionOption,
+  type DecisionTreeLabels,
+  type DecisionTreeProps,
+} from './ai/decision-tree.tsx'
 export {
   Markdown,
   docHeadings,

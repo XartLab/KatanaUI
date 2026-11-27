@@ -12,8 +12,12 @@
   border-radius: var(--radius-control);
   background: var(--k-container-secondary-background);
 }
-.k-cal-card[data-disabled] {
+/* 禁用：翻月按钮与日格淡到 0.45（它们带 disabled / aria-disabled，axe 不量）；标题不用透明度（0.45 压到 3.8:1，axe #190），降到次要色。 */
+.k-cal-card[data-disabled] :is(.k-cal-nav, .k-cal-grid) {
   opacity: 0.45;
+}
+.k-cal-card[data-disabled] .k-cal-title {
+  color: var(--k-content-secondary-foreground);
 }
 .k-cal-card .k-cal-cell[data-today]:not([data-selected]) {
   color: var(--k-content-primary-foreground);

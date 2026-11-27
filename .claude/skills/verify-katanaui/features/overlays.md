@@ -11,6 +11,7 @@
 - `dialog-esc` 按 Esc：模态框关上，焦点回到「对话框」钮。
 - `dialog-cancel` 点「取消」：同样关上。
 - `popover-scroll-close` Popover 开着时滚页面，或滚装着触发钮的容器：浮层关上；滚一个不装触发钮的容器：浮层不关（#125，修在 #135）。
+- `tooltip-timing` 工具条上悬停停 500ms 才出提示；出了以后 400ms 内移到邻居立即换字；离开超过 400ms 再进又要等 500ms（#251）。
 
 ## How to get to it (user POV)
 
@@ -34,7 +35,10 @@
 - **滚页面关。** `page.mouse.wheel(0, 300)`。`window.scrollY` 变大，开着的浮层 0 个，钮 `aria-expanded="false"`。
 - **滚不相干的容器不关。** `split.hover()`，再用 `el.click()` 开「News panel」的「市场」，`page.mouse.wheel(200, 0)`。`news-split` 的 `scrollLeft` 变大、`window.scrollY` 不变；等 300ms 浮层还在（1 个）。按 Escape 关掉。
 - **滚装着锚点的容器关。** 鼠标还在外框上，用 `el.click()` 开「宽 1000px」那张的「市场」，等 300ms 仍开着；`page.mouse.wheel(-150, 0)`。`news-split` 的 `scrollLeft` 变小、`window.scrollY` 不变，开着的浮层 0 个，钮 `aria-expanded="false"`。
+- **确认对话框（#238）。** 换到 `#/alert-dialog`，点「平仓」（`exact: true`）。`getByRole('alertdialog', { name: '平掉 BTCUSDT 多单' })` 可见，焦点在「取消」上；点页面左上角（背板）对话框还在；按 Escape 关掉，页上「最后一次：还没选」不变，焦点回「平仓」钮。再开、点框里的「平仓」：关掉，页上写「最后一次：平仓」，确认钮字色是 `--k-actionable-negative-foreground`。「删除自选列表」开的是 sm，宽 320。
 - **证据。** `$KUI drive overlays`：十一步十一张截图，`popover-open.aria.yml`、`dialog-open.aria.yml` 是打开时浮层与模态框的 ARIA 快照；第 9 到 11 步的「看到什么」里记了每次滚动前后的 `pageY` 与 `splitX`。
+
+- **提示时间（手走，还没有流程）。** 换到 `#/toolbar`，视口里的 `getByRole('toolbar', { name: 'Example toolbar' })`。鼠标移到「Alerts」钮上：0.4 秒内页上没有 `[data-slot="tooltip-content"]`，停到 0.5 秒出现「Alerts」。紧接着移到「Draw」：立即换成「Draw」，不再等。把鼠标移出去超过 0.4 秒再回到「Alerts」：又要等满 0.5 秒。按下按钮提示就收。判据是出现的时刻，要么用 Playwright 的 `page.clock`（`install` 后 `pauseAt`、`runFor`，e2e 里就是这样），要么用 `performance.now()` 量从移入到提示出现的毫秒数（应在 500 到 600 之间，换字应小于 100）。留截图与提示出现时刻的数值。
 
 ## Gotchas
 

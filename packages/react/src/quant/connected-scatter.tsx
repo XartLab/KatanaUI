@@ -43,6 +43,7 @@ export function ConnectedScatter({
   tableHead,
   onExport,
   onFullscreen,
+  onCopyImage,
   source,
 }: ConnectedScatterProps) {
   const [tableView, setTableView] = useState(false)
@@ -73,6 +74,7 @@ export function ConnectedScatter({
           onTableView={setTableView}
           onExport={onExport}
           onFullscreen={onFullscreen}
+          onCopyImage={onCopyImage}
         />
       </div>
       {tableView && (

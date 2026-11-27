@@ -8,6 +8,7 @@
  */
 import { useId, useState } from 'react'
 import { cn } from '../../lib/cn.ts'
+import { spanVar } from '../../lib/fill.ts'
 import { formatVolume } from '../../lib/chart/format/index.ts'
 import { ChangeText } from '../../quotes/change-text.tsx'
 import { SymbolMark } from '../../quotes/symbol-mark.tsx'
@@ -155,11 +156,7 @@ export function NetBuyBar({
                   {item.change === undefined ? DASH : <ChangeText value={item.change} />}
                 </span>
                 <span className="k-netbuy-track" aria-hidden="true">
-                  <i
-                    data-slot="netbuy-bar"
-                    data-tone={tone}
-                    style={{ left: `${bar.left * 100}%`, width: `${bar.width * 100}%` }}
-                  />
+                  <i data-slot="netbuy-bar" data-tone={tone} style={spanVar(bar.left, bar.width)} />
                 </span>
                 <span className="k-netbuy-num k-netbuy-net" data-slot="netbuy-net" data-tone={tone}>
                   {signed(item.net, formatAmount)}

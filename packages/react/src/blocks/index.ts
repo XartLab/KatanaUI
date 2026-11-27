@@ -329,6 +329,20 @@ export {
   type PanelTabsProps,
 } from './panel-tabs/panel-tabs.tsx'
 export {
+  FloatingWindow,
+  isFloatingWindowSupported,
+  useFloatingWindow,
+  type FloatingWindowLabels,
+  type FloatingWindowMode,
+  type FloatingWindowProps,
+} from './floating-window/floating-window.tsx'
+export {
+  StrategyLauncher,
+  type StrategyEntry,
+  type StrategyLauncherLabels,
+  type StrategyLauncherProps,
+} from './strategy-launcher/strategy-launcher.tsx'
+export {
   CATALOG_ITEM_MIME,
   ComponentCatalog,
   type ComponentCatalogLabels,
@@ -427,6 +441,32 @@ export {
   type FundingRateProps,
 } from './funding-rate/funding-rate.tsx'
 export { countdownTo, formatCountdown, formatRate, fundingBars, rateTone } from './funding-rate/funding-model.ts'
+export { DerivativesBoard, type DerivativesBoardProps } from './derivatives/derivatives-board.tsx'
+export {
+  DerivativesCard,
+  type DerivativesCardCommon,
+  type DerivativesCardProps,
+} from './derivatives/derivatives-card.tsx'
+export type { DerivativesLabels } from './derivatives/derivatives-labels.ts'
+export {
+  DEFAULT_PERIODS,
+  DERIVATIVES_KINDS,
+  alignedAxes,
+  basisOf,
+  hasData,
+  longShare,
+  longShortRatioOf,
+  signedBars,
+  symmetricAxis,
+  type AxisSpec,
+  type BasisPoint,
+  type DerivativesData,
+  type DerivativesKind,
+  type FundingRatePoint,
+  type LongShortPoint,
+  type OpenInterestVolumePoint,
+  type TakerVolumePoint,
+} from './derivatives/derivatives-model.ts'
 export {
   OptionsChain,
   type OptionExpiry,
@@ -515,3 +555,87 @@ export {
   type PlanStatus,
   type PlannedRun,
 } from './rate-limit-planner/rate-limit-model.ts'
+// 参照 affectUI 补的第二批（KATANAview #1908）：定时运行、任务队列、花费瀑布。
+export {
+  ScheduledRuns,
+  type ScheduleMove,
+  type ScheduledRunsLabels,
+  type ScheduledRunsProps,
+} from './scheduled-runs/scheduled-runs.tsx'
+export {
+  buildSchedule,
+  canDrop,
+  moveSlot,
+  type PieceKind,
+  type SchedulePiece,
+  type SchedulePin,
+  type ScheduledTask,
+  type Slot as ScheduleSlot,
+} from './scheduled-runs/schedule-model.ts'
+export { AgentQueue, type AgentQueueLabels, type AgentQueueProps } from './agent-queue/agent-queue.tsx'
+export {
+  depthSummary,
+  queueDepth,
+  queueOrder,
+  workerSlots,
+  type QueueJob,
+  type QueueJobStatus,
+} from './agent-queue/queue-model.ts'
+export { CostWaterfall, type CostWaterfallLabels, type CostWaterfallProps } from './cost-waterfall/cost-waterfall.tsx'
+export {
+  costRows,
+  priciestStep,
+  stepTotals,
+  type CostMode,
+  type CostRow,
+  type CostStep,
+  type CostStepKind,
+  type CostStepStatus,
+  type CostTotals,
+} from './cost-waterfall/cost-model.ts'
+// 参照 affectUI 补的第三批（KATANAview #1908）：流程编排、Agent 树、Agent 总览、多角色小组。
+export { FlowBuilder, type FlowBuilderLabels, type FlowBuilderProps } from './flow-builder/flow-builder.tsx'
+export {
+  flowElapsed,
+  flowOrder,
+  insertStep,
+  moveStep,
+  removeStep,
+  type FlowPath,
+  type FlowRun,
+  type FlowSlot,
+  type FlowStep,
+  type FlowStepKind,
+  type FlowStepStatus,
+  type FlowTemplate,
+} from './flow-builder/flow-model.ts'
+export {
+  AgentTree,
+  type AgentBarLabels,
+  type AgentRunLabels,
+  type AgentTreeLabels,
+  type AgentTreeProps,
+} from './agent-tree/agent-tree.tsx'
+export {
+  agentElapsed,
+  agentTotals,
+  branchCost,
+  visibleAgents,
+  type AgentResolution,
+  type AgentRow,
+  type AgentRunStatus,
+  type AgentRunStep,
+  type AgentTotals,
+  type RunAgent,
+} from './agent-tree/agent-tree-model.ts'
+export { AgentFleet, type AgentFleetLabels, type AgentFleetProps } from './agent-fleet/agent-fleet.tsx'
+export { AgentCrew, type AgentCrewLabels, type AgentCrewProps } from './agent-crew/agent-crew.tsx'
+export {
+  crewContextLevel,
+  steerActions,
+  type CrewAgent,
+  type CrewHandoff,
+  type CrewProject,
+  type CrewStatus,
+  type CrewSteer,
+} from './agent-crew/crew-model.ts'

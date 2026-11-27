@@ -175,6 +175,7 @@
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .k-mheat-head-avg {
   flex: none;
@@ -203,7 +204,7 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   color: var(--mheat-fg);
   background: var(--mheat-bg);
   font: 500 var(--text-data-size)/14px var(--font-sans);
@@ -243,7 +244,7 @@
   z-index: 1;
   box-sizing: border-box;
   border: 1px solid var(--k-content-primary-foreground);
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   pointer-events: none !important;
 }
 .k-mheat-cell[data-selected] {
@@ -293,6 +294,7 @@
   opacity: 0.85;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 .k-mheat-card {
   position: absolute;
@@ -399,7 +401,7 @@
 .k-mheat-swatch {
   display: block;
   height: 10px;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   background: var(--mheat-bg);
 }
 .k-mheat-swatch[data-off] {
@@ -422,7 +424,7 @@
   height: 28px;
   margin-left: auto;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   background: transparent;
   color: var(--k-content-body-foreground);
   cursor: pointer;
@@ -434,6 +436,10 @@
 .k-mheat-fullscreen:focus-visible {
   outline: 1px solid var(--k-separable-bold-borderColor);
   outline-offset: -1px;
+}
+/* 相机钮在全屏钮前（#87）：两颗挨着靠右，auto 留给相机钮。 */
+.k-mheat-copy + .k-mheat-fullscreen {
+  margin-left: 0;
 }
 .k-mheat:fullscreen {
   padding: var(--space-4);

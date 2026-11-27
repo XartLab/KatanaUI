@@ -1,0 +1,460 @@
+/* SPDX-License-Identifier: MIT */
+/* Agent 卡片树（KATANAview #1908）：AgentTree、AgentFleet 的展开树与 AgentCrew 共用。
+   窄的排法：每层往里缩 20px，左边一道竖线连到父，拐到卡的中线（--k-org-mid：卡顶到中线的距离）；排队与停下的卡与通向它的线变淡、线变虚。
+   宽于 560px（AgentTree、AgentCrew）：第一层子 Agent 在根下面并排，顶上一道横线、各自一道短竖线；再往下仍挂在各自的父下面往里缩。
+   卡 54px 高固定（状态变了不跳）；要你的卡 warn 边、失败的 danger 边；键盘焦点的环画在卡上（树项本身不画）。 */
+.k-org {
+  --k-org-line: var(--k-separable-primary-borderColor);
+  --k-org-indent: 20px;
+  --k-org-card: 54px;
+  --k-org-mid: calc(6px + var(--k-org-card) / 2);
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-org-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px var(--space-3);
+  min-width: 0;
+}
+.k-org-title {
+  margin: 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-org-totals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-left: auto;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-num-small);
+}
+.k-org-totals [data-status='waiting'] {
+  color: var(--k-status-warn-foreground);
+}
+.k-org-totals [data-status='failed'] {
+  color: var(--k-status-danger-foreground);
+}
+.k-org-tree,
+.k-org-group {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-org-group {
+  padding-left: var(--k-org-indent);
+}
+.k-org-item {
+  position: relative;
+  min-width: 0;
+  outline: 0;
+}
+.k-org-group > .k-org-item {
+  padding-top: 6px;
+}
+/* 拐角线：从上一个兄弟（或父）那里下来，拐到这张卡的中线。 */
+.k-org-group > .k-org-item::before {
+  position: absolute;
+  top: 0;
+  left: calc(8px - var(--k-org-indent));
+  width: calc(var(--k-org-indent) - 8px);
+  height: var(--k-org-mid);
+  border-bottom: 1px solid var(--k-org-line);
+  border-left: 1px solid var(--k-org-line);
+  content: '';
+}
+/* 后面还有兄弟时竖线往下接着走。 */
+.k-org-group > .k-org-item:not(:last-child)::after {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(8px - var(--k-org-indent));
+  border-left: 1px solid var(--k-org-line);
+  content: '';
+}
+.k-org-item[data-muted]::before {
+  border-style: dashed;
+  opacity: 0.6;
+}
+.k-org-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+  height: var(--k-org-card);
+  padding: 4px 10px;
+  overflow: hidden;
+  border: 1px solid var(--k-separable-secondary-borderColor);
+  border-radius: var(--radius-overlay);
+  background: var(--k-container-secondary-background);
+  cursor: pointer;
+  transition:
+    border-color var(--dur-snappy) var(--ease-snappy),
+    opacity var(--dur-snappy) var(--ease-snappy);
+}
+.k-org-card:hover {
+  border-color: var(--k-separable-bold-borderColor);
+}
+.k-org-item:focus-visible > .k-org-card {
+  outline: 1px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+/* 排队与停下的卡变淡不用透明度：0.55 把卡上的次要字压到 2.4:1（axe，#190）。改成边换虚线（同通向它的线）、名字降到次要色（卡底上 ≥5.1:1）。 */
+.k-org-item[data-muted] > .k-org-card {
+  border-style: dashed;
+}
+.k-org-item[data-muted] > .k-org-card .k-at-name {
+  color: var(--k-content-secondary-foreground);
+}
+.k-org-item[data-status='waiting'] > .k-org-card {
+  border-color: var(--k-status-warn-foreground);
+}
+.k-org-item[data-status='failed'] > .k-org-card {
+  border-color: var(--k-status-danger-foreground);
+}
+.k-org-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* 卡里的行：名字 · 模型 · 状态；工具小方块 · 任务；花费 · 耗时。 */
+.k-at-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.k-at-name {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--k-content-primary-foreground);
+  font-weight: inherit;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-at-model {
+  flex: none;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-mono);
+}
+.k-at-status {
+  flex: none;
+  margin-left: auto;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-at-status[data-status='running'],
+.k-at-status[data-status='working'] {
+  color: var(--accent);
+}
+.k-at-status[data-status='waiting'] {
+  color: var(--k-status-warn-foreground);
+}
+.k-at-status[data-status='failed'] {
+  color: var(--k-status-danger-foreground);
+}
+.k-at-status[data-status='done'] {
+  color: var(--k-status-ok-foreground);
+}
+.k-at-fold {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 14px;
+  height: 14px;
+  color: var(--k-content-secondary-foreground);
+  cursor: pointer;
+}
+.k-at-fold svg {
+  width: 12px;
+  height: 12px;
+  transition: rotate var(--dur-snappy) var(--ease-snappy);
+}
+.k-at-fold[data-open] svg {
+  rotate: 90deg;
+}
+.k-at-tools {
+  display: flex;
+  flex: none;
+}
+.k-at-tools i {
+  display: grid;
+  place-items: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 2px;
+  border: 1px solid var(--k-container-secondary-background);
+  border-radius: var(--radius-md);
+  background: var(--k-container-tertiary-background);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-style: normal;
+}
+.k-at-tools i + i {
+  margin-left: -4px;
+}
+.k-at-task {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-at-nums {
+  gap: var(--space-3);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-num-small);
+}
+.k-at-pop {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 280px;
+}
+.k-at-pop p {
+  margin: 0;
+}
+.k-at-pop-title {
+  color: var(--k-content-primary-foreground);
+}
+.k-at-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-at-steps li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-at-steps li > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-at-steps small {
+  color: var(--k-content-secondary-foreground);
+}
+.k-at-steps [data-part='status'] {
+  margin-left: auto;
+}
+.k-at-steps i {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--k-container-track-background);
+}
+.k-at-steps [data-status='running'] i {
+  background: var(--accent);
+}
+.k-at-steps [data-status='done'] i {
+  background: var(--k-status-ok-foreground);
+}
+.k-at-steps [data-status='failed'] i {
+  background: var(--k-status-danger-foreground);
+}
+.k-at-steps [data-status='waiting'] i {
+  background: var(--k-status-warn-foreground);
+}
+.k-at-ask {
+  color: var(--k-content-secondary-foreground);
+}
+.k-at-error {
+  color: var(--k-status-danger-foreground);
+}
+.k-at-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+/* 宽的排法：第一层子 Agent 在根下面并排（AgentTree、AgentCrew；AgentFleet 的展开树窄，一直往里缩）。 */
+@container (min-width: 560px) {
+  :is(.k-at, .k-crew) .k-org-tree > .k-org-item > .k-org-card {
+    width: min(100%, 260px);
+    margin: 0 auto;
+  }
+  :is(.k-at, .k-crew) .k-org-tree > .k-org-item > .k-org-group {
+    position: relative;
+    display: flex;
+    padding: 16px 0 0;
+  }
+  :is(.k-at, .k-crew) .k-org-tree > .k-org-item > .k-org-group::before {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    height: 16px;
+    border-left: 1px solid var(--k-org-line);
+    content: '';
+  }
+  :is(.k-at, .k-crew) .k-org-tree > .k-org-item > .k-org-group > .k-org-item {
+    flex: 1 1 0;
+    padding: 16px 6px 0;
+  }
+  :is(.k-at, .k-crew) .k-org-tree > .k-org-item > .k-org-group > .k-org-item::before {
+    right: 0;
+    left: 0;
+    width: auto;
+    height: 0;
+    border-top: 1px solid var(--k-org-line);
+    border-bottom: 0;
+    border-left: 0;
+  }
+  :is(.k-at, .k-crew) .k-org-tree > .k-org-item > .k-org-group > .k-org-item:first-child::before {
+    left: 50%;
+  }
+  :is(.k-at, .k-crew) .k-org-tree > .k-org-item > .k-org-group > .k-org-item:last-child::before {
+    right: 50%;
+  }
+  :is(.k-at, .k-crew) .k-org-tree > .k-org-item > .k-org-group > .k-org-item::after {
+    position: absolute;
+    top: 0;
+    bottom: auto;
+    left: 50%;
+    height: 16px;
+    border-left: 1px solid var(--k-org-line);
+    content: '';
+  }
+}
+
+/* AgentFleet：左边一列主卡，右边是打开的那棵树（跨满所有行，多出来的高给最后一行）；窄于 640px 树落到它那张卡下面。 */
+.k-fleet-body {
+  display: grid;
+  grid-template-rows: repeat(var(--k-fleet-rows), auto) 1fr;
+  grid-template-columns: minmax(220px, 300px) minmax(0, 1fr);
+  gap: 6px var(--space-4);
+  align-items: start;
+}
+.k-fleet-main {
+  display: grid;
+  grid-column: 1;
+  grid-template-columns: 24px minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+  min-width: 0;
+  height: 86px;
+  padding: 8px 10px;
+  border: 1px solid var(--k-separable-secondary-borderColor);
+  border-radius: var(--radius-overlay);
+  background: var(--k-container-secondary-background);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--dur-snappy) var(--ease-snappy);
+}
+.k-fleet-main:hover {
+  border-color: var(--k-separable-bold-borderColor);
+}
+.k-fleet-main:focus-visible {
+  outline: 1px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+.k-fleet-main[aria-expanded='true'] {
+  border-color: var(--focus-ring);
+  background: var(--k-selectable-background-selected);
+}
+/* 打开的那张卡是 selected 底，次要字（ink-300）压在上面只有 4.2:1（console，axe #190），提到 body。 */
+.k-fleet-main[aria-expanded='true'] :is(.k-at-model, .k-at-task, .k-at-nums, .k-fleet-phrase) {
+  color: var(--k-content-body-foreground);
+}
+.k-fleet-main[data-status='queued'],
+.k-fleet-main[data-status='stopped'] {
+  opacity: 0.55;
+}
+.k-fleet-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.k-fleet-phrase {
+  overflow: hidden;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-fleet-ring {
+  width: 24px;
+  height: 24px;
+  rotate: -90deg;
+}
+.k-fleet-ring circle {
+  fill: none;
+  stroke-width: 3;
+}
+.k-fleet-ring [data-part='track'] {
+  stroke: var(--k-container-track-background);
+}
+.k-fleet-ring [data-part='arc'] {
+  stroke: var(--k-content-secondary-foreground);
+  stroke-linecap: round;
+  transition: stroke-dasharray var(--dur-snappy) var(--ease-snappy);
+}
+.k-fleet-ring[data-status='running'] [data-part='arc'] {
+  stroke: var(--accent);
+}
+.k-fleet-ring[data-status='waiting'] [data-part='arc'] {
+  stroke: var(--k-status-warn-foreground);
+}
+.k-fleet-ring[data-status='failed'] [data-part='arc'] {
+  stroke: var(--k-status-danger-foreground);
+}
+.k-fleet-ring[data-status='done'] [data-part='arc'] {
+  stroke: var(--k-status-ok-foreground);
+}
+.k-fleet-panel {
+  display: flex;
+  grid-row: 1 / -1;
+  grid-column: 2;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 8px 10px 10px;
+  border: var(--hairline);
+  border-radius: var(--radius-overlay);
+}
+.k-fleet-panel-title,
+.k-fleet-empty {
+  margin: 0;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+@container (max-width: 640px) {
+  .k-fleet-body {
+    grid-template-rows: none;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .k-fleet-panel {
+    grid-row: auto;
+    grid-column: 1;
+  }
+}
+@media (pointer: coarse) {
+  .k-at-fold {
+    width: 24px;
+    height: 24px;
+  }
+}

@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+import { readFileSync } from 'node:fs'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
 import { Meter, meterLimitMax, meterLimitState, meterShare } from './meter.tsx'
@@ -21,7 +22,23 @@ describe('Meter', () => {
     expect(html).toContain('role="meter"')
     expect(html).toContain('aria-valuenow="72.4"')
     expect(html).toContain('data-tone="ok"')
-    expect(html).toContain('width:72.4%')
+    expect(html).toContain('--fill:0.724')
+  })
+
+  it('neutral 自成一档（#178）：data-tone 写 neutral 不并进 off，CSS 用中性墨色填充、数照常；off 仍是停用', () => {
+    expect(renderToStaticMarkup(<Meter label="SCORE" value={40} tone="neutral" />)).toContain('data-tone="neutral"')
+    expect(renderToStaticMarkup(<Meter label="SCORE" value={40} tone="neutral" display="gauge" />)).toContain(
+      'data-tone="neutral"',
+    )
+    expect(renderToStaticMarkup(<Meter label="OFF" value={0} tone="off" />)).toContain('data-tone="off"')
+    expect(renderToStaticMarkup(<Meter label="RUN" value={40} />)).toContain('data-tone="accent"')
+    const css = readFileSync(new URL('../../theme/meter.css', import.meta.url), 'utf8')
+    expect(css).toMatch(/\.k-meter\[data-tone='neutral'\] \{\s*--meter-color: var\(--k-status-neutral-foreground\);/)
+    expect(css).toMatch(
+      /\.k-meter\[data-tone='neutral'\] \.k-meter-value \{\s*color: var\(--k-content-primary-foreground\);/,
+    )
+    // 停用转灰的那条规则不带 neutral。
+    expect(css).not.toMatch(/data-tone='neutral'\] \.k-meter-label/)
   })
 
   it('sync：右侧大百分比与琥珀刻度；刻度的读屏名进 valuetext', () => {
@@ -71,7 +88,7 @@ describe('Meter', () => {
     expect(breach).toContain('data-tone="danger"')
     expect(breach).toContain('aria-valuemax="125"')
     expect(breach).toContain('class="k-meter-limit is-hard" style="left:80%"')
-    expect(breach).toContain('width:100%')
+    expect(breach).toContain('--fill:1')
   })
 
   it('没给线就没有限额：不写 data-state、tone 照传；gauge 不画线也不换 tone', () => {

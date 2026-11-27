@@ -24,6 +24,11 @@
 .k-meter[data-tone='off'] {
   --meter-color: var(--k-separable-bold-borderColor);
 }
+/* neutral（#178）：有数、不表态。填充、指针与大百分比用中性墨色（Graphite 的 ink-300 中性灰，跟 Tag / StatusIcon 的 neutral 同一个），
+   右边的数用正文主色读得清；跟 off 不同，名字与数不转灰。 */
+.k-meter[data-tone='neutral'] {
+  --meter-color: var(--k-status-neutral-foreground);
+}
 .k-meter-head {
   display: flex;
   justify-content: space-between;
@@ -38,7 +43,8 @@
   color: var(--meter-color);
   font-variant-numeric: tabular-nums;
 }
-.k-meter[data-tone='ok'] .k-meter-value {
+.k-meter[data-tone='ok'] .k-meter-value,
+.k-meter[data-tone='neutral'] .k-meter-value {
   color: var(--k-content-primary-foreground);
 }
 .k-meter[data-tone='off'] .k-meter-label,
@@ -52,13 +58,18 @@
   background: var(--k-surface-sunken-background);
   border: var(--hairline);
   box-shadow: var(--recess);
+  /* 刻度盘的指针用 translate 画，位置要量轨宽：轨是容器，取 cqw（kubai Vibe Design Tips 011，#251）。 */
+  container-type: inline-size;
 }
 .k-meter-fill {
   display: block;
+  width: 100%;
   height: 100%;
   /* 点阵纹理：4px 实、2px 空；长度编码量，不用实色（卡：长度比颜色准） */
   background: repeating-linear-gradient(90deg, var(--meter-color) 0 4px, transparent 4px 6px);
-  transition: width var(--dur-gentle) var(--ease-gentle);
+  /* 条长是 --fill（0 到 1）。有点阵纹理，scale 会把点拉伸，所以裁掉右边（clip-path 只重绘、不重排）；kubai Vibe Design Tips 011，#251。 */
+  clip-path: inset(0 calc((1 - var(--fill, 0)) * 100%) 0 0);
+  transition: clip-path var(--dur-gentle) var(--ease-gentle);
 }
 .k-meter-mark {
   position: absolute;
@@ -106,11 +117,14 @@
   position: absolute;
   top: 4px;
   bottom: 4px;
+  left: 0;
   width: 2px;
   margin-left: -1px;
   background: var(--meter-color);
   box-shadow: 0 0 6px var(--meter-color);
-  transition: left var(--dur-gentle) var(--ease-gentle);
+  /* 指针在 6px 内缩之间的轨上：6px + (轨宽 − 12px) × --fill；轨是容器，取 cqw。 */
+  translate: calc(6px + (100cqw - 12px) * var(--fill, 0)) 0;
+  transition: translate var(--dur-gentle) var(--ease-gentle);
 }
 .k-meter-ticks {
   position: absolute;

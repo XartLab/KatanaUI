@@ -15,6 +15,7 @@ import { SeatTableUsage } from '../gallery/usage/SeatTableUsage.tsx'
 import { TradingDatePickerUsage } from '../gallery/usage/TradingDatePickerUsage.tsx'
 import { ThemeHeatMatrixUsage } from '../gallery/usage/ThemeHeatMatrixUsage.tsx'
 import { mount } from './render.tsx'
+import { settled } from './settle.ts'
 
 const items: Record<string, React.ReactNode> = {
   'sentiment-cycle': <SentimentCycleUsage />,
@@ -44,6 +45,7 @@ for (const theme of ['graphite', 'console'] as const) {
         await page.viewport(960, 1200)
         await mount(<div style={{ width: 720, display: 'flex', flexDirection: 'column', gap: 8 }}>{node}</div>, theme)
         await new Promise((r) => setTimeout(r, 250)) // let measuring and transitions finish
+        await settled()
         await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-cn-${name}`)
       })
     }

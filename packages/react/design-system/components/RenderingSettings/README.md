@@ -50,7 +50,7 @@ export function RenderingSettingsUsage() {
 
 ```
 RenderingSettings
-  行 × 6（名称、说明、ToggleGroup 或 Slider）
+  行 × 6（名称、说明、Switch、ToggleGroup 或 Slider）
   字体小节
     行 × 4（界面、汉字、数据字、代码：Select）
   恢复默认（Button）
@@ -59,6 +59,7 @@ RenderingSettings
 ## Keyboard
 
 - `Tab`：按行的次序走过每个控件，最后是恢复默认
-- `← →`：开关与平滑方式（分段切换）里换一段
+- `Space`：开关（像素对齐、斜线零、中英对齐）翻转
+- `Tab`：平滑方式（分段切换）按钮之间走；Enter 或 Space 按下
 - `← → / ↑ ↓`：字重、字号滑块走一格（字重 10，字号 5%）；Home / End 到两头
 - `Enter / Space`：打开字体下拉；下拉里 ↑ ↓ 选、Enter 确定、Esc 收起

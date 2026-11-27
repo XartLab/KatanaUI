@@ -104,7 +104,7 @@
   height: 22px;
   padding: 0 8px;
   border: var(--hairline);
-  border-radius: 4px;
+  border-radius: var(--radius-md);
   background: transparent;
   color: var(--k-content-body-foreground);
   font: var(--text-num-sm) var(--chart-font-axis, var(--font-num-small));

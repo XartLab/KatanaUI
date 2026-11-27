@@ -1,0 +1,174 @@
+/* SPDX-License-Identifier: MIT */
+/* FanOutGrid（KATANAview #1908）：格子 18px 方块、auto-fill 换行；状态色：排队是轨道色、在跑强调色、重试 warn、成功 ok、失败 danger；
+   计数开关亮一种时其余格降到 25%；钉住的格一圈焦点色。窄于 520px 格子缩到 14px、头上的数换到第二行。 */
+.k-fan {
+  --k-fan-cell: 18px;
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-fan-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px var(--space-3);
+}
+.k-fan-title {
+  margin: 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-fan-job {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-fan-facts {
+  display: flex;
+  gap: var(--space-3);
+  margin-left: auto;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-num-small);
+}
+.k-fan-meter {
+  height: 2px;
+  background: var(--k-container-track-background);
+}
+.k-fan-meter b {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--k-status-ok-foreground);
+  transform-origin: left;
+  scale: var(--fill, 0) 1;
+  transition: scale var(--dur-snappy) var(--ease-snappy);
+}
+.k-fan-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, var(--k-fan-cell));
+  gap: 3px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-fan-cell,
+.k-fan-count i {
+  background: var(--k-container-track-background);
+}
+.k-fan-cell {
+  display: block;
+  width: var(--k-fan-cell);
+  height: var(--k-fan-cell);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition:
+    background-color var(--dur-snappy) var(--ease-snappy),
+    opacity var(--dur-snappy) var(--ease-snappy);
+}
+.k-fan [data-status='running'] i,
+.k-fan-cell[data-status='running'] {
+  background: var(--accent);
+}
+.k-fan [data-status='retrying'] i,
+.k-fan-cell[data-status='retrying'] {
+  background: var(--k-status-warn-foreground);
+}
+.k-fan [data-status='done'] i,
+.k-fan-cell[data-status='done'] {
+  background: var(--k-status-ok-foreground);
+}
+.k-fan [data-status='failed'] i,
+.k-fan-cell[data-status='failed'] {
+  background: var(--k-status-danger-foreground);
+}
+.k-fan-cell[data-dim] {
+  opacity: 0.25;
+}
+.k-fan-cell:focus-visible,
+.k-fan-cell[aria-pressed='true'] {
+  outline: 1px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+.k-fan-details {
+  min-height: 1lh;
+  margin: 0;
+  overflow: hidden;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-fan-details b {
+  color: var(--k-content-primary-foreground);
+  font-weight: inherit;
+}
+.k-fan-details [data-part='error'] {
+  color: var(--k-status-danger-foreground);
+}
+.k-fan-tray {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding-top: 6px;
+  border-top: var(--hairline);
+}
+.k-fan-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+.k-fan-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 24px;
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  background: none;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  cursor: pointer;
+}
+.k-fan-count:hover {
+  background: var(--k-selectable-background-hover);
+}
+.k-fan-count:focus-visible {
+  outline: 1px solid var(--focus-ring);
+}
+.k-fan-count[aria-pressed='true'] {
+  border-color: var(--k-separable-primary-borderColor);
+  color: var(--k-content-primary-foreground);
+}
+.k-fan-count i {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-sm);
+}
+.k-fan-count span {
+  font-family: var(--font-num-small);
+}
+.k-fan-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+@container (max-width: 520px) {
+  .k-fan {
+    --k-fan-cell: 14px;
+  }
+  .k-fan-facts {
+    width: 100%;
+    margin-left: 0;
+  }
+}

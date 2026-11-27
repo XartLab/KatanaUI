@@ -1,0 +1,119 @@
+/* SPDX-License-Identifier: MIT */
+/* 区间时间轴（RangeScrubber，KatanaUI #11）：上面一行读数、快捷钮、口径切换；中间一条 44px 的轴（背景柱、午休竖虚线、「现在」之后的斜纹、选区、两个把手）；下面每半小时一根刻度，整点写字。
+   选区是 12% 的主字色底加两条边（不盖住柱子），选区外的柱子 35% 不透明度，照 RangeHistogramSlider。斜纹只用中性白透明度，不写色值。 */
+.k-rs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-3);
+  background: var(--bg-200);
+  border: var(--hairline);
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-rs-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+.k-rs-readout {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--k-content-primary-foreground);
+  font-weight: 600;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.k-rs-track {
+  position: relative;
+  height: 44px;
+  border-bottom: 2px solid var(--k-separable-bold-borderColor);
+  touch-action: none;
+  user-select: none;
+  cursor: pointer;
+}
+.k-rs-bars {
+  position: absolute;
+  inset: 4px 0 0;
+}
+.k-rs-bar {
+  position: absolute;
+  bottom: 0;
+  min-height: 1px;
+  background: var(--ink-300);
+  opacity: 0.35;
+}
+.k-rs-bar[data-in='true'] {
+  background: var(--ink-200);
+  opacity: 1;
+}
+.k-rs-lunch {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 1px dashed var(--ink-400);
+}
+.k-rs-future {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(135deg, var(--alpha-white-8) 0 2px, transparent 2px 6px);
+  cursor: not-allowed;
+}
+.k-rs-span {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  box-sizing: border-box;
+  border-right: 1px solid var(--k-content-primary-foreground);
+  border-left: 1px solid var(--k-content-primary-foreground);
+  background: color-mix(in srgb, var(--k-content-primary-foreground) 12%, transparent);
+  cursor: grab;
+}
+.k-rs-thumb {
+  position: absolute;
+  bottom: -9px;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  margin-left: -8px;
+  border: 2px solid var(--k-content-primary-foreground);
+  border-radius: var(--radius-pill);
+  background: var(--k-surface-sunken-background);
+  cursor: ew-resize;
+  outline: none;
+}
+.k-rs-thumb:focus-visible {
+  box-shadow: 0 0 0 2px var(--k-focused-outlineColor);
+}
+.k-rs-ticks {
+  position: relative;
+  height: 16px;
+  margin-top: 6px;
+}
+.k-rs-tick {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  color: var(--ink-300);
+}
+.k-rs-tick:not([data-major])::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 0;
+  height: 4px;
+  border-left: 1px solid var(--ink-400);
+}
+.k-rs-tick:first-child {
+  transform: none;
+}
+.k-rs-tick:last-child {
+  transform: translateX(-100%);
+}
