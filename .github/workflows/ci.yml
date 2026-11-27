@@ -1,8 +1,12 @@
 # SPDX-License-Identifier: MIT
 # PR 与 main 上的门禁（#2）：跟本地的 pnpm test、pnpm typecheck、pnpm build:site 一样。
 # 全量门禁放在这里并行跑，本地平时只跑 pnpm fast（2026-11-18：本地全量约 20 分钟，太慢）。
-# runner：仓库变量 KATANAUI_RUNNER（JSON，如 ["self-hosted","au-5090"]）指到自建机；没设就用 GitHub 托管的 ubuntu-latest。
-# e2e 用 playwright --shard 切成 4 片并行（自建机核多可以切更细：改 e2e 的 matrix）。动作版本与 pages.yml 一致（2026-11-14 查过）。
+# runner（#190）：仓库变量 KATANAUI_RUNNER（JSON，现为 ["self-hosted","katanaui"]，AU-5090 的 WSL archlinux 上的 au-5090-kui）。
+# 没设就用 GitHub 托管的 ubuntu-latest。2026-11-21 起组织的托管 runner 起不来（0 个 job），所以设了自建机。
+# 外部 fork 的 PR 一律走托管 runner，不让外部代码上自己的机器（同 KATANAview #767）。
+# 自建机上的做法照 KATANAview 的 ci.yml：浏览器类 job 在 Playwright 官方镜像里跑；pnpm 装到按 job 隔离的目录；
+# 不开 setup-node 的 pnpm 缓存（自建机拉缓存极慢、会卡死）；容器里 root 留下的文件最后放开权限，免得下次 checkout 删不掉。
+# e2e 用 playwright --shard 切成 4 片；只有一台 runner 时依次跑。动作版本与 pages.yml 一致（2026-11-14 查过）。
 name: CI
 
 on:
@@ -17,36 +21,45 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  # 自建机从 npmmirror 装（KATANAview 实测更快）；托管 runner 与 fork PR 用官方源。
+  pnpm_config_registry: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'https://registry.npmjs.org' || (vars.KATANAUI_RUNNER && 'https://registry.npmmirror.com' || 'https://registry.npmjs.org') }}
+
 jobs:
   gate:
-    runs-on: ${{ fromJSON(vars.KATANAUI_RUNNER || '"ubuntu-latest"') }}
+    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'ubuntu-latest' || fromJSON(vars.KATANAUI_RUNNER || '"ubuntu-latest"') }}
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
+        with:
+          dest: ${{ runner.temp }}/setup-pnpm-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}-${{ strategy.job-index || 0 }}
       - uses: actions/setup-node@v7
         with:
           node-version: 26
-          cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm test
       - run: pnpm typecheck
       - run: pnpm build:site
 
   # 组件截图（Vitest 浏览器模式 + pixelgate）：整套 444 张，基线在 packages/react/.pixelgate-unit/baseline/。
+  # 浏览器与字体用镜像里的，版本跟 @playwright/test 一致，升级时一起改（下面 e2e、visual 同）。
   shots:
-    runs-on: ${{ fromJSON(vars.KATANAUI_RUNNER || '"ubuntu-latest"') }}
+    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'ubuntu-latest' || fromJSON(vars.KATANAUI_RUNNER || '"ubuntu-latest"') }}
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
+        with:
+          dest: ${{ runner.temp }}/setup-pnpm-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}-${{ strategy.job-index || 0 }}
       - uses: actions/setup-node@v7
         with:
           node-version: 26
-          cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm exec playwright install --with-deps chromium
-        working-directory: packages/react
       - run: pnpm exec vp test run -c vitest.browser.config.ts
         working-directory: packages/react
+      # 红了上传 runner 渲染的实际截图（current/）、差异图（diff/）与报告：基线只能收这里的图，不收沙箱的（见文档站「开发接入 → 视觉回归」）。
+      # 接受：gh run download <run> -n pixelgate-unit -D /tmp/shots，再在 packages/react 跑 pnpm exec pixelgate approve --out-dir .pixelgate-unit --from /tmp/shots。
       - if: failure()
         uses: actions/upload-artifact@v7
         with:
@@ -56,10 +69,14 @@ jobs:
             !packages/react/.pixelgate-unit/baseline/
           include-hidden-files: true
           if-no-files-found: ignore
+      - if: always()
+        run: chmod -R a+rwX "$GITHUB_WORKSPACE"
 
   # e2e：按切片并行（playwright --shard）。切片数改这里的 matrix。
   e2e:
-    runs-on: ${{ fromJSON(vars.KATANAUI_RUNNER || '"ubuntu-latest"') }}
+    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'ubuntu-latest' || fromJSON(vars.KATANAUI_RUNNER || '"ubuntu-latest"') }}
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
     strategy:
       fail-fast: false
       matrix:
@@ -67,33 +84,34 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
+        with:
+          dest: ${{ runner.temp }}/setup-pnpm-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}-${{ strategy.job-index || 0 }}
       - uses: actions/setup-node@v7
         with:
           node-version: 26
-          cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm exec playwright install --with-deps chromium
+      # 表达式里不能做加法（原来 env 里写 5330 + matrix.shard，整个文件解析失败、每次 0 个 job，#190），端口在 shell 里算。
+      - run: E2E_PORT=$((5330 + ${{ matrix.shard }})) pnpm exec playwright test --shard=${{ matrix.shard }}/4
         working-directory: packages/react
-      - run: pnpm exec playwright test --shard=${{ matrix.shard }}/4
-        working-directory: packages/react
-        env:
-          E2E_PORT: ${{ 5330 + matrix.shard }}
+      - if: always()
+        run: chmod -R a+rwX "$GITHUB_WORKSPACE"
 
   # 视觉回归（pixelgate，自研）：只在 PR 上跑——main 上的内容已经过 PR 这一关，不重复占 runner（本文件其余 job 两边都跑，这条是有意的例外）。
   # CI 不写基线、缺基线算失败（--ci）；基线是 Linux 渲染的，提交在 packages/react/.pixelgate/baseline/。
   visual:
     if: github.event_name == 'pull_request'
-    runs-on: ${{ fromJSON(vars.KATANAUI_RUNNER || '"ubuntu-latest"') }}
+    runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'ubuntu-latest' || fromJSON(vars.KATANAUI_RUNNER || '"ubuntu-latest"') }}
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
+        with:
+          dest: ${{ runner.temp }}/setup-pnpm-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}-${{ strategy.job-index || 0 }}
       - uses: actions/setup-node@v7
         with:
           node-version: 26
-          cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm exec playwright install --with-deps chromium
-        working-directory: packages/react
       - run: pnpm vr --ci
         working-directory: packages/react
       # 不管过没过都把摘要写进 job summary；没有报告（比如配置错误）就不写。
@@ -111,3 +129,5 @@ jobs:
             !packages/react/.pixelgate/hidpi/baseline/
           include-hidden-files: true
           if-no-files-found: ignore
+      - if: always()
+        run: chmod -R a+rwX "$GITHUB_WORKSPACE"

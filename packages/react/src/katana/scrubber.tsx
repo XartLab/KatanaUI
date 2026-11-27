@@ -6,6 +6,7 @@
 // 搬来的：填充条、刻度点、胶囊把手悬停时放大变实、按下拖动时去掉过渡（跟手）；弹簧换成我们 token 的 --ease-snappy。
 // 改的：键盘 ← → ↑ ↓ 走一步、Shift 走十步、PageUp / PageDown 十步（原件没有 Shift 与翻页）；读数格式由调用方给；名字必填并当作读屏名。
 import { useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent } from 'react'
+import { fillVar } from '../lib/fill.ts'
 import { cn } from '../lib/cn.ts'
 
 const PAGE_STEPS = 10
@@ -126,7 +127,7 @@ export function Scrubber({
         onPointerCancel={() => setDragging(false)}
         onKeyDown={onKeyDown}
       >
-        <div className="k-scrubber-fill" style={{ width: `${percent}%` }} />
+        <div className="k-scrubber-fill" style={fillVar(percent / 100)} />
         {ticks > 0 && (
           <div className="k-scrubber-ticks" aria-hidden="true">
             {Array.from({ length: ticks }, (_, i) => (
@@ -134,7 +135,7 @@ export function Scrubber({
             ))}
           </div>
         )}
-        <div className="k-scrubber-thumb" aria-hidden="true" style={{ left: `${percent}%` }} />
+        <div className="k-scrubber-thumb" aria-hidden="true" style={fillVar(percent / 100)} />
         <span className="k-scrubber-label">{label}</span>
         <span className="k-scrubber-value" data-slot="scrubber-value">
           {format(value)}

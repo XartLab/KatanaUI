@@ -586,6 +586,8 @@ function DensityDemo() {
           rows={STOCKS}
           rowId={(row) => row.code}
           label="Comfortable screener"
+          // 这张表要摆出全部列类型：不按列优先级收列（#122 默认收），放不下就横向滚，同上面的 grid-demo。
+          collapseColumns={false}
           sort={sort}
           onSortChange={setSort}
           density="comfortable"

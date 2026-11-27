@@ -111,8 +111,9 @@ function Slider({
           // 填充的右端停在把手中心：宽度 = 比例 × (轨宽 − 把手) + 把手的一半。
           <span
             data-slot="slider-fill"
-            className="absolute inset-y-0 left-0 bg-[repeating-linear-gradient(90deg,var(--k-content-body-foreground)_0_3px,transparent_3px_5px)]"
-            style={{ width: `calc(${fraction} * (100% - ${THUMB}px) + ${THUMB / 2}px)` }}
+            className="absolute inset-0 bg-[repeating-linear-gradient(90deg,var(--k-content-body-foreground)_0_3px,transparent_3px_5px)]"
+            // 点阵纹理的填充：整条铺满，右边裁掉到把手中心（clip-path 只重绘，松手后的 settle 过渡不重排；kubai Vibe Design Tips 011，#251）。
+            style={{ clipPath: `inset(0 calc(100% - (${fraction} * (100% - ${THUMB}px) + ${THUMB / 2}px)) 0 0)` }}
           />
         ) : (
           // 多把手：填充从最小那个把手的中心到最大那个的中心（Radix 的 Range 按百分比摆，两端对不到把手中心，差最多 7px）。

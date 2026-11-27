@@ -74,7 +74,7 @@ export function Pagination({ page, totalPages, onPageChange, siblings = 1, label
             <li
               key={`e${index}`}
               aria-hidden="true"
-              className="k-text-data flex size-7 items-center justify-center text-(color:--k-content-tertiary-foreground)"
+              className="k-text-data flex size-7 items-center justify-center text-(color:--k-content-secondary-foreground)"
             >
               …
             </li>

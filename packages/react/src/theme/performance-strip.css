@@ -20,7 +20,7 @@
   gap: 4px;
   padding: 10px 8px;
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--radius-overlay);
   background: transparent;
   color: var(--k-content-primary-foreground);
   cursor: pointer;
@@ -47,6 +47,7 @@
 }
 .k-perf-value {
   font: 600 14px/20px var(--font-sans);
+  font-variant-numeric: tabular-nums;
 }
 .k-perf-cell[data-tone='up'] .k-perf-value {
   color: var(--pnl-up);

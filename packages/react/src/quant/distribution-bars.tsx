@@ -3,7 +3,8 @@
 // 底部一行汇总（涨 x / 平 y / 跌 z）。档的边界、档名与汇总的名字都由调用方传，件只按家数画柱、按色调汇总。
 // 结构照 metric-card 一族：数据与文字全由调用方传，没有数据就是空态，不画样本；颜色只用语义色调（up / down / muted / accent）映到 token，不收色值。
 // 图是 HTML 柱不是 SVG：柱顶的家数是文字，要跟柱一起按列对齐。
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
+import { fillVar } from '../lib/fill.ts'
 import { cn } from '../lib/cn.ts'
 import type { GaugeTone } from '../quotes/gauge-bar.tsx'
 
@@ -86,6 +87,12 @@ export function distributionBarHeight(count: number | null, max: number, height:
   return Math.max(1, Math.round((count / max) * (height - COUNT_ROW)))
 }
 
+/** 柱长占柱区的比例（柱区 = height − COUNT_ROW）：写成 --fill，柱用 scaleY 画，家数标签跟着柱顶走，都不重排。 */
+export function distributionFill(count: number | null, max: number, height: number): number {
+  const room = Math.max(1, height - COUNT_ROW)
+  return distributionBarHeight(count, max, height) / room
+}
+
 const defaultFormat = (count: number) => count.toLocaleString('en-US')
 
 export function DistributionBars({
@@ -115,7 +122,10 @@ export function DistributionBars({
   const sums = distributionTotals(bins)
   return (
     <div className={cn('k-dist', className)} data-slot="distribution-bars" role="group" aria-label={label}>
-      <div className="k-dist-plot" style={{ height }}>
+      <div
+        className="k-dist-plot"
+        style={{ height, '--k-dist-h': `${Math.max(1, height - COUNT_ROW)}px` } as CSSProperties}
+      >
         {bins.map((bin) => (
           <div
             key={bin.key}
@@ -123,9 +133,10 @@ export function DistributionBars({
             data-slot="distribution-bin"
             data-key={bin.key}
             data-tone={bin.tone}
+            style={fillVar(distributionFill(bin.count, max, height))}
           >
             <span className="k-dist-count">{bin.count === null ? '—' : formatCount(bin.count)}</span>
-            <i className="k-dist-bar" style={{ height: distributionBarHeight(bin.count, max, height) }} />
+            <i className="k-dist-fill" />
           </div>
         ))}
       </div>

@@ -137,16 +137,23 @@ test('NetBuyBar：净买往右净卖往左，点行展开席位，机构席位�
       .locator(selector)
       .first()
       .evaluate((el) => getComputedStyle(el).color)
-  const red = await page.evaluate(() => {
-    const probe = document.createElement('span')
-    probe.style.color = 'var(--signal-red)'
-    document.body.append(probe)
-    const out = getComputedStyle(probe).color
-    probe.remove()
-    return out
-  })
-  expect(await colorOf('[data-code="300401"] [data-slot="change-text"]')).toBe(red)
-  expect(await colorOf('[data-code="300401"] [data-slot="netbuy-net"]')).toBe(red)
+  const resolve = (color: string) =>
+    page.evaluate((value) => {
+      const probe = document.createElement('span')
+      probe.style.color = value
+      document.body.append(probe)
+      const out = getComputedStyle(probe).color
+      probe.remove()
+      return out
+    }, color)
+  const red = await resolve('var(--signal-red)')
+  // 展开的行是 selected 底，涨跌字往主文字色混 35%（net-buy-bar.css，axe #190），仍是红。
+  const opened = (await box.locator('[data-code="300401"]').first().getAttribute('data-open')) !== null
+  const rowRed = opened
+    ? await resolve('color-mix(in srgb, var(--k-tone-up-foreground) 65%, var(--k-content-primary-foreground))')
+    : red
+  expect(await colorOf('[data-code="300401"] [data-slot="change-text"]')).toBe(rowRed)
+  expect(await colorOf('[data-code="300401"] [data-slot="netbuy-net"]')).toBe(rowRed)
   const barOf = (code: string) => box.locator(`[data-code="${code}"] [data-slot="netbuy-bar"]`)
   const track = await box.locator('[data-code="300401"] .k-netbuy-track').boundingBox()
   const buy = await barOf('300401').boundingBox()

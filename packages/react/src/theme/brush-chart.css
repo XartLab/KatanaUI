@@ -52,7 +52,7 @@
 }
 .k-brush-strip {
   border: 1px solid var(--k-separable-tertiary-borderColor);
-  border-radius: var(--radius-inner, 6px);
+  border-radius: var(--radius-inner);
   background: var(--k-surface-sunken-background);
   overflow: hidden;
   cursor: pointer;
@@ -99,6 +99,6 @@
   bottom: 25%;
   left: 5px;
   width: 2px;
-  border-radius: 1px;
+  border-radius: var(--radius-sm);
   background: var(--k-content-body-foreground);
 }

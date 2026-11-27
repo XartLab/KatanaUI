@@ -117,7 +117,7 @@
   margin: 0;
   padding: 6px 8px;
   border: 1px solid var(--alpha-white-8);
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   color: var(--k-content-primary-foreground);
 }
 .k-hl-none {
@@ -140,7 +140,7 @@
   padding: 6px 8px;
   background: var(--k-container-tertiary-background);
   border: 1px solid var(--alpha-white-8);
-  border-radius: 8px;
+  border-radius: var(--radius-overlay);
 }
 .k-hl-stance {
   display: inline-flex;

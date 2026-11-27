@@ -1,6 +1,6 @@
 {
   "name": "@katana-ui/logos",
-  "version": "0.2.0",
+  "version": "0.5.0",
   "private": true,
   "description": "Katana UI 的徽标解析：品种代码规范化（代码.场所 + ISO MIC）、可插拔的来源（加密币取 @web3icons/core 的 SVG、应用自托管、地址模板）、内存缓存与失败缓存、React 的 LogoProvider / useLogo，以及把徽标下载到应用目录的命令行 katana-logos。不打包任何企业商标图片。",
   "license": "MIT",

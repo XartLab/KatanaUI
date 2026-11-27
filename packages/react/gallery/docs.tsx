@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+import { phrased } from './phrased'
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import {
   CodeBlock,
@@ -7,7 +8,6 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  SideNav,
   Tabs,
   TabsContent,
   TabsList,
@@ -20,6 +20,9 @@ import { PATTERN_GROUPS, PatternPage, patternById } from './patterns'
 import { packageOf, sourceOf } from './source-map'
 import { CopyButton } from './CopyButton'
 import { DocToc } from './DocToc'
+import { NavDrawer } from './NavDrawer'
+import { PageNav } from './PageNav'
+import { SideRail } from './SideRail'
 import { DemoCopyToast } from './pages/demo-copy'
 import { CoveragePage } from './coverage'
 import { RENDERING_ID, RenderingPage } from './rendering'
@@ -69,6 +72,19 @@ const subscribe = (listener: () => void) => {
   window.addEventListener('hashchange', listener)
   return () => window.removeEventListener('hashchange', listener)
 }
+/** 窄屏（与 gallery.css 的 @media (max-width: 760px) 同一个界）：左栏换成底栏 + 抽屉，两套目录不同时在页上。 */
+const NARROW = '(max-width: 760px)'
+const subscribeNarrow = (listener: () => void) => {
+  const query = matchMedia(NARROW)
+  query.addEventListener('change', listener)
+  return () => query.removeEventListener('change', listener)
+}
+const useNarrow = () =>
+  useSyncExternalStore(
+    subscribeNarrow,
+    () => matchMedia(NARROW).matches,
+    () => false,
+  )
 const currentId = () => location.hash.replace(/^#\/?/, '')
 
 /** 把主题写到根节点与地址上（地址的 ?theme= 让刷新、分享链接都停在同一个主题）。 */
@@ -152,7 +168,7 @@ function DocBody({ page }: { page: DocPage }) {
   return (
     <article className="gal-doc" data-page={page.id}>
       <header className="gal-doc-head">
-        <h1>{page.title}</h1>
+        <h1 {...phrased(page.title)} />
         <p>{page.summary}</p>
         <dl className="gal-doc-meta">
           <div>
@@ -267,37 +283,48 @@ const groupIcon = (id: string) => {
   return Icon ? <Icon aria-hidden /> : undefined
 }
 
+/** 组件页在目录里的一条：名字用页标题（英文名 + 中文名）。 */
+const pageNavItem = (item: DocPage) => {
+  const [name, ...rest] = item.title.split(' ')
+  return {
+    id: item.id,
+    label: (
+      <>
+        {name}
+        {rest.length > 0 ? <span className="gal-nav-cn"> {rest.join(' ').replace(/（[^）]*）/g, '')}</span> : null}
+      </>
+    ),
+    href: `#/${item.id}`,
+    keywords: `${item.id} ${item.title}`,
+  }
+}
+
+/** 跟基础分节同 id 的组件组（decisions：基础那三页选法 + 组件组里的 emphasis-guide）并进那一节，目录里只出一个「设计决策」，组 id 不重复。 */
+const isFoundationSection = (id: string) => FOUNDATION_SECTIONS.some((section) => section.id === id)
+
 const navGroups: readonly SideNavGroup[] = [
   ...FOUNDATION_SECTIONS.map((section) => ({
     id: section.id,
     title: section.title,
     icon: groupIcon(section.id),
-    items: FOUNDATION_PAGES.filter((item) => item.section === section.id).map((item) => ({
-      id: item.id,
-      label: item.title,
-      href: `#/${item.id}`,
-      keywords: item.id,
-    })),
-  })),
-  ...GROUPS.map((group) => ({
-    id: group.id,
-    title: group.title,
-    icon: groupIcon(group.id),
-    items: PAGES.filter((item) => item.group === group.id).map((item) => {
-      const [name, ...rest] = item.title.split(' ')
-      return {
+    items: [
+      ...FOUNDATION_PAGES.filter((item) => item.section === section.id).map((item) => ({
         id: item.id,
-        label: (
-          <>
-            {name}
-            {rest.length > 0 ? <span className="gal-nav-cn"> {rest.join(' ').replace(/（[^）]*）/g, '')}</span> : null}
-          </>
-        ),
+        label: item.title,
         href: `#/${item.id}`,
-        keywords: `${item.id} ${item.title}`,
-      }
-    }),
-  })).filter((group) => group.items.length > 0),
+        keywords: item.id,
+      })),
+      ...PAGES.filter((item) => item.group === section.id).map(pageNavItem),
+    ],
+  })),
+  ...GROUPS.filter((group) => !isFoundationSection(group.id))
+    .map((group) => ({
+      id: group.id,
+      title: group.title,
+      icon: groupIcon(group.id),
+      items: PAGES.filter((item) => item.group === group.id).map(pageNavItem),
+    }))
+    .filter((group) => group.items.length > 0),
   ...PATTERN_GROUPS,
   {
     id: 'overview',
@@ -355,6 +382,8 @@ export function Docs({ theme, onTheme }: { theme: ThemeName; onTheme: (theme: Th
   const onFoundation = isFoundation(id)
   const pattern = patternById(id)
   const [navOpen, setNavOpen] = useState(true)
+  const narrow = useNarrow()
+  const [section, setSection] = useState('')
   const body = useRef<HTMLDivElement>(null)
   // 切页回到顶：侧栏、锚点或上一页的滚动位置都可能把页面带下去，标题会藏到顶栏后面。
   useEffect(() => {
@@ -364,13 +393,13 @@ export function Docs({ theme, onTheme }: { theme: ThemeName; onTheme: (theme: Th
   const crumb = currentNav ? crumbOf(currentNav) : null
   return (
     <div className="gal-shell" data-gallery-theme={theme}>
-      {navOpen ? (
+      {navOpen && !narrow ? (
         <aside className="gal-side">
-          <SideNav
-            aria-label="文档目录"
+          <SideRail
             groups={navGroups}
             current={currentNav}
-            labels={{ search: '搜索组件与文档', empty: '没有匹配的页' }}
+            remember
+            slashFocus
             header={
               <div className="gal-side-head">
                 <button
@@ -444,10 +473,12 @@ export function Docs({ theme, onTheme }: { theme: ThemeName; onTheme: (theme: Th
                 没有「{id}」这一页，从左侧目录里选。
               </p>
             )}
+            <PageNav groups={navGroups} current={currentNav} />
           </div>
-          <DocToc key={id} root={body} />
+          <DocToc key={id} root={body} onActive={setSection} />
         </main>
       </div>
+      {narrow ? <NavDrawer groups={navGroups} current={currentNav} section={section || crumb?.name} /> : null}
       <DemoCopyToast />
     </div>
   )

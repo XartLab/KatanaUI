@@ -73,6 +73,6 @@
 .k-profile-empty,
 .k-profile-source {
   margin: 0;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }

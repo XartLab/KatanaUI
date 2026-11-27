@@ -1,0 +1,58 @@
+/* SPDX-License-Identifier: MIT */
+/* 悬浮窗 FloatingWindow 的页内浮层（#245，对 OKX 下单面板的「在悬浮窗中交易」）。真 PiP 窗口的样子由里面的子树自己决定。
+   浮层是 popover="manual"（浏览器顶层），要盖掉 UA 给 [popover] 的 inset: 0 与 margin: auto，所以显式写位置；默认贴右下角，拖过之后行内样式改成 left / top。 */
+.k-float-root {
+  min-width: 0;
+}
+.k-float-layer {
+  position: fixed;
+  inset: auto 16px 16px auto;
+  display: flex;
+  max-width: calc(100vw - 16px);
+  max-height: calc(100vh - 16px);
+  margin: 0;
+  padding: 0;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--k-container-subtle-borderColor);
+  border-radius: var(--radius-control);
+  background: var(--k-container-primary-background);
+  box-shadow: var(--shadow-overlay);
+  color: var(--k-content-primary-foreground);
+}
+.k-float-layer:not(:popover-open) {
+  display: none;
+}
+.k-float-bar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  border-bottom: 1px solid var(--k-container-subtle-borderColor);
+  background: var(--k-container-secondary-background);
+}
+/* 标题栏：整条是拖动把手；touch-action: none 让触屏的拖动不被当成滚动。 */
+.k-float-handle {
+  flex: 1;
+  min-width: 0;
+  padding: 0 12px;
+  height: var(--k-size-row);
+  overflow: hidden;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: grab;
+  font: var(--text-body) var(--font-sans);
+  font-weight: 500;
+  text-align: left;
+  text-overflow: ellipsis;
+  touch-action: none;
+  white-space: nowrap;
+}
+.k-float-handle:active {
+  cursor: grabbing;
+}
+.k-float-body {
+  min-height: 0;
+  flex: 1;
+  overflow: auto;
+}

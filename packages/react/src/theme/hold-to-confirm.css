@@ -21,8 +21,8 @@
   user-select: none;
   touch-action: none;
   transition:
-    color 0.15s,
-    border-color 0.15s;
+    color var(--dur-hover) var(--ease-hover),
+    border-color var(--dur-hover) var(--ease-hover);
 }
 .k-hold:hover:not(:disabled) {
   color: var(--k-content-primary-foreground);
