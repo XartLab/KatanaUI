@@ -23,6 +23,7 @@ import quantGuidance from '../gallery/guidance/quant'
 import quotesGuidance from '../gallery/guidance/quotes'
 import readoutsGuidance from '../gallery/guidance/readouts'
 import motionFxGuidance from '../gallery/guidance/motion-fx'
+import tagComboboxGuidance from '../gallery/guidance/tag-combobox'
 import motionTextGuidance from '../gallery/guidance/motion-text'
 import smoothuiBGuidance from '../gallery/guidance/smoothui-b'
 import { GROUPS, PAGES } from '../gallery/registry'
@@ -52,6 +53,7 @@ const GUIDANCE: Record<string, { use?: readonly string[]; avoid?: readonly strin
   smoothuiBGuidance,
   motionTextGuidance,
   motionFxGuidance,
+  tagComboboxGuidance,
 )
 const guidanceOf = (id: string) => GUIDANCE[id] ?? {}
 
