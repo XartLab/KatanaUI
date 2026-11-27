@@ -59,6 +59,11 @@
           "target": "~/src/katana/ui/theme/agent-recap.css"
         },
         {
+          "path": "src/theme/agent-run-detail.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/agent-run-detail.css"
+        },
+        {
           "path": "src/theme/ai-status.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/ai-status.css"
@@ -10041,6 +10046,52 @@
           "path": "src/blocks/agent-crew/crew-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/agent-crew/crew-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "agent-run-detail",
+      "type": "registry:component",
+      "title": "Agent Run Detail",
+      "description": "一次 Agent 运行的详情页或抽屉：头（返回钮、运行名、右上一颗随状态变的动作钮）→ 大号百分比加分段刻度进度条加一行时间 → 阻塞时的问题卡 → 完成时的「接着跑」→ 可收起的「详情」键值对与「步骤」。状态五种：在跑、阻塞、完成、暂停、失败。时间（已用、约剩、阻塞多久、总用时、预估）都是毫秒、由调用方给，件不读钟；包里不带语言。交互与信息结构借自 Jamie Merrill 的 Agent workflow（in progress / blocked / complete）与 Agent drawer（x.com/jamiemerrill，2026-11-24 看截图）：只借信息结构与交互，样子是我们的 Graphite 风格，没有他的蓝橙绿原色，没抄任何素材。列表侧见 AgentRunList。演示数据是示例。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/severity"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/agent-run-detail/agent-run-detail.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/agent-run-detail/agent-run-detail.tsx"
+        },
+        {
+          "path": "src/blocks/agent-run-detail/run-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/agent-run-detail/run-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "agent-run-list",
+      "type": "registry:component",
+      "title": "Agent Run List",
+      "description": "AgentRunDetail 的列表侧：分组的运行清单，一行一个运行：左上名字、左下副标题、右上状态字（灯加词，着状态色）、右下相对时间、行尾箭头；点一行回调 id，选中的行 aria-current。相对时间的文字（「6 分钟前开始」「昨天」）由调用方写好传进来，件不读钟。现有的 RunningNow 是标题栏胶囊加弹层、AgentFleet 是带状态环与子树的主卡，都不是平列表，所以补这一件。信息结构借自 Jamie Merrill 的 Agent tracker（x.com/jamiemerrill，2026-11-24 看截图）。演示数据是示例。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/agent-run-detail",
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/agent-run-list/agent-run-list.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/agent-run-list/agent-run-list.tsx"
         }
       ]
     },

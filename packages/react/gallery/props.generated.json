@@ -1804,6 +1804,381 @@
         }
       ]
     },
+    "AgentRunDetail": {
+      "kind": "component",
+      "source": "src/blocks/agent-run-detail/agent-run-detail.tsx",
+      "props": [
+        {
+          "name": "name",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Run name (the title)."
+        },
+        {
+          "name": "status",
+          "type": "RunDetailStatus",
+          "required": true,
+          "description": "State of the run."
+        },
+        {
+          "name": "progress",
+          "type": "number",
+          "required": true,
+          "description": "Progress, 0 to 1."
+        },
+        {
+          "name": "elapsed",
+          "type": "number",
+          "required": false,
+          "description": "Time used so far, in milliseconds (running, paused, failed)."
+        },
+        {
+          "name": "remaining",
+          "type": "number",
+          "required": false,
+          "description": "Time left, in milliseconds (running)."
+        },
+        {
+          "name": "blockedFor",
+          "type": "number",
+          "required": false,
+          "description": "How long it has been blocked, in milliseconds (blocked)."
+        },
+        {
+          "name": "took",
+          "type": "number",
+          "required": false,
+          "description": "Total time it took, in milliseconds (done)."
+        },
+        {
+          "name": "formatDuration",
+          "type": "(ms: number) => string",
+          "required": true,
+          "description": "How a duration in milliseconds is written (「6m 12s」)."
+        },
+        {
+          "name": "ticks",
+          "type": "number",
+          "required": false,
+          "default": "40",
+          "description": "Number of ticks in the bar, rounded down and kept between 1 and 120; not a finite number is 40."
+        },
+        {
+          "name": "question",
+          "type": "RunQuestion",
+          "required": false,
+          "description": "The question card of a blocked run."
+        },
+        {
+          "name": "onConfirm",
+          "type": "() => void",
+          "required": false,
+          "description": "Called by the confirm button on the question card."
+        },
+        {
+          "name": "next",
+          "type": "readonly RunNextAction[]",
+          "required": false,
+          "description": "Suggested next actions of a finished run."
+        },
+        {
+          "name": "onNext",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called with the id of the chosen suggestion."
+        },
+        {
+          "name": "details",
+          "type": "readonly RunDetailRow[]",
+          "required": false,
+          "description": "Key-value rows of the details."
+        },
+        {
+          "name": "steps",
+          "type": "readonly RunDetailStep[]",
+          "required": false,
+          "description": "Steps, in order."
+        },
+        {
+          "name": "onBack",
+          "type": "() => void",
+          "required": false,
+          "description": "Shows the back button."
+        },
+        {
+          "name": "onAction",
+          "type": "(action: RunDetailAction) => void",
+          "required": false,
+          "description": "Shows the header action (pause, resume, cancel or run again by state); called with which one."
+        },
+        {
+          "name": "defaultCollapsed",
+          "type": "readonly RunDetailSection[]",
+          "required": false,
+          "default": "[]",
+          "description": "Sections folded when first drawn."
+        },
+        {
+          "name": "onSectionToggle",
+          "type": "(section: RunDetailSection, open: boolean) => void",
+          "required": false,
+          "description": "Called when a section is folded or unfolded."
+        },
+        {
+          "name": "headingLevel",
+          "type": "RunHeadingLevel",
+          "required": false,
+          "description": "Heading level of the run name, 2 to 6 (default 2); the section titles and the question title are one level below."
+        },
+        {
+          "name": "labels",
+          "type": "AgentRunDetailLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "AgentRunDetailLabels": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-detail/agent-run-detail.tsx",
+      "props": [
+        {
+          "name": "back",
+          "type": "string",
+          "required": true,
+          "description": "Back button."
+        },
+        {
+          "name": "status",
+          "type": "Record<RunDetailStatus, string>",
+          "required": true,
+          "description": "State words; shown beside the percent."
+        },
+        {
+          "name": "actions",
+          "type": "Record<RunDetailAction, string>",
+          "required": true,
+          "description": "Names of the header action."
+        },
+        {
+          "name": "progress",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the progress bar."
+        },
+        {
+          "name": "progressValue",
+          "type": "(percent: number, status: string) => string",
+          "required": true,
+          "description": "Spoken value of the progress bar, built from the whole percent and the state word (「76%，阻塞」); the caller writes the joining text."
+        },
+        {
+          "name": "elapsed",
+          "type": "(time: string) => string",
+          "required": true,
+          "description": "Time line texts, each built from a duration already written by `formatDuration`."
+        },
+        {
+          "name": "remaining",
+          "type": "(time: string) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "blocked",
+          "type": "(time: string) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "completed",
+          "type": "(time: string) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "confirm",
+          "type": "string",
+          "required": true,
+          "description": "Confirm button on the question card."
+        },
+        {
+          "name": "next",
+          "type": "string",
+          "required": true,
+          "description": "Section titles."
+        },
+        {
+          "name": "details",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "steps",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "estimate",
+          "type": "(time: string) => string",
+          "required": true,
+          "description": "Estimate on a \"run next\" button (「~2 分钟」), built from a written duration."
+        },
+        {
+          "name": "step",
+          "type": "Record<RunDetailStepStatus, string>",
+          "required": true,
+          "description": "Step state words: read by screen readers on every step, written on the right for running, blocked and failed."
+        }
+      ]
+    },
+    "AgentRunDetailProps": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-detail/agent-run-detail.tsx",
+      "props": [
+        {
+          "name": "name",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Run name (the title)."
+        },
+        {
+          "name": "status",
+          "type": "RunDetailStatus",
+          "required": true,
+          "description": "State of the run."
+        },
+        {
+          "name": "progress",
+          "type": "number",
+          "required": true,
+          "description": "Progress, 0 to 1."
+        },
+        {
+          "name": "elapsed",
+          "type": "number",
+          "required": false,
+          "description": "Time used so far, in milliseconds (running, paused, failed)."
+        },
+        {
+          "name": "remaining",
+          "type": "number",
+          "required": false,
+          "description": "Time left, in milliseconds (running)."
+        },
+        {
+          "name": "blockedFor",
+          "type": "number",
+          "required": false,
+          "description": "How long it has been blocked, in milliseconds (blocked)."
+        },
+        {
+          "name": "took",
+          "type": "number",
+          "required": false,
+          "description": "Total time it took, in milliseconds (done)."
+        },
+        {
+          "name": "formatDuration",
+          "type": "(ms: number) => string",
+          "required": true,
+          "description": "How a duration in milliseconds is written (「6m 12s」)."
+        },
+        {
+          "name": "ticks",
+          "type": "number",
+          "required": false,
+          "default": "40",
+          "description": "Number of ticks in the bar, rounded down and kept between 1 and 120; not a finite number is 40."
+        },
+        {
+          "name": "question",
+          "type": "RunQuestion",
+          "required": false,
+          "description": "The question card of a blocked run."
+        },
+        {
+          "name": "onConfirm",
+          "type": "() => void",
+          "required": false,
+          "description": "Called by the confirm button on the question card."
+        },
+        {
+          "name": "next",
+          "type": "readonly RunNextAction[]",
+          "required": false,
+          "description": "Suggested next actions of a finished run."
+        },
+        {
+          "name": "onNext",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called with the id of the chosen suggestion."
+        },
+        {
+          "name": "details",
+          "type": "readonly RunDetailRow[]",
+          "required": false,
+          "description": "Key-value rows of the details."
+        },
+        {
+          "name": "steps",
+          "type": "readonly RunDetailStep[]",
+          "required": false,
+          "description": "Steps, in order."
+        },
+        {
+          "name": "onBack",
+          "type": "() => void",
+          "required": false,
+          "description": "Shows the back button."
+        },
+        {
+          "name": "onAction",
+          "type": "(action: RunDetailAction) => void",
+          "required": false,
+          "description": "Shows the header action (pause, resume, cancel or run again by state); called with which one."
+        },
+        {
+          "name": "defaultCollapsed",
+          "type": "readonly RunDetailSection[]",
+          "required": false,
+          "description": "Sections folded when first drawn."
+        },
+        {
+          "name": "onSectionToggle",
+          "type": "(section: RunDetailSection, open: boolean) => void",
+          "required": false,
+          "description": "Called when a section is folded or unfolded."
+        },
+        {
+          "name": "headingLevel",
+          "type": "RunHeadingLevel",
+          "required": false,
+          "description": "Heading level of the run name, 2 to 6 (default 2); the section titles and the question title are one level below."
+        },
+        {
+          "name": "labels",
+          "type": "AgentRunDetailLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
     "AgentRunLabels": {
       "kind": "type",
       "source": "src/blocks/agent-tree/agent-tree.tsx",
@@ -1873,6 +2248,127 @@
           "type": "string",
           "required": true,
           "description": "Hint read with each card: the keys that fold, open and select."
+        }
+      ]
+    },
+    "AgentRunList": {
+      "kind": "component",
+      "source": "src/blocks/agent-run-list/agent-run-list.tsx",
+      "props": [
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Heading of the list."
+        },
+        {
+          "name": "actions",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Right side of the heading, usually a button such as \"New agent\"."
+        },
+        {
+          "name": "groups",
+          "type": "readonly RunListGroup[]",
+          "required": true,
+          "description": "Groups of runs."
+        },
+        {
+          "name": "selectedId",
+          "type": "string | null",
+          "required": false,
+          "default": "null",
+          "description": "The run whose detail is open."
+        },
+        {
+          "name": "onOpen",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called with the id of the run to open."
+        },
+        {
+          "name": "headingLevel",
+          "type": "RunHeadingLevel",
+          "required": false,
+          "description": "Heading level of the list title, 2 to 6 (default 2); the group titles are one level below."
+        },
+        {
+          "name": "labels",
+          "type": "AgentRunListLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "AgentRunListLabels": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-list/agent-run-list.tsx",
+      "props": [
+        {
+          "name": "status",
+          "type": "Record<RunDetailStatus, string>",
+          "required": true,
+          "description": "State words."
+        }
+      ]
+    },
+    "AgentRunListProps": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-list/agent-run-list.tsx",
+      "props": [
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Heading of the list."
+        },
+        {
+          "name": "actions",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Right side of the heading, usually a button such as \"New agent\"."
+        },
+        {
+          "name": "groups",
+          "type": "readonly RunListGroup[]",
+          "required": true,
+          "description": "Groups of runs."
+        },
+        {
+          "name": "selectedId",
+          "type": "string | null",
+          "required": false,
+          "description": "The run whose detail is open."
+        },
+        {
+          "name": "onOpen",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called with the id of the run to open."
+        },
+        {
+          "name": "headingLevel",
+          "type": "RunHeadingLevel",
+          "required": false,
+          "description": "Heading level of the list title, 2 to 6 (default 2); the group titles are one level below."
+        },
+        {
+          "name": "labels",
+          "type": "AgentRunListLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
         }
       ]
     },
@@ -48381,6 +48877,151 @@
         }
       ]
     },
+    "RunDetailAction": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
+      "props": []
+    },
+    "RunDetailRow": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-detail/agent-run-detail.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Key (left)."
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Icon before the value."
+        },
+        {
+          "name": "value",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Value (right)."
+        }
+      ]
+    },
+    "RunDetailSection": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
+      "props": []
+    },
+    "RunDetailStatus": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
+      "props": []
+    },
+    "RunDetailStep": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Step name."
+        },
+        {
+          "name": "status",
+          "type": "RunDetailStepStatus",
+          "required": true,
+          "description": "State of the step."
+        },
+        {
+          "name": "duration",
+          "type": "number",
+          "required": false,
+          "description": "How long the step took, in milliseconds; shown on a finished step."
+        }
+      ]
+    },
+    "RunDetailStepStatus": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
+      "props": []
+    },
+    "RunHeadingLevel": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
+      "props": []
+    },
+    "RunListGroup": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-list/agent-run-list.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Group heading."
+        },
+        {
+          "name": "items",
+          "type": "readonly RunListItem[]",
+          "required": true,
+          "description": "Runs of the group, in order."
+        }
+      ]
+    },
+    "RunListItem": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-list/agent-run-list.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key; the callback gets it back."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Run name."
+        },
+        {
+          "name": "subtitle",
+          "type": "string",
+          "required": false,
+          "description": "Muted line under the name (「48 contractors · United States」)."
+        },
+        {
+          "name": "status",
+          "type": "RunDetailStatus",
+          "required": true,
+          "description": "State of the run."
+        },
+        {
+          "name": "when",
+          "type": "string",
+          "required": false,
+          "description": "Relative time already written by the caller (「Started 6m ago」)."
+        }
+      ]
+    },
     "RunMode": {
       "kind": "type",
       "source": "src/blocks/run-mode-badge/run-mode-badge.tsx",
@@ -48446,10 +49087,94 @@
         }
       ]
     },
+    "RunNextAction": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-detail/agent-run-detail.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key; the callback gets it back."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Action name."
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Icon before the name."
+        },
+        {
+          "name": "estimate",
+          "type": "number",
+          "required": false,
+          "description": "Estimated duration in milliseconds, written on the right of the button."
+        }
+      ]
+    },
+    "RunQuestion": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-detail/agent-run-detail.tsx",
+      "props": [
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "What is missing or unclear (the card title)."
+        },
+        {
+          "name": "description",
+          "type": "ReactNode",
+          "required": false,
+          "description": "One line of explanation."
+        }
+      ]
+    },
+    "RunSegments": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
+      "props": [
+        {
+          "name": "filled",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "current",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
     "RunStatus": {
       "kind": "type",
       "source": "src/blocks/portfolio-run-grid/portfolio-run-model.ts",
       "props": []
+    },
+    "RunTimeLine": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
+      "props": [
+        {
+          "name": "left",
+          "type": "'elapsed' | 'blocked' | 'completed'",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "remaining",
+          "type": "boolean",
+          "required": true,
+          "description": ""
+        }
+      ]
     },
     "RunningNow": {
       "kind": "component",
@@ -67265,6 +67990,11 @@
       "source": "src/quotes/watchlist-model.ts",
       "props": []
     },
+    "clampRunProgress": {
+      "kind": "function",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
+      "props": []
+    },
     "clampSignal": {
       "kind": "function",
       "source": "src/ai/smart-recommendation.tsx",
@@ -67751,6 +68481,11 @@
     "crewContextLevel": {
       "kind": "function",
       "source": "src/blocks/agent-crew/crew-model.ts",
+      "props": []
+    },
+    "currentRunStep": {
+      "kind": "function",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
       "props": []
     },
     "decimalsOfTick": {
@@ -69645,6 +70380,46 @@
           "description": "Change as a percentage (1.5 means 1.5%)."
         }
       ]
+    },
+    "runHeaderAction": {
+      "kind": "function",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
+      "props": []
+    },
+    "runHeadingLevel": {
+      "kind": "function",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
+      "props": []
+    },
+    "runPercent": {
+      "kind": "function",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
+      "props": []
+    },
+    "runSegments": {
+      "kind": "function",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
+      "props": []
+    },
+    "runStepTone": {
+      "kind": "function",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
+      "props": []
+    },
+    "runSubHeadingLevel": {
+      "kind": "function",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
+      "props": []
+    },
+    "runTimeLine": {
+      "kind": "function",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
+      "props": []
+    },
+    "runTone": {
+      "kind": "function",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
+      "props": []
     },
     "runningCounts": {
       "kind": "function",

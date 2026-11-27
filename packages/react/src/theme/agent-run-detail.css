@@ -1,0 +1,468 @@
+/* SPDX-License-Identifier: MIT */
+/* AgentRunDetail 与 AgentRunList（KatanaUI #196）：单次运行的详情与运行列表。
+   语气只靠 data-tone：accent（在跑）、warn（阻塞）、ok（完成）、neutral（暂停）、danger（失败）、off（还没到的步骤），颜色读 --k-status-* 与 --accent。
+   分段进度条：--ard-ticks 根竖短刻度，亮的是状态色、暗的是同色 16%、当前刻度（只在跑时）亮正文主色加一圈同色外框；状态词与灯在百分比旁，不单靠颜色。
+   折叠：标题是按钮，内容 hidden="until-found"；箭头朝上是展开、朝下是收起。 */
+.k-ard,
+.k-arl {
+  --ard-tone: var(--k-content-secondary-foreground);
+  container-type: inline-size;
+  min-width: 0;
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-ard[data-tone='accent'],
+.k-ard [data-tone='accent'],
+.k-arl [data-tone='accent'] {
+  --ard-tone: var(--accent);
+}
+.k-ard[data-tone='warn'],
+.k-ard [data-tone='warn'],
+.k-arl [data-tone='warn'] {
+  --ard-tone: var(--k-status-warn-foreground);
+}
+.k-ard[data-tone='ok'],
+.k-ard [data-tone='ok'],
+.k-arl [data-tone='ok'] {
+  --ard-tone: var(--k-status-ok-foreground);
+}
+.k-ard[data-tone='danger'],
+.k-ard [data-tone='danger'],
+.k-arl [data-tone='danger'] {
+  --ard-tone: var(--k-status-danger-foreground);
+}
+.k-ard[data-tone='neutral'],
+.k-ard [data-tone='neutral'],
+.k-arl [data-tone='neutral'] {
+  --ard-tone: var(--k-status-neutral-foreground);
+}
+.k-ard[data-tone='off'],
+.k-ard [data-tone='off'],
+.k-arl [data-tone='off'] {
+  --ard-tone: var(--k-separable-bold-borderColor);
+}
+
+.k-ard {
+  display: flex;
+  flex-direction: column;
+  border: var(--hairline);
+  border-radius: var(--radius-overlay);
+  background: var(--k-container-primary-background);
+}
+.k-ard > * + * {
+  border-top: var(--hairline);
+}
+.k-ard-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+}
+.k-ard-name {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-title) var(--font-sans);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.k-ard-progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+}
+.k-ard-pct-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.k-ard-pct {
+  color: var(--k-content-primary-foreground);
+  font: var(--text-display) var(--font-num);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--text-display-tracking);
+}
+.k-ard-state,
+.k-arl-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ard-tone);
+  font: var(--text-data) var(--font-sans);
+  white-space: nowrap;
+}
+.k-ard-lamp {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--ard-tone);
+}
+.k-ard-ticks {
+  display: grid;
+  grid-template-columns: repeat(var(--ard-ticks), minmax(0, 1fr));
+  gap: 3px;
+  height: 28px;
+}
+.k-ard-ticks i {
+  border-radius: var(--radius-pill);
+  background: color-mix(in oklab, var(--ard-tone) 16%, transparent);
+  transition: background-color var(--dur-snappy) var(--ease-snappy);
+}
+.k-ard-ticks i[data-tick='lit'] {
+  background: var(--ard-tone);
+}
+.k-ard-ticks i[data-tick='current'] {
+  background: var(--k-content-primary-foreground);
+  outline: 2px solid color-mix(in oklab, var(--ard-tone) 55%, transparent);
+  outline-offset: 0;
+}
+.k-ard-time {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin: 0;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-num-small);
+}
+
+/* 阻塞问题卡：warn 语气，一颗确认钮。 */
+.k-ard-question {
+  display: flex;
+  gap: var(--space-3);
+  margin: 0 var(--space-4) var(--space-4);
+  padding: var(--space-3);
+  border: 1px solid var(--k-status-warn-borderColor);
+  border-radius: var(--radius-control);
+  background: var(--k-status-warn-background);
+}
+.k-ard > .k-ard-question {
+  border-top: 1px solid var(--k-status-warn-borderColor);
+}
+.k-ard-question-icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+  color: var(--k-status-warn-foreground);
+}
+.k-ard-question-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.k-ard-question-title {
+  margin: 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-ard-question-text {
+  margin: 0;
+  color: var(--k-content-body-foreground);
+  font: var(--text-caption) var(--font-sans);
+}
+
+/* 可收起的分组。 */
+.k-ard-section {
+  padding: 0 var(--space-4);
+}
+.k-ard-section-title {
+  margin: 0;
+}
+.k-ard-section-title button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-3) 0;
+  border: 0;
+  background: transparent;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-data) var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+}
+.k-ard-section-title button:hover {
+  color: var(--k-content-primary-foreground);
+}
+.k-ard-section-title button:focus-visible {
+  outline: var(--k-focused-outlineWidth) solid var(--k-focused-outlineColor);
+  outline-offset: var(--k-focused-outlineOffset);
+}
+.k-ard-section-title svg {
+  width: 14px;
+  height: 14px;
+  transition: rotate var(--dur-snappy) var(--ease-snappy);
+}
+.k-ard-section-title button[aria-expanded='false'] svg {
+  rotate: 180deg;
+}
+.k-ard-panel {
+  padding-bottom: var(--space-3);
+}
+/* 收起的内容（hidden="until-found" 只藏内容、盒子还在）不留下内边距。 */
+.k-ard-panel[hidden] {
+  padding-bottom: 0;
+}
+
+/* 接着跑：一颗钮分两段，左边图标与名字，右边预估时长。 */
+.k-ard-next {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-ard-next-button {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--k-actionable-borderColor);
+  border-radius: var(--radius-control);
+  background: var(--k-actionable-background);
+  color: var(--k-actionable-foreground);
+  font: var(--text-data) var(--font-sans);
+  cursor: pointer;
+  transition: background-color var(--dur-snappy) var(--ease-snappy);
+}
+.k-ard-next-button:hover {
+  background: var(--k-actionable-background-hover);
+}
+.k-ard-next-button:focus-visible {
+  outline: var(--k-focused-outlineWidth) solid var(--k-focused-outlineColor);
+  outline-offset: var(--k-focused-outlineOffset);
+}
+.k-ard-next-main,
+.k-ard-next-estimate {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 6px var(--space-3);
+}
+.k-ard-next-main svg {
+  width: 14px;
+  height: 14px;
+}
+.k-ard-next-estimate {
+  border-left: 1px solid var(--k-actionable-borderColor);
+  color: var(--k-content-body-foreground);
+  font: var(--text-caption) var(--font-num-small);
+}
+
+/* 详情：键 / 值两列，值前面一个图标。 */
+.k-ard-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+}
+.k-ard-details > div {
+  display: grid;
+  grid-template-columns: minmax(80px, 30%) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 24px;
+}
+.k-ard-details dt {
+  color: var(--k-content-secondary-foreground);
+}
+.k-ard-details dd {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  margin: 0;
+  color: var(--k-content-primary-foreground);
+}
+.k-ard-details dd > span {
+  display: inline-flex;
+  color: var(--k-content-tertiary-foreground);
+}
+.k-ard-details dd svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* 步骤：图标、名字、右边耗时或状态字；阻塞的那步名字 warn 色；还没到的步骤暗一点。 */
+.k-ard-steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-ard-steps li {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 28px;
+  color: var(--k-content-secondary-foreground);
+}
+.k-ard-step-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--k-separable-primary-borderColor);
+  border-radius: var(--radius-pill);
+  color: var(--ard-tone);
+}
+.k-ard-step-icon svg {
+  width: 12px;
+  height: 12px;
+}
+.k-ard-steps li[data-status='done'] .k-ard-step-icon {
+  border-color: transparent;
+  background: color-mix(in oklab, var(--ard-tone) 16%, transparent);
+}
+.k-ard-steps li[data-status='running'] .k-ard-step-icon,
+.k-ard-steps li[data-status='blocked'] .k-ard-step-icon,
+.k-ard-steps li[data-status='failed'] .k-ard-step-icon {
+  border-color: transparent;
+}
+.k-ard-steps li[data-status='running'] {
+  color: var(--k-content-primary-foreground);
+}
+.k-ard-steps li[data-status='blocked'] .k-ard-step-name {
+  color: var(--k-status-warn-foreground);
+}
+.k-ard-steps li[data-status='failed'] .k-ard-step-name {
+  color: var(--k-status-danger-foreground);
+}
+.k-ard-step-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-ard-step-meta {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-num-small);
+}
+.k-ard-steps li[data-status='running'] .k-ard-step-meta,
+.k-ard-steps li[data-status='blocked'] .k-ard-step-meta {
+  color: var(--k-content-primary-foreground);
+}
+.k-ard-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* 运行列表：一行一个运行，两行两列加箭头。 */
+.k-arl {
+  display: flex;
+  flex-direction: column;
+  border: var(--hairline);
+  border-radius: var(--radius-overlay);
+  background: var(--k-container-primary-background);
+}
+.k-arl-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+}
+.k-arl-title {
+  margin: 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-title) var(--font-sans);
+}
+.k-arl-group {
+  padding: var(--space-2) var(--space-2) var(--space-3);
+  border-top: var(--hairline);
+}
+.k-arl-group-title {
+  margin: 0;
+  padding: var(--space-2) var(--space-2) var(--space-1);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans);
+}
+.k-arl-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-arl-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 14px;
+  grid-template-areas:
+    'name state chevron'
+    'subtitle when chevron';
+  align-items: center;
+  gap: 2px var(--space-3);
+  width: 100%;
+  min-height: 52px;
+  padding: var(--space-2);
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.k-arl-row:hover {
+  background: var(--k-selectable-background-hover);
+}
+.k-arl-row[aria-current='true'] {
+  background: var(--k-selectable-background-selected);
+}
+.k-arl-row[aria-current='true'] :is(.k-arl-subtitle, .k-arl-when) {
+  color: var(--k-content-body-foreground);
+}
+.k-arl-row:focus-visible {
+  outline: var(--k-focused-outlineWidth) solid var(--k-focused-outlineColor);
+  outline-offset: var(--k-focused-outlineOffset);
+}
+.k-arl-name {
+  grid-area: name;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--k-content-primary-foreground);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-arl-state {
+  grid-area: state;
+  justify-self: end;
+}
+.k-arl-subtitle {
+  grid-area: subtitle;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-arl-when {
+  grid-area: when;
+  justify-self: end;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-num-small);
+  white-space: nowrap;
+}
+.k-arl-chevron {
+  grid-area: chevron;
+  width: 14px;
+  height: 14px;
+  color: var(--k-content-tertiary-foreground);
+}
