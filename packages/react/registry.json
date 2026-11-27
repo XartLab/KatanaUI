@@ -3491,6 +3491,45 @@
       ]
     },
     {
+      "name": "toast-stack-model",
+      "type": "registry:lib",
+      "title": "Toast Stack Model",
+      "description": "ToastStack 的几何与手势判定（纯函数）：收拢与展开时每条的位置、缩放、不透明度，滑动关的距离与速度判定。",
+      "files": [
+        {
+          "path": "src/katana/toast-stack-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/katana/toast-stack-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "toast-stack",
+      "type": "registry:component",
+      "title": "Toast Stack",
+      "description": "可选的叠放层，套在 Toast 零件外面：多条时只露最新一条、后面的缩小上移变淡（最多 3 层），指针移进或 Tab 进去展开成列表，横向拖过约 40% 或甩出去就关，带动作钮的条点了原地变成结果态（如「已恢复」）。定时、暂停、最多条数由它管；条目表受控或不受控都行。旧的 Toast 零件不变。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/motion",
+        "@katana/severity",
+        "@katana/spring",
+        "@katana/toast",
+        "@katana/toast-stack-model"
+      ],
+      "files": [
+        {
+          "path": "src/katana/toast-stack.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/toast-stack.tsx"
+        }
+      ]
+    },
+    {
       "name": "toast",
       "type": "registry:component",
       "title": "Toast",

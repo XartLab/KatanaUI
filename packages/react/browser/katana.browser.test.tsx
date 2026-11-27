@@ -49,6 +49,7 @@ import {
   Squircle,
 } from '../src/index'
 import { CopyToastStates } from '../gallery/pages/undo-copy.tsx'
+import { ToastStackStates } from '../gallery/pages/toast-stack.tsx'
 import { mount } from './render.tsx'
 import { settled, waitUntil, withFakeIntervals, withFrameClock, type FrameClock } from './settle.ts'
 
@@ -59,6 +60,7 @@ const items: Record<string, React.ReactNode> = {
   'animated-stepper': <AnimatedStepperUsage />,
   'animated-tags': <AnimatedTagsUsage />,
   'copy-toast': <CopyToastStates />,
+  'toast-stack': <ToastStackStates />,
   // Animated parts (type/wipe/blink/marquee) are left out of the shot: they never settle.
   'arcade-pixel': (
     <>
@@ -170,7 +172,12 @@ const items: Record<string, React.ReactNode> = {
 }
 
 // loading：骨架 500ms 后才出、2s 转「仍在加载」，等 250ms 截到哪边看机器忙不忙（#190）；钉在 1000ms 截骨架。
-const settle: Record<string, number> = { 'page-preloader': 1500, 'measured-skeleton-loading': 900, loading: 1000 }
+const settle: Record<string, number> = {
+  'page-preloader': 1500,
+  'measured-skeleton-loading': 900,
+  loading: 1000,
+  'toast-stack': 700,
+}
 
 // Freeze the clock (Date only, so timers still run): today/relative-time cells must not drift between days.
 const NOW = new Date('2026-11-17T09:00:00')

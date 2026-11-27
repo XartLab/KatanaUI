@@ -69,6 +69,31 @@ const feedback: GuidanceMap = {
       '语气（tone）只是色条与图标的颜色，标题里也要写明；说明文字用 ink-2，各主题都过 4.5:1。',
     ],
   },
+  'toast-stack': {
+    aliases: ['Stacked toasts', 'Toast queue', 'Sonner', 'Snackbar stack', '叠加吐司', '叠放提示'],
+    use: [
+      '同一时间可能弹出好几条的地方（告警、撤销提示）：收拢时只露最新一条、后面缩小 5%、上移 8px、变淡，最多露 3 层，不把窗口角落占满。',
+      '指针移进或 Tab 进去展开成列表（间距 8px），移出收回；展开时每条的计时暂停，走开后接着剩下的时间。',
+      '横向拖过条宽的 40%，或松手速度 ≥ 500px/s 且已拖开 24px：往那边滑出并关，其余走弹簧补位；不够弹回。数值是看参照的帧估的（待定）。',
+      '「撤销」这类动作钮：条目的 action 带 label 与 result，点了这一条原地换成结果态（默认 ok 语气、绿色色条，停留 2.4 秒），不另弹一条；没有 result 就是点了即关。',
+      '条目表受控（items + onItemsChange）或不受控（ref.push）都行；超过 max（默认 5）最旧的先收。受控时调用方可以在 onItemsChange 里拒绝变更（items 不变就是拒绝），叠放层不会把被拒的变更悄悄带进后面的操作。',
+      '触屏没有悬停：点一下收拢的叠层（点在钮上不算）展开，点叠层外收回；展开时同样暂停计时。',
+      '交互借自 Jamie Merrill 的「Stacked toasts」「Dismissing toasts」（2026-11-24 逐帧看，只借交互）；样子是现有的 Toast 皮肤，不用他的白底配色。',
+    ],
+    avoid: [
+      '要用户处理的事用 dialog 或 alert：提示会自己消失，动作钮只当界面别处已有动作的快捷方式。',
+      '一次只会有一条、也不需要撤销的用单条 Toast（调用方自己管条目表）。',
+    ],
+    a11y: [
+      '区域是 ToastViewport（role=region、aria-live=polite；warn / danger 的条自己带 role=alert），名字 labels.region 由调用方传；aria-relevant 是 "additions text"：结果态换内容只是文本节点的改动，只写 additions 读屏器不会读「已恢复」。不要靠换 key 重挂来触发朗读，那会丢焦点。',
+      '展开不靠指针：Tab 进叠层（:focus-visible）就展开，能 Tab 到每条的动作钮与关闭钮；动作钮读屏名就是钮上的字，关闭钮是 labels.close。',
+      '键盘焦点在条里时计时暂停；关掉有焦点的一条，焦点移到相邻一条的关闭钮，关掉最后一条（或被 max 裁掉）就还给进叠层前拿着焦点的元素（照 lib/opener-focus 的思路）；点动作钮后焦点落到同一条的关闭钮，不丢。Esc 关掉焦点所在的一条。',
+      'prefers-reduced-motion：不缩放、不滑、不接拖动手势，收拢只留最前面一条，只有淡入淡出。',
+      '看不见的层（第 4 层以后；减弱动效下收拢的后面几层）与正在退场的条用 inert，不用 aria-hidden：里面的钮 Tab 不到，也没有「焦点在 aria-hidden 里」。Tab 进叠层落到第一个能聚焦的层，叠层随即展开、inert 撤掉。',
+      '页面不可见（切走标签页）时计时自动暂停，回来接着走，「撤销」的窗口不会在没人看见时过完。',
+      '滑动关只是指针手势的快捷方式，键盘与读屏用户走关闭钮与 Esc，功能不缺。',
+    ],
+  },
   'copy-toast': {
     aliases: ['Copy image', 'Snapshot', 'Copy to clipboard', 'Take a snapshot', '复制图', '截图'],
     use: [

@@ -61444,6 +61444,330 @@
       "source": "src/katana/toast.tsx",
       "props": []
     },
+    "ToastStack": {
+      "kind": "component",
+      "source": "src/katana/toast-stack.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "ToastStackItem[]",
+          "required": false,
+          "description": "Controlled list of toasts, oldest first: the last one is the front."
+        },
+        {
+          "name": "defaultItems",
+          "type": "ToastStackItem[]",
+          "required": false,
+          "description": "Initial list when uncontrolled; push through the ref afterwards."
+        },
+        {
+          "name": "onItemsChange",
+          "type": "(items: ToastStackItem[]) => void",
+          "required": false,
+          "description": "Called with the next list whenever a toast is pushed, dismissed, expires, settles into its result or is trimmed by max."
+        },
+        {
+          "name": "labels",
+          "type": "ToastStackLabels",
+          "required": true,
+          "description": "Accessible names (required; the package ships no text): region is the live region's aria-label, close names every close button."
+        },
+        {
+          "name": "position",
+          "type": "ToastPosition",
+          "required": false,
+          "default": "'bottom-right'",
+          "description": "Which corner (default bottom-right): at the bottom corners the newest sits on the window edge and older ones peek upward; at the top corners the reverse."
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "default": "5",
+          "description": "Most toasts kept (default 5); the oldest goes first."
+        },
+        {
+          "name": "duration",
+          "type": "number",
+          "required": false,
+          "default": "5000",
+          "description": "Default time on screen in ms (default 5000, Infinity never expires); an item's own duration wins."
+        },
+        {
+          "name": "resultDuration",
+          "type": "number",
+          "required": false,
+          "default": "2400",
+          "description": "How long a result state stays after its action button was clicked, in ms (default 2400)."
+        },
+        {
+          "name": "expanded",
+          "type": "boolean",
+          "required": false,
+          "description": "Force expanded or collapsed; leave it out to follow the pointer and keyboard focus (true also pauses the timers)."
+        },
+        {
+          "name": "paused",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Pause every timer from outside; expanded, hovered, keyboard-focused, touch-opened stacks and a hidden page (tab switched away) already pause by themselves."
+        },
+        {
+          "name": "inline",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Render in the document flow instead of fixed to a window corner (docs and screenshots)."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra classes for the viewport region."
+        },
+        {
+          "name": "ref",
+          "type": "Ref<ToastStackHandle>",
+          "required": false,
+          "description": "Handle with push, dismiss and clear; works when controlled too, the result goes out through onItemsChange."
+        }
+      ]
+    },
+    "ToastStackAction": {
+      "kind": "type",
+      "source": "src/katana/toast-stack.tsx",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "钮上的字（包里不带文案，调用方传）。"
+        },
+        {
+          "name": "onAction",
+          "type": "(item: ToastStackItem) => void",
+          "required": false,
+          "description": "点了以后先调这个（真正去撤销）。"
+        },
+        {
+          "name": "result",
+          "type": "ToastStackResult",
+          "required": false,
+          "description": "有：这一条原地换成它；没有：点了就关掉这一条。"
+        }
+      ]
+    },
+    "ToastStackHandle": {
+      "kind": "type",
+      "source": "src/katana/toast-stack.tsx",
+      "props": [
+        {
+          "name": "push",
+          "type": "(item: Omit<ToastStackItem, 'id'> & { id?: string }) => string",
+          "required": true,
+          "description": "压进一条（成为最前面的）；id 已存在就原地更新；返回 id。超过 max 时最旧的先收。"
+        },
+        {
+          "name": "dismiss",
+          "type": "(id: string) => void",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "clear",
+          "type": "() => void",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "ToastStackItem": {
+      "kind": "type",
+      "source": "src/katana/toast-stack.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "tone",
+          "type": "Severity",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "description",
+          "type": "ReactNode",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "duration",
+          "type": "number",
+          "required": false,
+          "description": "停多久（毫秒）后自己关；不写取叠放层的 duration，Infinity 不自动消失。"
+        },
+        {
+          "name": "action",
+          "type": "ToastStackAction",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "ToastStackLabels": {
+      "kind": "type",
+      "source": "src/katana/toast-stack.tsx",
+      "props": [
+        {
+          "name": "region",
+          "type": "string",
+          "required": true,
+          "description": "区域的读屏名（role=region 的 aria-label）。"
+        },
+        {
+          "name": "close",
+          "type": "string",
+          "required": true,
+          "description": "每一条关闭钮的读屏名。"
+        }
+      ]
+    },
+    "ToastStackProps": {
+      "kind": "type",
+      "source": "src/katana/toast-stack.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "ToastStackItem[]",
+          "required": false,
+          "description": "Controlled list of toasts, oldest first: the last one is the front."
+        },
+        {
+          "name": "defaultItems",
+          "type": "ToastStackItem[]",
+          "required": false,
+          "description": "Initial list when uncontrolled; push through the ref afterwards."
+        },
+        {
+          "name": "onItemsChange",
+          "type": "(items: ToastStackItem[]) => void",
+          "required": false,
+          "description": "Called with the next list whenever a toast is pushed, dismissed, expires, settles into its result or is trimmed by max."
+        },
+        {
+          "name": "labels",
+          "type": "ToastStackLabels",
+          "required": true,
+          "description": "Accessible names (required; the package ships no text): region is the live region's aria-label, close names every close button."
+        },
+        {
+          "name": "position",
+          "type": "ToastPosition",
+          "required": false,
+          "description": "Which corner (default bottom-right): at the bottom corners the newest sits on the window edge and older ones peek upward; at the top corners the reverse."
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "description": "Most toasts kept (default 5); the oldest goes first."
+        },
+        {
+          "name": "duration",
+          "type": "number",
+          "required": false,
+          "description": "Default time on screen in ms (default 5000, Infinity never expires); an item's own duration wins."
+        },
+        {
+          "name": "resultDuration",
+          "type": "number",
+          "required": false,
+          "description": "How long a result state stays after its action button was clicked, in ms (default 2400)."
+        },
+        {
+          "name": "expanded",
+          "type": "boolean",
+          "required": false,
+          "description": "Force expanded or collapsed; leave it out to follow the pointer and keyboard focus (true also pauses the timers)."
+        },
+        {
+          "name": "paused",
+          "type": "boolean",
+          "required": false,
+          "description": "Pause every timer from outside; expanded, hovered, keyboard-focused, touch-opened stacks and a hidden page (tab switched away) already pause by themselves."
+        },
+        {
+          "name": "inline",
+          "type": "boolean",
+          "required": false,
+          "description": "Render in the document flow instead of fixed to a window corner (docs and screenshots)."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra classes for the viewport region."
+        },
+        {
+          "name": "ref",
+          "type": "Ref<ToastStackHandle>",
+          "required": false,
+          "description": "Handle with push, dismiss and clear; works when controlled too, the result goes out through onItemsChange."
+        }
+      ]
+    },
+    "ToastStackResult": {
+      "kind": "type",
+      "source": "src/katana/toast-stack.tsx",
+      "props": [
+        {
+          "name": "tone",
+          "type": "Severity",
+          "required": false,
+          "description": "默认 ok（成功态，绿色语气）。"
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": "默认按语气取图标。"
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "description",
+          "type": "ReactNode",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "duration",
+          "type": "number",
+          "required": false,
+          "description": "结果态停多久（毫秒）；不写取叠放层的 resultDuration，Infinity 不自动消失。"
+        }
+      ]
+    },
     "ToastText": {
       "kind": "component",
       "source": "src/katana/toast.tsx",

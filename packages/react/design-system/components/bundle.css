@@ -823,6 +823,10 @@
   inset: 0;
 }
 
+.inset-auto {
+  inset: auto;
+}
+
 .inset-x-0 {
   inset-inline: 0;
 }
@@ -4575,6 +4579,10 @@
 
 .data-\[checked\]\:text-\(color\:--k-content-primary-foreground\)[data-checked] {
   color: var(--k-content-primary-foreground);
+}
+
+.data-\[clamped\]\:overflow-hidden[data-clamped] {
+  overflow: hidden;
 }
 
 .data-\[disabled\]\:cursor-default[data-disabled] {

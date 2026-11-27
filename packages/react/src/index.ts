@@ -381,6 +381,16 @@ export {
   type ToastPhase,
   type ToastPosition,
 } from './katana/toast.tsx'
+// 叠放的弹出提示（#195）：收拢、悬停展开、滑动关、撤销就地变状态；旧的 Toast 零件不变。
+export {
+  ToastStack,
+  type ToastStackAction,
+  type ToastStackHandle,
+  type ToastStackItem,
+  type ToastStackLabels,
+  type ToastStackProps,
+  type ToastStackResult,
+} from './katana/toast-stack.tsx'
 // 复制图 / 复制文字与结果提示（#77 第 4 条，#22 G11）。
 export {
   CopyToast,

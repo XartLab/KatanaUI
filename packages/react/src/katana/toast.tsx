@@ -13,6 +13,7 @@ import { Button } from '../primitives/button.tsx'
 //     皮肤跟弹出菜单同一层（surface-4、7% 白边、同一组阴影），左边一道 2px 强调色条；过渡走 snappy 弹簧（theme/motion.css 的 token）。
 //   ToastIcon、ToastTitle、ToastDescription、ToastClose（label 读屏名由调用方传）、ToastClear（「全部关掉」，文字由调用方传）、
 //   ToastAction（一个文字钮，如「撤销」，文字由调用方传）、ToastCountdown（可选的剩余时间环，剩余比例由调用方传，包里不计时）。
+// 要收拢叠放、悬停展开、滑动关、撤销就地变状态，用外面的 ToastStack（toast-stack.tsx，#195）：它套这些零件，计时与最多条数自己管；不用它时这里的用法一点没变。
 // 出处：样子是原来应用里 shell.css 的 .kc-toast（2026-11-14 搬进包），数值没改。
 // G3：加 tone（lib/severity.ts 的 Severity）：neutral 是原来的样子（色条取主文字色、图标取 --accent），ok / warn / danger 色条与图标都取 --k-status-*-foreground，
 //   跟 Alert、Progress 同一套语气；说明文字从 ink-3 提到 ink-2（console 主题下 ink-3 压在 surface-4 上只有 4.45:1，a11y 已知违规里那条）。

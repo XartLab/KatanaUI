@@ -150,6 +150,7 @@ import {
   WorkspaceTabsDemo,
 } from './pages/blocks.tsx'
 import { AlertDemo, ProgressDemo, ToastDemo } from './pages/feedback.tsx'
+import { ToastStackDemo } from './pages/toast-stack.tsx'
 import { ComboboxDemo, CommandDemo } from './pages/pickers.tsx'
 import { EventTimelineDemo, JsonViewerDemo } from './pages/arc-controls.tsx'
 import {
@@ -424,6 +425,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   loading: LoadingDemo,
   'measured-skeleton': MeasuredSkeletonUsage,
   toast: ToastDemo,
+  'toast-stack': ToastStackDemo,
   'ticker-tape': TickerTapeDemo,
   'refresh-control': RefreshControlDemo,
   'grid-summary-row': GridSummaryRowDemo,
