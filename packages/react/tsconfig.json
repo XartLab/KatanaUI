@@ -22,6 +22,7 @@
     "scripts",
     "e2e",
     "browser",
+    "shot",
     "vitest.browser.config.ts",
     "vite.config.ts",
     "playwright.config.ts",
