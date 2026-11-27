@@ -1799,8 +1799,24 @@ export function DistributionBarsDemo() {
         <DistributionBars bins={DIST_BINS} label="示例涨跌幅分布" totals={{ up: '涨', muted: '平', down: '跌' }} />
       </div>
       <p className="gal-note">
-        示例数据：11 档（9 档同理），柱顶是家数，底部一行汇总；档的边界与文字都由调用方传。没有数据显示空态：
+        示例数据：11 档（9 档同理），柱顶是家数，底部一行汇总；档的边界与文字都由调用方传。窄容器（300px）里档名放不下并排就在区间符后换成上下两行，悬停某档看完整名；
+        第二张用 lines 把区间上下叠（总是两行）：
       </p>
+      <div className="gal-wide" data-testid="dist-narrow" style={{ maxWidth: 300 }}>
+        <DistributionBars bins={DIST_BINS} label="示例涨跌幅分布（窄）" />
+      </div>
+      <div className="gal-wide" data-testid="dist-lines" style={{ maxWidth: 300 }}>
+        <DistributionBars
+          bins={DIST_BINS.map((bin) => {
+            const edges = /^(-?\d+)~(-?\d+)$/.exec(bin.label)
+            return edges
+              ? { ...bin, lines: [`${edges[1]}%`, `${edges[2]}%`] as const, title: `${edges[1]}% ~ ${edges[2]}%` }
+              : bin
+          })}
+          label="示例涨跌幅分布（上下叠）"
+        />
+      </div>
+      <p className="gal-note">没有数据显示空态：</p>
       <div className="gal-wide" data-testid="dist-empty" style={{ maxWidth: 560 }}>
         <DistributionBars bins={[]} label="示例空态" empty="暂无数据" />
       </div>

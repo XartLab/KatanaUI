@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: MIT */
 /* DistributionBars（#109）：分档分布柱。柱区按档等分，每档一列：柱顶一行家数（等宽数字）、下面是柱；档名在柱区下面一行，汇总在最底。
+   档名（#260）：窄柱下不再单行省略成「-...」——最多两行，放不下才省略，完整名在悬停（title）里；区间档名在区间符后断成两段（.k-dist-part），一行放得下就一行，
+   放不下上下叠；lines 给的两行总是上下叠。
    颜色只用语义色调映到 token：涨 --pnl-up、跌 --pnl-down、弱 --ink-400、强调 --ink-100（Graphite 的中性亮，不用橙）。 */
 .k-dist {
   display: flex;
@@ -57,11 +59,31 @@
   background: var(--ink-100);
 }
 .k-dist-label {
+  display: -webkit-box;
   min-width: 0;
   overflow: hidden;
   color: var(--ink-300);
+  line-height: 1.25;
   text-align: center;
   text-overflow: ellipsis;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+/* 区间档名与两行档名：两段各自不折行，容器放不下并排就换行（flex-wrap），居中。 */
+.k-dist-label:is([data-wrap='range'], [data-lines]) {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  column-gap: 0;
+}
+.k-dist-label[data-lines] {
+  flex-direction: column;
+  align-items: center;
+}
+.k-dist-part {
+  min-width: 0;
   white-space: nowrap;
 }
 .k-dist-totals {

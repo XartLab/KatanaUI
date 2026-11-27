@@ -72,7 +72,7 @@ export function useDrillFocus(figure: RefObject<HTMLElement | null>, drill: stri
 /** 字色按底色亮度现算黑白，写成容器上的 --mheat-ink-0…6；换主题、涨跌色互换时重读。 */
 export function useInkContrast(figure: RefObject<HTMLElement | null>, scheme: HeatmapScheme) {
   // 字色按底色亮度现算黑白：读图例七块色的真实底色，在 bg-000（深字）与 ink-100（浅字）里挑对比度高的，写成容器上的变量 --mheat-ink-0…6；
-  // 换主题、涨跌色互换（根上的 data-theme、data-updown）时重读。
+  // 换主题、涨跌色互换（data-theme、data-updown，后者可在任意子树上切，所以连根下面的变化也听）时重读。
   useLayoutEffect(() => {
     const root = figure.current
     if (!root) return
@@ -94,7 +94,11 @@ export function useInkContrast(figure: RefObject<HTMLElement | null>, scheme: He
     }
     apply()
     const observer = new MutationObserver(apply)
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'data-updown'] })
+    observer.observe(document.documentElement, {
+      attributes: true,
+      subtree: true,
+      attributeFilter: ['data-theme', 'data-updown'],
+    })
     return () => observer.disconnect()
   }, [figure, scheme])
 }

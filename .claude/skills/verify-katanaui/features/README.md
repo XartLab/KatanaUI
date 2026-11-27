@@ -49,6 +49,10 @@
 | [FloatingWindow 悬浮窗](floating-window.md) | `drive floating-window` | 开页内浮层、拖与方向键移动、Esc 关、状态不丢；真 PiP 路径手点验收 |
 | [ComponentCatalog menu 样式](component-catalog.md) | `drive component-catalog` | 分组折叠、点行添加、灰行点不动、悬停与聚焦出原因、推荐一组 |
 | [对照 Salt 补的七件](salt-gaps.md) | 还没有流程（手走） | Pill 改与删、SystemStatus 关闭、Calendar 选日与不可选日、ListBox 单选与多选、Link / Card / Panel 的样子 |
+| [IntradaySeries 盘中分钟线](intraday-series.md) | 还没有流程（手走） | 悬停读全部序列、午休缝、左右轴、昨日虚线、缺分钟断线、键盘走分钟、切序列 |
+| [GroupedTable 分组表](grouped-table.md) | 还没有流程（手走） | 组头行数与汇总、组按汇总排序、「其他」在最后、收起、换分组维度、组内排序 |
+| [MatrixHeat 矩阵热力](matrix-heat.md) | 还没有流程（手走） | 悬停出值与原因、空格不着色、点表头给行 / 列排序、选中、键盘走格、发散色阶 |
+| [ValuationBand 估值带](valuation-band.md) | 还没有流程（手走） | 分位带与标注、当前点分位、悬停读估值与分位、缺值断线 |
 
 ## 待补
 

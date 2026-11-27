@@ -184,7 +184,11 @@ import '@katana-ui/react/ui.css'       // 组件样式、渲染层，最后引`}
         head={['属性', '值', '作用']}
         rows={[
           [code('data-theme'), '不写 / console', '不写是 Graphite（默认）；console 是暖色旧主题'],
-          [code('data-updown'), '不写 / cn', 'cn 红涨绿跌'],
+          [
+            code('data-updown'),
+            '不写 / cn / intl',
+            'cn 红涨绿跌；可写在任意容器上往下继承，intl 在 cn 区域里切回绿涨红跌',
+          ],
           [code('data-density'), 'high / medium / low', '可写在任意容器上往下继承，默认 medium'],
           [code('data-text-smoothing'), '等', '渲染设置，见「渲染设置」页与 RenderingSettings'],
         ]}
@@ -561,7 +565,11 @@ function ModesPage() {
       <Table
         head={['开关', '值', '作用']}
         rows={[
-          [code('data-updown'), 'cn', '涨跌色对调（红涨绿跌）；组件只写 pnl-up / pnl-down'],
+          [
+            code('data-updown'),
+            'cn / intl',
+            '涨跌色对调（cn 红涨绿跌，intl 绿涨红跌）；组件只写 pnl-up / pnl-down。可写在任意容器上，往下继承：A 股区域用 cn，同屏的加密货币面板不写（或写 intl）',
+          ],
           [code('data-transparency'), 'reduced', '去掉毛玻璃与半透明'],
           [code('data-density'), 'high / medium / low', '高度与内距，见「密度」'],
         ]}
@@ -569,6 +577,10 @@ function ModesPage() {
       <ul className="gal-list">
         <li>LCD 窗在任何主题下都是深色岛（lcd-bg）。</li>
         <li>主题切换只改根节点属性，不重渲染组件。</li>
+        <li>
+          涨跌色可在任意子树用 data-updown 切，A 股区域用 cn；只换 pnl-up / pnl-down 不够，引用它们的语义
+          token（k-tone-*、div-pos 等） 在同一个选择器里重声明，子树里才会跟着换。
+        </li>
       </ul>
     </>
   )

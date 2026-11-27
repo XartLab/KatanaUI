@@ -33,4 +33,16 @@ describe('formatCnAmount', () => {
     expect(formatCnAmount(123_456_789, { abbreviate: false })).toBe('123,456,789')
     expect(formatCnAmount(2e8, undefined, { wan: '萬', yi: '億' })).toBe('2.00億')
   })
+
+  it('万亿档（#260）：≥ 1e12 写 x.xx万亿，9.99e11 仍是亿；亿档进位到 10000 亿也写万亿', () => {
+    expect(formatCnAmount(1.1e12)).toBe('1.10万亿')
+    expect(formatCnAmount(1e12)).toBe('1.00万亿')
+    expect(formatCnAmount(9.99e11)).toBe('9,990.00亿')
+    expect(formatCnAmount(9.999999e11)).toBe('1.00万亿')
+    expect(formatCnAmount(-2.5e12)).toBe('-2.50万亿')
+    expect(formatCnAmount(1.23456e13, { signed: true })).toBe('+12.35万亿')
+    expect(formatCnAmount(1.1e12, { digits: 1 })).toBe('1.1万亿')
+    expect(formatCnAmount(1.1e12, undefined, { wan: '萬', yi: '億', wanyi: '萬億' })).toBe('1.10萬億')
+    expect(formatCnAmount(1.1e12, undefined, { wan: '萬', yi: '億' })).toBe('1.10万亿')
+  })
 })

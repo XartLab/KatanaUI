@@ -3,6 +3,8 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
 import {
   DistributionBars,
+  binTitle,
+  splitRangeLabel,
   distributionBarHeight,
   distributionFill,
   distributionTotals,
@@ -36,7 +38,7 @@ describe('DistributionBars', () => {
     expect(html).toContain('style="--fill:0.5"')
     expect(distributionFill(600, 1200, 96)).toBe(0.5)
     expect(distributionFill(null, 1200, 96)).toBe(0)
-    expect(html).toContain('<span class="k-dist-label">-3</span>')
+    expect(html).toContain('<span class="k-dist-label" data-slot="distribution-label" title="-3">-3</span>')
     expect(html).toContain('aria-label="dist"')
   })
 
@@ -79,5 +81,33 @@ describe('DistributionBars', () => {
   it('formatCount 换家数的写法', () => {
     const html = renderToStaticMarkup(<DistributionBars bins={BINS} label="d" formatCount={(n) => `${n}家`} />)
     expect(html).toContain('>1200家<')
+  })
+
+  it('窄档名（#260）：字符串区间在区间符后断成两段，完整名进 title；lines 总是上下两行', () => {
+    expect(splitRangeLabel('-5%~-3%')).toEqual(['-5%~', '-3%'])
+    expect(splitRangeLabel('3% 至 5%')).toEqual(['3% 至', '5%'])
+    // 负号不是区间符；没有区间符、区间符在开头 / 结尾、不是字符串都不断。
+    expect(splitRangeLabel('-3%')).toBeNull()
+    expect(splitRangeLabel('~3%')).toBeNull()
+    expect(splitRangeLabel('3%~')).toBeNull()
+    expect(splitRangeLabel(42)).toBeNull()
+    expect(binTitle({ label: '-5%~-3%' })).toBe('-5%~-3%')
+    expect(binTitle({ label: <b>x</b>, lines: ['-3%', '-5%'] })).toBe('-3% ~ -5%')
+    expect(binTitle({ label: <b>x</b>, lines: ['-3%', '-5%'], title: 'Down 3 to 5%' })).toBe('Down 3 to 5%')
+    const html = renderToStaticMarkup(
+      <DistributionBars
+        label="dist"
+        bins={[
+          { key: 'r', label: '-5%~-3%', count: 5, tone: 'down' },
+          { key: 'l', label: 'x', lines: ['-3%', '-1%'], count: 9, tone: 'down', title: 'Down 1 to 3%' },
+        ]}
+      />,
+    )
+    expect(html).toContain(
+      '<span class="k-dist-label" data-slot="distribution-label" data-wrap="range" title="-5%~-3%"><span class="k-dist-part">-5%~</span><span class="k-dist-part">-3%</span></span>',
+    )
+    expect(html).toContain('data-lines="2" title="Down 1 to 3%"><span class="k-dist-part">-3%</span><span class="k-dist-part">-1%</span>')
+    // 悬停整根柱也能看到完整名。
+    expect(html).toContain('data-key="l" data-tone="down" title="Down 1 to 3%"')
   })
 })

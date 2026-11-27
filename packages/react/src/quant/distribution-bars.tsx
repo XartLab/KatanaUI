@@ -15,8 +15,19 @@ export type DistributionBin = {
   /**
    * The bin name under the bar (e.g. "-3%"), written by the caller.
    * 档名（柱下面的字，如「-3%」「涨停」），由调用方写。
+   * 窄柱放不下时自动换行（#260）：字符串档名带区间符（`~` `～` `–` `—` `至`）的，在区间符后断成上下两行，放得下就留在一行；最多两行，不再被省略号截成「-...」。
    */
   label: ReactNode
+  /**
+   * Two stacked lines instead of label, e.g. the upper and lower edge of an interval; always two lines, however wide the bar.
+   * 区间上下叠的两行档名（如上界、下界）：给了就总是两行，不看柱宽；label 仍是整句，给读屏与默认悬停用。
+   */
+  lines?: readonly [ReactNode, ReactNode]
+  /**
+   * Full bin name in the hover (title); defaults to label when it is a string, else the two lines joined.
+   * 悬停（title）里的完整档名；不给就取字符串的 label，label 不是字符串时取 lines 两行拼起来。
+   */
+  title?: string
   /**
    * The count in this bin; null means no number (no bar, a dash above).
    * 这一档的家数；null 是没有数（不画柱，柱顶写「—」）。
@@ -70,6 +81,26 @@ export type DistributionBarsProps = {
 const COUNT_ROW = 16
 const TOTAL_ORDER = ['up', 'muted', 'down'] as const
 
+const RANGE_SEPARATOR = /^(.+?[~～–—至])(.+)$/
+
+/**
+ * 字符串档名在区间符后断成两段（区间符留在第一段）：「-5%~-3%」→「-5%~」「-3%」；没有区间符、区间符在开头或结尾、不是字符串返回 null。
+ * 不拿 ASCII 连字符断：它多半是负号（「-3%」）。纯函数。
+ */
+export function splitRangeLabel(label: ReactNode): [string, string] | null {
+  if (typeof label !== 'string') return null
+  const hit = RANGE_SEPARATOR.exec(label.trim())
+  return hit ? [hit[1]!, hit[2]!.trim()] : null
+}
+
+/** 悬停里的完整档名：显式 title，否则字符串 label，否则 lines 两行都是字符串时用「 ~ 」连起来；都没有返回 undefined。纯函数。 */
+export function binTitle(bin: Pick<DistributionBin, 'label' | 'lines' | 'title'>): string | undefined {
+  if (bin.title !== undefined) return bin.title
+  if (typeof bin.label === 'string') return bin.label
+  const [upper, lower] = bin.lines ?? []
+  return typeof upper === 'string' && typeof lower === 'string' ? `${upper} ~ ${lower}` : undefined
+}
+
 /** 各色调的家数之和（没有数的档不算）。纯函数。 */
 export function distributionTotals(bins: readonly DistributionBin[]): Record<'up' | 'muted' | 'down', number> {
   const sums = { up: 0, muted: 0, down: 0 }
@@ -91,6 +122,33 @@ export function distributionBarHeight(count: number | null, max: number, height:
 export function distributionFill(count: number | null, max: number, height: number): number {
   const room = Math.max(1, height - COUNT_ROW)
   return distributionBarHeight(count, max, height) / room
+}
+
+/** 一档的档名：lines 总是上下两行；字符串区间在区间符后断开，一行放得下就一行；其余原样（最多两行，超出再省略）。 */
+function BinLabel({ bin }: { bin: DistributionBin }) {
+  const title = binTitle(bin)
+  if (bin.lines) {
+    return (
+      <span className="k-dist-label" data-slot="distribution-label" data-lines="2" title={title}>
+        <span className="k-dist-part">{bin.lines[0]}</span>
+        <span className="k-dist-part">{bin.lines[1]}</span>
+      </span>
+    )
+  }
+  const parts = splitRangeLabel(bin.label)
+  if (parts) {
+    return (
+      <span className="k-dist-label" data-slot="distribution-label" data-wrap="range" title={title}>
+        <span className="k-dist-part">{parts[0]}</span>
+        <span className="k-dist-part">{parts[1]}</span>
+      </span>
+    )
+  }
+  return (
+    <span className="k-dist-label" data-slot="distribution-label" title={title}>
+      {bin.label}
+    </span>
+  )
 }
 
 const defaultFormat = (count: number) => count.toLocaleString('en-US')
@@ -133,6 +191,7 @@ export function DistributionBars({
             data-slot="distribution-bin"
             data-key={bin.key}
             data-tone={bin.tone}
+            title={binTitle(bin)}
             style={fillVar(distributionFill(bin.count, max, height))}
           >
             <span className="k-dist-count">{bin.count === null ? '—' : formatCount(bin.count)}</span>
@@ -142,9 +201,7 @@ export function DistributionBars({
       </div>
       <div className="k-dist-axis" aria-hidden="true">
         {bins.map((bin) => (
-          <span key={bin.key} className="k-dist-label">
-            {bin.label}
-          </span>
+          <BinLabel key={bin.key} bin={bin} />
         ))}
       </div>
       {totals && TOTAL_ORDER.some((tone) => totals[tone] !== undefined) ? (
