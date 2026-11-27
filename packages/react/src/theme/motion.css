@@ -55,22 +55,6 @@
     opacity: 0;
   }
 }
-@keyframes kc-accordion-down {
-  from {
-    height: 0;
-  }
-  to {
-    height: var(--radix-accordion-content-height);
-  }
-}
-@keyframes kc-accordion-up {
-  from {
-    height: var(--radix-accordion-content-height);
-  }
-  to {
-    height: 0;
-  }
-}
 
 /* 菜单、右键菜单、弹层、提示：从触发它的那一边长出来（Radix Popper 给了 --radix-popper-transform-origin）。入场走 snappy 弹簧，退场 --dur-exit 的 --ease-exit 淡出。 */
 [data-slot='dropdown-menu-content'],
@@ -128,12 +112,18 @@
 [data-slot='alert-dialog-overlay'][data-state='closed'] {
   animation: kc-fade-out var(--dur-exit) var(--ease-exit) both;
 }
-/* 折叠：高度从 0 长到内容高度。 */
-[data-slot='accordion-content'][data-state='open'] {
-  animation: kc-accordion-down var(--dur-snappy) var(--ease-snappy);
+/* 折叠：高度在 0 与内容高度（--accordion-panel-height）之间过渡，写法同折叠单项（sui-motion.css）。 */
+[data-slot='accordion-content'] {
+  height: var(--accordion-panel-height);
+  transition: height var(--dur-snappy) var(--ease-snappy);
 }
-[data-slot='accordion-content'][data-state='closed'] {
-  animation: kc-accordion-up var(--dur-exit) var(--ease-exit);
+[data-slot='accordion-content'][data-starting-style],
+[data-slot='accordion-content'][data-ending-style] {
+  height: 0;
+}
+[data-slot='accordion-content'][data-ending-style] {
+  transition-duration: var(--dur-exit);
+  transition-timing-function: var(--ease-exit);
 }
 /* 开关：圆钮滑过去走 snappy 弹簧（自带一点过冲）；按住时被压扁一点，像真的在推它。 */
 [data-slot='switch-thumb'] {
