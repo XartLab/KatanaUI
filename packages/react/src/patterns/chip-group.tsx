@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 import { X } from 'lucide-react'
-import { ToggleGroup as ToggleGroupPrimitive } from 'radix-ui'
+import { Toggle, ToggleGroup } from '@ui-sdk/react/toggle'
 import { cn } from '../lib/cn.ts'
 
 // 功能参照 Arc Chip group（uiarc.dev，2026-11-14 读：分面筛选，一组可开关的小标签），实现原创；外观在 theme/chip-group.css。
 // 用途：筛选器、自选分组的快速过滤。每个芯片是 aria-pressed 的开关（同包里分段切换的约定），整组 role=group；
-// 行为底座是 Radix ToggleGroup（方向键在芯片间走，Tab 只停一个）。多选是默认；single 最多选一个，点已选的就取消（取消 = 不筛）。
+// 行为底座是 UI SDK 的 ToggleGroup（方向键在芯片间走，Tab 只停一个；#263 从 Radix 换来）。多选是默认；single 最多选一个，点已选的就取消（取消 = 不筛）。
 // 文字全由调用方传（label、labels.clear、每个芯片的 label），数量由调用方算好传进来。
 
 export type ChipItem = {
@@ -51,19 +51,19 @@ export function ChipGroup({
 }: ChipGroupProps) {
   const clearLabel = labels?.clear ?? legacyClear
   return (
-    <ToggleGroupPrimitive.Root
-      type="multiple"
+    <ToggleGroup
       role="group"
       aria-label={label}
       className={cn('k-chips', className)}
+      multiple={selection === 'multiple'}
       value={[...value]}
       onValueChange={(next) => onValueChange(selection === 'single' ? next.filter((v) => !value.includes(v)) : next)}
     >
       {items.map((item) => (
-        <ToggleGroupPrimitive.Item key={item.value} value={item.value} disabled={item.disabled} className="k-chip">
+        <Toggle key={item.value} value={item.value} disabled={item.disabled} className="k-chip">
           <span>{item.label}</span>
           {item.count !== undefined && <span className="k-chip-count">{item.count}</span>}
-        </ToggleGroupPrimitive.Item>
+        </Toggle>
       ))}
       {clearLabel && value.length > 0 && (
         <button
@@ -76,6 +76,6 @@ export function ChipGroup({
           <X size={12} aria-hidden />
         </button>
       )}
-    </ToggleGroupPrimitive.Root>
+    </ToggleGroup>
   )
 }
