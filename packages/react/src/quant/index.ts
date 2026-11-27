@@ -52,6 +52,15 @@ export {
   type MatrixHeatSort,
 } from './matrix-heat.tsx'
 export { matrixShade, nextMatrixSort, sortColumnsByRow, sortRowsByColumn } from './matrix-heat-model.ts'
+// 估值带（#260）：估值历史曲线 + 历史分位带，当前点标分位。
+export {
+  ValuationBand,
+  defaultValuationLabels,
+  type ValuationBandLabels,
+  type ValuationBandProps,
+  type ValuationPoint,
+} from './valuation-band.tsx'
+export { valuationLevels, valuationPercentile } from './valuation-band-model.ts'
 export {
   MarketHeatmap,
   type HeatmapColorBy,
