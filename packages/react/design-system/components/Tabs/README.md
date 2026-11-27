@@ -17,6 +17,7 @@
 | `defaultValue` | `string` | — | The selected tab's value at first (uncontrolled). |
 | `onValueChange` | `(value: string) => void` | — | Called with the chosen tab's value. |
 | `activationMode` | `'automatic' \| 'manual'` | — | automatic (default): arrow keys select as they move; manual: they only move focus, Enter or Space selects. |
+| `data-slot` | `string` | — | Replaces the default data-slot name, which styles and selectors key on. |
 
 ### TabsList
 
@@ -25,6 +26,7 @@
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `variant` | `"line" \| "default" \| "bare"` | `'default'` | Skin: line, default, or bare (no skin, the caller's class names style it). |
+| `data-slot` | `string` | — | Replaces the default data-slot name, which styles and selectors key on. |
 | `children` | `ReactNode` | — | The tab triggers. |
 
 ### TabsTrigger
@@ -33,6 +35,7 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
+| `data-slot` | `string` | — | Replaces the default data-slot name, which styles and selectors key on. |
 | `bare` | `boolean` | — | Skip the skin. |
 
 ### TabsContent

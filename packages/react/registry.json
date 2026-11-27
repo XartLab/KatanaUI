@@ -1908,7 +1908,8 @@
         "@ui-sdk/react@0.1.0-beta.17"
       ],
       "registryDependencies": [
-        "@katana/cn"
+        "@katana/cn",
+        "@katana/slot-name"
       ],
       "files": [
         {
@@ -2006,6 +2007,7 @@
         "@katana/cn",
         "@katana/focus",
         "@katana/motion",
+        "@katana/slot-name",
         "@katana/spring"
       ],
       "files": [

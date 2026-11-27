@@ -25,7 +25,15 @@ Field 的 invalid 为真才渲染；children 是调用方写的话。
 
 其余属性透传给 UI SDK Label。不在 Field 里单独用也行。
 
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `data-slot` | `string` | — | Replaces the default data-slot name, which styles and selectors key on. |
+
 ### FieldLabel / FieldDescription / FieldContent / FieldGroup / FieldSet / FieldLegend / FieldSeparator
+
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `data-slot` | `string` | — | Replaces the default data-slot name, which styles and selectors key on. |
 
 ## Usage
 

@@ -32256,8 +32256,8 @@ button.k-consensus-hash:focus-visible {
   mask-mode: match-source, match-source;
 }
 
-[data-slot="tabs-content"][data-selected] {
-  animation: kc-fade-in .15s var(--ease-hover) both;
+[data-slot="tabs-content"][data-selected]:not([data-activation-direction="none"]) {
+  animation: kc-fade-in .15s var(--ease-hover);
 }
 
 @keyframes kc-dialog-part-in {

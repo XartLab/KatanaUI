@@ -20628,7 +20628,14 @@
     "FieldLabel": {
       "kind": "component",
       "source": "src/primitives/field.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "data-slot",
+          "type": "string",
+          "required": false,
+          "description": "Replaces the default data-slot name, which styles and selectors key on."
+        }
+      ]
     },
     "FieldLegend": {
       "kind": "component",
@@ -28140,7 +28147,14 @@
     "Label": {
       "kind": "component",
       "source": "src/primitives/label.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "data-slot",
+          "type": "string",
+          "required": false,
+          "description": "Replaces the default data-slot name, which styles and selectors key on."
+        }
+      ]
     },
     "LadderItem": {
       "kind": "type",
@@ -58822,6 +58836,12 @@
           "type": "'automatic' | 'manual'",
           "required": false,
           "description": "automatic (default): arrow keys select as they move; manual: they only move focus, Enter or Space selects."
+        },
+        {
+          "name": "data-slot",
+          "type": "string",
+          "required": false,
+          "description": "Replaces the default data-slot name, which styles and selectors key on."
         }
       ]
     },
@@ -58849,6 +58869,12 @@
           "description": "Skin: line, default, or bare (no skin, the caller's class names style it)."
         },
         {
+          "name": "data-slot",
+          "type": "string",
+          "required": false,
+          "description": "Replaces the default data-slot name, which styles and selectors key on."
+        },
+        {
           "name": "children",
           "type": "ReactNode",
           "required": false,
@@ -58860,6 +58886,12 @@
       "kind": "component",
       "source": "src/primitives/tabs.tsx",
       "props": [
+        {
+          "name": "data-slot",
+          "type": "string",
+          "required": false,
+          "description": "Replaces the default data-slot name, which styles and selectors key on."
+        },
         {
           "name": "bare",
           "type": "boolean",
