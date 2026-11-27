@@ -194,15 +194,16 @@ export function NewsFeedUsage() {
       </div>
       <div style={{ height: 300 }} data-testid="news-tagged">
         <NewsFeed
-          items={NEWS_ITEMS.slice(0, 4).map((item, index) => ({
-            ...item,
-            tags: [
-              { label: index % 2 ? '政策' : '公告' },
-              { label: ['利好', '中性', '利空', '未标'][index]!, tone: index === 3 ? 'warn' : 'info' },
-            ],
-            sourcesCount: index === 0 ? 3 : undefined,
-            alsoFrom: index === 0 ? ['演示快讯', '演示财经'] : undefined,
-          }))}
+          // 方向（利好 / 利空 / 中性 / 未标）只用中性色：涨跌色或信息蓝读起来都像价格判断（见下方「怎么用」）。
+          // groupBy 不替调用方排序，组键隔开又回来就再出一个小标题，所以演示先按频道排好（组内仍是时间新的在前）。
+          items={NEWS_ITEMS.slice(0, 4)
+            .map((item, index) => ({
+              ...item,
+              tags: [{ label: index % 2 ? '政策' : '公告' }, { label: ['利好', '中性', '利空', '未标'][index]! }],
+              sourcesCount: index === 0 ? 3 : undefined,
+              alsoFrom: index === 0 ? ['演示快讯', '演示财经'] : undefined,
+            }))
+            .toSorted((a, b) => (a.channel === b.channel ? b.time - a.time : a.channel === 'flash' ? -1 : 1))}
           channels={[]}
           sources={NEWS_SOURCES}
           now={NEWS_NOW}
