@@ -1,6 +1,13 @@
 // SPDX-License-Identifier: MIT
 import { useState } from 'react'
-import { InlineEdit, SplitButton, TagInput, type InlineEditLabels, type TagInputLabels } from '../../src/index.ts'
+import {
+  Button,
+  InlineEdit,
+  SplitButton,
+  TagInput,
+  type InlineEditLabels,
+  type TagInputLabels,
+} from '../../src/index.ts'
 import { Row } from './parts.tsx'
 
 // #1954 从 Arc（MIT）照搬的三件的演示。按钮与输入不连任何账户、不发任何请求：保存是本页里的一个定时器，失败是故意 reject 的。
@@ -135,6 +142,8 @@ const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export function InlineEditDemo() {
   const [name, setName] = useState('核心持仓')
+  const [unmountName, setUnmountName] = useState('模板甲')
+  const [mounted, setMounted] = useState(true)
   return (
     <>
       <Row name="标题 · h3 · 保存要 0.6 秒">
@@ -164,13 +173,30 @@ export function InlineEditDemo() {
           labels={EDIT_LABELS}
         />
       </Row>
+      <Row name="编辑中被卸载 · 补存">
+        {mounted && (
+          <InlineEdit
+            value={unmountName}
+            label="可卸载名"
+            onSave={(next) => setUnmountName(next)}
+            labels={EDIT_LABELS}
+          />
+        )}
+        <Button size="sm" data-gallery-inline-unmount onClick={() => setMounted(!mounted)}>
+          {mounted ? '卸载' : '装回'}
+        </Button>
+        <output data-gallery-inline-unmounted>已存：{unmountName}</output>
+      </Row>
       <Row name="空值 · 占位">
         <InlineEdit value="" label="布局名" placeholder="未命名布局" onSave={() => {}} labels={EDIT_LABELS} />
       </Row>
       <Row name="禁用">
         <InlineEdit value="系统默认布局" label="布局名" disabled onSave={() => {}} labels={EDIT_LABELS} />
       </Row>
-      <p className="gal-note">演示：保存是本页的定时器，第二行故意失败。回车保存、Esc 放弃、点到外面也保存。</p>
+      <p className="gal-note">
+        演示：保存是本页的定时器，第二行故意失败。回车保存、Esc
+        放弃、点到外面也保存；编辑中被卸载（第三行点「卸载」）同样补存一次。
+      </p>
     </>
   )
 }

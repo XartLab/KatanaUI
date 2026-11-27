@@ -14027,6 +14027,36 @@
         }
       ]
     },
+    "DateRangeApplyLabels": {
+      "kind": "type",
+      "source": "src/patterns/date-range-picker.tsx",
+      "props": [
+        {
+          "name": "pickFirst",
+          "type": "string",
+          "required": true,
+          "description": "状态字：还没点第一天。"
+        },
+        {
+          "name": "selected",
+          "type": "(days: number) => string",
+          "required": true,
+          "description": "状态字：已选 days 天（含首尾，数的是日历上高亮的格数）。带数字的文案一律传函数，英文要在里面处理单复数（1 day / 3 days）。"
+        },
+        {
+          "name": "apply",
+          "type": "string",
+          "required": true,
+          "description": "脚上两颗钮的字。"
+        },
+        {
+          "name": "clear",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
     "DateRangeLabels": {
       "kind": "type",
       "source": "src/patterns/date-range-picker.tsx",
@@ -14135,12 +14165,6 @@
           "description": ""
         },
         {
-          "name": "labels",
-          "type": "DateRangeLabels",
-          "required": true,
-          "description": ""
-        },
-        {
           "name": "locale",
           "type": "string",
           "required": true,
@@ -14150,6 +14174,19 @@
           "name": "className",
           "type": "string",
           "required": false,
+          "description": ""
+        },
+        {
+          "name": "commit",
+          "type": "'immediate'",
+          "required": false,
+          "default": "'immediate'",
+          "description": "immediate（默认）：点完终点、点预设就上报并收起。apply：改动先放草稿，点「应用」才上报并收起，Esc 或点外面丢掉草稿。"
+        },
+        {
+          "name": "labels",
+          "type": "DateRangeLabels & Partial<DateRangeApplyLabels>",
+          "required": true,
           "description": ""
         }
       ]
@@ -14157,68 +14194,7 @@
     "DateRangePickerProps": {
       "kind": "type",
       "source": "src/patterns/date-range-picker.tsx",
-      "props": [
-        {
-          "name": "value",
-          "type": "DateRange | null",
-          "required": true,
-          "description": "The current range (inclusive YYYY-MM-DD pair); null means nothing picked."
-        },
-        {
-          "name": "onValueChange",
-          "type": "(range: DateRange) => void",
-          "required": false,
-          "description": "Called with a valid range once both ends are filled and start ≤ end (typing, calendar or a preset)."
-        },
-        {
-          "name": "onValue",
-          "type": "(range: DateRange) => void",
-          "required": false,
-          "description": "Old name of onValueChange, kept for one release."
-        },
-        {
-          "name": "today",
-          "type": "string",
-          "required": true,
-          "description": "今天（YYYY-MM-DD，按应用的显示时区算好）：预设从它算。"
-        },
-        {
-          "name": "weekStart",
-          "type": "WeekStart",
-          "required": false,
-          "description": "一周从哪天起，默认周一。"
-        },
-        {
-          "name": "min",
-          "type": "string",
-          "required": false,
-          "description": "能选的最早、最晚日期（YYYY-MM-DD）。"
-        },
-        {
-          "name": "max",
-          "type": "string",
-          "required": false,
-          "description": ""
-        },
-        {
-          "name": "labels",
-          "type": "DateRangeLabels",
-          "required": true,
-          "description": ""
-        },
-        {
-          "name": "locale",
-          "type": "string",
-          "required": true,
-          "description": "给 react-aria 的语言（日期各段的顺序）：中文界面 zh-CN，英文界面 en-CA。"
-        },
-        {
-          "name": "className",
-          "type": "string",
-          "required": false,
-          "description": ""
-        }
-      ]
+      "props": []
     },
     "DateTimeInput": {
       "kind": "component",
@@ -70715,7 +70691,14 @@
     "typeToSearchKey": {
       "kind": "function",
       "source": "src/lib/use-type-to-search.ts",
-      "props": []
+      "props": [
+        {
+          "name": "keyCode",
+          "type": "number",
+          "required": false,
+          "description": "Legacy key code; 229 means an input method is still composing (Safari sends it on the commit keystroke)."
+        }
+      ]
     },
     "underwaterShare": {
       "kind": "function",

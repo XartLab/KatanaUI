@@ -69,6 +69,10 @@ Dialog 的 bare 皮：顶部 12dvh、宽 min(640px, 100vw−24px)、圆角 14。
 
 上面那条判断的纯函数：该打开就返回那个字，否则 null。
 
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `keyCode` | `number` | — | Legacy key code; 229 means an input method is still composing (Safari sends it on the commit keystroke). |
+
 ## Usage
 
 ```tsx

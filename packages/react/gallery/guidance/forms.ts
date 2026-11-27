@@ -273,9 +273,25 @@ const forms: GuidanceMap = {
   },
   'date-range-picker': {
     aliases: ['Date range', 'DateRangePicker (Salt / MUI)', 'Range calendar', '日期区间'],
-    use: ['回放、台账、绩效报告选起止日期。', '常用区间（本周、本月、年初至今）要一键选。'],
-    avoid: ['选单个日期用 DateTimeInput。', '要选未来区间（事件日历）时预设不适用。'],
+    use: [
+      '回放、台账、绩效报告选起止日期。',
+      '常用区间（本周、本月、年初至今）要一键选。',
+      '两种提交方式：commit="immediate"（默认）点完终点就生效并收起，适合选错了代价小、随手改的筛选；commit="apply" 先挑再应用，挑的过程里不触发上报，点「应用」才生效，适合每次上报都会重拉数据或重算的报表与回放，也推荐新接入的调用方用它。',
+      'apply 要多传四条文案（pickFirst、selected、apply、clear）：selected 只收函数 (days) => string，英文在里面分单复数；包里没有后备语言。',
+      'apply 弹层开着时外部改了 value：草稿没动过就跟着变，动过就保留草稿，点「应用」上报草稿；要「外部一改就重置」的给组件换 key。',
+      '预设受 min / max 约束：整段越界的预设禁用，不裁剪。',
+      '改默认不动现有调用：旧代码不传 commit 就还是 immediate，也不用补文案。',
+    ],
+    avoid: [
+      '选单个日期用 DateTimeInput。',
+      '要选未来区间（事件日历）时预设不适用。',
+      'apply 里别再另放「确认」钮：脚上的「应用」就是确认；也别在 onValueChange 里等第二步。',
+    ],
     a11y: [
+      '读屏播报的状态字是 role=status（polite、整句读），只在点选后更新（点起点、点终点、预设、清除），悬停不播报；脚上看得见的那份跟着悬停走，对读屏隐藏。键盘移动日期时 react-aria 自己播报日期。',
+      '点外面收起点一次就收（immediate 也是，原来日历里点过格子或翻月后要点两次）；点弹层里面与弹层里再弹出的子浮层不收。',
+      '「应用」在区间不完整时是 disabled，Tab 到「清除」「应用」只在日历之后；挑到一半 Tab 走会放弃这次挑选，不替用户补终点。',
+      'Esc 或点外面收起丢草稿，焦点回触发钮；点「应用」收起同样回触发钮。',
       '起点、终点各是一个 react-aria 的分段日期框，读屏名分别取 labels.start、labels.end。',
       '预设列是 role=group，每项 aria-pressed；「自定义」带 aria-current。',
       '日历是 react-aria 的 RangeCalendar，翻月按钮有读屏名。',

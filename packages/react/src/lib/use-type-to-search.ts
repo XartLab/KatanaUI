@@ -27,9 +27,13 @@ export function typeToSearchKey(
   event: Pick<
     KeyboardEvent,
     'key' | 'ctrlKey' | 'metaKey' | 'altKey' | 'isComposing' | 'defaultPrevented' | 'target' | 'repeat'
-  >,
+  > & {
+    /** Legacy key code; 229 means an input method is still composing (Safari sends it on the commit keystroke). */
+    keyCode?: number
+  },
 ): string | null {
-  if (event.defaultPrevented || event.isComposing || event.repeat) return null
+  // keyCode 229：Safari 上屏那一下 isComposing 已是 false，但仍是 229。
+  if (event.defaultPrevented || event.isComposing || event.keyCode === 229 || event.repeat) return null
   if (event.ctrlKey || event.metaKey || event.altKey) return null
   // 按码点数：一个汉字、一个带重音的字母都是一个字；'Enter'、'ArrowUp'、'Dead'、'Process'（输入法）这类名字不是。
   if (Array.from(event.key).length !== 1) return null

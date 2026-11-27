@@ -6583,6 +6583,12 @@
   cursor: default;
 }
 
+.k-dr-preset:disabled {
+  color: var(--k-content-tertiary-foreground);
+  cursor: not-allowed;
+  background: none;
+}
+
 .k-dr-preset:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: -2px;
@@ -6616,6 +6622,50 @@
 
 .k-rcal .k-cal-cell[data-selection-start][data-selection-end] {
   border-radius: var(--radius-control);
+}
+
+.k-dr-main {
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  display: flex;
+}
+
+.k-dr-foot {
+  border-top: 1px solid var(--k-separable-secondary-borderColor);
+  align-items: center;
+  gap: 8px;
+  padding-top: 8px;
+  display: flex;
+}
+
+.k-dr-status {
+  min-width: 0;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  flex: 1;
+}
+
+.k-rcal .k-cal-cell {
+  position: relative;
+}
+
+.k-rcal .k-cal-cell[data-k-today]:after {
+  content: "";
+  opacity: .7;
+  background: currentColor;
+  border-radius: 50%;
+  width: 3px;
+  height: 3px;
+  margin-left: -1.5px;
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+}
+
+.k-rcal .k-cal-cell[data-selection-start][data-hovered]:not([data-disabled]), .k-rcal .k-cal-cell[data-selection-end][data-hovered]:not([data-disabled]) {
+  background: var(--k-selectable-bold-background-selected);
 }
 
 .k-tree {

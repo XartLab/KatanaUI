@@ -3656,13 +3656,14 @@
       "name": "date-range-picker",
       "type": "registry:component",
       "title": "Date Range Picker",
-      "description": "起点—终点两个可逐段打字的日期框，右边的日历按钮打开双月日历，左边一列预设：今天、本周、本月、年初至今，不在预设里的显示「自定义」。回放、台账、报告的区间用它。功能参照 Arc，实现原创。",
+      "description": "起点—终点两个可逐段打字的日期框，右边的日历按钮打开双月日历，左边一列预设：今天、本周、本月、年初至今，不在预设里的显示「自定义」。回放、台账、报告的区间用它。有两种提交方式：immediate 点完终点就生效，apply 先挑再应用（脚上有状态字与「清除 / 应用」）。功能参照 Arc，实现原创；先挑再应用的交互借自 Jamie Merrill 的 Date range picker。",
       "dependencies": [
         "@internationalized/date@3.12.4",
         "lucide-react@1.67.0",
         "react-aria-components@1.22.1"
       ],
       "registryDependencies": [
+        "@katana/button",
         "@katana/cn",
         "@katana/date-range-model",
         "@katana/popover"

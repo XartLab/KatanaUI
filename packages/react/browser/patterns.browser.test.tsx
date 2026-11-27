@@ -13,6 +13,7 @@ import {
   ComboboxList,
   ComboboxTrigger,
   CommandPalette,
+  DateRangePicker,
   FilterBar,
   ViewSwitcher,
   type FilterBarLabels,
@@ -127,6 +128,44 @@ for (const theme of ['graphite', 'console'] as const) {
         </OpenFrame>,
       ))
     test('date-range-picker', () => shot('date-range-picker', <DateRangePickerUsage />))
+    // commit="apply" 的打开态（#192）：点起点 7 号、悬停到 18 号——预览区间、脚上写「12 days selected」、应用还禁用。英文文案（沙箱 CJK 字形与基线不一致，#202）。
+    test('date-range-picker-apply', () =>
+      shot(
+        'date-range-picker-apply',
+        <OpenFrame width={700} height={420}>
+          {/* 弹层在 OpenFrame 里是文档流、跟在触发钮后面：让它换到下一行，才像真的挂在输入框下面。 */}
+          <style>
+            {'.shot-open .k-dr{flex-wrap:wrap}.shot-open .k-dr [data-radix-popper-content-wrapper]{flex-basis:100%}'}
+          </style>
+          <DateRangePicker
+            commit="apply"
+            value={null}
+            onValueChange={() => {}}
+            today="2026-11-14"
+            locale="en-CA"
+            labels={{
+              start: 'Start',
+              end: 'End',
+              pickRange: 'Pick range',
+              calendar: 'Range calendar',
+              previousMonth: 'Previous month',
+              nextMonth: 'Next month',
+              presets: 'Presets',
+              preset: { today: 'Today', week: 'This week', month: 'This month', ytd: 'Year to date' },
+              custom: 'Custom',
+              pickFirst: 'Pick the first day',
+              selected: (days) => `${days} ${days === 1 ? 'day' : 'days'} selected`,
+              apply: 'Apply',
+              clear: 'Clear',
+            }}
+          />
+        </OpenFrame>,
+        async () => {
+          await page.getByRole('button', { name: 'Pick range' }).click()
+          await page.getByRole('button', { name: /December 7, 2026/ }).click()
+          await page.getByRole('button', { name: /December 18, 2026/ }).hover()
+        },
+      ))
     test('date-time-input', () => shot('date-time-input', <DateTimeInputUsage />))
     test('delete-button', () => shot('delete-button', <DeleteButtonUsage />))
     test('dock', () => shot('dock', <DockUsage />))
