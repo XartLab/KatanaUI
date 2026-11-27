@@ -9,6 +9,7 @@
  */
 import { CheckIcon, XIcon } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
+import { fillVar } from '../lib/fill.ts'
 import { cn } from '../lib/cn.ts'
 import { attemptFill, bestAttempt, countAttempts, type Attempt, type AttemptStatus } from './parallel-attempts-model.ts'
 
@@ -112,7 +113,7 @@ export function ParallelAttempts({
                 </span>
                 {attempt.approach !== undefined && <span className="k-pa-approach">{attempt.approach}</span>}
                 <span className="k-pa-bar" aria-hidden="true">
-                  <i style={{ width: `${attemptFill(attempt) * 100}%` }} />
+                  <i style={fillVar(attemptFill(attempt))} />
                 </span>
                 <span className="k-pa-state" data-slot="parallel-state">
                   {status === 'done' ? (

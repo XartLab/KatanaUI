@@ -32,7 +32,7 @@
   padding: 0 8px;
   background: transparent;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   color: var(--k-content-body-foreground);
   font: var(--text-data) var(--font-sans);
   text-align: left;
@@ -79,13 +79,13 @@
   font-weight: 600;
 }
 .k-rcal .k-cal-cell[data-selection-start] {
-  border-radius: 6px 0 0 6px;
+  border-radius: var(--radius-control) 0 0 var(--radius-control);
 }
 .k-rcal .k-cal-cell[data-selection-end] {
-  border-radius: 0 6px 6px 0;
+  border-radius: 0 var(--radius-control) var(--radius-control) 0;
 }
 .k-rcal .k-cal-cell[data-selection-start][data-selection-end] {
-  border-radius: 6px;
+  border-radius: var(--radius-control);
 }
 
 /* 日历这一列（日历 + apply 的脚）；预设列在它左边。 */

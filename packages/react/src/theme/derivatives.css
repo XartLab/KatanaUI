@@ -1,0 +1,183 @@
+/* SPDX-License-Identifier: MIT */
+/* DerivativesBoard / DerivativesCard 交易数据（XartLab/KatanaUI#245）：卡的网格，每张卡 标题 + 信息钮 + 周期钮 / 图例 / 图。
+   图画在 viewBox 里（preserveAspectRatio none），文字、十字线、悬停窗是叠上去的 HTML。左轴字在绘图区左边的留白里，右轴在右边（有右轴才留）。
+   柱子按 data-tone 取色：up / down 读 --pnl-up / --pnl-down（根上 data-updown 互换），volume 是中性热度档；线用 series-1 / series-2。不写色值。 */
+.k-deriv {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--k-deriv-min, 360px)), 1fr));
+  gap: var(--space-2);
+  min-width: 0;
+  color: var(--k-content-body-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
+}
+.k-deriv-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--k-separable-tertiary-borderColor);
+  border-radius: var(--radius-md);
+  background: var(--k-container-secondary-background);
+}
+.k-deriv-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+.k-deriv-title {
+  margin: 0;
+  overflow: hidden;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  /* 窄卡（约 300px）里周期按钮放不下时换到第二行，标题不被挤成 0 宽（CI 截图 2026-11-26 发现） */
+  flex: 0 1 auto;
+  min-width: 4em;
+}
+.k-deriv-info {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--k-content-secondary-foreground);
+  cursor: help;
+}
+.k-deriv-info:hover {
+  color: var(--k-content-primary-foreground);
+}
+.k-deriv-info:focus-visible {
+  outline: 2px solid var(--k-focused-outlineColor);
+  outline-offset: 1px;
+}
+.k-deriv-info-tip {
+  max-width: 260px;
+}
+.k-deriv-periods {
+  margin-left: auto;
+  flex: none;
+}
+
+/* 图例：短线或短柱 + 名字，不只靠颜色认序列 */
+.k-deriv-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  margin: 0;
+  padding: 0;
+  color: var(--k-content-secondary-foreground);
+  list-style: none;
+}
+.k-deriv-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.k-deriv-key {
+  display: inline-block;
+  background: var(--k-deriv-key);
+}
+.k-deriv-key[data-shape='line'] {
+  width: 12px;
+  height: 2px;
+}
+.k-deriv-key[data-shape='bar'] {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-sm);
+}
+
+/* 图 */
+.k-deriv-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.k-deriv-plot {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-left: 48px;
+  touch-action: pan-y;
+}
+.k-deriv-plot[data-right] {
+  margin-right: 48px;
+}
+.k-deriv-plot:focus-visible {
+  outline: 1px solid var(--k-focused-outlineColor);
+  outline-offset: 2px;
+}
+.k-deriv-panel {
+  position: relative;
+}
+.k-deriv-panel > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.k-deriv-rtick {
+  position: absolute;
+  left: 100%;
+  padding-left: 8px;
+  translate: 0 round(nearest, -50%, 1px);
+  color: var(--k-chart-axis-foreground);
+  font: var(--text-num-sm) var(--font-num-small);
+  pointer-events: none;
+  white-space: nowrap;
+}
+.k-deriv-bar[data-tone='up'] {
+  fill: var(--pnl-up);
+}
+.k-deriv-bar[data-tone='down'] {
+  fill: var(--pnl-down);
+}
+.k-deriv-bar[data-tone='flat'] {
+  fill: var(--k-content-secondary-foreground);
+}
+.k-deriv-bar[data-tone='volume'] {
+  fill: var(--k-heat-3);
+}
+.k-deriv-zero {
+  stroke: var(--k-separable-secondary-borderColor);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.k-deriv-line {
+  fill: none;
+  stroke: var(--series-1);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.k-deriv-line[data-series='2'] {
+  stroke: var(--series-2);
+}
+.k-deriv-xaxis {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 48px;
+  color: var(--k-chart-axis-foreground);
+  font: var(--text-num-sm) var(--font-num-small);
+  white-space: nowrap;
+}
+.k-deriv-plot[data-right] + .k-deriv-xaxis {
+  margin-right: 48px;
+}
+.k-deriv-empty {
+  display: grid;
+  place-items: center;
+  margin: 0;
+  color: var(--k-content-secondary-foreground);
+}

@@ -18,7 +18,14 @@ function collect(root: HTMLElement): Heading[] {
   return found
 }
 
-export function DocToc({ root }: { root: RefObject<HTMLElement | null> }) {
+export function DocToc({
+  root,
+  onActive,
+}: {
+  root: RefObject<HTMLElement | null>
+  /** 当前读到的节名（窄屏底栏显示）；这一页没有节时给空串。 */
+  onActive?: (title: string) => void
+}) {
   const [items, setItems] = useState<Heading[]>([])
   const [active, setActive] = useState('')
   const lock = useRef(false)
@@ -51,7 +58,9 @@ export function DocToc({ root }: { root: RefObject<HTMLElement | null> }) {
   // 高亮：取在「顶栏 + 页签」下沿到视口上 30% 之间的最靠上一节；一节都不在带里时，沿用上一次的。
   useEffect(() => {
     if (items.length === 0) return
-    const bar = document.querySelector<HTMLElement>('.gal-bar')?.offsetHeight ?? 0
+    // 窄屏顶栏不吸顶（position: static），不占顶上的带。
+    const barEl = document.querySelector<HTMLElement>('.gal-bar')
+    const bar = barEl && getComputedStyle(barEl).position === 'sticky' ? barEl.offsetHeight : 0
     const tabs = document.querySelector<HTMLElement>('.gal-doc-tablist')?.offsetHeight ?? 0
     const inBand = new Set<string>()
     const watch = new IntersectionObserver(
@@ -70,9 +79,14 @@ export function DocToc({ root }: { root: RefObject<HTMLElement | null> }) {
     return () => watch.disconnect()
   }, [items])
 
-  if (items.length === 0) return null
   // 还没滚动、或当前节已不在页上时，高亮第一节（渲染时算，不在 effect 里 setState）。
-  const shownId = items.some((item) => item.id === active) ? active : items[0].id
+  const shownId = items.length === 0 ? '' : items.some((item) => item.id === active) ? active : items[0].id
+  const shownText = items.find((item) => item.id === shownId)?.text ?? ''
+  useEffect(() => {
+    onActive?.(shownText)
+  }, [shownText, onActive])
+  useEffect(() => () => onActive?.(''), [onActive])
+  if (items.length === 0) return null
   return (
     <nav className="gal-toc" aria-label="本页">
       <p className="gal-toc-title">本页</p>

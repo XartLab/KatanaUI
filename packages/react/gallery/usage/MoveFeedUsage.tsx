@@ -23,6 +23,7 @@ export function MoveFeedUsage() {
         region: 'Intraday moves',
         filter: 'Filter by move type',
         all: 'All',
+        onlyCurrent: 'Current symbol',
         types: {
           rocket: 'Rocket',
           dive: 'Dive',

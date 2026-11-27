@@ -114,7 +114,7 @@ function OtpField({
               data-filled={char ? '' : undefined}
               data-active={focused && index === active ? '' : undefined}
               className={cn(
-                'k-text-body relative box-border grid h-(--k-size-base) shrink-0 place-items-center rounded-[6px] border border-(color:--k-editable-borderColor) bg-(--k-editable-background) font-medium text-(color:--k-content-primary-foreground) tabular-nums',
+                'k-text-body relative box-border grid h-(--k-size-base) shrink-0 place-items-center rounded-[var(--radius-control)] border border-(color:--k-editable-borderColor) bg-(--k-editable-background) font-medium text-(color:--k-content-primary-foreground) tabular-nums',
                 'transition-[border-color,background-color] duration-[120ms] data-[filled]:border-(color:--k-editable-borderColor-filled) data-[filled]:bg-(--k-editable-background-filled)',
                 invalid &&
                   'border-(color:--k-status-danger-foreground) data-[filled]:border-(color:--k-status-danger-foreground)',
@@ -142,7 +142,7 @@ function OtpField({
         aria-hidden="true"
         data-slot="otp-frame"
         className={cn(
-          'pointer-events-none absolute top-0 left-0 box-border h-(--k-size-base) rounded-[6px] border border-(color:--k-editable-bold-borderColor-active) transition-opacity duration-[120ms]',
+          'pointer-events-none absolute top-0 left-0 box-border h-(--k-size-base) rounded-[var(--radius-control)] border border-(color:--k-editable-bold-borderColor-active) transition-opacity duration-[120ms]',
           focused ? 'opacity-100' : 'opacity-0',
           invalid && 'border-(color:--k-status-danger-foreground)',
         )}

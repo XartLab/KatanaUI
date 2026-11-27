@@ -24,6 +24,7 @@ import { RobustnessGateUsage } from '../gallery/usage/RobustnessGateUsage.tsx'
 import { UnderwaterChartUsage } from '../gallery/usage/UnderwaterChartUsage.tsx'
 import { WalkForwardMatrixUsage } from '../gallery/usage/WalkForwardMatrixUsage.tsx'
 import { mount } from './render.tsx'
+import { settled } from './settle.ts'
 
 const items: Record<string, React.ReactNode> = {
   'brush-chart': <BrushChartUsage />,
@@ -85,11 +86,13 @@ for (const theme of ['graphite', 'console'] as const) {
           theme,
         )
         await new Promise((r) => setTimeout(r, settle[name] ?? 250)) // let measuring / enter transitions finish
+        await settled()
         await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-quant-${name}`)
         // 日历热力图再截一张「换手」视图：序数格用 --k-heat-1…5（中性灰浓度）与配套字色。
         if (name === 'calendar-heatmap') {
           await page.getByRole('button', { name: '换手' }).click()
           await new Promise((r) => setTimeout(r, 400))
+          await settled()
           await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-quant-${name}-turnover`)
         }
       })

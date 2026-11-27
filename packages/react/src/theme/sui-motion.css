@@ -22,7 +22,7 @@
   animation: kc-collapsible-down var(--dur-snappy) var(--ease-snappy);
 }
 [data-slot='collapsible-content'][data-state='closed'] {
-  animation: kc-collapsible-up 120ms linear;
+  animation: kc-collapsible-up var(--dur-exit) var(--ease-exit);
 }
 
 /* 菜单栏的面板：与下拉菜单同一条入场（kc-pop-in / kc-pop-out 在 motion.css）。 */
@@ -69,7 +69,7 @@
   animation: kc-pop-in var(--dur-snappy) var(--ease-snappy) both;
 }
 [data-slot='navigation-menu-viewport'][data-state='closed'] {
-  animation: kc-pop-out 120ms linear both;
+  animation: kc-pop-out var(--dur-exit) var(--ease-exit) both;
 }
 [data-slot='navigation-menu-content'][data-motion='from-end'] {
   animation: kc-nav-in-end var(--dur-snappy) var(--ease-snappy) both;
@@ -78,13 +78,13 @@
   animation: kc-nav-in-start var(--dur-snappy) var(--ease-snappy) both;
 }
 [data-slot='navigation-menu-content'][data-motion='to-end'] {
-  animation: kc-nav-out-end 120ms linear both;
+  animation: kc-nav-out-end var(--dur-exit) var(--ease-exit) both;
 }
 [data-slot='navigation-menu-content'][data-motion='to-start'] {
-  animation: kc-nav-out-start 120ms linear both;
+  animation: kc-nav-out-start var(--dur-exit) var(--ease-exit) both;
 }
 
-/* 富提示：模糊 + 缩放 + 上移一起收敛（原件 rich-popover 的入场：blur 8px · scale 0.95 · y 5px），退场用 120ms 直线淡出。 */
+/* 富提示：模糊 + 缩放 + 上移一起收敛（原件 rich-popover 的入场：blur 8px · scale 0.95 · y 5px），退场 --dur-exit 的 --ease-exit 淡出。 */
 @keyframes kc-rich-in {
   from {
     opacity: 0;
@@ -107,7 +107,7 @@
   animation: kc-rich-in var(--dur-snappy) var(--ease-snappy) both;
 }
 [data-slot='rich-popover-content'][data-state='closed'] {
-  animation: kc-rich-out 120ms linear both;
+  animation: kc-rich-out var(--dur-exit) var(--ease-exit) both;
 }
 
 /* 终端的光标：1s 一闪，steps(1) 不渐变（原件 mac-terminal-caret-blink）。 */
@@ -161,7 +161,7 @@
 /* ── 并入已有件的动效（对齐 SmoothUI，不改任何 API）──
    页签内容：切换时淡入（SmoothUI tabs 的 animated 面板：opacity 0 到 1）。 */
 [data-slot='tabs-content'][data-state='active'] {
-  animation: kc-fade-in 150ms linear both;
+  animation: kc-fade-in 150ms var(--ease-hover) both;
 }
 
 /* 对话框：头、身、脚依次从下面轻升进来（SmoothUI dialog 的 stagger：4px / 8px、错开一拍）。
@@ -172,22 +172,25 @@
     translate: 0 8px;
   }
 }
-[data-slot='dialog-content']:not([data-bare])[data-state='open'] > [data-slot='dialog-header'] {
+[data-slot='dialog-content']:not([data-bare])[data-state='open'] > [data-slot='dialog-header'],
+[data-slot='alert-dialog-content'][data-state='open'] > [data-slot='alert-dialog-header'] {
   animation: kc-dialog-part-in var(--dur-snappy) var(--ease-snappy) 20ms both;
 }
-[data-slot='dialog-content']:not([data-bare])[data-state='open'] > [data-slot='dialog-body'] {
+[data-slot='dialog-content']:not([data-bare])[data-state='open'] > [data-slot='dialog-body'],
+[data-slot='alert-dialog-content'][data-state='open'] > [data-slot='alert-dialog-body'] {
   animation: kc-dialog-part-in var(--dur-snappy) var(--ease-snappy) 60ms both;
 }
-[data-slot='dialog-content']:not([data-bare])[data-state='open'] > [data-slot='dialog-footer'] {
+[data-slot='dialog-content']:not([data-bare])[data-state='open'] > [data-slot='dialog-footer'],
+[data-slot='alert-dialog-content'][data-state='open'] > [data-slot='alert-dialog-footer'] {
   animation: kc-dialog-part-in var(--dur-snappy) var(--ease-snappy) 100ms both;
 }
 
 /* 滚动条：出现 160ms 淡入、消失前等 160ms 再 120ms 淡出（SmoothUI scroll-area 的 delay-160 与 duration），悬停时变宽一档。 */
 [data-slot='scroll-area-scrollbar'][data-state='visible'] {
-  animation: kc-fade-in 160ms linear both;
+  animation: kc-fade-in 160ms var(--ease-hover) both;
 }
 [data-slot='scroll-area-scrollbar'][data-state='hidden'] {
-  animation: kc-fade-out 120ms linear 160ms both;
+  animation: kc-fade-out var(--dur-exit) var(--ease-exit) 160ms both;
 }
 [data-slot='scroll-area-scrollbar'][data-orientation='vertical'] {
   transition: width 160ms ease-in-out;

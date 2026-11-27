@@ -104,7 +104,7 @@ function Row(props: RowProps) {
         tabIndex={focusedId === node.id ? 0 : -1}
         data-slot="file-tree-row"
         className={cn(
-          'k-text-body flex h-[26px] cursor-pointer items-center gap-1.5 rounded-[6px] pr-2 text-ink-2 select-none',
+          'k-text-body flex h-[26px] cursor-pointer items-center gap-1.5 rounded-[var(--radius-control)] pr-2 text-ink-2 select-none',
           'transition-colors duration-100',
           selected ? 'bg-alpha-white-6 text-ink' : 'hover:bg-alpha-white-3',
           focusRingInset,

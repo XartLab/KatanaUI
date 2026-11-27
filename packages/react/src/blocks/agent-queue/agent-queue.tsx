@@ -10,6 +10,7 @@
  */
 import { MinusIcon, PauseIcon, PlayIcon, PlusIcon } from 'lucide-react'
 import { useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
+import { fillVar } from '../../lib/fill.ts'
 import { cn } from '../../lib/cn.ts'
 import { assignSeries } from '../../lib/chart/chart-kit/series-colors.ts'
 import { Button } from '../../primitives/button.tsx'
@@ -225,7 +226,7 @@ export function AgentQueue({
         </span>
         {job.status === 'running' && (
           <span className="k-aq-bar" aria-hidden="true">
-            <b style={{ width: `${Math.round(Math.min(1, Math.max(0, job.progress ?? 0)) * 100)}%` }} />
+            <b style={fillVar(Math.min(1, Math.max(0, job.progress ?? 0)))} />
           </span>
         )}
       </button>

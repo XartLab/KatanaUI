@@ -124,7 +124,7 @@ export function PasswordInput({
         onPointerDown={(event) => event.preventDefault()}
         onClick={toggle}
         className={cn(
-          'absolute top-1/2 right-0.5 grid size-6 -translate-y-1/2 cursor-pointer place-items-center rounded-[5px] text-ink-3',
+          'absolute top-1/2 right-0.5 grid size-6 -translate-y-1/2 cursor-pointer place-items-center rounded-[var(--radius-inner)] text-ink-3',
           'transition-colors duration-[120ms] not-disabled:hover:text-ink disabled:cursor-not-allowed disabled:opacity-45',
           '[&_svg]:size-[15px]',
           focusRingInset,

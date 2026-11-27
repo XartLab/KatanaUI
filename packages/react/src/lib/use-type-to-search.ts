@@ -27,7 +27,10 @@ export function typeToSearchKey(
   event: Pick<
     KeyboardEvent,
     'key' | 'ctrlKey' | 'metaKey' | 'altKey' | 'isComposing' | 'defaultPrevented' | 'target' | 'repeat'
-  > & { keyCode?: number },
+  > & {
+    /** Legacy key code; 229 means an input method is still composing (Safari sends it on the commit keystroke). */
+    keyCode?: number
+  },
 ): string | null {
   // keyCode 229：Safari 上屏那一下 isComposing 已是 false，但仍是 229。
   if (event.defaultPrevented || event.isComposing || event.keyCode === 229 || event.repeat) return null
