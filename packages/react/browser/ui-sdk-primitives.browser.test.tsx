@@ -10,6 +10,7 @@ import {
   AccordionTrigger,
   Avatar,
   Checkbox,
+  ChipGroup,
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
@@ -18,6 +19,7 @@ import {
   Progress,
   RadioGroup,
   RadioGroupItem,
+  ScrollArea,
   Separator,
   Switch,
   Tabs,
@@ -274,5 +276,83 @@ describe('Collapsible / Accordion / Tabs', () => {
     expect(active()?.hasAttribute('data-selected')).toBe(false)
     await userEvent.keyboard('{Enter}')
     expect(active()?.hasAttribute('data-selected')).toBe(true)
+  })
+})
+
+describe('ChipGroup', () => {
+  test('多选：方向键在芯片间走，Tab 只停一个，空格开关，禁用项仍可到达但按不动', async () => {
+    function Harness() {
+      const [value, setValue] = useState<string[]>([])
+      return (
+        <ChipGroup
+          label="分面"
+          value={value}
+          onValueChange={setValue}
+          items={[
+            { value: 'a', label: '港股' },
+            { value: 'b', label: '美股', disabled: true },
+            { value: 'c', label: 'A 股' },
+          ]}
+        />
+      )
+    }
+    await mount(<Harness />)
+    expect(q('[role="group"]').getAttribute('aria-label')).toBe('分面')
+    await userEvent.tab()
+    expect(active()?.textContent).toBe('港股')
+    await userEvent.keyboard(' ')
+    expect(active()?.getAttribute('aria-pressed')).toBe('true')
+    expect(active()?.hasAttribute('data-pressed')).toBe(true)
+    await userEvent.keyboard('{ArrowRight}')
+    await userEvent.keyboard(' ')
+    expect(active()?.textContent).toBe('美股')
+    expect(active()?.getAttribute('aria-pressed')).toBe('false')
+    await userEvent.keyboard('{ArrowRight}{Enter}')
+    expect(active()?.textContent).toBe('A 股')
+    expect(active()?.getAttribute('aria-pressed')).toBe('true')
+  })
+
+  test('single：最多选一个，点已选的取消', async () => {
+    function Harness() {
+      const [value, setValue] = useState<string[]>(['a'])
+      return (
+        <ChipGroup
+          label="单选"
+          selection="single"
+          value={value}
+          onValueChange={setValue}
+          items={[
+            { value: 'a', label: '甲' },
+            { value: 'b', label: '乙' },
+          ]}
+        />
+      )
+    }
+    await mount(<Harness />)
+    const [a, b] = document.querySelectorAll<HTMLElement>('.k-chip')
+    await userEvent.click(b!)
+    expect(a?.getAttribute('aria-pressed')).toBe('false')
+    expect(b?.getAttribute('aria-pressed')).toBe('true')
+    await userEvent.click(b!)
+    expect(b?.getAttribute('aria-pressed')).toBe('false')
+  })
+})
+
+describe('ScrollArea', () => {
+  test('视口能 Tab 到，方向键与 PageDown 能滚；滚动条是 aria-hidden 的装饰，溢出才有 data-overflow-y', async () => {
+    await mount(
+      <ScrollArea style={{ height: 120, width: 200 }}>
+        {Array.from({ length: 30 }, (_, i) => (
+          <div key={i}>{`Row ${i + 1}`}</div>
+        ))}
+      </ScrollArea>,
+    )
+    const viewport = q('[data-slot="scroll-area-viewport"]')
+    await userEvent.tab()
+    expect(active()).toBe(viewport)
+    await userEvent.keyboard('{PageDown}')
+    await expect.poll(() => viewport.scrollTop).toBeGreaterThan(0)
+    expect(q('[data-slot="scroll-area"]').hasAttribute('data-overflow-y')).toBe(true)
+    expect(q('[data-slot="scroll-area-scrollbar"]').getAttribute('aria-hidden')).toBe('true')
   })
 })
