@@ -178,20 +178,33 @@
 }
 
 /* 滚动条：出现 160ms 淡入、消失前等 160ms 再 120ms 淡出（SmoothUI scroll-area 的 delay-160 与 duration），悬停时变宽一档。 */
-[data-slot='scroll-area-scrollbar'][data-state='visible'] {
-  animation: kc-fade-in 160ms var(--ease-hover) both;
+[data-slot='scroll-area-scrollbar'] {
+  opacity: 0;
+  transition: opacity var(--dur-exit) var(--ease-exit) 160ms;
 }
-[data-slot='scroll-area-scrollbar'][data-state='hidden'] {
-  animation: kc-fade-out var(--dur-exit) var(--ease-exit) 160ms both;
+/* UI SDK 不卸载滚动条，显示与否是 data-visible；不可见时它不接指针。 */
+[data-slot='scroll-area-scrollbar'][data-visible] {
+  opacity: 1;
+  transition: opacity 160ms var(--ease-hover);
 }
 [data-slot='scroll-area-scrollbar'][data-orientation='vertical'] {
-  transition: width 160ms ease-in-out;
+  transition:
+    opacity var(--dur-exit) var(--ease-exit) 160ms,
+    width 160ms ease-in-out;
 }
 [data-slot='scroll-area-scrollbar'][data-orientation='vertical']:hover {
   width: 6px;
 }
 [data-slot='scroll-area-scrollbar'][data-orientation='horizontal'] {
-  transition: height 160ms ease-in-out;
+  transition:
+    opacity var(--dur-exit) var(--ease-exit) 160ms,
+    height 160ms ease-in-out;
+}
+[data-slot='scroll-area-scrollbar'][data-visible][data-orientation] {
+  transition:
+    opacity 160ms var(--ease-hover),
+    width 160ms ease-in-out,
+    height 160ms ease-in-out;
 }
 [data-slot='scroll-area-scrollbar'][data-orientation='horizontal']:hover {
   height: 6px;
