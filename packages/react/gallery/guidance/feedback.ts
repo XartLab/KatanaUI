@@ -115,7 +115,7 @@ const feedback: GuidanceMap = {
     ],
     avoid: ['库存、额度的满格用 meter。', '等待内容区加载用 skeleton。'],
     a11y: [
-      'Radix Progress，role=progressbar，确定态带 aria-valuenow。',
+      'UI SDK Progress，role=progressbar，确定态带 aria-valuenow。',
       '不确定态不带 aria-valuenow。',
       '名字由调用方传 aria-label。',
     ],
