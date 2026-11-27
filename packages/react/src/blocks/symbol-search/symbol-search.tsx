@@ -133,7 +133,7 @@ function SymbolRow({ item, query, onSelect }: { item: SymbolSearchItem; query: s
       onSelect={onSelect}
       data-slot="symbol-search-row"
       data-symbol={item.symbol}
-      className="h-11 gap-2.5 rounded-[8px] px-2"
+      className="h-11 gap-2.5 rounded-[var(--radius-overlay)] px-2"
     >
       <SymbolMark symbol={item.symbol} name={item.name} src={item.logo} size="md" />
       <span className="flex min-w-0 flex-1 flex-col justify-center gap-0.5">
@@ -391,7 +391,7 @@ export function SymbolSearchDialog({
         data-slot="symbol-search-dialog"
         className={cn(
           'fixed top-[12dvh] left-1/2 flex max-h-[76dvh] w-[min(640px,calc(100vw-24px))] -translate-x-1/2 flex-col overflow-hidden overscroll-contain',
-          'rounded-[14px] border border-(color:--k-overlay-dialog-borderColor) bg-(--k-surface-raised-background) shadow-(--k-overlay-dialog-shadow)',
+          'rounded-[var(--radius-dialog)] border border-(color:--k-overlay-dialog-borderColor) bg-(--k-surface-raised-background) shadow-(--k-overlay-dialog-shadow)',
         )}
       >
         <DialogTitle className="sr-only">{props.labels.title}</DialogTitle>

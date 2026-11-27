@@ -17,6 +17,7 @@
 | `id` | `string` | — | Remember the measured shape under this key. |
 | `onReveal` | `() => void` | — | Called once when content has replaced the skeleton. |
 | `delay` | `number` | — | Milliseconds to wait before the bars show; defaults to LoadingWait's 500. |
+| `minShown` | `number` | — | Minimum milliseconds the bars stay once shown, even if the data arrives sooner; defaults to LoadingWait's 500. |
 | `className` | `string` | — | Class name for the root element. |
 | `data` | `never` | — | The data; loading while null or undefined. |
 | `sample` | `ReactNode` | — | Example content measured while loading, instead of children. |
@@ -107,7 +108,7 @@ export function MeasuredSkeletonUsage() {
 
 ## States
 
-- 加载中：不到 500ms 不露骨架条（不可见层照样占位），超过了才出，快的请求不闪。
+- 加载中：不到 500ms 不露骨架条（不可见层照样占位），超过了才出，快的请求不闪；出了至少留 minShown（默认 500ms），数据早到也等满再揭示。
 - 骨架：每行文字一条 line-200 的圆角条，图片、按钮、标签各一块，圆角跟随内容；不闪、不脉冲。
 - 数据到了：真内容淡入到骨架的位置，onReveal 调一次；给了 id 的下次进来第一帧就是上次的形状。
 

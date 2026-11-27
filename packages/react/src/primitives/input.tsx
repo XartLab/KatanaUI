@@ -11,7 +11,7 @@ import { focusRingInset } from '../lib/focus.ts'
 // multiline：给 textarea 用，高度由 rows、min-height 与调用方的类定；竖向内边距为 0 是改前的样子（调用方各自按需要加）。
 const inputVariants = cva(
   [
-    'k-text-body box-border w-full py-0 rounded-[6px] border border-(color:--k-editable-borderColor) bg-(--k-editable-background) text-(color:--k-content-primary-foreground) tabular-nums',
+    'k-text-body box-border w-full py-0 rounded-[var(--radius-control)] border border-(color:--k-editable-borderColor) bg-(--k-editable-background) text-(color:--k-content-primary-foreground) tabular-nums',
     'transition-[border-color] duration-[120ms] placeholder:text-(color:--k-content-secondary-foreground) focus:border-(color:--k-editable-borderColor-active) aria-invalid:border-(color:--k-status-danger-foreground)',
     'disabled:cursor-not-allowed disabled:opacity-45',
     focusRingInset,
@@ -79,7 +79,7 @@ function Input({
         data-slot="input-box"
         data-size={size}
         className={cn(
-          'box-border flex w-full min-w-0 items-center gap-2 rounded-[6px] border border-(color:--k-editable-borderColor) bg-(--k-editable-background) px-2',
+          'box-border flex w-full min-w-0 items-center gap-2 rounded-[var(--radius-control)] border border-(color:--k-editable-borderColor) bg-(--k-editable-background) px-2',
           size === 'sm' ? 'h-[26px]' : 'h-[30px]',
           'focus-within:border-(color:--k-editable-borderColor-active)',
           invalid && 'border-(color:--k-status-danger-foreground)',

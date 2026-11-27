@@ -127,7 +127,7 @@
   color: var(--k-content-primary-foreground);
 }
 .k-rlp-name small {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-rlp-track {
@@ -139,7 +139,7 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   background: var(--k-content-secondary-foreground);
   cursor: grab;
   touch-action: none;

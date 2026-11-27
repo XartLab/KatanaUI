@@ -1,6 +1,6 @@
 # Loading
 
-加载态的唯一入口：给 pending 等数据，不给 pending 当 Suspense 边界，给 phase 钉在某一段直接画。500ms 内到了什么也不画；超过了出点阵骨架，2s 说「仍在加载」，10s 转琥珀条加重试。
+加载态的唯一入口：给 pending 等数据，不给 pending 当 Suspense 边界，给 phase 钉在某一段直接画。500ms 内到了什么也不画；超过了出点阵骨架，出了至少留 500ms，2s 说「仍在加载」，10s 转琥珀条加重试。
 
 ## Provide
 
@@ -98,6 +98,7 @@ export function LoadingUsage() {
 - 超过 500ms：caption（亮强调色灯 +「加载 <内容> · <来源>」）加点阵骨架；2s：说「仍在加载」。
 - 10s：琥珀条（warn 灯 + 文案 + 重试），骨架留着、降到半透明；没给 onRetry 就没有重试钮。
 - 数据到了：骨架出过的内容用 2px 模糊揭示，没出过的直接出现。
+- 最短停留：骨架出了至少留 500ms 再交出内容（510ms 到的数据，骨架留到 1000ms）；只管 pending 模式，Suspense 模式没有。
 
 ## Don't
 

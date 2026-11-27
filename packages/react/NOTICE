@@ -139,3 +139,10 @@ This package is licensed under the MIT License (see LICENSE).
    #104 对照 Salt 的组件清单补的七件（`src/katana/pill.tsx`、`system-status.tsx`、`link.tsx`、`panel.tsx`，`src/patterns/calendar.tsx`、`list-box.tsx`，`src/primitives/card.tsx` 的变体）
    只取它的结构与用法（部件划分、语气档、变体档、什么时候用 / 不用），没有搬它的代码、类名与样式；文件头逐个写明，文档站「对照 Salt」一节（`docs/salt-map.json`）列着对应关系。
    Only the structure and usage guidance of these Salt components are followed; no Salt code, class names or styles are copied.
+
+14. BudouX（https://github.com/google/budoux ，npm `budoux` 0.10.4，Apache-2.0，Copyright Google LLC；2026-11-26 核对 package.json 的 license 字段，#250）
+   只是文档站（`gallery/phrased.tsx`）的开发依赖（devDependencies），用来给中文标题按词插 `<wbr>`；它不在 `dependencies` 里，也不随本包的 lib 分发，
+   使用者装 `@katana-ui/react` 不会装到它。Apache-2.0 是宽松许可证，与本包的 MIT 兼容；文档站发布产物里带着它的代码，按 Apache-2.0 §4 保留版权与许可声明（上游仓库 LICENSE）。
+   BudouX is a dev-only dependency of the documentation site (Apache-2.0, compatible with this package's MIT licence); it is not part of the published library.
+15. 排版开关的数值（`src/theme/typesetting.css`、文档站「中英排版开关」页）取自 kubai（@kubai087）《999 个小技巧》第 007 期「中英文排版的 CSS 设置」
+   （https://vibedesign.tips/007-type-switches/ ，数值照 issue #250 抄录的原文，2026-11-26）；只取数值与做法，没有搬代码或文字。

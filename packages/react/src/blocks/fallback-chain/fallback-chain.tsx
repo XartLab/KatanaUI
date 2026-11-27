@@ -11,7 +11,13 @@ import type { ReactNode } from 'react'
 import { cn } from '../../lib/cn.ts'
 import { Led } from '../../katana/led.tsx'
 import { Button } from '../../primitives/button.tsx'
-import { answeredLevel, chainOutcome, type FallbackAttempt, type FallbackOutcome, type FallbackStatus } from './fallback-model.ts'
+import {
+  answeredLevel,
+  chainOutcome,
+  type FallbackAttempt,
+  type FallbackOutcome,
+  type FallbackStatus,
+} from './fallback-model.ts'
 
 /** Texts of FallbackChain (the package ships no text). */
 export type FallbackChainLabels = {

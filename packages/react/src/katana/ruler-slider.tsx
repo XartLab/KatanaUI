@@ -108,7 +108,7 @@ function Notch({
       {label !== undefined && (
         <span
           data-slot="ruler-slider-mark"
-          className="k-text-micro absolute top-full left-1/2 mt-(--space-1) -translate-x-1/2 whitespace-nowrap text-ink-4 tabular-nums"
+          className="k-text-micro absolute top-full left-1/2 mt-(--space-1) -translate-x-1/2 whitespace-nowrap text-ink-3 tabular-nums"
         >
           {label}
         </span>

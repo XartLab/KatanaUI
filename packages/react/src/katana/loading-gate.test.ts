@@ -2,6 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import {
   LOADING_DELAY_MS,
+  LOADING_MIN_SHOWN_MS,
   LOADING_SLOW_MS,
   LOADING_TIMEOUT_MS,
   MAX_SKELETON_ROWS,
@@ -67,6 +68,75 @@ describe('startLoadingGate', () => {
     const gate = startLoadingGate(vi.fn())
     vi.advanceTimersByTime(12_000)
     expect(gate.stop()).toBe(true)
+  })
+})
+
+// 最短停留（#251，kubai Vibe Design Tips 017）：骨架出了至少留 500ms 再交出内容。
+describe('startLoadingGate 最短停留', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('默认最短停留 500ms', () => {
+    expect(LOADING_MIN_SHOWN_MS).toBe(500)
+  })
+
+  it('510ms 到达：骨架留到 1000ms 才交出内容，期间不交', () => {
+    const phase = vi.fn()
+    const done = vi.fn()
+    const gate = startLoadingGate(phase)
+    vi.advanceTimersByTime(510)
+    expect(phase.mock.calls).toEqual([['loading']])
+    gate.release(done)
+    vi.advanceTimersByTime(489)
+    expect(done).not.toHaveBeenCalled()
+    vi.advanceTimersByTime(1)
+    expect(done).toHaveBeenCalledTimes(1)
+    // 揭示：骨架出过。
+    expect(gate.stop()).toBe(true)
+  })
+
+  it('400ms 到达：骨架没出过，立刻交出内容，也不揭示，之后 500ms 的定时器不会再把骨架冒出来', () => {
+    const phase = vi.fn()
+    const done = vi.fn()
+    const gate = startLoadingGate(phase)
+    vi.advanceTimersByTime(400)
+    gate.release(done)
+    expect(done).toHaveBeenCalledTimes(1)
+    expect(gate.stop()).toBe(false)
+    vi.advanceTimersByTime(20_000)
+    expect(phase).not.toHaveBeenCalled()
+  })
+
+  it('留够以后才到达（1.5s）：立刻交出，骨架出过要揭示', () => {
+    const done = vi.fn()
+    const gate = startLoadingGate(vi.fn())
+    vi.advanceTimersByTime(1500)
+    gate.release(done)
+    expect(done).toHaveBeenCalledTimes(1)
+    expect(gate.stop()).toBe(true)
+  })
+
+  it('等着交出的时候数据又变回在等：取消，骨架照旧，不再交出', () => {
+    const done = vi.fn()
+    const gate = startLoadingGate(vi.fn())
+    vi.advanceTimersByTime(510)
+    const cancel = gate.release(done)
+    vi.advanceTimersByTime(100)
+    cancel()
+    vi.advanceTimersByTime(5000)
+    expect(done).not.toHaveBeenCalled()
+  })
+
+  it('minShown 可调：给 0 就是旧行为，骨架一出内容一到就交', () => {
+    const done = vi.fn()
+    const gate = startLoadingGate(vi.fn(), { delay: 500, slow: 2000, timeout: 10_000, minShown: 0 })
+    vi.advanceTimersByTime(510)
+    gate.release(done)
+    expect(done).toHaveBeenCalledTimes(1)
   })
 })
 

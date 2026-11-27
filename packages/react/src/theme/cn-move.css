@@ -47,6 +47,17 @@
   outline: 2px solid var(--focus-ring);
   outline-offset: 1px;
 }
+.k-move-only {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  line-height: 20px;
+}
+.k-move-only label {
+  cursor: pointer;
+}
 .k-move-summary {
   flex: none;
   color: var(--ink-300);
@@ -126,6 +137,7 @@ button.k-move-row:focus-visible {
 }
 .k-move-value {
   text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 .k-move-value[data-direction='up'] {
   color: var(--pnl-up);

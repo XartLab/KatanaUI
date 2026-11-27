@@ -87,8 +87,10 @@ button.k-spark-tile:focus-visible {
 }
 .k-spark-tile-end,
 .k-spark-tile-halo {
-  /* 新点来了末点随线一起滑到新高度（和线的延伸同一档时长）。 */
-  transition: top var(--dur-reorder) var(--ease-snappy);
+  /* 新点来了末点随线一起滑到新高度（和线的延伸同一档时长）：图高固定 24px，末点高度 --k-end-y（px）写进 translate，不动 top。 */
+  top: 0;
+  translate: 0 calc(var(--k-end-y, 0) * 1px);
+  transition: translate var(--dur-reorder) var(--ease-snappy);
 }
 /* 末点的光晕：平时透明，新点来了由共用层 .k-live-flash 闪一次涨跌色。 */
 .k-spark-tile-halo {

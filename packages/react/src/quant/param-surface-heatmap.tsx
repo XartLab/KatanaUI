@@ -28,6 +28,7 @@ import {
   divergingColor,
   divergingShare,
   sequentialColor,
+  sequentialInk,
 } from './research-color.ts'
 
 export type SurfaceParam = {
@@ -162,13 +163,14 @@ export function ParamSurfaceHeatmap({
   const best = bestCell(grid, metric.key, metric.goal)
   const crossesZero = range !== null && range.min < 0 && range.max > 0
   const limit = range === null ? 0 : Math.max(Math.abs(range.min), Math.abs(range.max))
-  const colorOf = (value: number | null): string | undefined => {
-    if (value === null || range === null) return undefined
+  const styleOf = (value: number): CSSProperties | undefined => {
+    if (range === null) return undefined
     const flip = metric.goal === 'min' ? -1 : 1
-    if (crossesZero) return divergingColor(flip * divergingShare(value, limit))
+    if (crossesZero) return { background: divergingColor(flip * divergingShare(value, limit)) }
     const span = range.max - range.min
     const share = span === 0 ? 0.5 : (value - range.min) / span
-    return sequentialColor(metric.goal === 'min' ? 1 - share : share)
+    const position = metric.goal === 'min' ? 1 - share : share
+    return { background: sequentialColor(position), color: sequentialInk(position) }
   }
   const current = pinned ?? hot ?? best
   const currentPoint = current === null ? null : (grid.cells[current.yi]?.[current.xi] ?? null)
@@ -329,7 +331,7 @@ export function ParamSurfaceHeatmap({
                         aria-label={name}
                         aria-selected={isPinned}
                         tabIndex={stop.xi === xi && stop.yi === yi ? 0 : -1}
-                        style={value === null ? undefined : { background: colorOf(value) }}
+                        style={value === null ? undefined : styleOf(value)}
                         onPointerEnter={() => setHot({ xi, yi })}
                         onFocus={() => {
                           setStop({ xi, yi })

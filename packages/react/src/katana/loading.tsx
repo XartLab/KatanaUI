@@ -9,6 +9,8 @@
  * 文字全在 labels（原 texts，留一个版本作兼容）。fill：内容要撑满父级（面板主体）时给，骨架行数按容器高度量；嵌在流里的用 lines。
  * what / source：caption「加载 <内容> · <来源>」的两段（来源没有就省）；header：已经知道的真表头，骨架只占它下面。
  * 等了 2s 说「仍在加载」，10s 转琥珀条；给了 onRetry 条上才有「重试」。Loading 只管显示，不管取数，也不会中止它：晚到的数据照样替换掉错误态。
+ * 最短停留（#251 批 A，kubai Vibe Design Tips 017）：骨架出了以后至少留 500ms（LOADING_MIN_SHOWN_MS）再交出内容，510ms 到的数据骨架留到 1000ms；500ms 内到的不出骨架。
+ * 只管 pending 模式：Suspense 模式的骨架是 React 在 promise 落定时自己摘的，这里拦不住，没有最短停留。
  * 搬自 src/ui/Loading.tsx 与 LoadingBoundary.tsx（#1860）。
  */
 import { Suspense, useState, type ReactNode } from 'react'
@@ -77,6 +79,14 @@ export function Loading(props: LoadingProps) {
   // 按属性在不在判模式，不按值：pending={undefined} 不会把等数据静默换成 Suspense。
   const suspenseMode = !('pending' in props)
   const [revealed, setRevealed] = useState(false)
+  // 数据到了（pending 从真变假）但骨架还没留够：这一段继续挂着，等 LoadingWait 说可以摘了再换成内容。渲染时就判，免得内容闪一帧。
+  const waiting = Boolean(pending)
+  const [wasWaiting, setWasWaiting] = useState(waiting)
+  const [releasing, setReleasing] = useState(false)
+  if (!suspenseMode && waiting !== wasWaiting) {
+    setWasWaiting(waiting)
+    setReleasing(!waiting)
+  }
   const labels = (given ?? texts)!
   if (phase !== undefined)
     return (
@@ -93,7 +103,7 @@ export function Loading(props: LoadingProps) {
         onRetry={onRetry}
       />
     )
-  const wait = (withSource: boolean) => (
+  const wait = (withSource: boolean, ready = false) => (
     <LoadingWait
       labels={labels}
       label={label}
@@ -102,8 +112,10 @@ export function Loading(props: LoadingProps) {
       lines={lines}
       fill={fill}
       header={withSource ? header : undefined}
+      ready={ready}
       onRetry={onRetry}
       onSettled={setRevealed}
+      onReleased={() => setReleasing(false)}
     />
   )
   if (suspenseMode)
@@ -113,7 +125,7 @@ export function Loading(props: LoadingProps) {
         <div className={contentClass(fill, revealed)}>{children}</div>
       </Suspense>
     )
-  if (pending) return wait(true)
+  if (waiting || releasing) return wait(true, !waiting)
   return <div className={contentClass(fill, revealed)}>{children}</div>
 }
 

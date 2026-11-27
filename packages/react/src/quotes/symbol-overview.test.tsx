@@ -75,6 +75,6 @@ describe('品种概览', () => {
       renderToStaticMarkup(
         <CompareBar a={{ label: 'a', value: 50, text: '50' }} b={{ label: 'b', value: 100, text: '100' }} label="c" />,
       ),
-    ).toContain('width:50%')
+    ).toContain('--fill:0.5')
   })
 })

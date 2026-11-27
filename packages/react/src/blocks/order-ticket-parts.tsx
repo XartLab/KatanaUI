@@ -151,7 +151,7 @@ export function ReadoutRow({
     <div className="flex items-baseline justify-between gap-3">
       <dt className="text-ink-3">
         {label}
-        {note ? <span className="ml-1 text-ink-4">{note}</span> : null}
+        {note ? <span className="ml-1 text-ink-3">{note}</span> : null}
       </dt>
       <dd
         data-slot={slot}

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
-import { Plus } from 'lucide-react'
-import { useState } from 'react'
+import { Plus, RefreshCw } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 import {
   Button,
   Checkbox,
@@ -41,6 +41,52 @@ const DENSITIES = [
   ['medium', '30'],
   ['low', '36'],
 ] as const
+
+/** 进行中演示：点一下模拟一次请求（毫秒数写在名字旁）；presses 数的是真正触发了 onClick 的次数，进行中再按应当不涨。 */
+function PendingDemo() {
+  const [pending, setPending] = useState({ save: false, quick: false, refresh: false })
+  const [presses, setPresses] = useState({ save: 0, quick: 0, refresh: 0 })
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([])
+  useEffect(
+    () => () => {
+      for (const timer of timers.current) clearTimeout(timer)
+    },
+    [],
+  )
+  const run = (key: keyof typeof pending, ms: number) => {
+    setPresses((count) => ({ ...count, [key]: count[key] + 1 }))
+    setPending((state) => ({ ...state, [key]: true }))
+    timers.current.push(setTimeout(() => setPending((state) => ({ ...state, [key]: false })), ms))
+  }
+  return (
+    <Row name="进行中（pending）">
+      <Button pending={pending.save} onClick={() => run('save', 1200)} data-gallery-pending="save">
+        保存修改
+      </Button>
+      <Button size="sm" pending={pending.quick} onClick={() => run('quick', 400)} data-gallery-pending="quick">
+        快速保存
+      </Button>
+      <Button
+        variant="icon"
+        size="icon"
+        aria-label="刷新"
+        pending={pending.refresh}
+        spinIcon
+        onClick={() => run('refresh', 300)}
+        data-gallery-pending="refresh"
+      >
+        <RefreshCw />
+      </Button>
+      <output className="gal-note" data-gallery-pending-count>
+        触发次数 保存 {presses.save} · 快速 {presses.quick} · 刷新 {presses.refresh}
+      </output>
+      <p className="gal-note">
+        点一下模拟请求：保存 1.2 秒、快速保存 0.4 秒、刷新 0.3 秒。满 300ms 才出转圈，出了至少留
+        500ms；字与宽度不变，进行中再按无效但仍可聚焦。刷新钮的图标本身就是动作，按下立刻转它自己，至少转一整圈、停在整圈上。
+      </p>
+    </Row>
+  )
+}
 
 export function ButtonDemo() {
   return (
@@ -87,6 +133,7 @@ export function ButtonDemo() {
           带图标
         </Button>
       </Row>
+      <PendingDemo />
       <Row name="effect（SmoothUI）">
         <Button effect="magnetic" variant="primary" data-gallery-magnet>
           买入 600519

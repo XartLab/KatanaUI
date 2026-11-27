@@ -244,9 +244,7 @@ export function RootCauseTree({
                   ))}
                 </p>
               )}
-              {open.at !== undefined && formatTime !== undefined && (
-                <p className="k-rct-at">{formatTime(open.at)}</p>
-              )}
+              {open.at !== undefined && formatTime !== undefined && <p className="k-rct-at">{formatTime(open.at)}</p>}
               {onAction !== undefined && isRootCause(open) && (
                 <p className="k-rct-actions">
                   <Button size="sm" variant="primary" onClick={() => onAction(open, 'fix')}>
