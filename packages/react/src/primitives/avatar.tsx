@@ -58,9 +58,7 @@ export function Avatar({ src, alt, fallback, size, status, statusLabel, classNam
         )}
         {...props}
       >
-        {src ? (
-          <AvatarImage src={src} alt={alt} className="aspect-square size-full rounded-full object-cover" />
-        ) : null}
+        {src ? <AvatarImage src={src} alt={alt} className="aspect-square size-full rounded-full object-cover" /> : null}
         <AvatarFallback
           aria-label={alt}
           role="img"

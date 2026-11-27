@@ -46,11 +46,7 @@ function ScrollArea({
   )
 }
 
-function ScrollBar({
-  className,
-  orientation = 'vertical',
-  ...props
-}: ComponentProps<typeof ScrollAreaScrollbar>) {
+function ScrollBar({ className, orientation = 'vertical', ...props }: ComponentProps<typeof ScrollAreaScrollbar>) {
   return (
     <ScrollAreaScrollbar
       data-slot="scroll-area-scrollbar"

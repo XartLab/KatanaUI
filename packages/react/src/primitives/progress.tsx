@@ -49,10 +49,7 @@ function Progress({
       className={cn('relative h-1 w-full overflow-hidden rounded-full bg-(--k-container-track-background)', className)}
       {...props}
     >
-      <ProgressIndicator
-        data-slot="progress-indicator"
-        className={indicatorVariants({ tone: severityOf(tone) })}
-      />
+      <ProgressIndicator data-slot="progress-indicator" className={indicatorVariants({ tone: severityOf(tone) })} />
     </ProgressRoot>
   )
 }

@@ -1,7 +1,13 @@
 // SPDX-License-Identifier: MIT
 // 起步代码取自 shadcn/ui（https://ui.shadcn.com ，MIT，Copyright (c) 2023 shadcn），2026-11-11 用 `shadcn add` 生成（#1777），行为底座是 Radix；
 // 拷进来以后归我们改：样子（尺寸、颜色、动效）按 OpenMarket 实测样式与我们的 token 重写（决策记录 0049）。
-import { Accordion as AccordionRoot, AccordionHeader, AccordionItem as AccordionEntry, AccordionPanel, AccordionTrigger as AccordionButton } from '@ui-sdk/react/accordion'
+import {
+  Accordion as AccordionRoot,
+  AccordionHeader,
+  AccordionItem as AccordionEntry,
+  AccordionPanel,
+  AccordionTrigger as AccordionButton,
+} from '@ui-sdk/react/accordion'
 import { ChevronDownIcon } from 'lucide-react'
 import type { ComponentProps, ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
@@ -45,7 +51,9 @@ function Accordion({ type, value, defaultValue, onValueChange, collapsible, ...p
       collapsible={multiple ? undefined : collapsible}
       value={list(value)}
       defaultValue={list(defaultValue)}
-      onValueChange={(next) => (onValueChange as ((v: string | string[]) => void) | undefined)?.(multiple ? next : (next[0] ?? ''))}
+      onValueChange={(next) =>
+        (onValueChange as ((v: string | string[]) => void) | undefined)?.(multiple ? next : (next[0] ?? ''))
+      }
       {...props}
     />
   )

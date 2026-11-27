@@ -152,7 +152,12 @@ function TabsContent({
   forceMount?: true
 }) {
   return (
-    <TabsPanel render={slotName('tabs-content')} keepMounted={forceMount} className={cn('flex-1 outline-0', className)} {...props} />
+    <TabsPanel
+      render={slotName('tabs-content')}
+      keepMounted={forceMount}
+      className={cn('flex-1 outline-0', className)}
+      {...props}
+    />
   )
 }
 
