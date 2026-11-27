@@ -9,9 +9,9 @@ const overlays: GuidanceMap = {
     use: ['给图标按钮补一句名字或快捷键。', '解释一个缩写、截断的文字。'],
     avoid: ['里面要放链接或按钮用 popover。', '想补充一小块信息用 hover-card。', '必须读到的内容直接写在页面上。'],
     a11y: [
-      'Radix Tooltip，浮层是 role=tooltip，触发器靠 aria-describedby 指向它。',
+      'UI SDK Tooltip（#263 从 Radix 换来），浮层是 role=tooltip，触发器靠 aria-describedby 指向它。',
       '聚焦触发器也会出现，不等延迟。',
-      '悬停停 500ms 才出；出了以后 400ms 内移到邻居立即出、原地换字；离开超过 400ms 再进，重新等 500ms。按下触发器就收。数值在 TooltipProvider（TOOLTIP_DELAY_MS、TOOLTIP_SKIP_MS），件里不另写。出处：kubai Vibe Design Tips 025。',
+      '悬停停 500ms 才出；出了以后 400ms 内移到邻居立即出、原地换字；离开超过 400ms 再进，重新等 500ms。按下触发器就收。首个延迟在 TooltipProvider（TOOLTIP_DELAY_MS），件里不另写；「邻居立即出」的时长由 UI SDK 自己管（skipDelayDuration 只留名字，不再起作用）。出处：kubai Vibe Design Tips 025。',
       '触屏没有悬停，别只放在这里；本库是桌面工作台，没有触屏方案。',
     ],
   },
@@ -24,7 +24,7 @@ const overlays: GuidanceMap = {
       '一串命令用 dropdown-menu。',
     ],
     a11y: [
-      'Radix Popover，内容是 role=dialog，打开后焦点进入，关闭还给触发器。',
+      'UI SDK Popover（渲染在浏览器顶层，不进 Portal），内容是 role=dialog，打开后焦点进入，关闭还给触发器；对外仍是 Radix 的写法（asChild、onOpenAutoFocus、onEscapeKeyDown、onPointerDownOutside 等）。',
       '用 PopoverTitle 给它名字。',
       '点外面或按 Esc 收起。',
     ],
@@ -38,8 +38,8 @@ const overlays: GuidanceMap = {
       '只是通知用 toast 或 alert。',
     ],
     a11y: [
-      'Radix Dialog，role=dialog、aria-modal，名字取 DialogTitle，说明取 DialogDescription。',
-      '焦点锁在里面，关闭后回到打开前的元素。',
+      'UI SDK Dialog（原生 <dialog>，开着时在顶层），role=dialog、aria-modal，名字取 DialogTitle，说明取 DialogDescription。',
+      '焦点锁在里面，关闭后回到触发器，没有触发器（代码打开）回到打开前拿着焦点的元素。',
       '右上角关闭钮的读屏名由 closeLabel 传。',
     ],
   },
@@ -48,7 +48,7 @@ const overlays: GuidanceMap = {
     use: ['平仓、撤单、删除这类不能撤回的事，做之前要用户明确选一个。', '一句话说得清的用 size="sm"。'],
     avoid: ['能撤回的直接做并给撤销。', '要填表、多步的用 dialog。', '按钮不要写「确定」「是」，写动作本身。'],
     a11y: [
-      'Radix AlertDialog，role=alertdialog、aria-modal，名字取 AlertDialogTitle，说明取 AlertDialogDescription。',
+      'UI SDK AlertDialog，role=alertdialog、aria-modal，名字取 AlertDialogTitle，说明取 AlertDialogDescription。',
       '打开时焦点落在 AlertDialogCancel；点背板不关，只有取消、确认与 Esc 能关。',
       'Esc 只触发 onOpenChange(false)，不点取消钮：取消要做的事写在 onOpenChange 里，不要只写在取消钮的 onClick 里。',
     ],
@@ -97,7 +97,7 @@ const overlays: GuidanceMap = {
       '常驻的侧栏用 side-nav 或 splitter。',
     ],
     a11y: [
-      'Radix Dialog，role=dialog，名字取 SheetTitle，说明取 SheetDescription，必须带。',
+      'UI SDK Dialog，role=dialog，名字取 SheetTitle，说明取 SheetDescription，必须带。',
       '焦点锁在里面，关闭回到触发器。',
       '关闭钮的读屏名由 closeLabel 传。',
     ],
@@ -107,7 +107,7 @@ const overlays: GuidanceMap = {
     use: ['悬停一个品种、用户名时预览补充信息。', '内容比 tooltip 长、但不需要操作。'],
     avoid: ['需要点里面的东西用 popover。', '一句话用 tooltip。', '重要信息直接写在页面。'],
     a11y: [
-      'Radix HoverCard，只面向有指针的用户，读屏不会朗读卡里的内容，所以别把独有信息放这里。',
+      'UI SDK HoverCard，只面向有指针的用户，读屏不会朗读卡里的内容，所以别把独有信息放这里。',
       '键盘聚焦触发器也会打开，Esc 收起。',
     ],
   },

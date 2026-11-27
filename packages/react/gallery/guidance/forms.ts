@@ -178,6 +178,7 @@ const forms: GuidanceMap = {
     avoid: ['选项多于五个用 Select。', '切换页面内容用 Tabs。'],
     a11y: [
       '整组 role=group，每个按钮是 aria-pressed 的开关，读屏读「已按下 / 未按下」。',
+      '键盘：Tab 只停在组里一个按钮上，方向键在按钮间走（UI SDK ToggleGroup，照 WAI-ARIA 的 toolbar 模式；以前每个按钮都是 Tab 停靠点，用户 2026-11-27 接受这个变化，#263），空格选中。',
       '整组的名字要传 aria-label；仅图标的按钮各自传 aria-label。',
       '禁用项读作「不可用」，仍可被读屏浏览到。',
     ],
