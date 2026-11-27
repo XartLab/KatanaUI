@@ -27193,6 +27193,24 @@
         }
       ]
     },
+    "IntentOptions": {
+      "kind": "type",
+      "source": "src/patterns/omnibox/omnibox-model.ts",
+      "props": [
+        {
+          "name": "minLength",
+          "type": "number",
+          "required": false,
+          "description": "Text at least this long (characters) reads as a question."
+        },
+        {
+          "name": "minWords",
+          "type": "number",
+          "required": false,
+          "description": "Text with at least this many space-separated words reads as a question."
+        }
+      ]
+    },
     "IpoEvent": {
       "kind": "type",
       "source": "src/quant/event-calendar-model.ts",
@@ -34136,6 +34154,30 @@
       "source": "src/primitives/navigation-menu.tsx",
       "props": []
     },
+    "NearestRowOptions": {
+      "kind": "type",
+      "source": "src/lib/proximity-highlight.ts",
+      "props": [
+        {
+          "name": "current",
+          "type": "number | null",
+          "required": false,
+          "description": "Index of the row picked last time; kept while the pointer stays within `hysteresis` of its edges."
+        },
+        {
+          "name": "hysteresis",
+          "type": "number",
+          "required": false,
+          "description": "Pixels past the current row's edges in which it is kept."
+        },
+        {
+          "name": "reach",
+          "type": "number",
+          "required": false,
+          "description": "Farthest distance in pixels from a row at which it is still picked."
+        }
+      ]
+    },
     "NetBuyBar": {
       "kind": "component",
       "source": "src/blocks/net-buy-bar/net-buy-bar.tsx",
@@ -35517,6 +35559,877 @@
           "type": "string",
           "required": false,
           "description": "Text label inside the box on the left (dragging it changes the value like dragging the box); the accessible name still comes from label."
+        }
+      ]
+    },
+    "Omnibox": {
+      "kind": "component",
+      "source": "src/patterns/omnibox/omnibox.tsx",
+      "props": [
+        {
+          "name": "onQuery",
+          "type": "OmniboxQuery",
+          "required": true,
+          "description": "Search: return the matching items of every category (or, with a scope, that object's actions); may be async."
+        },
+        {
+          "name": "onSelect",
+          "type": "(item: OmniboxItem, info: OmniboxSelectInfo) => void",
+          "required": true,
+          "description": "Called when a command or page is chosen (Enter or click), or any row with Ctrl or Command held."
+        },
+        {
+          "name": "onAsk",
+          "type": "(text: string, scope: OmniboxItem | null) => void",
+          "required": false,
+          "description": "Called with the text and the scope when the text reads as a question and Enter is pressed."
+        },
+        {
+          "name": "categories",
+          "type": "readonly OmniboxCategory[]",
+          "required": true,
+          "description": "Categories in order; the first is the \"all\" tab."
+        },
+        {
+          "name": "category",
+          "type": "string",
+          "required": false,
+          "description": "Controlled category id."
+        },
+        {
+          "name": "defaultCategory",
+          "type": "string",
+          "required": false,
+          "description": "Initial category id when uncontrolled."
+        },
+        {
+          "name": "onCategoryChange",
+          "type": "(category: string) => void",
+          "required": false,
+          "description": "Called when the category changes."
+        },
+        {
+          "name": "scope",
+          "type": "OmniboxItem | null",
+          "required": false,
+          "description": "Controlled scope (the object turned into a tag), or null for none."
+        },
+        {
+          "name": "defaultScope",
+          "type": "OmniboxItem | null",
+          "required": false,
+          "default": "null",
+          "description": "Initial scope when uncontrolled."
+        },
+        {
+          "name": "onScopeChange",
+          "type": "(scope: OmniboxItem | null) => void",
+          "required": false,
+          "description": "Called when a scope tag is set or removed."
+        },
+        {
+          "name": "recent",
+          "type": "readonly OmniboxItem[]",
+          "required": false,
+          "description": "Controlled recent items, newest first."
+        },
+        {
+          "name": "onRecentChange",
+          "type": "(recent: OmniboxItem[]) => void",
+          "required": false,
+          "description": "Called with the new recent list after a choice or after clearing."
+        },
+        {
+          "name": "recentLimit",
+          "type": "number",
+          "required": false,
+          "default": "5",
+          "description": "Most recent items kept."
+        },
+        {
+          "name": "perCategory",
+          "type": "number",
+          "required": false,
+          "default": "4",
+          "description": "Rows per category in the all tab before the \"show all\" row."
+        },
+        {
+          "name": "placeholders",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Example queries that rotate as the placeholder while the box is empty."
+        },
+        {
+          "name": "placeholderInterval",
+          "type": "number",
+          "required": false,
+          "default": "2800",
+          "description": "Milliseconds each example stays."
+        },
+        {
+          "name": "placeholderCycles",
+          "type": "number",
+          "required": false,
+          "default": "1",
+          "description": "How many rounds through the examples before it settles on `labels.placeholder`."
+        },
+        {
+          "name": "detectIntent",
+          "type": "(text: string) => boolean | 'weak'",
+          "required": false,
+          "default": "defaultIntent",
+          "description": "Decides whether the text reads as a question: true always asks, `'weak'` asks only when the search found nothing (long product names reach the length threshold), false never."
+        },
+        {
+          "name": "defaultQuery",
+          "type": "string",
+          "required": false,
+          "default": "''",
+          "description": "Initial text in the input."
+        },
+        {
+          "name": "debounceMs",
+          "type": "number",
+          "required": false,
+          "default": "80",
+          "description": "Delay before onQuery runs after typing, in ms."
+        },
+        {
+          "name": "labels",
+          "type": "OmniboxLabels",
+          "required": true,
+          "description": "Text."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "OmniboxCategory": {
+      "kind": "type",
+      "source": "src/patterns/omnibox/omnibox-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "OmniboxDialog": {
+      "kind": "component",
+      "source": "src/patterns/omnibox/omnibox.tsx",
+      "props": [
+        {
+          "name": "onQuery",
+          "type": "OmniboxQuery",
+          "required": true,
+          "description": "Search: return the matching items of every category (or, with a scope, that object's actions); may be async."
+        },
+        {
+          "name": "onSelect",
+          "type": "(item: OmniboxItem, info: OmniboxSelectInfo) => void",
+          "required": true,
+          "description": "Called when a command or page is chosen (Enter or click), or any row with Ctrl or Command held."
+        },
+        {
+          "name": "onAsk",
+          "type": "(text: string, scope: OmniboxItem | null) => void",
+          "required": false,
+          "description": "Called with the text and the scope when the text reads as a question and Enter is pressed."
+        },
+        {
+          "name": "categories",
+          "type": "readonly OmniboxCategory[]",
+          "required": true,
+          "description": "Categories in order; the first is the \"all\" tab."
+        },
+        {
+          "name": "category",
+          "type": "string",
+          "required": false,
+          "description": "Controlled category id."
+        },
+        {
+          "name": "defaultCategory",
+          "type": "string",
+          "required": false,
+          "description": "Initial category id when uncontrolled."
+        },
+        {
+          "name": "onCategoryChange",
+          "type": "(category: string) => void",
+          "required": false,
+          "description": "Called when the category changes."
+        },
+        {
+          "name": "scope",
+          "type": "OmniboxItem | null",
+          "required": false,
+          "description": "Controlled scope (the object turned into a tag), or null for none."
+        },
+        {
+          "name": "defaultScope",
+          "type": "OmniboxItem | null",
+          "required": false,
+          "description": "Initial scope when uncontrolled."
+        },
+        {
+          "name": "onScopeChange",
+          "type": "(scope: OmniboxItem | null) => void",
+          "required": false,
+          "description": "Called when a scope tag is set or removed."
+        },
+        {
+          "name": "recent",
+          "type": "readonly OmniboxItem[]",
+          "required": false,
+          "description": "Controlled recent items, newest first."
+        },
+        {
+          "name": "onRecentChange",
+          "type": "(recent: OmniboxItem[]) => void",
+          "required": false,
+          "description": "Called with the new recent list after a choice or after clearing."
+        },
+        {
+          "name": "recentLimit",
+          "type": "number",
+          "required": false,
+          "description": "Most recent items kept."
+        },
+        {
+          "name": "perCategory",
+          "type": "number",
+          "required": false,
+          "description": "Rows per category in the all tab before the \"show all\" row."
+        },
+        {
+          "name": "placeholders",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Example queries that rotate as the placeholder while the box is empty."
+        },
+        {
+          "name": "placeholderInterval",
+          "type": "number",
+          "required": false,
+          "description": "Milliseconds each example stays."
+        },
+        {
+          "name": "placeholderCycles",
+          "type": "number",
+          "required": false,
+          "description": "How many rounds through the examples before it settles on `labels.placeholder`."
+        },
+        {
+          "name": "detectIntent",
+          "type": "(text: string) => boolean | 'weak'",
+          "required": false,
+          "description": "Decides whether the text reads as a question: true always asks, `'weak'` asks only when the search found nothing (long product names reach the length threshold), false never."
+        },
+        {
+          "name": "defaultQuery",
+          "type": "string",
+          "required": false,
+          "description": "Initial text in the input."
+        },
+        {
+          "name": "debounceMs",
+          "type": "number",
+          "required": false,
+          "description": "Delay before onQuery runs after typing, in ms."
+        },
+        {
+          "name": "labels",
+          "type": "OmniboxLabels",
+          "required": true,
+          "description": "Text."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        },
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": true,
+          "description": "Whether the dialog is open."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(open: boolean) => void",
+          "required": true,
+          "description": "Called to open or close (Esc, click outside, after a choice or a question)."
+        },
+        {
+          "name": "keepOpen",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Keep the dialog open after a choice."
+        }
+      ]
+    },
+    "OmniboxDialogProps": {
+      "kind": "type",
+      "source": "src/patterns/omnibox/omnibox.tsx",
+      "props": [
+        {
+          "name": "onQuery",
+          "type": "OmniboxQuery",
+          "required": true,
+          "description": "Search: return the matching items of every category (or, with a scope, that object's actions); may be async."
+        },
+        {
+          "name": "onSelect",
+          "type": "(item: OmniboxItem, info: OmniboxSelectInfo) => void",
+          "required": true,
+          "description": "Called when a command or page is chosen (Enter or click), or any row with Ctrl or Command held."
+        },
+        {
+          "name": "onAsk",
+          "type": "(text: string, scope: OmniboxItem | null) => void",
+          "required": false,
+          "description": "Called with the text and the scope when the text reads as a question and Enter is pressed."
+        },
+        {
+          "name": "categories",
+          "type": "readonly OmniboxCategory[]",
+          "required": true,
+          "description": "Categories in order; the first is the \"all\" tab."
+        },
+        {
+          "name": "category",
+          "type": "string",
+          "required": false,
+          "description": "Controlled category id."
+        },
+        {
+          "name": "defaultCategory",
+          "type": "string",
+          "required": false,
+          "description": "Initial category id when uncontrolled."
+        },
+        {
+          "name": "onCategoryChange",
+          "type": "(category: string) => void",
+          "required": false,
+          "description": "Called when the category changes."
+        },
+        {
+          "name": "scope",
+          "type": "OmniboxItem | null",
+          "required": false,
+          "description": "Controlled scope (the object turned into a tag), or null for none."
+        },
+        {
+          "name": "defaultScope",
+          "type": "OmniboxItem | null",
+          "required": false,
+          "description": "Initial scope when uncontrolled."
+        },
+        {
+          "name": "onScopeChange",
+          "type": "(scope: OmniboxItem | null) => void",
+          "required": false,
+          "description": "Called when a scope tag is set or removed."
+        },
+        {
+          "name": "recent",
+          "type": "readonly OmniboxItem[]",
+          "required": false,
+          "description": "Controlled recent items, newest first."
+        },
+        {
+          "name": "onRecentChange",
+          "type": "(recent: OmniboxItem[]) => void",
+          "required": false,
+          "description": "Called with the new recent list after a choice or after clearing."
+        },
+        {
+          "name": "recentLimit",
+          "type": "number",
+          "required": false,
+          "description": "Most recent items kept."
+        },
+        {
+          "name": "perCategory",
+          "type": "number",
+          "required": false,
+          "description": "Rows per category in the all tab before the \"show all\" row."
+        },
+        {
+          "name": "placeholders",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Example queries that rotate as the placeholder while the box is empty."
+        },
+        {
+          "name": "placeholderInterval",
+          "type": "number",
+          "required": false,
+          "description": "Milliseconds each example stays."
+        },
+        {
+          "name": "placeholderCycles",
+          "type": "number",
+          "required": false,
+          "description": "How many rounds through the examples before it settles on `labels.placeholder`."
+        },
+        {
+          "name": "detectIntent",
+          "type": "(text: string) => boolean | 'weak'",
+          "required": false,
+          "description": "Decides whether the text reads as a question: true always asks, `'weak'` asks only when the search found nothing (long product names reach the length threshold), false never."
+        },
+        {
+          "name": "defaultQuery",
+          "type": "string",
+          "required": false,
+          "description": "Initial text in the input."
+        },
+        {
+          "name": "debounceMs",
+          "type": "number",
+          "required": false,
+          "description": "Delay before onQuery runs after typing, in ms."
+        },
+        {
+          "name": "labels",
+          "type": "OmniboxLabels",
+          "required": true,
+          "description": "Text."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        },
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": true,
+          "description": "Whether the dialog is open."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(open: boolean) => void",
+          "required": true,
+          "description": "Called to open or close (Esc, click outside, after a choice or a question)."
+        },
+        {
+          "name": "keepOpen",
+          "type": "boolean",
+          "required": false,
+          "description": "Keep the dialog open after a choice."
+        }
+      ]
+    },
+    "OmniboxItem": {
+      "kind": "type",
+      "source": "src/patterns/omnibox/omnibox-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable id (recent list and highlight key on it)."
+        },
+        {
+          "name": "category",
+          "type": "string",
+          "required": false,
+          "description": "Category id (a tab); items of scope actions need none."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Main text of the row."
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "required": false,
+          "description": "Second, quieter text on the same row (exchange, path, type)."
+        },
+        {
+          "name": "kind",
+          "type": "OmniboxKind",
+          "required": false,
+          "description": "What Enter does: `object` becomes a scope tag, `command` runs, `page` opens."
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Leading icon or mark."
+        },
+        {
+          "name": "meta",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Quiet text at the end of the row; replaced by the Enter hint while the row is highlighted."
+        },
+        {
+          "name": "preview",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Preview card shown beside the panel while the row is highlighted (render the node yourself; screen readers do not read it)."
+        },
+        {
+          "name": "hint",
+          "type": "string",
+          "required": false,
+          "description": "Overrides the Enter hint text of the row."
+        },
+        {
+          "name": "scope",
+          "type": "boolean",
+          "required": false,
+          "description": "For `object` rows: set to false to act directly instead of becoming a scope tag."
+        },
+        {
+          "name": "type",
+          "type": "string",
+          "required": false,
+          "description": "Caller's own type tag (`symbol`, `strategy`) for choosing which actions a scope offers."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "OmniboxKind": {
+      "kind": "type",
+      "source": "src/patterns/omnibox/omnibox-model.ts",
+      "props": []
+    },
+    "OmniboxLabels": {
+      "kind": "type",
+      "source": "src/patterns/omnibox/omnibox.tsx",
+      "props": [
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the omnibox (and the dialog title, read by screen readers only)."
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false,
+          "description": "Input placeholder; also what shows after the example carousel has run."
+        },
+        {
+          "name": "scopedPlaceholder",
+          "type": "string",
+          "required": false,
+          "description": "Input placeholder while a scope tag is set."
+        },
+        {
+          "name": "categories",
+          "type": "string",
+          "required": false,
+          "description": "Accessible name of the category tabs."
+        },
+        {
+          "name": "recent",
+          "type": "string",
+          "required": false,
+          "description": "Heading of the recent group."
+        },
+        {
+          "name": "clearRecent",
+          "type": "string",
+          "required": false,
+          "description": "Button at the end of the recent heading that clears the list; drawn only when this is given."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": false,
+          "description": "Shown when nothing matches."
+        },
+        {
+          "name": "loading",
+          "type": "string",
+          "required": false,
+          "description": "Shown while onQuery is pending and no older rows can stay."
+        },
+        {
+          "name": "error",
+          "type": "string",
+          "required": false,
+          "description": "Shown when onQuery threw or rejected."
+        },
+        {
+          "name": "showAll",
+          "type": "(count: number, categoryLabel: string) => string",
+          "required": false,
+          "description": "Text of the \"show all\" row at the end of a category in the all tab."
+        },
+        {
+          "name": "scopeHeading",
+          "type": "(scopeLabel: string) => string",
+          "required": false,
+          "description": "Heading above the scope's actions (for example `name => \\`${name}: actions\\``)."
+        },
+        {
+          "name": "removeScope",
+          "type": "(scopeLabel: string) => string",
+          "required": false,
+          "description": "Accessible name of the button that removes the scope tag."
+        },
+        {
+          "name": "hintRun",
+          "type": "string",
+          "required": false,
+          "description": "Enter hint at the end of the highlighted command row."
+        },
+        {
+          "name": "hintOpen",
+          "type": "string",
+          "required": false,
+          "description": "Enter hint at the end of the highlighted page row."
+        },
+        {
+          "name": "hintViewOptions",
+          "type": "string",
+          "required": false,
+          "description": "Enter hint at the end of the highlighted object row (Enter makes it a scope tag)."
+        },
+        {
+          "name": "hintNewTab",
+          "type": "string",
+          "required": false,
+          "description": "Enter hint while Ctrl or Command is held (the row opens in a new tab)."
+        },
+        {
+          "name": "ask",
+          "type": "string",
+          "required": false,
+          "description": "Text next to the Enter key on the right of the input when the text reads as a question."
+        },
+        {
+          "name": "footer",
+          "type": "{ navigate: string; select: string; newTab: string; close: string }",
+          "required": false,
+          "description": "Footer key hints; the footer is drawn only when this is given."
+        },
+        {
+          "name": "searchInstead",
+          "type": "string",
+          "required": false,
+          "description": "Text of the button (next to the \"ask\" hint) that turns a question back into a search when it also found results; ↓ does the same."
+        },
+        {
+          "name": "askInstead",
+          "type": "(text: string) => string",
+          "required": false,
+          "description": "Line under the empty text that says Enter will ask the typed text (when `onAsk` is given and nothing matched)."
+        },
+        {
+          "name": "categorySet",
+          "type": "(categoryLabel: string, count: number) => string",
+          "required": false,
+          "description": "Announcement when the category changes (tabs are switched with the keyboard from the input, so the focus never moves)."
+        },
+        {
+          "name": "resultCount",
+          "type": "(count: number) => string",
+          "required": false,
+          "description": "Announcement for screen readers after results settle (the count is the rows drawn)."
+        },
+        {
+          "name": "scopeSet",
+          "type": "(scopeLabel: string) => string",
+          "required": false,
+          "description": "Announcement when a scope tag is set."
+        },
+        {
+          "name": "scopeCleared",
+          "type": "string",
+          "required": false,
+          "description": "Announcement when the scope tag is removed."
+        }
+      ]
+    },
+    "OmniboxProps": {
+      "kind": "type",
+      "source": "src/patterns/omnibox/omnibox.tsx",
+      "props": [
+        {
+          "name": "onQuery",
+          "type": "OmniboxQuery",
+          "required": true,
+          "description": "Search: return the matching items of every category (or, with a scope, that object's actions); may be async."
+        },
+        {
+          "name": "onSelect",
+          "type": "(item: OmniboxItem, info: OmniboxSelectInfo) => void",
+          "required": true,
+          "description": "Called when a command or page is chosen (Enter or click), or any row with Ctrl or Command held."
+        },
+        {
+          "name": "onAsk",
+          "type": "(text: string, scope: OmniboxItem | null) => void",
+          "required": false,
+          "description": "Called with the text and the scope when the text reads as a question and Enter is pressed."
+        },
+        {
+          "name": "categories",
+          "type": "readonly OmniboxCategory[]",
+          "required": true,
+          "description": "Categories in order; the first is the \"all\" tab."
+        },
+        {
+          "name": "category",
+          "type": "string",
+          "required": false,
+          "description": "Controlled category id."
+        },
+        {
+          "name": "defaultCategory",
+          "type": "string",
+          "required": false,
+          "description": "Initial category id when uncontrolled."
+        },
+        {
+          "name": "onCategoryChange",
+          "type": "(category: string) => void",
+          "required": false,
+          "description": "Called when the category changes."
+        },
+        {
+          "name": "scope",
+          "type": "OmniboxItem | null",
+          "required": false,
+          "description": "Controlled scope (the object turned into a tag), or null for none."
+        },
+        {
+          "name": "defaultScope",
+          "type": "OmniboxItem | null",
+          "required": false,
+          "description": "Initial scope when uncontrolled."
+        },
+        {
+          "name": "onScopeChange",
+          "type": "(scope: OmniboxItem | null) => void",
+          "required": false,
+          "description": "Called when a scope tag is set or removed."
+        },
+        {
+          "name": "recent",
+          "type": "readonly OmniboxItem[]",
+          "required": false,
+          "description": "Controlled recent items, newest first."
+        },
+        {
+          "name": "onRecentChange",
+          "type": "(recent: OmniboxItem[]) => void",
+          "required": false,
+          "description": "Called with the new recent list after a choice or after clearing."
+        },
+        {
+          "name": "recentLimit",
+          "type": "number",
+          "required": false,
+          "description": "Most recent items kept."
+        },
+        {
+          "name": "perCategory",
+          "type": "number",
+          "required": false,
+          "description": "Rows per category in the all tab before the \"show all\" row."
+        },
+        {
+          "name": "placeholders",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Example queries that rotate as the placeholder while the box is empty."
+        },
+        {
+          "name": "placeholderInterval",
+          "type": "number",
+          "required": false,
+          "description": "Milliseconds each example stays."
+        },
+        {
+          "name": "placeholderCycles",
+          "type": "number",
+          "required": false,
+          "description": "How many rounds through the examples before it settles on `labels.placeholder`."
+        },
+        {
+          "name": "detectIntent",
+          "type": "(text: string) => boolean | 'weak'",
+          "required": false,
+          "description": "Decides whether the text reads as a question: true always asks, `'weak'` asks only when the search found nothing (long product names reach the length threshold), false never."
+        },
+        {
+          "name": "defaultQuery",
+          "type": "string",
+          "required": false,
+          "description": "Initial text in the input."
+        },
+        {
+          "name": "debounceMs",
+          "type": "number",
+          "required": false,
+          "description": "Delay before onQuery runs after typing, in ms."
+        },
+        {
+          "name": "labels",
+          "type": "OmniboxLabels",
+          "required": true,
+          "description": "Text."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "OmniboxQuery": {
+      "kind": "type",
+      "source": "src/patterns/omnibox/omnibox.tsx",
+      "props": []
+    },
+    "OmniboxSelectInfo": {
+      "kind": "type",
+      "source": "src/patterns/omnibox/omnibox.tsx",
+      "props": [
+        {
+          "name": "newTab",
+          "type": "boolean",
+          "required": true,
+          "description": "True when chosen with Ctrl or Command held (open in a new tab; the caller does it)."
+        },
+        {
+          "name": "scope",
+          "type": "OmniboxItem | null",
+          "required": true,
+          "description": "The scope tag that was set when the row was chosen (an action of that object), or null."
         }
       ]
     },
@@ -42819,6 +43732,60 @@
           "type": "number",
           "required": false,
           "description": "Number of stacked layers."
+        }
+      ]
+    },
+    "ProximityHighlightOptions": {
+      "kind": "type",
+      "source": "src/lib/proximity-highlight.ts",
+      "props": [
+        {
+          "name": "itemSelector",
+          "type": "string",
+          "required": true,
+          "description": "CSS selector of the rows inside the container (for example `[cmdk-item]`)."
+        },
+        {
+          "name": "activeSelector",
+          "type": "string",
+          "required": false,
+          "description": "CSS selector of the current row when the pointer is away (keyboard highlight), for example `[cmdk-item][aria-selected=\"true\"]`."
+        },
+        {
+          "name": "enabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Turn the highlight off (rows keep their own background)."
+        },
+        {
+          "name": "hysteresis",
+          "type": "number",
+          "required": false,
+          "description": "Pixels past a row's edge in which the pointer still counts as on it, so the highlight does not flip back and forth at the seam."
+        },
+        {
+          "name": "reach",
+          "type": "number",
+          "required": false,
+          "description": "Farthest distance in pixels from a row at which the pointer still picks it (the gap and padding around rows)."
+        }
+      ]
+    },
+    "ProximityRect": {
+      "kind": "type",
+      "source": "src/lib/proximity-highlight.ts",
+      "props": [
+        {
+          "name": "top",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "bottom",
+          "type": "number",
+          "required": true,
+          "description": ""
         }
       ]
     },
@@ -67738,6 +68705,24 @@
         }
       ]
     },
+    "createIntentDetector": {
+      "kind": "function",
+      "source": "src/patterns/omnibox/omnibox-model.ts",
+      "props": [
+        {
+          "name": "minLength",
+          "type": "number",
+          "required": false,
+          "description": "Text at least this long (characters) reads as a question."
+        },
+        {
+          "name": "minWords",
+          "type": "number",
+          "required": false,
+          "description": "Text with at least this many space-separated words reads as a question."
+        }
+      ]
+    },
     "createLinkHub": {
       "kind": "function",
       "source": "src/lib/link-group.tsx",
@@ -67762,6 +68747,24 @@
       "kind": "function",
       "source": "src/blocks/agent-queue/queue-model.ts",
       "props": []
+    },
+    "detectIntent": {
+      "kind": "function",
+      "source": "src/patterns/omnibox/omnibox-model.ts",
+      "props": [
+        {
+          "name": "minLength",
+          "type": "number",
+          "required": false,
+          "description": "Text at least this long (characters) reads as a question."
+        },
+        {
+          "name": "minWords",
+          "type": "number",
+          "required": false,
+          "description": "Text with at least this many space-separated words reads as a question."
+        }
+      ]
     },
     "detectPlatform": {
       "kind": "function",
@@ -69134,6 +70137,30 @@
       "kind": "value",
       "source": "src/primitives/navigation-menu.tsx",
       "props": []
+    },
+    "nearestRow": {
+      "kind": "function",
+      "source": "src/lib/proximity-highlight.ts",
+      "props": [
+        {
+          "name": "current",
+          "type": "number | null",
+          "required": false,
+          "description": "Index of the row picked last time; kept while the pointer stays within `hysteresis` of its edges."
+        },
+        {
+          "name": "hysteresis",
+          "type": "number",
+          "required": false,
+          "description": "Pixels past the current row's edges in which it is kept."
+        },
+        {
+          "name": "reach",
+          "type": "number",
+          "required": false,
+          "description": "Farthest distance in pixels from a row at which it is still picked."
+        }
+      ]
     },
     "neighborhood": {
       "kind": "function",
@@ -71123,6 +72150,42 @@
           "type": "(value: unknown) => value is T",
           "required": false,
           "description": "读出来的值形状不对就返回 false，当没存过。"
+        }
+      ]
+    },
+    "useProximityHighlight": {
+      "kind": "function",
+      "source": "src/lib/proximity-highlight.ts",
+      "props": [
+        {
+          "name": "itemSelector",
+          "type": "string",
+          "required": true,
+          "description": "CSS selector of the rows inside the container (for example `[cmdk-item]`)."
+        },
+        {
+          "name": "activeSelector",
+          "type": "string",
+          "required": false,
+          "description": "CSS selector of the current row when the pointer is away (keyboard highlight), for example `[cmdk-item][aria-selected=\"true\"]`."
+        },
+        {
+          "name": "enabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Turn the highlight off (rows keep their own background)."
+        },
+        {
+          "name": "hysteresis",
+          "type": "number",
+          "required": false,
+          "description": "Pixels past a row's edge in which the pointer still counts as on it, so the highlight does not flip back and forth at the seam."
+        },
+        {
+          "name": "reach",
+          "type": "number",
+          "required": false,
+          "description": "Farthest distance in pixels from a row at which the pointer still picks it (the gap and padding around rows)."
         }
       ]
     },

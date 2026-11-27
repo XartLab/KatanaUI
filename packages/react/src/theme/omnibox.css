@@ -10,7 +10,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border-radius: 14px;
+  border-radius: var(--radius-dialog);
   border: 1px solid var(--k-overlay-dialog-borderColor);
   background: var(--k-surface-raised-background);
   box-shadow: var(--k-overlay-dialog-shadow);
@@ -24,7 +24,7 @@
   height: 48px;
   padding: 0 14px;
   border-bottom: 1px solid var(--k-separable-subtle-borderColor);
-  transition: border-color 0.12s;
+  transition: border-color var(--dur-hover) var(--ease-hover);
 }
 .k-omnibox[data-asking] .k-omnibox-bar {
   border-bottom-color: transparent;
@@ -141,7 +141,7 @@
   align-items: center;
   gap: 4px;
   padding: 2px 6px;
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   color: var(--k-content-secondary-foreground);
   cursor: pointer;
 }
@@ -196,8 +196,8 @@
   font-weight: 500;
   cursor: pointer;
   transition:
-    background-color 0.12s,
-    color 0.12s;
+    background-color var(--dur-hover) var(--ease-hover),
+    color var(--dur-hover) var(--ease-hover);
 }
 .k-omnibox-tab:hover {
   background: var(--k-selectable-subtle-background-hover);
@@ -223,7 +223,7 @@
 .k-omnibox-panel .k-omnibox-row {
   height: 36px;
   gap: 10px;
-  border-radius: 8px;
+  border-radius: var(--radius-inner);
   padding: 0 8px;
 }
 .k-omnibox-panel .k-omnibox-row[data-slot='command-item'][data-selected='true'] {
@@ -296,7 +296,7 @@
   right: 2px;
   height: 22px;
   padding: 0 8px;
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans);
 }
@@ -337,7 +337,7 @@
   width: 260px;
   padding: 12px;
   border: 1px solid var(--k-overlay-dialog-borderColor);
-  border-radius: 12px;
+  border-radius: var(--radius-overlay);
   background: var(--k-surface-raised-background);
   box-shadow: var(--k-overlay-dialog-shadow);
   color: var(--k-content-body-foreground);
