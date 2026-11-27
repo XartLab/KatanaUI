@@ -1,0 +1,454 @@
+/* SPDX-License-Identifier: MIT */
+/* AgentDrawer 与 AgentActivity（#225）：Agent 档案抽屉。颜色只用语义 token；热力格用 --k-heat-0…5（中性灰浓度，不用蓝）。
+   「在跑」与「进行中」是中性亮色（--k-content-primary-foreground），不用 accent：Graphite 下 accent 是橙，色弱下与失败红分不出（#211）；在动靠转圈图标与状态词。
+   布局：头、可滚的中段（属性区、页签）、底部动作条；容器查询按抽屉自己的宽度排指标卡（窄于 280px 一列）。 */
+
+.k-ad {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-ad-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4) var(--space-4) var(--space-3);
+  border-bottom: 1px solid var(--k-separable-subtle-borderColor);
+}
+.k-ad-title {
+  margin: 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-title) var(--font-sans);
+}
+.k-ad-desc {
+  margin: 0;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-body) var(--font-sans);
+  text-wrap: pretty;
+}
+.k-ad-scroll {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow: auto;
+}
+
+/* 属性区：左列名（图标加字），右列值。 */
+.k-ad-props {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-3) var(--space-6);
+  margin: 0;
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--k-separable-subtle-borderColor);
+}
+.k-ad-key {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-body) var(--font-sans);
+}
+.k-ad-key-icon,
+.k-ad-metric-icon {
+  display: inline-grid;
+  place-items: center;
+  color: var(--k-content-tertiary-foreground);
+}
+.k-ad-key-icon svg,
+.k-ad-metric-icon svg {
+  width: 14px;
+  height: 14px;
+}
+.k-ad-value {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  margin: 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-body) var(--font-sans);
+}
+.k-ad-mark {
+  flex: none;
+  width: 14px;
+  height: 14px;
+}
+.k-ad-mark[data-tone='progress'] {
+  color: var(--k-content-primary-foreground);
+}
+.k-ad-mark[data-tone='ok'] {
+  color: var(--k-status-ok-foreground);
+}
+.k-ad-mark[data-tone='warn'] {
+  color: var(--k-status-warn-foreground);
+}
+.k-ad-mark[data-tone='danger'] {
+  color: var(--k-status-danger-foreground);
+}
+.k-ad-mark[data-tone='neutral'] {
+  color: var(--k-status-neutral-foreground);
+}
+.k-ad-status,
+.k-ad-run-result {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--k-content-primary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-weight: 500;
+}
+.k-ad-status {
+  padding: 2px var(--space-2) 2px 6px;
+  border: 1px solid var(--k-separable-primary-borderColor);
+  border-radius: var(--radius-pill);
+  background: var(--k-status-neutral-background);
+}
+.k-ad-status[data-tone='warn'],
+.k-ad-run-result[data-tone='warn'] {
+  border-color: var(--k-status-warn-borderColor);
+  background: var(--k-status-warn-background);
+  color: var(--k-status-warn-foreground);
+}
+.k-ad-status[data-tone='neutral'],
+.k-ad-run-result[data-tone='neutral'] {
+  color: var(--k-content-secondary-foreground);
+}
+.k-ad-run-result[data-tone='ok'] {
+  color: var(--k-status-ok-foreground);
+}
+.k-ad-run-result[data-tone='danger'] {
+  color: var(--k-status-danger-foreground);
+}
+/* 转圈：一圈 0.9 秒。产品不跟系统的「减少动态效果」（motion.css 头部），所以不写 prefers-reduced-motion。 */
+.k-ad-spin {
+  animation: k-ad-spin 0.9s linear infinite;
+}
+@keyframes k-ad-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+.k-ad-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-ad-trigger,
+.k-ad-owner {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.k-ad-trigger .k-ad-mark {
+  color: var(--k-content-secondary-foreground);
+}
+.k-ad-detail {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+
+/* 页签（线型）与用量页。 */
+.k-ad-tabs {
+  gap: 0;
+}
+.k-ad-tablist {
+  width: 100%;
+  height: 40px;
+  padding: 0 var(--space-3);
+  border-bottom: 1px solid var(--k-separable-subtle-borderColor);
+}
+.k-ad-usage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+}
+.k-ad-h {
+  margin: 0 0 var(--space-2);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-ad-block {
+  min-width: 0;
+}
+
+/* 指标卡：两张并排。 */
+.k-ad-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@container (max-width: 279px) {
+  .k-ad-metrics {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.k-ad-metric {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--k-separable-secondary-borderColor);
+  border-radius: var(--radius-overlay);
+  background: var(--k-container-secondary-background);
+}
+.k-ad-metric-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.k-ad-metric-label {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-ad-delta {
+  margin-left: auto;
+}
+.k-ad-metric-value {
+  color: var(--k-content-primary-foreground);
+  font: var(--text-title) var(--font-num);
+  font-size: var(--text-lcd-size);
+  font-variant-numeric: tabular-nums;
+}
+.k-ad-metric-unit {
+  margin-left: var(--space-1);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+
+/* 活动热力格：一行一个星期，每行一列一周；格子是方的，最小 10px、最宽 28px。
+   周数多放不下时整张图（月份、星期标签、格子）在 .k-ad-scroller 里横向滚动，不把格子压到 10px 以下；星期标签粘在左边。 */
+.k-ad-activity {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--k-separable-secondary-borderColor);
+  border-radius: var(--radius-overlay);
+  background: var(--k-container-secondary-background);
+}
+.k-ad-scroller {
+  overflow-x: auto;
+  padding: 1px 1px var(--space-1);
+}
+.k-ad-chart {
+  --k-ad-label: 28px;
+  --k-ad-cell-min: 10px;
+  --k-ad-gap: 3px;
+  min-width: calc(var(--k-ad-label) + var(--k-ad-cols, 1) * (var(--k-ad-cell-min) + var(--k-ad-gap)));
+  max-width: calc(var(--k-ad-label) + var(--k-ad-cols, 1) * (28px + var(--k-ad-gap)));
+}
+.k-ad-months,
+.k-ad-row {
+  display: grid;
+  grid-template-columns: var(--k-ad-label) repeat(var(--k-ad-cols, 1), minmax(var(--k-ad-cell-min), 1fr));
+  column-gap: var(--k-ad-gap);
+}
+.k-ad-months {
+  height: 14px;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-ad-months span {
+  white-space: nowrap;
+}
+.k-ad-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-ad-gap);
+}
+.k-ad-weekday {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  align-self: center;
+  background: var(--k-container-secondary-background);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  white-space: nowrap;
+}
+.k-ad-cell,
+.k-ad-swatch {
+  --k-cell: var(--k-heat-0);
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  background: var(--k-cell);
+}
+.k-ad-cell[data-level='1'],
+.k-ad-swatch[data-level='1'] {
+  --k-cell: var(--k-heat-1);
+}
+.k-ad-cell[data-level='2'],
+.k-ad-swatch[data-level='2'] {
+  --k-cell: var(--k-heat-2);
+}
+.k-ad-cell[data-level='3'],
+.k-ad-swatch[data-level='3'] {
+  --k-cell: var(--k-heat-3);
+}
+.k-ad-cell[data-level='4'],
+.k-ad-swatch[data-level='4'] {
+  --k-cell: var(--k-heat-4);
+}
+.k-ad-cell[data-level='5'],
+.k-ad-swatch[data-level='5'] {
+  --k-cell: var(--k-heat-5);
+}
+.k-ad-cell {
+  outline: 0;
+  transition: box-shadow var(--dur-flash) var(--ease-snappy);
+}
+.k-ad-cell:hover {
+  box-shadow: 0 0 0 1px var(--k-content-primary-foreground);
+}
+.k-ad-cell:focus-visible {
+  outline: var(--k-focused-outlineWidth) solid var(--k-focused-outlineColor);
+  outline-offset: 1px;
+}
+.k-ad-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 16px;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-ad-readout {
+  margin: 0;
+  min-width: 0;
+  font-variant-numeric: tabular-nums;
+}
+.k-ad-legend {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 3px;
+}
+.k-ad-legend span:first-child {
+  margin-right: var(--space-1);
+}
+.k-ad-legend span:last-child {
+  margin-left: var(--space-1);
+}
+.k-ad-swatch {
+  display: block;
+  width: 10px;
+}
+
+/* 最近运行：一行一个运行，整行是按钮（给了 onOpenRun）。 */
+.k-ad-runs {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--k-separable-secondary-borderColor);
+  border-radius: var(--radius-overlay);
+  background: var(--k-container-secondary-background);
+  overflow: hidden;
+}
+.k-ad-run + .k-ad-run {
+  border-top: 1px solid var(--k-separable-subtle-borderColor);
+}
+.k-ad-run-body {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-width: 0;
+  padding: var(--space-2) var(--space-3);
+  border: 0;
+  background: transparent;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+  text-align: start;
+}
+.k-ad-run-body.is-link {
+  cursor: pointer;
+  transition: background-color var(--dur-flash) var(--ease-snappy);
+}
+.k-ad-run-body.is-link:hover {
+  background: var(--k-actionable-subtle-background-hover);
+}
+.k-ad-run-body.is-link:focus-visible {
+  outline: var(--k-focused-outlineWidth) solid var(--k-focused-outlineColor);
+  outline-offset: -2px;
+}
+.k-ad-run-body > .k-ad-mark:first-child {
+  color: var(--k-content-tertiary-foreground);
+}
+.k-ad-run-actor {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* 只给读屏的字。 */
+.k-ad-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.k-ad-run-meta {
+  display: inline-flex;
+  flex: none;
+  gap: var(--space-2);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-num-small);
+  font-variant-numeric: tabular-nums;
+}
+.k-ad-run-result {
+  flex: none;
+  min-width: 52px;
+  justify-content: flex-end;
+}
+.k-ad-empty {
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px dashed var(--k-separable-secondary-borderColor);
+  border-radius: var(--radius-overlay);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+
+/* 底部动作条（调用方放按钮）。 */
+.k-ad-foot-actions {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--k-separable-subtle-borderColor);
+}
+
+/* 放在 Sheet 里：右上角有关闭钮，头部右边留出它的位置。 */
+[data-slot='sheet-content'] .k-ad-head {
+  padding-right: 52px;
+}

@@ -39,6 +39,11 @@
           "target": "~/src/katana/ui/theme/agent-crew.css"
         },
         {
+          "path": "src/theme/agent-drawer.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/agent-drawer.css"
+        },
+        {
           "path": "src/theme/agent-lanes.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/agent-lanes.css"
@@ -10041,6 +10046,41 @@
           "path": "src/blocks/agent-crew/crew-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/agent-crew/crew-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "agent-drawer",
+      "type": "registry:component",
+      "title": "Agent Drawer",
+      "description": "一个 Agent 本身的档案，侧抽屉（放进 Sheet）或停靠面板都能放：头是名字与一句说明；属性区是状态（在跑 / 暂停 / 停用，图标加词）、标签（多个）、触发（定时 / 事件 / 上传 / 手动，带图标，可附「交易日 08:30」这类细节）、负责人（头像加名字）、创建时间；下面三个页签「用量 / 配置 / 历史」，配置与历史的内容是调用方给的槽（没给的页签不出现）。用量页内置三块：顶上两张指标卡（节省时间、本月花费，数值与环比徽章由调用方写好）、活动热力格（最近 N 周每天跑了几次，带月份与星期标签）、最近运行列表（触发源或人、结果、时长、相对时间，点一行只回调运行 id，可接 AgentRunDetail）。底部 footer 槽放「通知我」「暂停」，件自己不做动作。Agent 列表不新建件：用 DataGrid 的 custom 列加 onOpen，点一行打开抽屉，演示见页上。「在跑」不用强调色（Graphite 下是橙，色弱下与失败红分不出，#211），用中性亮色加转圈图标与状态词。件不取时间，时间与时长由调用方格式化。信息结构与交互借自 Jamie Merrill 公开的 Agent 抽屉与 Agent tracker 截图（2026-11-24 读，只取结构与交互），样子是 KatanaUI 的，热力格是中性灰不是蓝；实现原创。演示数据是示例。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/avatar",
+        "@katana/calendar-model",
+        "@katana/chart-scale",
+        "@katana/cn",
+        "@katana/severity",
+        "@katana/tabs",
+        "@katana/tag"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/agent-drawer/agent-activity.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/agent-drawer/agent-activity.tsx"
+        },
+        {
+          "path": "src/blocks/agent-drawer/agent-drawer-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/agent-drawer/agent-drawer-model.ts"
+        },
+        {
+          "path": "src/blocks/agent-drawer/agent-drawer.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/agent-drawer/agent-drawer.tsx"
         }
       ]
     },

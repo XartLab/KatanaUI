@@ -342,6 +342,7 @@ function collectItems() {
       'agent-tree',
       'agent-fleet',
       'agent-crew',
+      'agent-drawer',
       // #245 模块 2：策略入口。
       'strategy-launcher',
       'floating-window',
