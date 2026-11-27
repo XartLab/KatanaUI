@@ -574,7 +574,7 @@ a.k-news-title:hover {
   font-weight: 600;
 }
 .k-news-group-count {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font-variant-numeric: tabular-nums;
 }
 .k-news[data-layout='card'] .k-news-group {

@@ -425,7 +425,7 @@ export function NewsFeed({
     />
   )
   const renderGroup = (entry: Extract<NewsEntry, { kind: 'group' }>, style?: NewsRowPosition['style']) => (
-    <li key={entry.id} className="k-news-group" data-group={entry.group.key} role="presentation" style={style}>
+    <li key={entry.id} className="k-news-group" data-group={entry.group.key} style={style}>
       <span className="k-news-group-label" role="heading" aria-level={3}>
         {entry.group.label}
       </span>
