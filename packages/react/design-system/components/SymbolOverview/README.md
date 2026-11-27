@@ -8,7 +8,7 @@
 
 ### SymbolOverview
 
-items 是 { id, symbol, name?, last, changePct, values, times }：values 与 times 一一对应，横轴按时刻摆，几只品种的时刻可以不同。页签是 Radix Tabs，区间是 ToggleGroup。
+items 是 { id, symbol, name?, last, changePct, values, times }：values 与 times 一一对应，横轴按时刻摆，几只品种的时刻可以不同。页签是 UI SDK Tabs，区间是 ToggleGroup。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
@@ -97,7 +97,7 @@ SymbolOverview（Tabs）
 
 ## Keyboard
 
-- `← / →（页签上）`：换到前一只 / 后一只品种（Radix Tabs）
+- `← / →（页签上）`：换到前一只 / 后一只品种（UI SDK Tabs）
 - `← / →（图上）`：走到前一个 / 后一个点，出读数
 - `Shift + ← / →`：一次走三个点
 - `Home / End`：走到第一个 / 最后一个点

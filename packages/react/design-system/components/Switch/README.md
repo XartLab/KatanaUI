@@ -8,7 +8,7 @@
 
 ### Switch
 
-其余属性透传给 Radix Switch.Root。
+其余属性透传给 UI SDK Switch。
 
 ## Usage
 

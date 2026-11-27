@@ -8,23 +8,28 @@
 
 ### Tabs
 
-其余属性透传给 Radix Tabs.Root。
+其余属性透传给 UI SDK Tabs。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `bare` | `boolean` | — | Skip the skin. |
+| `value` | `string` | — | The selected tab's value (controlled). |
+| `defaultValue` | `string` | — | The selected tab's value at first (uncontrolled). |
+| `onValueChange` | `(value: string) => void` | — | Called with the chosen tab's value. |
+| `activationMode` | `'automatic' \| 'manual'` | — | automatic (default): arrow keys select as they move; manual: they only move focus, Enter or Space selects. |
 
 ### TabsList
 
-其余属性透传给 Radix Tabs.List。tabsListVariants 是它的类名函数。
+其余属性透传给 UI SDK TabsList。tabsListVariants 是它的类名函数。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `variant` | `"line" \| "default" \| "bare"` | `'default'` | Skin: line, default, or bare (no skin, the caller's class names style it). |
+| `children` | `ReactNode` | — | The tab triggers. |
 
 ### TabsTrigger
 
-其余属性透传给 Radix Tabs.Trigger。
+其余属性透传给 UI SDK TabsTab。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
@@ -32,7 +37,11 @@
 
 ### TabsContent
 
-其余属性透传给 Radix Tabs.Content。
+其余属性透传给 UI SDK TabsPanel。
+
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `forceMount` | `true` | — | Keep the panel in the page while it isn't selected (hidden then). |
 
 ## Usage
 

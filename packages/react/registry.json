@@ -1185,6 +1185,19 @@
       ]
     },
     {
+      "name": "slot-name",
+      "type": "registry:lib",
+      "title": "Slot Name",
+      "description": "把 UI SDK 部件自带的 data-slot 写回我们原来的名字（样式与调用方的选择器认它）。",
+      "files": [
+        {
+          "path": "src/lib/slot-name.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/slot-name.ts"
+        }
+      ]
+    },
+    {
       "name": "spring",
       "type": "registry:lib",
       "title": "Spring",
@@ -1484,12 +1497,14 @@
       "title": "Accordion",
       "description": "一组可展开收起的标题与内容；展开时高度从 0 长出来。",
       "dependencies": [
-        "lucide-react@1.67.0",
-        "radix-ui@1.8.1"
+        "@ui-sdk/core@0.1.0-beta.17",
+        "@ui-sdk/react@0.1.0-beta.17",
+        "lucide-react@1.67.0"
       ],
       "registryDependencies": [
         "@katana/cn",
-        "@katana/focus"
+        "@katana/focus",
+        "@katana/slot-name"
       ],
       "files": [
         {
@@ -1547,7 +1562,8 @@
       "title": "Avatar",
       "description": "圆形头像：图片没到或失败时显示缩写，右下角可挂在线状态点，AvatarGroup 叠放并把多出的折成 +N；三档尺寸 24 / 32 / 40。",
       "dependencies": [
-        "radix-ui@1.8.1"
+        "@ui-sdk/core@0.1.0-beta.17",
+        "@ui-sdk/react@0.1.0-beta.17"
       ],
       "registryDependencies": [
         "@katana/cn"
@@ -1678,7 +1694,8 @@
       "title": "Checkbox",
       "description": "14px 凹陷方框；选中后中心一块 6px 方块，框换亮中性底，符号弹进来。半选画 2px 横杠。可选 indicator=\"check\"：一笔写出来的勾（改自 SmoothUI，MIT）。",
       "dependencies": [
-        "radix-ui@1.8.1"
+        "@ui-sdk/core@0.1.0-beta.17",
+        "@ui-sdk/react@0.1.0-beta.17"
       ],
       "registryDependencies": [
         "@katana/cn",
@@ -1698,12 +1715,14 @@
       "title": "Collapsible",
       "description": "一个标题行加一块可收起的内容；内容高度从 0 长出来，箭头翻过来。成组、同时只开一项的用 Accordion。",
       "dependencies": [
-        "lucide-react@1.67.0",
-        "radix-ui@1.8.1"
+        "@ui-sdk/core@0.1.0-beta.17",
+        "@ui-sdk/react@0.1.0-beta.17",
+        "lucide-react@1.67.0"
       ],
       "registryDependencies": [
         "@katana/cn",
-        "@katana/focus"
+        "@katana/focus",
+        "@katana/slot-name"
       ],
       "files": [
         {
@@ -1885,7 +1904,8 @@
       "title": "Label",
       "description": "标签加控件加说明加错误排成一组，并把它们的 ARIA 关联好：标签点一下聚焦控件，说明与错误进控件的 aria-describedby，出错时 aria-invalid、错误条 role=alert。可选 shakeOnInvalid：变成无效的那一刻整组抖一下（改自 SmoothUI form，MIT）。",
       "dependencies": [
-        "radix-ui@1.8.1"
+        "@ui-sdk/core@0.1.0-beta.17",
+        "@ui-sdk/react@0.1.0-beta.17"
       ],
       "registryDependencies": [
         "@katana/cn"
@@ -1976,10 +1996,11 @@
       "name": "morph-toggle",
       "type": "registry:ui",
       "title": "Morph Toggle",
-      "description": "带仪式感的单个开关：圆钮滑动时形状跟着变（方块变圆），或钮里两个图标转着换。底座是 Radix Switch，尺寸与颜色同 Switch。改自 SmoothUI（MIT）。",
+      "description": "带仪式感的单个开关：圆钮滑动时形状跟着变（方块变圆），或钮里两个图标转着换。底座是 UI SDK Switch，尺寸与颜色同 Switch。改自 SmoothUI（MIT）。",
       "dependencies": [
-        "motion@14.9.0",
-        "radix-ui@1.8.1"
+        "@ui-sdk/core@0.1.0-beta.17",
+        "@ui-sdk/react@0.1.0-beta.17",
+        "motion@14.9.0"
       ],
       "registryDependencies": [
         "@katana/cn",
@@ -2082,8 +2103,9 @@
       "title": "Progress",
       "description": "4 高的细条，填充走 snappy 弹簧滑到新位置；不知道进度（不给 value）是一块来回滑的不确定条。",
       "dependencies": [
-        "class-variance-authority@0.7.1",
-        "radix-ui@1.8.1"
+        "@ui-sdk/core@0.1.0-beta.17",
+        "@ui-sdk/react@0.1.0-beta.17",
+        "class-variance-authority@0.7.1"
       ],
       "registryDependencies": [
         "@katana/alert",
@@ -2104,11 +2126,13 @@
       "title": "Radio Group",
       "description": "一组互斥的单选钮：14px 凹陷圆框，选中后框换亮中性，中心一颗深色点从小弹到位。方向键在选项间移动并选中。改自 SmoothUI（MIT）。",
       "dependencies": [
-        "radix-ui@1.8.1"
+        "@ui-sdk/core@0.1.0-beta.17",
+        "@ui-sdk/react@0.1.0-beta.17"
       ],
       "registryDependencies": [
         "@katana/cn",
-        "@katana/focus"
+        "@katana/focus",
+        "@katana/slot-name"
       ],
       "files": [
         {
@@ -2122,9 +2146,10 @@
       "name": "scroll-area",
       "type": "registry:ui",
       "title": "Scroll Area",
-      "description": "Radix 的自绘滚动条，4px 宽，平时不出现，指针到了这一块才出一条淡线（18% 墨色，指到滚动条上 32%）。调用方要给它一个确定的高。",
+      "description": "UI SDK ScrollArea 的自绘滚动条，4px 宽，平时不出现，指针到了这一块才出一条淡线（18% 墨色，指到滚动条上 32%）。调用方要给它一个确定的高。",
       "dependencies": [
-        "radix-ui@1.8.1"
+        "@ui-sdk/core@0.1.0-beta.17",
+        "@ui-sdk/react@0.1.0-beta.17"
       ],
       "registryDependencies": [
         "@katana/cn",
@@ -2167,7 +2192,8 @@
       "title": "Separator",
       "description": "1px 的线，取 line 色（跟菜单里的分隔线一条白线）；默认只是装饰，读屏不报。",
       "dependencies": [
-        "radix-ui@1.8.1"
+        "@ui-sdk/core@0.1.0-beta.17",
+        "@ui-sdk/react@0.1.0-beta.17"
       ],
       "registryDependencies": [
         "@katana/cn"
@@ -2263,7 +2289,8 @@
       "title": "Switch",
       "description": "34 × 18 的轨道画在 40 × 28 的布局盒里；开时轨道换强调色，圆钮挪过去。",
       "dependencies": [
-        "radix-ui@1.8.1"
+        "@ui-sdk/core@0.1.0-beta.17",
+        "@ui-sdk/react@0.1.0-beta.17"
       ],
       "registryDependencies": [
         "@katana/cn",
@@ -2283,12 +2310,14 @@
       "title": "Tabs",
       "description": "页签的选中块是一块跟着滑的底（弹簧）；default 是药丸底，line 是下划线。",
       "dependencies": [
-        "class-variance-authority@0.7.1",
-        "radix-ui@1.8.1"
+        "@ui-sdk/core@0.1.0-beta.17",
+        "@ui-sdk/react@0.1.0-beta.17",
+        "class-variance-authority@0.7.1"
       ],
       "registryDependencies": [
         "@katana/cn",
-        "@katana/focus"
+        "@katana/focus",
+        "@katana/slot-name"
       ],
       "files": [
         {
@@ -2344,7 +2373,8 @@
       "title": "Toggle",
       "description": "单个按下即开的按钮（aria-pressed）：外形是 Button，开时换分段选中的底与字；按下缩到 0.97。改自 SmoothUI（MIT）。",
       "dependencies": [
-        "radix-ui@1.8.1"
+        "@ui-sdk/core@0.1.0-beta.17",
+        "@ui-sdk/react@0.1.0-beta.17"
       ],
       "registryDependencies": [
         "@katana/button",
@@ -3588,8 +3618,9 @@
       "title": "Chip Group",
       "description": "分面筛选用的一排可开关小标签：多选或单选，可带命中数与清除钮。筛选器、自选分组的快速过滤用它。功能参照 Arc，实现原创。",
       "dependencies": [
-        "lucide-react@1.67.0",
-        "radix-ui@1.8.1"
+        "@ui-sdk/core@0.1.0-beta.17",
+        "@ui-sdk/react@0.1.0-beta.17",
+        "lucide-react@1.67.0"
       ],
       "registryDependencies": [
         "@katana/cn"

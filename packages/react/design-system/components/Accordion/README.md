@@ -8,15 +8,27 @@
 
 ### Accordion
 
-其余属性透传给 Radix Accordion.Root。
+其余属性透传给 UI SDK Accordion。
+
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `type` * | `'single'` | — | One item open at a time. |
+| `value` | `string` | — | The open item's value (controlled). |
+| `defaultValue` | `string` | — | The open item's value at first (uncontrolled). |
+| `onValueChange` | `(value: string) => void` | — | Called with the open item's value; an empty string once it closes. |
+| `collapsible` | `boolean` | — | Lets the open item close itself. |
 
 ### AccordionItem
 
-其余属性透传给 Radix Accordion.Item。
+其余属性透传给 UI SDK AccordionItem。
 
 ### AccordionTrigger / AccordionContent
 
-标题行（带箭头）与展开的内容，透传 Radix 同名部件。
+标题行（带箭头）与展开的内容，透传 UI SDK 同名部件。
+
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | — | The heading's content. |
 
 ## Usage
 

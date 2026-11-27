@@ -8,7 +8,7 @@
 
 ### ChipGroup
 
-每个芯片是 aria-pressed 的开关，整组 role=group；底座是 Radix ToggleGroup。受控：value 与 onValueChange。
+每个芯片是 aria-pressed 的开关，整组 role=group；底座是 UI SDK ToggleGroup。受控：value 与 onValueChange。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
@@ -78,7 +78,7 @@ export function ChipGroupUsage() {
 
 ```
 ChipGroup
-  ToggleGroup（Radix，type=multiple）
+  ToggleGroup（UI SDK，multiple）
     Item × n（字 + 命中数）
   button.k-chip-clear
 ```

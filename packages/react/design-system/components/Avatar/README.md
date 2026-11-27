@@ -8,7 +8,7 @@
 
 ### Avatar
 
-其余属性透传给 Radix Avatar.Root。
+其余属性透传给 UI SDK Avatar。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
@@ -69,8 +69,8 @@ export function AvatarUsage() {
 ```
 AvatarGroup
   Avatar
-    Radix Avatar.Image（有 src）
-    Radix Avatar.Fallback
+    AvatarImage（有 src）
+    AvatarFallback
     span（status 点）
   span（+N）
 ```

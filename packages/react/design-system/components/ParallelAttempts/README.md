@@ -31,8 +31,8 @@ picked 不给时跟着最优走，用户点过就以用户的为准。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `progress` | `number` | — | Progress 0..1 while running (or where a failed attempt stopped). |
 | `status` | `AttemptStatus` | — | Queued, running, done or failed; defaults to queued. |
+| `progress` | `number` | — | Progress 0..1 while running (or where a failed attempt stopped). |
 
 ### bestAttempt
 
