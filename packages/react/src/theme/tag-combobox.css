@@ -20,9 +20,9 @@
   padding: var(--k-tagcb-pad) 28px var(--k-tagcb-pad) 6px;
   background: var(--k-editable-background);
   border: 1px solid var(--k-editable-borderColor);
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   cursor: text;
-  transition: border-color 120ms;
+  transition: border-color var(--dur-hover) var(--ease-hover);
 }
 .k-tagcb-box:focus-within {
   border-color: var(--k-editable-borderColor-active);
@@ -45,7 +45,7 @@
   padding: 0 2px 0 3px;
   background: var(--k-actionable-background);
   border: 1px solid var(--k-actionable-borderColor);
-  border-radius: 11px;
+  border-radius: var(--radius-pill);
   color: var(--k-content-primary-foreground);
   font: var(--text-data) var(--font-sans);
   line-height: 1;
@@ -142,7 +142,7 @@
 .k-tagcb-toggle svg {
   width: 12px;
   height: 12px;
-  transition: transform 150ms;
+  transition: transform 150ms var(--ease-snappy);
 }
 .k-tagcb[data-open] .k-tagcb-toggle svg {
   transform: rotate(180deg);
@@ -165,7 +165,7 @@
   box-sizing: border-box;
   min-height: 30px;
   padding: 6px 8px;
-  border-radius: 6px;
+  border-radius: var(--radius-inner);
   color: var(--k-content-body-foreground);
   cursor: pointer;
   user-select: none;
