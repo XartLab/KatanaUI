@@ -2,27 +2,19 @@
 /* 改自 SmoothUI（https://github.com/educlopez/smoothui ，MIT，© 2024 Eduardo Calvo）的几件的动效：折叠单项、菜单栏、导航菜单。
    曲线与时长用 token（--ease-snappy / --dur-snappy）；产品不跟系统的「减少动态效果」，所以不写 prefers-reduced-motion（见 motion.css 头部）。 */
 
-@keyframes kc-collapsible-down {
-  from {
-    height: 0;
-  }
-  to {
-    height: var(--radix-collapsible-content-height);
-  }
+/* 折叠单项：高度在 0 与内容高度（UI SDK 量出来的 --collapsible-panel-height）之间过渡；进场 snappy，退场 exit。
+   data-starting-style 是打开前一帧、data-ending-style 是收起过程，UI SDK 等过渡放完才卸载面板；一开始就开着的不播。 */
+[data-slot='collapsible-content'] {
+  height: var(--collapsible-panel-height);
+  transition: height var(--dur-snappy) var(--ease-snappy);
 }
-@keyframes kc-collapsible-up {
-  from {
-    height: var(--radix-collapsible-content-height);
-  }
-  to {
-    height: 0;
-  }
+[data-slot='collapsible-content'][data-starting-style],
+[data-slot='collapsible-content'][data-ending-style] {
+  height: 0;
 }
-[data-slot='collapsible-content'][data-state='open'] {
-  animation: kc-collapsible-down var(--dur-snappy) var(--ease-snappy);
-}
-[data-slot='collapsible-content'][data-state='closed'] {
-  animation: kc-collapsible-up var(--dur-exit) var(--ease-exit);
+[data-slot='collapsible-content'][data-ending-style] {
+  transition-duration: var(--dur-exit);
+  transition-timing-function: var(--ease-exit);
 }
 
 /* 菜单栏的面板：与下拉菜单同一条入场（kc-pop-in / kc-pop-out 在 motion.css）。 */
@@ -160,7 +152,7 @@
 
 /* ── 并入已有件的动效（对齐 SmoothUI，不改任何 API）──
    页签内容：切换时淡入（SmoothUI tabs 的 animated 面板：opacity 0 到 1）。 */
-[data-slot='tabs-content'][data-state='active'] {
+[data-slot='tabs-content'][data-selected] {
   animation: kc-fade-in 150ms var(--ease-hover) both;
 }
 
