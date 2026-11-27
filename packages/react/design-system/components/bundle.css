@@ -1797,6 +1797,10 @@
   min-width: 120px;
 }
 
+.min-w-\[140px\] {
+  min-width: 140px;
+}
+
 .min-w-\[180px\] {
   min-width: 180px;
 }
@@ -30847,6 +30851,43 @@ span.k-flag-mark {
   border-color: var(--k-selectable-border);
   background: var(--k-selectable-background-selected);
   color: var(--k-content-primary-foreground);
+}
+
+.k-link-picker {
+  border-radius: var(--radius-inner);
+  cursor: pointer;
+  width: 22px;
+  height: 22px;
+  transition: background-color .12s var(--ease-snappy, ease-out);
+  background: none;
+  border: 0;
+  flex: 0 0 22px;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  display: inline-flex;
+}
+
+.k-link-picker:hover {
+  background: var(--k-actionable-subtle-background-hover);
+}
+
+.k-link-picker[data-state="open"] {
+  background: var(--k-actionable-subtle-background-active);
+}
+
+.k-link-picker:focus-visible {
+  outline: var(--k-focused-outlineWidth) solid var(--k-focused-outlineColor);
+  outline-offset: -2px;
+}
+
+.k-link-picker-dot {
+  flex: none;
+  justify-content: center;
+  align-items: center;
+  width: 12px;
+  height: 12px;
+  display: inline-flex;
 }
 
 .k-spark-tile {

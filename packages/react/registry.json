@@ -414,6 +414,11 @@
           "target": "~/src/katana/ui/theme/limit-ladder.css"
         },
         {
+          "path": "src/theme/link-group-picker.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/link-group-picker.css"
+        },
+        {
           "path": "src/theme/link.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/link.css"
@@ -1027,7 +1032,7 @@
       "name": "link-group",
       "type": "registry:lib",
       "title": "Link Group",
-      "description": "同一联动组的件共用品种、周期、十字线时刻、可见区间（#22 G8）：自选点一行，同组的图换品种；一张图上移动十字线，同组的图跟着画。照 TradingView 多图布局的同步（品种、周期、十字线、时间、日期区间）与自选联动。组 id 一般是面板头色点的 LinkGroup（A–D），null 不联动。纯 context，不带宿主、不存盘。",
+      "description": "同一联动组的件共用品种、周期、十字线时刻、可见区间（#22 G8）：自选点一行，同组的图换品种；一张图上移动十字线，同组的图跟着画。照 TradingView 多图布局的同步（品种、周期、十字线、时间、日期区间）与自选联动。组 id 一般是面板头色点的 LinkGroup（A–D），null 不联动。纯 context，不带宿主、不存盘。标题栏里放 LinkGroupPicker 选组（A–D 或不联动，#150）。",
       "files": [
         {
           "path": "src/lib/link-group.tsx",
@@ -2970,6 +2975,26 @@
           "path": "src/katana/led.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/katana/led.tsx"
+        }
+      ]
+    },
+    {
+      "name": "link-group-picker",
+      "type": "registry:component",
+      "title": "Link Group Picker",
+      "description": "同一联动组的件共用品种、周期、十字线时刻、可见区间（#22 G8）：自选点一行，同组的图换品种；一张图上移动十字线，同组的图跟着画。照 TradingView 多图布局的同步（品种、周期、十字线、时间、日期区间）与自选联动。组 id 一般是面板头色点的 LinkGroup（A–D），null 不联动。纯 context，不带宿主、不存盘。标题栏里放 LinkGroupPicker 选组（A–D 或不联动，#150）。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/dropdown-menu",
+        "@katana/led",
+        "@katana/link-group",
+        "@katana/menu-parts"
+      ],
+      "files": [
+        {
+          "path": "src/katana/link-group-picker.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/link-group-picker.tsx"
         }
       ]
     },

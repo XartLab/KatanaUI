@@ -29134,6 +29134,102 @@
       "source": "src/katana/led.tsx",
       "props": []
     },
+    "LinkGroupPicker": {
+      "kind": "component",
+      "source": "src/katana/link-group-picker.tsx",
+      "props": [
+        {
+          "name": "value",
+          "type": "LinkGroup | null",
+          "required": true,
+          "description": "Group of the panel; null is unlinked."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(group: LinkGroup | null) => void",
+          "required": true,
+          "description": "Called with the chosen group, or null when the user unlinks the panel."
+        },
+        {
+          "name": "carry",
+          "type": "LinkGroupState",
+          "required": false,
+          "description": "What the panel shows now (the state from useLinkGroup)."
+        },
+        {
+          "name": "labels",
+          "type": "LinkGroupPickerLabels",
+          "required": true,
+          "description": "Texts written by the caller."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name of the button."
+        }
+      ]
+    },
+    "LinkGroupPickerLabels": {
+      "kind": "type",
+      "source": "src/katana/link-group-picker.tsx",
+      "props": [
+        {
+          "name": "trigger",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the button and the menu (e.g."
+        },
+        {
+          "name": "none",
+          "type": "string",
+          "required": true,
+          "description": "Name of the unlinked option (e.g."
+        },
+        {
+          "name": "groups",
+          "type": "Partial<Record<LinkGroup, string>>",
+          "required": false,
+          "description": "Names of the groups; a group without a name shows its letter."
+        }
+      ]
+    },
+    "LinkGroupPickerProps": {
+      "kind": "type",
+      "source": "src/katana/link-group-picker.tsx",
+      "props": [
+        {
+          "name": "value",
+          "type": "LinkGroup | null",
+          "required": true,
+          "description": "Group of the panel; null is unlinked."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(group: LinkGroup | null) => void",
+          "required": true,
+          "description": "Called with the chosen group, or null when the user unlinks the panel."
+        },
+        {
+          "name": "carry",
+          "type": "LinkGroupState",
+          "required": false,
+          "description": "What the panel shows now (the state from useLinkGroup)."
+        },
+        {
+          "name": "labels",
+          "type": "LinkGroupPickerLabels",
+          "required": true,
+          "description": "Texts written by the caller."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name of the button."
+        }
+      ]
+    },
     "LinkGroupProvider": {
       "kind": "component",
       "source": "src/lib/link-group.tsx",
@@ -68531,6 +68627,60 @@
       "kind": "function",
       "source": "src/quant/period-returns-model.ts",
       "props": []
+    },
+    "joinLinkGroup": {
+      "kind": "function",
+      "source": "src/katana/link-group-picker.tsx",
+      "props": [
+        {
+          "name": "get",
+          "type": "(group: string) => LinkGroupState",
+          "required": true,
+          "description": "一组现在的状态（没人设过是空对象）。"
+        },
+        {
+          "name": "set",
+          "type": "(group: string, patch: Partial<LinkGroupState>) => void",
+          "required": true,
+          "description": "改一组的几个字段；值没变的字段不算改，什么都没变不通知。"
+        },
+        {
+          "name": "select",
+          "type": "(group: string, fields: readonly LinkField[]) => LinkGroupState",
+          "required": true,
+          "description": "只取几个字段：这几个字段没变时返回同一个对象（给 useSyncExternalStore）。"
+        },
+        {
+          "name": "subscribe",
+          "type": "(group: string, listener: (changed: readonly LinkField[]) => void) => () => void",
+          "required": true,
+          "description": "订阅一组；回调拿到这次改了哪些字段。"
+        },
+        {
+          "name": "symbol",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "interval",
+          "type": "string",
+          "required": false,
+          "description": "周期（调用方的写法：1、5、60、1D……）。"
+        },
+        {
+          "name": "crosshairTime",
+          "type": "number | null",
+          "required": false,
+          "description": "十字线所在的时刻（毫秒）；null 是指针不在任何一张图上。"
+        },
+        {
+          "name": "range",
+          "type": "{ from: number; to: number } | null",
+          "required": false,
+          "description": "可见的时间区间（毫秒）。"
+        }
+      ]
     },
     "keyMove": {
       "kind": "function",
