@@ -21,6 +21,7 @@ describe('compactNumber', () => {
     expect(formatCompactNumber(3.2e8, { locale: 'zh-CN', digits: 1 })).toBe('3.2亿')
     expect(compactNumber(5.2e8, { locale: 'zh-CN' })).toEqual({ number: '5.20', suffix: '亿' })
     expect(compactNumber(9_999, { locale: 'zh-CN' })).toEqual({ number: '9,999', suffix: '' })
+    expect(compactNumber(1.1e12, { locale: 'zh-CN' })).toEqual({ number: '1.10', suffix: '万亿' })
     expect(formatCompactNumber(Number.NaN, { locale: 'zh-CN' })).toBe('—')
     expect(formatCompactNumber(2e6)).toBe('2.00 M')
   })

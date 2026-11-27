@@ -40,8 +40,8 @@ export function compactNumber(value: number, { locale = 'en-US', digits }: Compa
   if (!Number.isFinite(value)) return { number: '—', suffix: '' }
   if (isZh(locale)) {
     const text = formatCnAmount(value, { digits })
-    const suffix = text.endsWith('亿') || text.endsWith('万') ? text.slice(-1) : ''
-    return { number: suffix ? text.slice(0, -1) : text, suffix }
+    const suffix = text.endsWith('万亿') ? '万亿' : text.endsWith('亿') || text.endsWith('万') ? text.slice(-1) : ''
+    return { number: suffix ? text.slice(0, -suffix.length) : text, suffix }
   }
   const places = digits ?? 2
   const parts = formatter(locale, {

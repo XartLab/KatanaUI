@@ -5,12 +5,13 @@
 /** 跟 `formatQuantity` 的 SizeFormat 同一套接口：abbreviate 为 false 就不缩成万 / 亿；digits 盖掉默认小数位。 */
 export type CnAmountSize = { abbreviate?: boolean; digits?: number; signed?: boolean }
 
-/** 万、亿的单位字（由调用方换，比如繁体）；默认「万」「亿」。这两个字是中国市场的计数单位，不算文案。 */
-export type CnAmountUnits = { wan: string; yi: string }
+/** 万、亿、万亿的单位字（由调用方换，比如繁体）；默认「万」「亿」「万亿」。这几个字是中国市场的计数单位，不算文案。wanyi 不给就是「万亿」（旧调用方只传 wan 与 yi 照常用）。 */
+export type CnAmountUnits = { wan: string; yi: string; wanyi?: string }
 
-const DEFAULT_UNITS: CnAmountUnits = { wan: '万', yi: '亿' }
+const DEFAULT_UNITS: CnAmountUnits = { wan: '万', yi: '亿', wanyi: '万亿' }
 const WAN = 1e4
 const YI = 1e8
+const WAN_YI = 1e12
 
 const withCommas = (text: string) => {
   const [int, frac] = text.split('.')
@@ -22,8 +23,9 @@ const withCommas = (text: string) => {
 const trimZeros = (text: string) => (text.includes('.') ? text.replace(/\.?0+$/, '') : text)
 
 /**
- * 金额写成万 / 亿：≥1 亿写「x.xx亿」（两位小数），≥1 万写「x万」（不到 100 万保留一位小数，去掉多余的 0；100 万以上取整），否则原样（千分位）。
- * 取不到（null、NaN）写「—」，不写 0。负数带 -，`signed` 给正数带 +。进位后到了下一档的写下一档（9999.6 万 → 1.00 亿）。
+ * 金额写成万 / 亿 / 万亿：≥1 万亿写「x.xx万亿」（两位小数，跟亿档一致，#260），≥1 亿写「x.xx亿」（两位小数），≥1 万写「x万」（不到 100 万保留一位小数，去掉多余的 0；100 万以上取整），否则原样（千分位）。
+ * 取不到（null、NaN）写「—」，不写 0。负数带 -，`signed` 给正数带 +。进位后到了下一档的写下一档（9999.6 万 → 1.00 亿；9999.999 亿 → 1.00 万亿）。
+ * 万亿档的界线是 1e12：9.99e11 仍写「9,990.00亿」。
  */
 export function formatCnAmount(
   value: number | null | undefined,
@@ -41,7 +43,12 @@ export function formatCnAmount(
   const places = digits ?? (wan < 100 ? 1 : 0)
   // 万的写法进位后到了 10000 万，就是 1 亿。
   if (size >= YI || Number(wan.toFixed(places)) >= 1e4) {
-    return `${sign}${withCommas((size / YI).toFixed(digits ?? 2))}${units.yi}`
+    const yiPlaces = digits ?? 2
+    // 亿的写法进位后到了 10000 亿，就是 1 万亿。
+    if (size >= WAN_YI || Number((size / YI).toFixed(yiPlaces)) >= 1e4) {
+      return `${sign}${withCommas((size / WAN_YI).toFixed(yiPlaces))}${units.wanyi ?? '万亿'}`
+    }
+    return `${sign}${withCommas((size / YI).toFixed(yiPlaces))}${units.yi}`
   }
   const text = withCommas(wan.toFixed(places))
   return `${sign}${digits === undefined ? trimZeros(text) : text}${units.wan}`
