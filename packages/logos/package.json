@@ -49,7 +49,7 @@
     "web3icons:sync": "node scripts/sync-web3icons.mjs"
   },
   "dependencies": {
-    "@web3icons/core": "4.0.60"
+    "@web3icons/core": "4.0.61"
   },
   "devDependencies": {
     "@types/node": "22.20.5",

@@ -172,8 +172,8 @@ importers:
   packages/logos:
     dependencies:
       '@web3icons/core':
-        specifier: 4.0.60
-        version: 4.0.60
+        specifier: 4.0.61
+        version: 4.0.61
     devDependencies:
       '@types/node':
         specifier: 22.20.5
@@ -2201,11 +2201,11 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@web3icons/common@0.11.55':
-    resolution: {integrity: sha512-fwwoWmA1gAxCElRBsPP/y7S1i7yJBzd5X3v9wJmcVZ5AzKoRXQp4iho5uazdSFzz6Jrriu8gZ0RAWC/dUDQZuw==}
+  '@web3icons/common@0.11.56':
+    resolution: {integrity: sha512-WCRThRBjpMzF2aNGGOPGFPvRG9/jx2oyQbk0khvssjW60hPkpRORus5gcgzLCRtB5r6y0fjeykGWOfMAwYrjxA==}
 
-  '@web3icons/core@4.0.60':
-    resolution: {integrity: sha512-ycV7X2vpRUN/VLHv88BWG4S0KlmLL2xD0KxtdL8H1VHdEA3pjn7C6oEr69DCn6Iz6vlrYweHInWi5Q2VjRVoaA==}
+  '@web3icons/core@4.0.61':
+    resolution: {integrity: sha512-wCnot07THfG1amkqLJUhrONy5bTFj0QiWydF7LpxJ30bB8qZcf8MirfgnDGUYcD7SW27uafZH4zG9Sc0nIuRrw==}
 
   '@xyflow/react@13.0.2':
     resolution: {integrity: sha512-dURQCKhz4TEYc43pp9yY4LeEvC7rmHLPeit396VKA9wSNjda245nA4JTZV3ieekB2dx7kwGjvXQELmsZ0FpVAA==}
@@ -5553,11 +5553,11 @@ snapshots:
   '@voidzero-dev/vite-plus-win32-x64-msvc@1.4.0':
     optional: true
 
-  '@web3icons/common@0.11.55': {}
+  '@web3icons/common@0.11.56': {}
 
-  '@web3icons/core@4.0.60':
+  '@web3icons/core@4.0.61':
     dependencies:
-      '@web3icons/common': 0.11.55
+      '@web3icons/common': 0.11.56
 
   '@xyflow/react@13.0.2(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1))':
     dependencies:
