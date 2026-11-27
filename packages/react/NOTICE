@@ -146,3 +146,8 @@ This package is licensed under the MIT License (see LICENSE).
    BudouX is a dev-only dependency of the documentation site (Apache-2.0, compatible with this package's MIT licence); it is not part of the published library.
 15. 排版开关的数值（`src/theme/typesetting.css`、文档站「中英排版开关」页）取自 kubai（@kubai087）《999 个小技巧》第 007 期「中英文排版的 CSS 设置」
    （https://vibedesign.tips/007-type-switches/ ，数值照 issue #250 抄录的原文，2026-11-26）；只取数值与做法，没有搬代码或文字。
+16. UI SDK（https://github.com/vercel-labs/ui ，npm `@ui-sdk/core`、`@ui-sdk/react` 0.1.0-beta.17，Apache-2.0，Copyright 2026 Vercel, Inc.；2026-11-27 读 commit a3b6cd5 的文档与源码，#263）
+   交互行为层的底座，是运行时依赖（`dependencies`，版本写死 0.1.0-beta.17），代码不随本包分发，由使用者的包管理器安装；它的许可证与版权声明随它自己的包走。
+   现在用到的件：calendar、date-input、time-input、listbox、tree（`src/patterns/date-parts.tsx`、`calendar.tsx`、`date-time-input.tsx`、`date-range-picker.tsx`、`list-box.tsx`、`tree-view.tsx`，`src/cn/trading-date-picker.tsx`，`src/katana/json-viewer.tsx`）。
+   只调用它的公开出口，没有拷它的源码。测试用它的 `@ui-sdk/core/testing`（`checkPattern`）。Apache-2.0 是宽松许可证，与本包的 MIT 兼容。
+   UI SDK is the behaviour layer (keyboard, focus, selection, ARIA) under the date, list and tree components; it is a runtime dependency installed from npm (pinned to 0.1.0-beta.17) and is not redistributed in this package.

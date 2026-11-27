@@ -37,7 +37,8 @@ describe('shadcn 注册表清单', () => {
     const names = new Set(registry.items.map((i) => `@katana/${i.name}`))
     for (const item of registry.items) {
       for (const dep of item.registryDependencies ?? []) expect(names.has(dep), `${item.name} → ${dep}`).toBe(true)
-      for (const dep of item.dependencies ?? []) expect(dep, item.name).toMatch(/^(@[^@/]+\/)?[^@/]+@\d+\.\d+\.\d+$/)
+      for (const dep of item.dependencies ?? [])
+        expect(dep, item.name).toMatch(/^(@[^@/]+\/)?[^@/]+@\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/)
     }
   })
 
