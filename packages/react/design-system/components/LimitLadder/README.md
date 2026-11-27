@@ -11,8 +11,9 @@ A 股专有件（连板、涨停、炸板是 A 股的概念）。按板位从高
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `levels` | `LadderLevel[]` | — | { board, promoted?: [已晋级, 候选], items }；件自己按 board 从高到低排。空数组画空态。 |
-| `levels[].items` | `LadderItem[]` | — | { code, name, change（百分数）, firstSeal?, sealAmount?（元，写成 520.00 M）, opens?, industry?, logo?, status }；没有的值写「—」。 |
-| `labels` | `LimitLadderLabels` | — | 板位单位、晋级率与只数文字、状态名、汇总读数名、列名、读屏名、空态文字，由调用方传。 |
+| `levels[].items` | `LadderItem[]` | — | { code, name, change（百分数）, firstSeal?, sealAmount?（元，按 locale 缩写：zh-CN 写成 5.20 亿，en-US 写成 520.00 M，单位 labels.sealUnit 写成小字）, opens?, industry?, logo?, status }；没有的值写「—」。 |
+| `labels` | `LimitLadderLabels` | — | 板位单位、晋级率与只数文字、状态名、汇总读数名、列名、封单额单位（sealUnit，可选，写成 10px 次要色小字）、读屏名、空态文字，由调用方传。 |
+| `locale` | `string` | `'en-US'` | 封单额缩写的语言（#92）：zh-CN 是 万 / 亿（formatCnAmount 的写法，#158），en-US 是 K / M / B；跟 DataGrid compact 列同一个 formatCompactNumber。 |
 | `selected` | `string \| null` | — | 选中个股的代码；选中行左侧画 2px 强调条。 |
 | `onSelect` | `(item: LadderItem) => void` | — | 点击或 Enter / Space 选一行；给出整条（G6 起不再只给代码）。 |
 | `rowActions` | `(item: LadderItem) => RowAction[]` | — | 行快捷操作（#23，一般传 symbolMenu(...)）：悬停或键盘落到这一行时右端浮出前三颗带图标的按钮，右键、菜单键、Shift+F10 出整份菜单。不传就没有。按钮条与菜单的读屏名取 labels.rowActions、labels.rowMenu（可选，省略用英文）。 |
@@ -155,6 +156,7 @@ export function LimitLadderUsage() {
           <LimitLadder
             levels={LADDER_LEVELS}
             labels={LADDER_LABELS}
+            locale="zh-CN"
             selected={selected}
             onSelect={(item) => setSelected(item.code)}
           />

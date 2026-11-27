@@ -2,6 +2,7 @@
 // 第 0 层（#110）：cn 件的文案。包里的件不写死任何语言：文字都走这份结构，由调用方传。
 // `cnLabelsZh` 是随包的简体中文默认；调用方可以整份换（别的语言、别的措辞），也可以只换其中一段（每个件只读自己那一段）。
 import type { CnPhase } from './session.ts'
+import type { ThresholdGapState } from './threshold-gap-model.ts'
 
 export type StreakLabels = {
   /** 首板。 */
@@ -192,6 +193,8 @@ export type MoveFeedLabels = {
   /** 类型多选筛的读屏名与「全部」。 */
   filter: string
   all: string
+  /** 「只看当前品种」开关上的字，例「当前币对」；缺省就不画这个开关（也不按品种筛），传了还要有 currentSymbol 才画。 */
+  onlyCurrent?: string
   /** 一类异动的名字，key 是 MOVE_TYPE_KEYS 里的。 */
   types: Record<string, string>
   /** 筛选 chip 上的计数文字。 */
@@ -201,6 +204,48 @@ export type MoveFeedLabels = {
   empty: string
   /** 一行的读屏名，例「09:31:05 机器人 火箭发射 +3.2%」。 */
   row: (time: string, name: string, type: string, value: string) => string
+  unavailable: string
+}
+
+export type RangeScrubberLabels = {
+  region: string
+  /** 起点、终点把手的读屏名。 */
+  low: string
+  high: string
+  /** 读数行，例「09:45–10:30 · 45 分钟」；minutes 是交易分钟（午休不算）。 */
+  span: (from: string, to: string, minutes: number) => string
+  /** 快捷钮组的读屏名与一个钮上的字，例「近 15 分」。 */
+  presetGroup: string
+  preset: (minutes: number) => string
+  /** 口径切换的读屏名与各口径的名字（键是调用方给的 metrics）。 */
+  metricGroup: string
+  metrics: Record<string, string>
+  /** 「现在」之后那段斜纹的悬停提示。 */
+  future: string
+}
+
+export type AuctionBarLabels = {
+  /** 09:25 之前格里写的字。 */
+  pending: string
+  /** 整格的读屏名（也是悬停提示）；金额已写成万 / 亿，取不到是「—」，没有涨停委买是 null。 */
+  aria: (parts: {
+    amount: string
+    previous: string
+    ratio: string
+    limitBid: string | null
+    pending: boolean
+  }) => string
+}
+
+export type ThresholdGapLabels = {
+  state: Record<ThresholdGapState, string>
+  /** 离阈值还差多少，例「差 0.04%」。 */
+  gap: (percent: string) => string
+  /** 越过阈值多少，例「超出 1.20%」。 */
+  over: (percent: string) => string
+  /** 读屏里阈值与预警线的说法，例「阈值 20.00%」。 */
+  threshold: (percent: string) => string
+  warn: (percent: string) => string
   unavailable: string
 }
 
@@ -218,6 +263,9 @@ export type CnLabels = {
   flowRace: FlowRaceLabels
   miniK: MiniKCardLabels
   moveFeed: MoveFeedLabels
+  rangeScrubber: RangeScrubberLabels
+  auctionBar: AuctionBarLabels
+  thresholdGap: ThresholdGapLabels
 }
 
 const NUMERALS = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十']
@@ -364,6 +412,7 @@ export const cnLabelsZh: CnLabels = {
     region: '盘口异动',
     filter: '按异动类型筛选',
     all: '全部',
+    onlyCurrent: '当前品种',
     types: {
       rocket: '火箭发射',
       rebound: '快速反弹',
@@ -376,11 +425,37 @@ export const cnLabelsZh: CnLabels = {
       sealDown: '封跌停板',
       openUp: '打开涨停板',
       openDown: '打开跌停板',
+      rise5m: '5 分钟涨幅',
+      fall5m: '5 分钟跌幅',
     },
     typeChip: (name, count) => `${name} ${count}`,
     summary: (count) => `共 ${count} 条`,
     empty: '暂无异动',
     row: (time, name, type, value) => `${time} ${name} ${type} ${value}`,
+    unavailable: '暂无数据',
+  },
+  rangeScrubber: {
+    region: '区间时间轴',
+    low: '区间起点',
+    high: '区间终点',
+    span: (from, to, minutes) => `${from}–${to} · ${minutes} 分钟`,
+    presetGroup: '快捷区间',
+    preset: (minutes) => (minutes >= 60 && minutes % 60 === 0 ? `近 ${minutes / 60} 小时` : `近 ${minutes} 分`),
+    metricGroup: '统计口径',
+    metrics: { change: '涨幅', net: '净额', strength: '强度' },
+    future: '还没到的时段',
+  },
+  auctionBar: {
+    pending: '未出结果',
+    aria: ({ amount, previous, ratio, limitBid, pending }) =>
+      `${pending ? '竞价未出结果，' : ''}竞价额 ${amount}，昨日同期 ${previous}，量比 ${ratio}${limitBid === null ? '' : `，涨停委买 ${limitBid}`}`,
+  },
+  thresholdGap: {
+    state: { watch: '监控中', near: '临近', triggered: '已触发', ended: '监管期结束' },
+    gap: (percent) => `差 ${percent}`,
+    over: (percent) => `超出 ${percent}`,
+    threshold: (percent) => `阈值 ${percent}`,
+    warn: (percent) => `预警线 ${percent}`,
     unavailable: '暂无数据',
   },
 }

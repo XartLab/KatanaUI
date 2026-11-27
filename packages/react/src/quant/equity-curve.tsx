@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 // 权益曲线（组件卡 EquityCurve，design/katana-console components/EquityCurve，2026-10-17 读；#1931 从应用的 panels/kit 搬进来）：
 // 上区权益线 2px series-1，基准线 1px 灰虚线；下区镜像回撤面用点阵 / 斜线纹理（读 CSS 变量，见 theme/chart-kit.css），不用实色；
+//   纹理色：卡写 seq-300，橙不上数据（2026-11-15）后取同档的中性灰浓度 --k-heat-3（同 BrushStrip 的面）；涨跌色不上面积（dataviz §2，KatanaUI #165）。
 // 末点 signal-orange 旁标最终值；线性 / 对数纵轴；底下一条概览刷选条，拖窗口只看一段；右上三件（表格视图、导出、全屏）。
 // 实时刷新：新点追加时权益线与基准线平滑延伸（共用层 lib/live-line.ts），末点滑到新位置并闪一圈光晕；窗口停在最新点时跟着最新点走（宽度不变），用户拖到别处就不动它。回撤面积没有做过场，直接换。
 // 横轴是时间（照 TradingView 策略测试器的权益曲线）：点按自己的时刻摆。包里不带语言，文字与数值格式都由调用方传。
@@ -315,7 +316,7 @@ export function EquityCurve({
           <div className="k-eq-dd" style={{ height: DRAWDOWN_H }} data-slot="equity-drawdown" aria-hidden="true">
             <svg viewBox={`0 0 ${PLOT_W} ${DRAWDOWN_H}`} preserveAspectRatio="none">
               <defs>
-                <DotFill id={dotId} color="color-mix(in srgb, var(--pnl-down) 60%, transparent)" />
+                <DotFill id={dotId} color="var(--k-heat-3)" />
               </defs>
               <line className="k-ck-grid" x1={0} x2={PLOT_W} y1={zeroY} y2={zeroY} />
               {ddArea && (

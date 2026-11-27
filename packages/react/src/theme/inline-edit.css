@@ -1,0 +1,163 @@
+/* SPDX-License-Identifier: MIT */
+/* InlineEdit（patterns/inline-edit.tsx）：字体、字号、颜色都继承外面（放在标题里就是标题的字），静止与编辑两态的边框与内距一样，切换时周围不动。
+   静止：透明边，悬停给按钮的悬停底，右边的铅笔淡出现（悬停或键盘聚焦时）；编辑：输入框的皮（--k-editable-*，聚焦边提亮）。
+   编辑时的宽度：隐藏的镜像字与输入框叠在同一格里（inline-grid），镜像字多宽框就多宽，打字跟着长，不量尺寸。
+   内距 0 4px、外距 0 -4px：框画出来了但字的位置跟没框时一样，跟周围的字对齐（照 Arc 的「同样的度量」，数值是我们定的，待定）。 */
+.k-inedit {
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--space-hair);
+  max-width: 100%;
+  min-width: 0;
+}
+.k-inedit-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  margin: 0;
+  font: inherit;
+}
+.k-inedit-display,
+.k-inedit-field {
+  box-sizing: border-box;
+  max-width: 100%;
+  margin: 0 -4px;
+  padding: 0 4px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+}
+.k-inedit-display {
+  display: inline-block;
+  min-width: 0;
+  overflow: hidden;
+  background: transparent;
+  text-align: start;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: text;
+  transition: background-color var(--dur-hover) var(--ease-hover);
+}
+.k-inedit-display:hover:not(:disabled) {
+  background: var(--k-actionable-background-hover);
+}
+.k-inedit-display:focus-visible {
+  outline: var(--k-focused-outlineWidth) solid var(--k-focused-outlineColor);
+  outline-offset: var(--k-focused-outlineOffset);
+}
+.k-inedit-display:disabled {
+  cursor: default;
+}
+.k-inedit-text[data-empty] {
+  color: var(--k-content-secondary-foreground);
+}
+.k-inedit-field {
+  display: inline-grid;
+  background: var(--k-editable-background);
+  border-color: var(--k-editable-borderColor-active);
+}
+.k-inedit[data-invalid] .k-inedit-field {
+  border-color: var(--k-status-danger-foreground);
+}
+.k-inedit-mirror,
+.k-inedit-input {
+  grid-area: 1 / 1;
+  min-width: 1ch;
+  font: inherit;
+  letter-spacing: inherit;
+  white-space: pre;
+}
+.k-inedit-mirror {
+  visibility: hidden;
+  overflow: hidden;
+}
+.k-inedit-input {
+  width: 100%;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: inherit;
+  line-height: inherit;
+}
+.k-inedit-input::placeholder {
+  color: var(--k-content-secondary-foreground);
+}
+.k-inedit-slot {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 2px;
+  color: var(--k-content-secondary-foreground);
+}
+.k-inedit-slot svg {
+  width: 14px;
+  height: 14px;
+}
+.k-inedit-pencil {
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity var(--dur-hover) var(--ease-hover);
+}
+.k-inedit:hover .k-inedit-pencil,
+.k-inedit:has(.k-inedit-display:focus-visible) .k-inedit-pencil {
+  opacity: 1;
+}
+.k-inedit-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: var(--k-actionable-subtle-foreground);
+  cursor: pointer;
+}
+.k-inedit-action:hover {
+  background: var(--k-actionable-subtle-background-hover);
+  color: var(--k-content-primary-foreground);
+}
+.k-inedit-action:focus-visible {
+  outline: var(--k-focused-outlineWidth) solid var(--k-focused-outlineColor);
+  outline-offset: -2px;
+}
+/* 保存中的转圈：一秒一圈，复用状态图标的关键帧（ai-status.css 的 k-status-spin）；§2.4 只许加载转。 */
+.k-inedit-spin {
+  animation: k-status-spin 1s linear infinite;
+}
+.k-inedit-saved {
+  color: var(--k-status-ok-foreground);
+}
+.k-inedit-failed {
+  color: var(--k-status-danger-foreground);
+}
+.k-inedit-message {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  margin: 0;
+  font: var(--text-caption) var(--font-sans-small);
+  color: var(--k-status-danger-foreground);
+}
+.k-inedit-retry {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  color: var(--k-content-primary-foreground);
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.k-inedit-retry:focus-visible {
+  outline: var(--k-focused-outlineWidth) solid var(--k-focused-outlineColor);
+  outline-offset: var(--k-focused-outlineOffset);
+}

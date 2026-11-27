@@ -19,7 +19,7 @@ function NavigationMenu({ className, children, ...props }: ComponentProps<typeof
       <div className="absolute top-full left-0 flex w-full justify-center">
         <NavigationMenuPrimitive.Viewport
           data-slot="navigation-menu-viewport"
-          className="relative mt-1 shrink-0 h-[var(--radix-navigation-menu-viewport-height)] origin-top overflow-hidden rounded-[var(--radius-overlay)] border border-(color:--k-overlay-borderColor) bg-(--k-surface-overlay-background) shadow-(--k-overlay-shadow) w-(--radix-navigation-menu-viewport-width) max-w-[100vw]"
+          className="k-mat-overlay relative mt-1 shrink-0 h-[var(--radix-navigation-menu-viewport-height)] origin-top overflow-hidden w-(--radix-navigation-menu-viewport-width) max-w-[100vw]"
         />
       </div>
     </NavigationMenuPrimitive.Root>
@@ -81,7 +81,7 @@ function NavigationMenuLink({ className, ...props }: ComponentProps<typeof Navig
     <NavigationMenuPrimitive.Link
       data-slot="navigation-menu-link"
       className={cn(
-        'k-text-body block cursor-pointer rounded-[6px] p-2 text-(color:--k-content-body-foreground) no-underline select-none transition-colors duration-100 hover:bg-(--k-selectable-background-hover) hover:text-(color:--k-content-primary-foreground)',
+        'k-text-body block cursor-pointer rounded-[var(--radius-inner)] p-2 text-(color:--k-content-body-foreground) no-underline select-none transition-colors duration-100 hover:bg-(--k-selectable-background-hover) hover:text-(color:--k-content-primary-foreground)',
         'data-[active]:bg-(--k-selectable-background-active) data-[active]:text-(color:--k-content-primary-foreground)',
         focusRingInset,
         className,

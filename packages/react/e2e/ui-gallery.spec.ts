@@ -4,8 +4,17 @@ import { readFileSync } from 'node:fs'
 import { summarize, type CoverageMap } from '../docs/coverage-core'
 import coverageMap from '../docs/coverage-map.json' with { type: 'json' }
 import propsGenerated from '../gallery/props.generated.json' with { type: 'json' }
+import accountGuidance from '../gallery/guidance/account'
+import affectGuidance from '../gallery/guidance/affect'
+import affectAgentGuidance from '../gallery/guidance/affect-agent'
+import affectFlowGuidance from '../gallery/guidance/affect-flow'
 import aiGuidance from '../gallery/guidance/ai'
+import arcInputsGuidance from '../gallery/guidance/arc-inputs'
 import blocksGuidance from '../gallery/guidance/blocks'
+import cnBatch2Guidance from '../gallery/guidance/cn-batch2'
+import cnBatch3Guidance from '../gallery/guidance/cn-batch3'
+import cnPackGuidance from '../gallery/guidance/cn-pack'
+import saltGapsGuidance from '../gallery/guidance/salt-gaps'
 import feedbackGuidance from '../gallery/guidance/feedback'
 import formsGuidance from '../gallery/guidance/forms'
 import layoutGuidance from '../gallery/guidance/layout'
@@ -19,10 +28,20 @@ import smoothuiBGuidance from '../gallery/guidance/smoothui-b'
 import { GROUPS, PAGES } from '../gallery/registry'
 
 // 指南按组分文件；gallery/guidance/index.ts 用 import.meta.glob 合并（Vite 才有），Playwright 的 Node 里没有，这里逐个引进来合并。
+// guidance/ 下新加一个组文件，这里要跟着加一行，不然那些页的「什么时候用 / 别用」条数对不上。
 const GUIDANCE: Record<string, { use?: readonly string[]; avoid?: readonly string[] }> = Object.assign(
   {},
+  accountGuidance,
+  affectGuidance,
+  affectAgentGuidance,
+  affectFlowGuidance,
   aiGuidance,
+  arcInputsGuidance,
   blocksGuidance,
+  cnBatch2Guidance,
+  cnBatch3Guidance,
+  cnPackGuidance,
+  saltGapsGuidance,
   feedbackGuidance,
   formsGuidance,
   layoutGuidance,
@@ -197,6 +216,18 @@ function sample(page: Page, spec: SampleSpec, ms: number): Promise<(string | num
 
 for (const theme of THEMES) {
   test.describe(`组件文档站 · ${theme}`, () => {
+    // Graphite 的样式层（src/theme/graphite.css，#130 / #131）有意改了浮层、菜单与对话框的皮肤，下面的皮肤断言按主题分两套：
+    // 浮层是玻璃（--glass-bg / --glass-edge / --glass-highlight / --glass-shadow）；圆角 overlay 8、control 6、inner 4（packages/tokens/src/tokens.json 的 radius，graphite 值）；
+    // 菜单内边 8、行 32 高左右 12、分组标题 caption 600 不全大写不拉字距、分隔线上下 8 左右 12 且用细线色；对话框头 56 左 24、脚 16 24，头脚分隔线也是细线色。
+    // Console 一行不动，仍断言旧皮肤（ca7ef061 的 src/ui/ui.css）的值。
+    const graphite = theme === 'graphite'
+    /** graphite.css 给浮层的影子：顶部内高光 + 玻璃影子。 */
+    const glassShadow = (page: Page) =>
+      resolved(page, 'box-shadow', 'inset 0 1px 0 var(--glass-highlight), var(--glass-shadow)')
+    /** graphite.css 的细线色 --g-hairline-color：line-100 的 70%，画到像素上读成 [r, g, b, a]。 */
+    const hairline = async (page: Page) =>
+      rgba(page, await resolved(page, 'background-color', 'color-mix(in srgb, var(--line-100) 70%, transparent)'))
+
     test('每一页的预览都看得见、有尺寸，每个能点的件都有尺寸，页上没有报错', async ({ page }) => {
       // 要逐页点目录、量尺寸，页数过百，默认 30 秒不够。
       test.setTimeout(300_000) // 页数已过 230，逐页走一遍约 1.7 分钟
@@ -218,6 +249,13 @@ for (const theme of THEMES) {
         count += here
         for (let index = 0; index < here; index++) {
           const controlBox = await controls.nth(index).boundingBox()
+          // 下单面板（order-ticket，#96）按自己的容器宽排版：窄于 560 只出当前方向那一栏、另一栏 display: none；
+          // 宽了两栏并排、方向切换（SideSwitch）藏起来。藏着的那半是设计如此，不量；别的件里量不到尺寸照样算错。
+          if (
+            controlBox === null &&
+            (await controls.nth(index).evaluate((element) => element.closest('[data-slot="order-ticket"]') !== null))
+          )
+            continue
           expect(controlBox && controlBox.width > 0 && controlBox.height > 0, `${id} 第 ${index} 个控件有尺寸`).toBe(
             true,
           )
@@ -230,6 +268,76 @@ for (const theme of THEMES) {
       await expect(tip).toBeVisible()
       expect(await bg(tip)).not.toBe('rgba(0, 0, 0, 0)')
       expect(errors).toEqual([])
+    })
+
+    // 进行中（kubai Vibe Design Tips 017，#251）：假时钟推时间，300ms 与 500ms 的边界差 1ms 都量得准。
+    test('按钮：进行中——满 300ms 才出转圈、出了至少留 500ms、宽度与字不变、期间再按无效但仍可聚焦', async ({
+      page,
+    }) => {
+      await page.clock.install({ time: 0 })
+      await open(page, theme, 'button')
+      await page.clock.pauseAt(60_000)
+      const area = section(page, 'button')
+      const count = area.locator('[data-gallery-pending-count]')
+      const pendingButton = (key: string) => area.locator(`[data-gallery-pending="${key}"]`)
+      const spinnerOf = (key: string) => pendingButton(key).locator('[data-slot="button-spinner"]')
+      const widthOf = async (key: string) => (await pendingButton(key).boundingBox())!.width
+
+      // 保存修改：1.2 秒的请求。
+      const save = pendingButton('save')
+      const before = await widthOf('save')
+      await save.click()
+      await expect(save).toHaveAttribute('aria-busy', 'true')
+      await expect(save).toHaveAttribute('aria-disabled', 'true')
+      await expect(count).toContainText('保存 1')
+      await page.clock.runFor(299)
+      await expect(spinnerOf('save')).toHaveCount(0)
+      await page.clock.runFor(1)
+      await expect(spinnerOf('save')).toHaveCount(1)
+      // 字与宽度不变（量 boundingBox）。
+      await expect(save).toHaveText('保存修改')
+      expect(await widthOf('save')).toBe(before)
+      // 进行中再按（鼠标、键盘）：不触发，焦点仍在按钮上（不用 disabled 属性）。
+      await save.click({ force: true })
+      await save.focus()
+      await page.keyboard.press('Enter')
+      await page.keyboard.press('Space')
+      await expect(save).toBeFocused()
+      await expect(save).not.toHaveAttribute('disabled', /.*/)
+      await expect(count).toContainText('保存 1')
+      // 1.2 秒到：转圈已留过 500ms，立刻收；aria-busy 摘掉，能再按。
+      await page.clock.runFor(900)
+      await expect(spinnerOf('save')).toHaveCount(0)
+      await expect(save).not.toHaveAttribute('aria-busy', 'true')
+      expect(await widthOf('save')).toBe(before)
+      await save.click()
+      await expect(count).toContainText('保存 2')
+      await page.clock.runFor(1500)
+
+      // 快速保存：0.4 秒的请求。300ms 出转圈，请求在 400ms 结束但转圈留够 500ms（到 800ms）。
+      const quick = pendingButton('quick')
+      await quick.click()
+      await page.clock.runFor(300)
+      await expect(spinnerOf('quick')).toHaveCount(1)
+      await page.clock.runFor(100)
+      await expect(count).toContainText('快速 1')
+      await page.clock.runFor(399)
+      await expect(spinnerOf('quick')).toHaveCount(1)
+      await page.clock.runFor(1)
+      await expect(spinnerOf('quick')).toHaveCount(0)
+
+      // 刷新（图标就是动作）：按下立刻转自己的图标，没有另外的转圈；0.3 秒请求结束后转到整圈（640ms）才停。
+      const refresh = pendingButton('refresh')
+      const iconBefore = await widthOf('refresh')
+      await refresh.click()
+      await expect(refresh).toHaveAttribute('data-spinning', 'true')
+      await expect(spinnerOf('refresh')).toHaveCount(0)
+      await page.clock.runFor(300)
+      await page.clock.runFor(339)
+      await expect(refresh).toHaveAttribute('data-spinning', 'true')
+      await page.clock.runFor(2)
+      await expect(refresh).not.toHaveAttribute('data-spinning', 'true')
+      expect(await widthOf('refresh')).toBe(iconBefore)
     })
 
     test('按钮：Tailwind 的类压得过旧样式；悬停和按下底色各变一次；禁用的不响应', async ({ page }) => {
@@ -375,13 +483,13 @@ for (const theme of THEMES) {
       await page.keyboard.press('Enter')
       const menu = page.getByRole('menu')
       await expect(menu).toBeVisible()
-      // 顶层菜单：触发器下方 2px，行 30 高。
+      // 顶层菜单：触发器下方 2px，行 30 高（Graphite 32）。
       await settled(page)
       const menuBox = (await menu.boundingBox())!
       expect(Math.round(menuBox.y - (triggerBox.y + triggerBox.height))).toBe(2)
       const first = menu.getByRole('menuitem', { name: '添加组件' })
       await expect(first).toBeFocused()
-      expect(Math.round((await first.boundingBox())!.height)).toBe(30)
+      expect(Math.round((await first.boundingBox())!.height)).toBe(graphite ? 32 : 30)
       // ↓ ↓ 走过已禁用的一项落到「显示网格」，Enter 选中：菜单收起、焦点回触发器、再开时它的勾没了。
       await page.keyboard.press('ArrowDown')
       await expect(menu.getByRole('menuitem', { name: '编辑布局' })).toBeFocused()
@@ -440,7 +548,8 @@ for (const theme of THEMES) {
       ]
       expect(Math.round(subMenuBox.x - (parentBox.x + parentBox.width))).toBe(2)
       // 实测差 1.25px（alignOffset -7 是 #1832 的值，边框与内边距合起来不是整 7），容差 1.5。
-      expect(Math.abs(subBox.y - parentBox.y)).toBeLessThanOrEqual(1.5)
+      // Graphite 的菜单内边是 8（console 6），alignOffset 仍按 6 + 1 取 -7，二级第一项比父项低 2px，扣掉这 2px 再比。
+      expect(Math.abs(subBox.y - parentBox.y - (graphite ? 2 : 0))).toBeLessThanOrEqual(1.5)
       // ← 关子菜单，焦点回到父项。
       await page.keyboard.press('ArrowLeft')
       await expect(sub).toHaveCount(0)
@@ -478,14 +587,20 @@ for (const theme of THEMES) {
         'line-height',
       ])
       expect(pop['min-width']).toBe('180px')
-      expect([pop['padding-top'], pop['padding-left']]).toEqual(['6px', '6px'])
+      // Graphite：内边 8；底、边、影子是玻璃。
+      expect([pop['padding-top'], pop['padding-left']]).toEqual(graphite ? ['8px', '8px'] : ['6px', '6px'])
       expect(pop['border-top-left-radius']).toBe(await radius(page, '--radius-overlay'))
-      expect(pop['background-color']).toBe(await token(page, '--bg-400'))
+      expect(pop['background-color']).toBe(await token(page, graphite ? '--glass-bg' : '--bg-400'))
       expect(pop.color).toBe(await token(page, '--ink-200'))
       expect(pop['border-top-width']).toBe('1px')
-      expect(await rgba(page, pop['border-top-color']!)).toEqual(await rgba(page, 'rgba(255, 255, 255, 0.07)'))
-      expect(pop['box-shadow']).toContain('rgba(0, 0, 0, 0.55) 0px 16px 48px 0px')
-      expect(pop['box-shadow']).toContain('rgba(0, 0, 0, 0.3) 0px 2px 8px 0px')
+      expect(await rgba(page, pop['border-top-color']!)).toEqual(
+        await rgba(page, graphite ? await token(page, '--glass-edge') : 'rgba(255, 255, 255, 0.07)'),
+      )
+      if (graphite) expect(pop['box-shadow']).toBe(await glassShadow(page))
+      else {
+        expect(pop['box-shadow']).toContain('rgba(0, 0, 0, 0.55) 0px 16px 48px 0px')
+        expect(pop['box-shadow']).toContain('rgba(0, 0, 0, 0.3) 0px 2px 8px 0px')
+      }
       expect(pop['font-size']).toBe('13px')
       expect(pop['line-height']).toBe('13px')
 
@@ -505,9 +620,11 @@ for (const theme of THEMES) {
         'transition-duration',
         'color',
       ])
-      expect(item.height).toBe('30px')
-      expect([item['padding-left'], item['padding-top']]).toEqual(['8px', '0px'])
-      expect(item['border-top-left-radius']).toBe('6px')
+      // Graphite：行 32 高、左右 12。圆角：浮层里的行统一 --radius-inner（#256，kubai 004）：旧 6 → Console 5（Graphite 本来就是 4）。
+      expect(item.height).toBe(graphite ? '32px' : '30px')
+      expect([item['padding-left'], item['padding-top']]).toEqual([graphite ? '12px' : '8px', '0px'])
+      expect(item['border-top-left-radius']).toBe(await radius(page, '--radius-inner'))
+      expect(item['border-top-left-radius']).toBe(graphite ? '4px' : '5px')
       expect(item['column-gap']).toBe('12px')
       expect([item['white-space'], item.cursor, item.display, item['justify-content']]).toEqual([
         'nowrap',
@@ -546,11 +663,12 @@ for (const theme of THEMES) {
         'margin-left',
         'background-color',
       ])
+      // Graphite：上下 8、左右内缩 12（不通到边），细线色。
       expect({ ...sep, 'background-color': await rgba(page, sep['background-color']!) }).toEqual({
         height: '1px',
-        'margin-top': '4px',
-        'margin-left': '-6px',
-        'background-color': await rgba(page, 'rgba(255, 255, 255, 0.07)'),
+        'margin-top': graphite ? '8px' : '4px',
+        'margin-left': graphite ? '12px' : '-6px',
+        'background-color': graphite ? await hairline(page) : await rgba(page, 'rgba(255, 255, 255, 0.07)'),
       })
 
       // 分组小标题：.k-pop-group（:574）padding 8 8 4（:575）· --ink-200（:576）· micro 10 · sans 字族（:577）· line-height 1.5（:578）· 字距 --text-micro-tracking（:579）· 大写（:580）。
@@ -565,17 +683,32 @@ for (const theme of THEMES) {
         'line-height',
         'font-family',
       ])
-      expect(group).toEqual({
-        'padding-top': '8px',
-        'padding-left': '8px',
-        'padding-bottom': '4px',
-        color: await token(page, '--ink-200'),
-        'font-size': '10px',
-        'text-transform': 'uppercase',
-        'letter-spacing': await resolved(page, 'letter-spacing', 'var(--text-micro-tracking)', '10px'),
-        'line-height': '15px',
-        'font-family': await resolved(page, 'font-family', 'var(--font-sans)'),
-      })
+      // Graphite：标题式写法——padding 12 12 4、caption（11 / 16）、不全大写、不拉字距。
+      expect(group).toEqual(
+        graphite
+          ? {
+              'padding-top': '12px',
+              'padding-left': '12px',
+              'padding-bottom': '4px',
+              color: await token(page, '--ink-200'),
+              'font-size': '11px',
+              'text-transform': 'none',
+              'letter-spacing': await resolved(page, 'letter-spacing', '0'),
+              'line-height': '16px',
+              'font-family': await resolved(page, 'font-family', 'var(--font-sans)'),
+            }
+          : {
+              'padding-top': '8px',
+              'padding-left': '8px',
+              'padding-bottom': '4px',
+              color: await token(page, '--ink-200'),
+              'font-size': '10px',
+              'text-transform': 'uppercase',
+              'letter-spacing': await resolved(page, 'letter-spacing', 'var(--text-micro-tracking)', '10px'),
+              'line-height': '15px',
+              'font-family': await resolved(page, 'font-family', 'var(--font-sans)'),
+            },
+      )
 
       // 快捷键方块：.k-kbd（:586）min 宽 20 · 高 20 · padding 0 4 · 圆角 4 · 6% 白底 · 12% 白边 · 500。
       const kbd = await css(menu.locator('.k-kbd'), [
@@ -635,11 +768,13 @@ for (const theme of THEMES) {
       const menu = page.getByRole('menu', { name: '面板菜单' })
       await expect(menu).toBeVisible()
       await settled(page)
-      // 行 30 高，皮肤与下拉菜单一样（取同一份样式）。
+      // 行 30 高，皮肤与下拉菜单一样（取同一份样式）；Graphite 行 32、内边 8、玻璃影子。
       const row = menu.getByRole('menuitem', { name: '克隆面板' })
-      expect(Math.round((await row.boundingBox())!.height)).toBe(30)
-      await expect(menu).toHaveCSS('padding-top', '6px')
-      expect(await menu.evaluate((el) => getComputedStyle(el).boxShadow)).toContain('rgba(0, 0, 0, 0.55) 0px 16px 48px')
+      expect(Math.round((await row.boundingBox())!.height)).toBe(graphite ? 32 : 30)
+      await expect(menu).toHaveCSS('padding-top', graphite ? '8px' : '6px')
+      const menuShadow = await menu.evaluate((el) => getComputedStyle(el).boxShadow)
+      if (graphite) expect(menuShadow).toBe(await glassShadow(page))
+      else expect(menuShadow).toContain('rgba(0, 0, 0, 0.55) 0px 16px 48px')
       // 键盘：↓ 走到「更多」，→ 开二级（开在右边 2px），Esc 只关二级、焦点回到「更多」。
       await page.keyboard.press('ArrowDown')
       await expect(row).toBeFocused()
@@ -655,7 +790,8 @@ for (const theme of THEMES) {
       const parentBox = (await parent.boundingBox())!
       const subMenu = page.getByRole('menu', { name: '更多' })
       expect(Math.round((await subMenu.boundingBox())!.x - (parentBox.x + parentBox.width))).toBe(2)
-      expect(Math.abs((await sub.boundingBox())!.y - parentBox.y)).toBeLessThanOrEqual(1.5)
+      // Graphite 二级第一项低 2px（内边 8，alignOffset 仍是 -7），同下拉菜单那条。
+      expect(Math.abs((await sub.boundingBox())!.y - parentBox.y - (graphite ? 2 : 0))).toBeLessThanOrEqual(1.5)
       await page.keyboard.press('Escape')
       await expect(subMenu).toHaveCount(0)
       await expect(menu).toBeVisible()
@@ -754,8 +890,10 @@ for (const theme of THEMES) {
       const box = (await dialog.boundingBox())!
       expect(Math.abs(box.x + box.width / 2 - 550)).toBeLessThan(2)
       expect(box.width).toBe(560)
-      // 标题栏 50 高，关闭钮有名字。
-      expect(Math.round((await dialog.locator('[data-slot="dialog-header"]').boundingBox())!.height)).toBe(50)
+      // 标题栏 50 高（Graphite 56），关闭钮有名字。
+      expect(Math.round((await dialog.locator('[data-slot="dialog-header"]').boundingBox())!.height)).toBe(
+        graphite ? 56 : 50,
+      )
       await expect(dialog.getByRole('button', { name: '关闭' })).toBeVisible()
       await page.keyboard.press('Escape')
       await expect(dialog).toHaveCount(0)
@@ -791,12 +929,18 @@ for (const theme of THEMES) {
         'overflow',
       ])
       expect(box.width).toBe('560px')
-      expect(box['border-top-left-radius']).toBe('14px')
-      expect(box['background-color']).toBe(await token(page, '--bg-300'))
-      expect(await rgba(page, box['border-top-color']!)).toEqual(await rgba(page, 'rgba(255, 255, 255, 0.09)'))
+      // Graphite：圆角 overlay（8），底、边、影子是玻璃。
+      expect(box['border-top-left-radius']).toBe(graphite ? '8px' : '14px')
+      expect(box['background-color']).toBe(await token(page, graphite ? '--glass-bg' : '--bg-300'))
+      expect(await rgba(page, box['border-top-color']!)).toEqual(
+        await rgba(page, graphite ? await token(page, '--glass-edge') : 'rgba(255, 255, 255, 0.09)'),
+      )
       expect(box['border-top-width']).toBe('1px')
-      expect(box['box-shadow']).toContain('rgba(0, 0, 0, 0.5) 0px 2px 4px 0px')
-      expect(box['box-shadow']).toContain('rgba(0, 0, 0, 0.45) 0px 24px 70px 0px')
+      if (graphite) expect(box['box-shadow']).toBe(await glassShadow(page))
+      else {
+        expect(box['box-shadow']).toContain('rgba(0, 0, 0, 0.5) 0px 2px 4px 0px')
+        expect(box['box-shadow']).toContain('rgba(0, 0, 0, 0.45) 0px 24px 70px 0px')
+      }
       expect(box.color).toBe(await token(page, '--ink-100'))
       expect(box['z-index']).toBe('41')
       expect(box.overflow).toBe('hidden')
@@ -811,8 +955,13 @@ for (const theme of THEMES) {
         'column-gap',
         'border-bottom-color',
       ])
-      expect([head.height, head['padding-left'], head['column-gap']]).toEqual(['50px', '16px', '12px'])
-      expect(await rgba(page, head['border-bottom-color']!)).toEqual(await rgba(page, 'rgba(255, 255, 255, 0.06)'))
+      // Graphite：头 56、左 24，下边线是细线色。
+      expect([head.height, head['padding-left'], head['column-gap']]).toEqual(
+        graphite ? ['56px', '24px', '12px'] : ['50px', '16px', '12px'],
+      )
+      expect(await rgba(page, head['border-bottom-color']!)).toEqual(
+        graphite ? await hairline(page) : await rgba(page, 'rgba(255, 255, 255, 0.06)'),
+      )
       // 正文 .k-dlg-body（:672）padding 16 24 24（:676）· gap 8（:679）；脚 .k-dlg-foot（:681）padding 12 16（:687）· gap 8（:684）· 右对齐（:685）· 上边线 6% 白（:688）。
       const body = await css(dialog.locator('[data-slot="dialog-body"]'), [
         'padding-top',
@@ -833,12 +982,13 @@ for (const theme of THEMES) {
         'justify-content',
         'border-top-color',
       ])
+      // Graphite：脚 16 24，上边线是细线色。
       expect({ ...foot, 'border-top-color': await rgba(page, foot['border-top-color']!) }).toEqual({
-        'padding-top': '12px',
-        'padding-left': '16px',
+        'padding-top': graphite ? '16px' : '12px',
+        'padding-left': graphite ? '24px' : '16px',
         'column-gap': '8px',
         'justify-content': 'flex-end',
-        'border-top-color': await rgba(page, 'rgba(255, 255, 255, 0.06)'),
+        'border-top-color': graphite ? await hairline(page) : await rgba(page, 'rgba(255, 255, 255, 0.06)'),
       })
     })
 
@@ -901,7 +1051,8 @@ for (const theme of THEMES) {
       const trigger = section(page, 'dropdown-menu').getByRole('button', { name: '菜单', exact: true })
       await trigger.click()
       expect(await font(page.getByRole('menuitem', { name: '编辑布局' }))).toEqual(['13px', '400'])
-      expect(await font(page.locator('[data-slot="dropdown-menu-label"]'))).toEqual(['10px', '600'])
+      // 分组标题：Console 是 micro（10 / 600），Graphite 是 caption 加 600（graphite.css 的 .k-pop-group）。
+      expect(await font(page.locator('[data-slot="dropdown-menu-label"]'))).toEqual([graphite ? '11px' : '10px', '600'])
       expect(await font(page.locator('[data-slot="dropdown-menu-shortcut"]'))).toEqual(['11px', '500'])
       await page.keyboard.press('Escape')
       await show(page, 'dialog')
@@ -909,42 +1060,51 @@ for (const theme of THEMES) {
       expect(await font(page.locator('[data-slot="dialog-title"]'))).toEqual(['15px', '600'])
     })
 
-    test('子菜单悬停延迟：悬停不到 100ms 不开，超过 100ms 开（Radix 默认）', async ({ page }) => {
-      // 悬停延迟是 Radix 的 setTimeout：用假时钟一格一格走，停多久由测试定，不被机器忙不忙拖成真实的几百毫秒（4 个 worker 并跑时真等 40 ms 会漂过 100 ms）。
+    // 级联菜单（#250，kubai 002）：打开 220ms、普通行 220ms 才收深一层、安全三角（顶点是最近两次 pointermove 里较早的点，随移动更新；保护带 min(90, max(56, 43%)) 宽）、
+    // 在三角里停在兄弟行最多护 1200ms（80ms 复查）、滑出所有层 360ms 才收、进了子菜单保护解除。数值在 primitives/cascade-model.ts 的 CASCADE_TIMING。
+    // 计时都是 setTimeout / setInterval / performance.now：用假时钟一格一格走，停多久由测试定，不被机器忙不忙拖成真实的几百毫秒。
+    const openSubMenu = async (page: Page) => {
       await page.clock.install()
       await open(page, theme, 'dropdown-menu')
       await section(page, 'dropdown-menu').getByRole('button', { name: '菜单', exact: true }).click()
-      const parent = page.locator('[data-slot="dropdown-menu-sub-trigger"]')
-      const box = (await parent.boundingBox())!
-      const sub = page.getByRole('menuitem', { name: '导出为图片' })
+      const trigger = page.locator('[data-slot="dropdown-menu-sub-trigger"]')
       // 菜单已开：时钟停住，之后只按测试给的毫秒数往前走。
       await page.clock.pauseAt(new Date(Date.now() + 10_000))
+      return {
+        trigger,
+        below: page.getByRole('menuitem', { name: '删除看板' }),
+        csv: page.getByRole('menuitem', { name: '导出为 CSV' }),
+        image: page.getByRole('menuitem', { name: '导出为图片' }),
+      }
+    }
+
+    test('子菜单悬停延迟：悬停不到 220ms 不开，满 220ms 开（#250，取代 Radix 默认的 100ms）', async ({ page }) => {
+      const { trigger, image } = await openSubMenu(page)
+      const box = (await trigger.boundingBox())!
       // 进到「更多」后马上离开（路过）：不开。
       await page.mouse.move(box.x + 10, box.y + 5)
       await page.clock.runFor(40)
       await page.mouse.move(box.x + 10, box.y - 60)
-      await page.clock.runFor(250)
-      await expect(sub).toHaveCount(0)
-      // 停住：不到 100 ms 还没开，过了 100 ms 开。
+      await page.clock.runFor(300)
+      await expect(image).toHaveCount(0)
+      // 停住：180 ms 还没开（Radix 的 100ms 已经过了），满 220 ms 开。
       await page.mouse.move(box.x + 10, box.y + 5)
-      await page.clock.runFor(40)
-      await expect(sub).toHaveCount(0)
-      await page.clock.runFor(100)
-      await expect(sub).toBeVisible()
+      await page.clock.runFor(180)
+      await expect(image).toHaveCount(0)
+      await page.clock.runFor(50)
+      await expect(image).toBeVisible()
     })
 
-    // 安全三角（#1832「0 关，靠自带的安全三角防误收」）：指针从「更多」斜着朝二级走，路上压过下面一行「删除看板」，
-    // 二级不收、那一行不亮；对照：从「更多」直着往下到同一行（背离二级），二级收起、那一行亮。真人移动是一串 pointermove，不瞬移，所以逐步移。
-    test('子菜单安全三角：斜着朝二级走、路过下一行不误收；直着往下走就收', async ({ page }) => {
-      await open(page, theme, 'dropdown-menu')
-      await section(page, 'dropdown-menu').getByRole('button', { name: '菜单', exact: true }).click()
-      const parent = page.locator('[data-slot="dropdown-menu-sub-trigger"]')
-      const below = page.getByRole('menuitem', { name: '删除看板' })
-      const csv = page.getByRole('menuitem', { name: '导出为 CSV' })
-      const from = (await parent.boundingBox())!
-      const start = { x: from.x + 12, y: from.y + from.height / 2 }
+    // 安全三角：指针从「更多」斜着朝二级走，路上压过下面一行「删除看板」，二级不收、那一行不亮（被标成 skipped）；
+    // 对照：从「更多」直着往下到同一行（背离二级），二级收起、那一行亮。真人移动是一串 pointermove，不瞬移，所以逐步移。
+    // 起点在触发器靠右侧、离父菜单右缘不到 77px（保护带只在父菜单靠子菜单的 43% 宽内，左半边不护）。
+    test('子菜单安全三角：斜着朝二级走、路过下一行不换不闪；直着往下走就收', async ({ page }) => {
+      const { trigger, below, csv, image } = await openSubMenu(page)
+      const from = (await trigger.boundingBox())!
+      const start = { x: from.x + from.width - 60, y: from.y + from.height / 2 }
       await page.mouse.move(start.x, start.y, { steps: 4 })
-      await expect(csv).toBeVisible({ timeout: 1000 })
+      await page.clock.runFor(300)
+      await expect(csv).toBeVisible()
       const target = (await csv.boundingBox())!
       const row = (await below.boundingBox())!
       // 终点在二级末项的下半截：斜率够缓，直线才会先压过下面一行再进二级
@@ -962,23 +1122,193 @@ for (const theme of THEMES) {
         const x = start.x + ((end.x - start.x) * i) / steps
         const y = start.y + ((end.y - start.y) * i) / steps
         await page.mouse.move(x, y)
-        if (x < row.x + row.width && y > row.y && y < row.y + row.height) crossed = true
-        await expect(csv, `第 ${i} 步：二级还开着`).toBeVisible({ timeout: 50 })
-        await expect(below, `第 ${i} 步：路过的「删除看板」不亮`).not.toHaveAttribute('data-highlighted', /.*/, {
-          timeout: 50,
-        })
+        const onRow = x < row.x + row.width && y > row.y && y < row.y + row.height
+        if (onRow) {
+          crossed = true
+          await expect(below, `第 ${i} 步：路过的行被跳过`).toHaveAttribute('data-k-cascade', 'skipped')
+        }
+        await expect(csv, `第 ${i} 步：二级还开着`).toBeVisible()
+        await expect(below, `第 ${i} 步：路过的「删除看板」不亮`).not.toHaveAttribute('data-highlighted', /.*/)
+        // 父项一直是展开态（行高亮由状态驱动：展开 = data-state=open）。
+        await expect(trigger, `第 ${i} 步：父项仍展开`).toHaveAttribute('data-state', 'open')
       }
       expect(crossed, '至少有一步落在「删除看板」那一行上').toBe(true)
       await expect(csv).toHaveAttribute('data-highlighted', /.*/)
+      // 进了二级：保护解除，路过的标记也撤了。
+      await expect(below).not.toHaveAttribute('data-k-cascade', /.*/)
 
-      // 对照：回到「更多」，直着往下到「删除看板」（背离二级）：二级收起，那一行亮。
+      // 对照：回到「更多」，直着往下到「删除看板」（背离二级）：那一行马上亮，二级要满 220ms 才收（普通行与父项一样）。
       await page.mouse.move(start.x, start.y, { steps: 6 })
-      await expect(page.getByRole('menuitem', { name: '导出为 CSV' })).toBeVisible({ timeout: 1000 })
+      await page.clock.runFor(300)
+      await expect(image).toBeVisible()
       await page.mouse.move(start.x, yMid, { steps: 6 })
-      await expect(page.getByRole('menuitem', { name: '导出为 CSV' }), '背离二级：收起').toHaveCount(0, {
-        timeout: 400,
-      })
       await expect(below).toHaveAttribute('data-highlighted', /.*/)
+      await page.clock.runFor(200)
+      await expect(image, '219ms 前：二级还开着').toBeVisible()
+      await page.clock.runFor(30)
+      await expect(image, '背离二级：满 220ms 收起').toHaveCount(0)
+    })
+
+    test('子菜单普通行：行马上亮，深一层满 220ms 才收，这期间回到父项就不收', async ({ page }) => {
+      const { trigger, below, csv, image } = await openSubMenu(page)
+      const from = (await trigger.boundingBox())!
+      const x = from.x + from.width - 60
+      await page.mouse.move(x, from.y + from.height / 2, { steps: 4 })
+      await page.clock.runFor(300)
+      await expect(csv).toBeVisible()
+      const row = (await below.boundingBox())!
+      // 指针从父项直着落到「删除看板」（背离二级）：不在三角里，行马上亮；Radix 自带的 focus-outside 不能把二级当场收掉。
+      await page.mouse.move(x, row.y + row.height / 2, { steps: 4 })
+      await expect(below).toHaveAttribute('data-highlighted', /.*/)
+      await page.clock.runFor(150)
+      await expect(csv, '150ms：二级还开着').toBeVisible()
+      // 回到父项：待收的计时取消，一直开着。
+      await page.mouse.move(x, from.y + from.height / 2, { steps: 4 })
+      await page.clock.runFor(1000)
+      await expect(image, '回到父项：取消').toBeVisible()
+      await page.mouse.move(x, row.y + row.height / 2, { steps: 4 })
+      await page.clock.runFor(219)
+      await expect(image, '219ms：还开着').toBeVisible()
+      await page.clock.runFor(1)
+      await expect(image, '满 220ms：收起').toHaveCount(0)
+    })
+
+    // 顶点随移动更新：在三角里停在一行上被护着；指针再往下走一小步（背离二级），新三角（顶点是上一个点）里已经没有这个点，立刻放行。
+    // 冻结在离开触发器那一刻的旧三角会继续护着这一行，那就是 002 说的「经过的行该切不切」。
+    test('子菜单安全三角：顶点随移动更新，在三角里往下走一小步立刻放行', async ({ page }) => {
+      const { trigger, below, csv } = await openSubMenu(page)
+      const from = (await trigger.boundingBox())!
+      const start = { x: from.x + from.width - 24, y: from.y + from.height / 2 }
+      await page.mouse.move(start.x, start.y, { steps: 3 })
+      await page.clock.runFor(300)
+      await expect(csv).toBeVisible()
+      const row = (await below.boundingBox())!
+      const held = { x: row.x + row.width - 6, y: row.y + 6 }
+      await page.mouse.move(held.x, held.y, { steps: 3 })
+      await page.clock.runFor(80)
+      await expect(below, '斜着停到这一行：护着').toHaveAttribute('data-k-cascade', 'skipped')
+      await expect(below).not.toHaveAttribute('data-highlighted', /.*/)
+      // 往下走 4px，仍在这一行里，x 不变（步子小，冻结的旧三角里这个点还在）。
+      await page.mouse.move(held.x, held.y + 4)
+      await expect(below, '往下走一小步：放行').not.toHaveAttribute('data-k-cascade', /.*/)
+      await expect(below).toHaveAttribute('data-highlighted', /.*/)
+    })
+
+    test('子菜单安全窗口：在三角里停在兄弟行，护满 1.2s 才切换', async ({ page }) => {
+      const { trigger, below, csv, image } = await openSubMenu(page)
+      const from = (await trigger.boundingBox())!
+      const start = { x: from.x + from.width - 24, y: from.y + from.height / 2 }
+      await page.mouse.move(start.x, start.y, { steps: 3 })
+      await page.clock.runFor(300)
+      await expect(csv).toBeVisible()
+      // 停到「删除看板」上，位置在三角里、保护带内（靠右、比触发器低半行）。
+      const row = (await below.boundingBox())!
+      await page.mouse.move(row.x + row.width - 6, row.y + row.height / 2, { steps: 3 })
+      await page.clock.runFor(80)
+      await expect(below).toHaveAttribute('data-k-cascade', 'skipped')
+      await page.clock.runFor(1000)
+      await expect(csv, '1.1s：还护着').toBeVisible()
+      await expect(below).not.toHaveAttribute('data-highlighted', /.*/)
+      await page.clock.runFor(160)
+      await expect(below, '满 1.2s：放行，这一行亮').toHaveAttribute('data-highlighted', /.*/)
+      await expect(below).not.toHaveAttribute('data-k-cascade', /.*/)
+      await expect(csv, '放行后二级再等 220ms 才收').toBeVisible()
+      await page.clock.runFor(230)
+      await expect(image).toHaveCount(0)
+    })
+
+    test('子菜单关闭延时：滑出所有层 360ms 才收，回来就取消', async ({ page }) => {
+      const { trigger, csv, image } = await openSubMenu(page)
+      const from = (await trigger.boundingBox())!
+      await page.mouse.move(from.x + 20, from.y + from.height / 2, { steps: 3 })
+      await page.clock.runFor(300)
+      await expect(csv).toBeVisible()
+      // 滑出父菜单（父菜单、二级、安全区之外）：300ms 内回来，不收。
+      // 沿触发器这一行往左滑出父菜单：不经过别的行，也不经过二级。
+      const away = { x: Math.max(2, from.x - 60), y: from.y + from.height / 2 }
+      await page.mouse.move(away.x, away.y, { steps: 4 })
+      await page.clock.runFor(300)
+      await expect(csv, '300ms：还开着').toBeVisible()
+      await page.mouse.move(from.x + 20, from.y + from.height / 2, { steps: 4 })
+      await page.clock.runFor(1000)
+      await expect(csv, '回来了：计时取消，一直开着').toBeVisible()
+      // 再滑出去：359ms 还开，满 360ms 收。
+      await page.mouse.move(away.x, away.y, { steps: 4 })
+      await page.clock.runFor(340)
+      await expect(csv).toBeVisible()
+      await page.clock.runFor(40)
+      await expect(image, '满 360ms：收起').toHaveCount(0)
+    })
+
+    test('拖着东西经过父项：420ms 才开（普通悬停是 220ms）', async ({ page }) => {
+      const { trigger, image } = await openSubMenu(page)
+      await trigger.dispatchEvent('dragover')
+      await page.clock.runFor(400)
+      await expect(image).toHaveCount(0)
+      await page.clock.runFor(30)
+      await expect(image).toBeVisible()
+    })
+
+    test('子菜单调试覆盖层：默认不画，根节点写 data-cascade-debug 才画三角与保护带', async ({ page }) => {
+      const { trigger, below, csv } = await openSubMenu(page)
+      const overlay = page.locator('[data-k-cascade-debug]')
+      const from = (await trigger.boundingBox())!
+      const start = { x: from.x + from.width - 24, y: from.y + from.height / 2 }
+      const row = (await below.boundingBox())!
+      const inside = { x: row.x + row.width - 6, y: row.y + row.height / 2 }
+      await page.mouse.move(start.x, start.y, { steps: 3 })
+      await page.clock.runFor(300)
+      await expect(csv).toBeVisible()
+      await page.mouse.move(inside.x, inside.y, { steps: 3 })
+      await expect(below).toHaveAttribute('data-k-cascade', 'skipped')
+      await expect(overlay, '默认关').toHaveCount(0)
+      await page.evaluate(() => document.documentElement.setAttribute('data-cascade-debug', ''))
+      await page.mouse.move(inside.x + 1, inside.y)
+      await expect(overlay, '开了：画出来').toHaveCount(1)
+      await expect(overlay.locator('polygon')).toHaveAttribute('points', /\d/)
+      const target = (await csv.boundingBox())!
+      await page.mouse.move(target.x + 10, target.y + target.height / 2, { steps: 3 })
+      await expect(overlay, '进了二级：保护解除，覆盖层撤掉').toHaveCount(0)
+    })
+
+    test('右键菜单的子菜单同一套：220ms 开，滑出 360ms 收', async ({ page }) => {
+      await page.clock.install()
+      await open(page, theme, 'context-menu')
+      await section(page, 'context-menu').locator('[data-gallery-ctx]').click({ button: 'right' })
+      const trigger = page.locator('[data-slot="context-menu-sub-trigger"]')
+      const image = page.getByRole('menuitem', { name: '导出为图片' })
+      await page.clock.pauseAt(new Date(Date.now() + 10_000))
+      const box = (await trigger.boundingBox())!
+      await page.mouse.move(box.x + 10, box.y + box.height / 2)
+      await page.clock.runFor(180)
+      await expect(image).toHaveCount(0)
+      await page.clock.runFor(50)
+      await expect(image).toBeVisible()
+      // 沿触发器这一行往左滑出父菜单：不经过别的行，也不经过二级。
+      const away = { x: Math.max(2, box.x - 60), y: box.y + box.height / 2 }
+      await page.mouse.move(away.x, away.y, { steps: 4 })
+      await page.clock.runFor(340)
+      await expect(image).toBeVisible()
+      await page.clock.runFor(40)
+      await expect(image).toHaveCount(0)
+    })
+
+    test('子菜单：滑出后 100ms 内进了二级，关闭计时取消，之后停多久都不收', async ({ page }) => {
+      const { trigger, csv, image } = await openSubMenu(page)
+      const from = (await trigger.boundingBox())!
+      await page.mouse.move(from.x + 20, from.y + from.height / 2, { steps: 3 })
+      await page.clock.runFor(300)
+      await expect(csv).toBeVisible()
+      // 滑出（计时开始），100ms 后进二级：计时取消，之后停多久都不收。
+      // 沿触发器这一行往左滑出父菜单：不经过别的行，也不经过二级。
+      const away = { x: Math.max(2, from.x - 60), y: from.y + from.height / 2 }
+      await page.mouse.move(away.x, away.y, { steps: 3 })
+      await page.clock.runFor(100)
+      const target = (await csv.boundingBox())!
+      await page.mouse.move(target.x + 10, target.y + target.height / 2, { steps: 4 })
+      await page.clock.runFor(2000)
+      await expect(image).toBeVisible()
+      await expect(csv).toHaveAttribute('data-highlighted', /.*/)
     })
 
     test('页签与折叠：点页签换内容，底块滑到它底下；折叠标题点了收起展开', async ({ page }) => {
@@ -1023,20 +1353,22 @@ for (const theme of THEMES) {
       const fields = section(page, 'input')
       const input = fields.getByRole('textbox', { name: '输入', exact: true })
       const small = fields.getByRole('textbox', { name: '输入 sm' })
-      // .k-in（ui.css 118-129）：30 高 · 内边 8 · 1px 边 · 圆角 6 · 13px/18px 400 · 字色 ink-100 · sans 字族（系统界面字体栈，含 Segoe UI）。
+      // .k-in（ui.css 118-129）：30 高 · 内边 8 · 1px 边 · 圆角 · 13px/18px 400 · 字色 ink-100 · sans 字族（系统界面字体栈，含 Segoe UI）。
+      // 圆角：旧值写死 6；#256（kubai 004）起读 --radius-control（Graphite 6、Console 7）。
       expect(
         await css(input, ['height', 'padding-left', 'padding-top', 'border-top-width', 'border-top-left-radius']),
-      ).toEqual(['30px', '8px', '0px', '1px', '6px'])
+      ).toEqual(['30px', '8px', '0px', '1px', await radius(page, '--radius-control')])
+      expect((await css(input, ['border-top-left-radius']))[0]).toBe(graphite ? '6px' : '7px')
       expect(await css(input, ['font-size', 'font-weight', 'line-height'])).toEqual(['13px', '400', '18px'])
       expect((await css(input, ['font-family']))[0]).toContain('Segoe UI')
       expect(await colorOf(input)).toBe(await token(page, '--ink-100'))
       expect(await bg(input)).toMatch(/0\.04\)$/)
-      // .k-in.sm（ui.css 140-145）：26 高 · 内边 6 · 圆角 6 · 字号 12px，字重与行高、字族仍是 .k-in 的 400 / 18px / 系统界面字体栈。
+      // .k-in.sm（ui.css 140-145）：26 高 · 内边 6 · 圆角（同 .k-in，--radius-control）· 字号 12px，字重与行高、字族仍是 .k-in 的 400 / 18px / 系统界面字体栈。
       expect(await css(small, ['height', 'padding-left', 'padding-top', 'border-top-left-radius'])).toEqual([
         '26px',
         '6px',
         '0px',
-        '6px',
+        graphite ? '6px' : '7px',
       ])
       expect(await css(small, ['font-size', 'font-weight', 'line-height', 'font-style'])).toEqual([
         '12px',
@@ -1067,13 +1399,14 @@ for (const theme of THEMES) {
       const list = page.locator('[data-slot="select-content"]')
       await expect(list).toBeVisible()
       await settled(page)
-      // .k-sel-pop（ui.css 287-300）：4 内边 · 圆角 7 · 9% 白边 · 底 bg-400（surface-4）。
+      // .k-sel-pop（ui.css 287-300）：4 内边 · 9% 白边 · 底 bg-400（surface-4）。圆角：旧值写死 7；#256（kubai 004）起读 --radius-overlay
+      // （Graphite 8、Console 10）。Graphite：玻璃底。
       expect(await css(list, ['padding-left', 'border-top-left-radius', 'border-top-width'])).toEqual([
         '4px',
-        '7px',
+        graphite ? '8px' : '10px',
         '1px',
       ])
-      expect(await bg(list)).toBe(await token(page, '--bg-400'))
+      expect(await bg(list)).toBe(await token(page, graphite ? '--glass-bg' : '--bg-400'))
       // .k-sel-opt（ui.css 310-324）：6px 8px · 圆角 inner · 11px/16px→行高 1.4 · 字色 ink-300；当前项（:328-332）9% 白底 · ink-100 · 600。
       const other = page.getByRole('option', { name: 'K 线' })
       expect(await css(other, ['padding-top', 'padding-left', 'font-size', 'font-weight'])).toEqual([
@@ -1100,16 +1433,22 @@ for (const theme of THEMES) {
       await expect(list).toBeVisible()
       await settled(page)
       const pop = page.locator('[data-slot="popover-content"]')
-      // .k-sel-pop（ui.css 287-300）：4 内边 · 圆角 7 · 9% 白边 · 阴影 0 8 24 · overflow auto · max-height min(可用高, 100dvh-16)。
+      // .k-sel-pop（ui.css 287-300）：4 内边 · 9% 白边 · 阴影 0 8 24 · overflow auto · max-height min(可用高, 100dvh-16)。
+      // 圆角：旧值写死 7；#256（kubai 004）起读 --radius-overlay（Graphite 8、Console 10）。Graphite：边、影子、底是玻璃。
       expect(await css(pop, ['padding-left', 'border-top-left-radius', 'border-top-width', 'overflow-y'])).toEqual([
         '4px',
-        '7px',
+        graphite ? '8px' : '10px',
         '1px',
         'auto',
       ])
-      await expect(pop).toHaveCSS('border-top-color', /0\.09\)$/)
-      expect((await css(pop, ['box-shadow']))[0]).toContain('24px')
-      expect(await bg(pop)).toBe(await token(page, '--bg-400'))
+      if (graphite) {
+        await expect(pop).toHaveCSS('border-top-color', await token(page, '--glass-edge'))
+        expect((await css(pop, ['box-shadow']))[0]).toBe(await glassShadow(page))
+      } else {
+        await expect(pop).toHaveCSS('border-top-color', /0\.09\)$/)
+        expect((await css(pop, ['box-shadow']))[0]).toContain('24px')
+      }
+      expect(await bg(pop)).toBe(await token(page, graphite ? '--glass-bg' : '--bg-400'))
       const maxHeight = parseFloat((await css(pop, ['max-height']))[0])
       expect(maxHeight).toBeGreaterThan(0)
       expect(maxHeight).toBeLessThanOrEqual(1500 - 16)
@@ -1156,11 +1495,12 @@ for (const theme of THEMES) {
       expect(Math.round((await link.boundingBox())!.height)).toBeLessThan(26)
       // .k-btn:disabled（ui.css 67-70）：不透明度 0.45。
       await expect(by('default 禁用')).toHaveCSS('opacity', '0.45')
-      // .k-btn.sm（ui.css 71-77）：26 高 · 内边 8 · 圆角 8 · 11px 600。
+      // .k-btn.sm（ui.css 71-77）：26 高 · 内边 8 · 11px 600。圆角：旧值 8（比 md 还圆）；#256 起改 --radius-control（主会话按 #251 的默认定的，
+      // Console 7）。Graphite：sm 按钮圆角 inner（4），没动。
       const small = by('default sm')
       expect(
         await css(small, ['height', 'padding-left', 'border-top-left-radius', 'font-size', 'font-weight']),
-      ).toEqual(['26px', '8px', '8px', '11px', '600'])
+      ).toEqual(['26px', '8px', graphite ? '4px' : '7px', '11px', '600'])
       // .k-btn svg.lucide（ui.css 78-82）：13px；带图标的按钮里图标与字隔 6px（:6-25 gap）。
       const withIcon = by('带图标')
       expect((await css(withIcon.locator('svg'), ['width']))[0]).toBe('13px')
@@ -1249,9 +1589,9 @@ for (const theme of THEMES) {
       await settled(page)
       const pop = (await list.boundingBox())!
       expect(Math.abs(pop.y - (trigger.y + trigger.height + 2))).toBeLessThan(2)
-      // .k-sel-pop（ui.css 287-300）：4 内边 · 圆角 7；当前项 600（:328）。
+      // .k-sel-pop（ui.css 287-300）：4 内边；圆角旧值 7，#256（kubai 004）起 --radius-overlay（Graphite 8、Console 10）；当前项 600（:328）。
       expect(await list.evaluate((n) => getComputedStyle(n).paddingLeft)).toBe('4px')
-      expect(await list.evaluate((n) => getComputedStyle(n).borderTopLeftRadius)).toBe('7px')
+      expect(await list.evaluate((n) => getComputedStyle(n).borderTopLeftRadius)).toBe(graphite ? '8px' : '10px')
       await expect(page.getByRole('option', { name: '折线' })).toHaveCSS('font-weight', '600')
       await page.getByRole('option', { name: 'K 线' }).click()
       await expect(list).toHaveCount(0)
@@ -1684,12 +2024,13 @@ for (const theme of THEMES) {
       const shown = area.locator('[data-gallery-datetime]')
       await expect(shown).toHaveText('2026-11-14 09:30')
       const input = area.locator('.k-dt-date .k-dt-input').first()
-      // .k-dt-input（ui.css 618-632）：30 高 · 内边 0 8 · 4% 白底 8% 白边 · 圆角 6；sm（:640-644）26 高 · 内边 0 6。
+      // .k-dt-input（ui.css 618-632）：30 高 · 内边 0 8 · 4% 白底 8% 白边 · 圆角；sm（:640-644）26 高 · 内边 0 6。
+      // 圆角：旧值写死 6；#256（kubai 004）起 --radius-control（Graphite 6、Console 7）。
       await expect(input).toHaveCSS('height', '30px')
       await expect(input).toHaveCSS('padding', '0px 8px')
       await expect(input).toHaveCSS('background-color', 'rgba(255, 255, 255, 0.04)')
       await expect(input).toHaveCSS('border-top-color', 'rgba(255, 255, 255, 0.08)')
-      await expect(input).toHaveCSS('border-top-left-radius', '6px')
+      await expect(input).toHaveCSS('border-top-left-radius', graphite ? '6px' : '7px')
       await expect(area.locator('.k-dt.sm .k-dt-input')).toHaveCSS('height', '26px')
       // 分段：聚焦的那一段橙暗底（:651-654，28% 橙）；打字改值（月 → 12）。
       const month = area.locator('.k-dt-date .k-dt-seg').nth(1)
@@ -1762,6 +2103,43 @@ for (const theme of THEMES) {
       await expect(area.locator('.k-loading-wait').last().locator('.k-loading-line').first()).toBeVisible()
       await wait.click()
       await expect(area.locator('[data-gallery-loaded]')).toBeVisible()
+    })
+
+    // 最短停留（kubai Vibe Design Tips 017，#251）：骨架出了至少留 500ms。假时钟推时间。
+    test('加载态：骨架出了至少留 500ms（510ms 到的数据骨架留到 1000ms）；400ms 到的数据不出骨架', async ({ page }) => {
+      await page.clock.install({ time: 0 })
+      await open(page, theme, 'loading')
+      await page.clock.pauseAt(60_000)
+      const area = section(page, 'loading')
+      const toggle = area.locator('[data-gallery-toggle]')
+      // 「等数据」那一行的容器（按钮后面紧跟的那一块）；别的行是钉住的各段，也有骨架行，不能混。
+      const demo = toggle.locator('xpath=following-sibling::div[contains(@class, "gal-wide")]')
+      const line = demo.locator('.k-loading-line')
+      const loaded = area.locator('[data-gallery-loaded]')
+      // 先让初始那一轮结束，再重新等：从这一刻起的时间是干净的。
+      // （假时钟跳到 60 秒时骨架才算「出现」，所以这一轮也要再推 500ms 才交出内容。）
+      await toggle.click()
+      await page.clock.runFor(500)
+      await expect(loaded).toBeVisible()
+      await toggle.click()
+      await expect(loaded).toHaveCount(0)
+      await page.clock.runFor(510)
+      await expect(line.first()).toBeVisible()
+      // 510ms 数据到了：骨架还在，内容还没出，直到骨架出现满 500ms（再过 489ms 仍在，490ms 时换成内容）。
+      await toggle.click()
+      await page.clock.runFor(489)
+      await expect(line.first()).toBeVisible()
+      await expect(loaded).toHaveCount(0)
+      await page.clock.runFor(1)
+      await expect(loaded).toBeVisible()
+      await expect(line).toHaveCount(0)
+      // 重新等，400ms 到：从没出过骨架，内容立刻出现。
+      await toggle.click()
+      await page.clock.runFor(400)
+      await expect(line).toHaveCount(0)
+      await toggle.click()
+      await expect(loaded).toBeVisible()
+      await expect(line).toHaveCount(0)
     })
 
     test('量出来的骨架（MeasuredSkeleton）：加载态有骨架条与读屏名，切到已加载标题与按钮的位置不跳（≤1px）', async ({
@@ -1920,9 +2298,11 @@ for (const theme of THEMES) {
       const meters = section(page, 'meter')
       const bars = meters.getByTestId('meter-bars').locator('.k-meter')
       const fill = async (meter: Locator) => {
-        const track = (await meter.locator('.k-meter-track').boundingBox())!
-        const filled = (await meter.locator('.k-meter-fill').boundingBox())!
-        return filled.width / (track.width - 2)
+        // 条长是 --fill，用 clip-path 裁右边画（点阵纹理不能 scale；#251）：看到的长度 = 1 − 右边裁掉的百分比。
+        return meter.locator('.k-meter-fill').evaluate((el) => {
+          const cut = /inset\(\s*\S+\s+([\d.]+)%/.exec(getComputedStyle(el).clipPath)
+          return cut ? 1 - Number(cut[1]) / 100 : Number.NaN
+        })
       }
       // 长度编码量：72% 就是约 72% 的槽宽。弹簧还在走时等它停。
       await expect.poll(async () => Math.round((await fill(bars.nth(0))) * 100)).toBe(72)
@@ -2175,6 +2555,58 @@ for (const theme of THEMES) {
       await grid.getByRole('columnheader', { name: 'PnL' }).getByRole('button').click()
       await expect(grid.getByRole('columnheader', { name: 'PnL' })).toHaveAttribute('aria-sort', 'ascending')
       await expect(grid.getByRole('row').nth(1).locator('[data-col="symbol"]')).toContainText('600519')
+    })
+
+    test('积木：数据表 comfortable 档（#90）——行 40、表头 48、首列左 20、格内 12、正文 14px、行间横线；代码芯片、单位小字、缩写、评级、横条、迷你图、区间；compact 面板行 20', async ({
+      page,
+    }) => {
+      await open(page, theme, 'data-grid')
+      const grid = section(page, 'data-grid').getByTestId('grid-comfortable')
+      const first = grid.getByRole('row').nth(1)
+      const cell = (name: string) => first.locator(`[data-col="${name}"]`)
+      const css = (locator: Locator, prop: string) =>
+        locator.evaluate((el, p) => getComputedStyle(el).getPropertyValue(p), prop)
+      // 尺寸：行 40、表头 48；首列左 20、其余左右 12；正文 14px w400、表头 13px。
+      expect((await first.boundingBox())!.height).toBe(40)
+      expect((await grid.locator('.k-grid-head').boundingBox())!.height).toBe(48)
+      expect(await css(cell('symbol'), 'padding-left')).toBe('20px')
+      expect(await css(cell('price'), 'padding-right')).toBe('12px')
+      expect(await css(cell('price'), 'font-size')).toBe('14px')
+      expect(await css(cell('price'), 'font-weight')).toBe('400')
+      expect(await css(grid.getByRole('columnheader', { name: /价格/ }).getByRole('button'), 'font-size')).toBe('13px')
+      // 只有横线：格子底边 1px，左右没有边。
+      expect(await css(cell('price'), 'border-bottom-width')).toBe('1px')
+      expect(await css(cell('price'), 'border-left-width')).toBe('0px')
+      // 排序列（市值，降序）亮一档、500、带箭头。
+      const sorted = grid.getByRole('columnheader', { name: /市值/ })
+      await expect(sorted).toHaveAttribute('aria-sort', 'descending')
+      expect(await css(sorted.getByRole('button'), 'font-weight')).toBe('500')
+      await expect(sorted.locator('.k-grid-sort')).toHaveText('▼')
+      // 品种格：徽标 18、代码芯片高 24 / 12px w600、全称。
+      await expect(cell('symbol').locator('[data-slot="symbol-mark"]')).toHaveCSS('width', '18px')
+      const chip = cell('symbol').locator('.k-code-chip')
+      await expect(chip).toHaveText('ALFA')
+      expect((await chip.boundingBox())!.height).toBe(24)
+      expect(await css(chip, 'font-size')).toBe('12px')
+      expect(await css(chip, 'font-weight')).toBe('600')
+      await expect(cell('symbol').locator('.k-code-name')).toHaveText('示例阿尔法科技')
+      // 单位小字 10px、次要色；缩写 K/M/B/T；复制出来的字连着单位。
+      await expect(cell('mcap')).toHaveText('5.18 T USD')
+      const unit = cell('mcap').locator('.k-num-unit')
+      expect(await css(unit, 'font-size')).toBe('10px')
+      expect(await css(unit, 'color')).toBe(await token(page, '--k-content-secondary-foreground'))
+      await expect(cell('volume')).toHaveText('42.80 M')
+      // 评级、标签、横条、迷你图、区间、日期复用现有件。
+      await expect(cell('rating').locator('[data-slot="rating-text"]')).toHaveAttribute('data-level', 'strong-buy')
+      await expect(cell('sector').locator('[data-slot="grid-pills"]')).toHaveText('科技')
+      await expect(cell('rvol').locator('.k-grid-bar.is-share > i')).toHaveAttribute('style', /width: 37\.33/)
+      await expect(cell('trend').locator('svg.k-spark')).toBeVisible()
+      await expect(cell('range').locator('[role="meter"]')).toHaveAttribute('aria-label', 'ALFA 52 周区间')
+      await expect(cell('earnings')).toHaveText(/^2026-\d\d-\d\d$/)
+      // compact 面板：行 20，字仍是 12px 数据字。
+      const panel = section(page, 'data-grid').getByTestId('grid-compact-panel')
+      expect((await panel.getByRole('row').nth(1).boundingBox())!.height).toBe(20)
+      expect(await css(panel.getByRole('row').nth(1).locator('[data-col="price"]'), 'font-size')).toBe('12px')
     })
 
     test('积木：数据表双击列头右缘把手、或右键「适应内容」，列宽按列头与数据里最宽的字调整，文字不被截断', async ({
@@ -2441,6 +2873,10 @@ for (const theme of THEMES) {
       expect(boards).toEqual(['5', '4', '3', '1'])
       await expect(ladder.locator('[data-board="4"] [data-slot="ladder-promote"]')).toContainText('晋级 1/2')
       await expect(ladder.locator('[data-board="1"] [data-slot="ladder-promote"]')).toContainText('晋级 6/31')
+      // 封单额按 zh-CN 缩写，写法同 cnAmount（#158）：≥1 亿写「5.20亿」，1 万–1 亿写「8,800万」；中文缩写自带量级，不挂单位小字。
+      const seal = ladder.locator('[data-code="600001"] [data-slot="ladder-seal"]')
+      await expect(seal.locator('.k-num-unit')).toHaveCount(0)
+      await expect(ladder.locator('[data-code="002005"] [data-slot="ladder-seal"]')).toHaveText('8,800万')
       // 晋级条的填充宽度按比例：1/2 约一半。
       const fill = ladder.locator('[data-board="4"] .k-ladder-promote-bar i')
       const [bar, filled] = await Promise.all([
@@ -2467,14 +2903,14 @@ for (const theme of THEMES) {
       expect(await colorOf('000003', '.k-ladder-symbol')).toBe(await ink('--ink-300'))
       expect(await colorOf('603007', '.k-ladder-symbol')).toBe(await ink('--ink-300'))
       // 数值列是界面无衬线加等宽数字，不是等宽字体族。
-      // 品种格：代码是主、名称是次（名称更淡更小）；封单额写成「520.00 M」，缺数据写「—」。
+      // 品种格：代码是主、名称是次（名称更淡更小）；封单额按 zh-CN 缩写写成「5.20亿」（#158 同 cnAmount）、不挂单位（#92，原来是「520.00 M」），缺数据写「—」。
       const sym = ladder.locator('[data-code="600002"]')
       await expect(sym.locator('.k-ladder-symbol')).toHaveText('600002')
       await expect(sym.locator('.k-ladder-sub')).toHaveText('示例电力')
       expect(
         await sym.locator('.k-ladder-sub').evaluate((el) => parseFloat(getComputedStyle(el).fontSize)),
       ).toBeLessThan(await sym.locator('.k-ladder-symbol').evaluate((el) => parseFloat(getComputedStyle(el).fontSize)))
-      await expect(ladder.locator('[data-code="600001"] .k-ladder-num').nth(2)).toHaveText('520.00 M')
+      await expect(ladder.locator('[data-code="600001"] .k-ladder-num').nth(2)).toHaveText('5.20亿')
       await expect(ladder.locator('[data-code="603007"] .k-ladder-num').nth(2)).toHaveText('—')
       await expect(ladder.locator('[data-code="600001"] .k-ladder-num').first()).toHaveText('+10.00%')
       const numStyle = await ladder
@@ -3094,6 +3530,40 @@ for (const theme of THEMES) {
       await expect(section(page, 'estimate-badge').getByText('Estimated from bars')).toBeVisible()
     })
 
+    // 提示时间统一在 TooltipProvider（kubai Vibe Design Tips 025，#251）。用假时钟推时间：本机忙时真等 500ms 量不准。
+    test('提示时间：停 500ms 才出；出了以后 400ms 内移到邻居立即出；离开超过 400ms 再进又要等 500ms', async ({
+      page,
+    }) => {
+      await page.clock.install({ time: 0 })
+      await open(page, theme, 'toolbar')
+      await page.clock.pauseAt(60_000)
+      const bar = section(page, 'toolbar').getByRole('toolbar', { name: 'Example toolbar' })
+      const tip = page.locator('[data-slot="tooltip-content"]')
+      const centerOf = async (name: string) => {
+        const box = (await bar.getByRole('button', { name, exact: true }).boundingBox())!
+        return { x: box.x + box.width / 2, y: box.y + box.height / 2 }
+      }
+      const alerts = await centerOf('Alerts')
+      const draw = await centerOf('Draw')
+      await page.mouse.move(alerts.x, alerts.y)
+      await page.clock.runFor(499)
+      await expect(tip).toHaveCount(0)
+      await page.clock.runFor(1)
+      await expect(tip).toContainText('Alerts')
+      // 沿工具条移到邻居：立即换字，不再等 500ms。
+      await page.mouse.move(draw.x, draw.y)
+      await expect(tip).toContainText('Draw')
+      // 离开超过 400ms 再回来：重新等。
+      await page.mouse.move(0, 0)
+      await expect(tip).toHaveCount(0)
+      await page.clock.runFor(401)
+      await page.mouse.move(alerts.x, alerts.y)
+      await page.clock.runFor(499)
+      await expect(tip).toHaveCount(0)
+      await page.clock.runFor(1)
+      await expect(tip).toContainText('Alerts')
+    })
+
     // 下面十条是 #1870 补的标准件：每件至少一条用户看得见的断言（打开、键盘、焦点回还）。
     test('弹出提示：键盘弹出，窗口右下角的读屏区域，两条出「全部关掉」，叉与全部关掉都收起并摘掉节点', async ({
       page,
@@ -3102,7 +3572,11 @@ for (const theme of THEMES) {
       const area = section(page, 'toast')
       const viewport = page.getByTestId('toast-viewport')
       await expect(viewport).toHaveAttribute('role', 'region')
-      await expect(viewport).toHaveAttribute('aria-live', 'assertive')
+      // 礼貌播报（kubai 016，#251）：「已复制」这类状态提示不打断读屏；要打断的 warn / danger 那一条自己带 role=alert。
+      await expect(viewport).toHaveAttribute('aria-live', 'polite')
+      await expect(page.getByTestId('toast-danger')).toHaveAttribute('role', 'alert')
+      await expect(page.getByTestId('toast-warn')).toHaveAttribute('role', 'alert')
+      await expect(page.getByTestId('toast-ok')).not.toHaveAttribute('role', /.+/)
       const add = area.getByRole('button', { name: '弹一条提示' })
       await add.focus()
       await page.keyboard.press('Enter')
@@ -3135,6 +3609,29 @@ for (const theme of THEMES) {
       await expect(toasts).toHaveCount(3)
       await page.getByRole('button', { name: '全部关掉（3）' }).click()
       await expect(toasts).toHaveCount(0)
+    })
+
+    test('弹出提示的撤销：带倒计时环与「撤销」，环随时间变短，撤销后字变「已恢复」再收', async ({ page }) => {
+      await open(page, theme, 'toast')
+      const area = section(page, 'toast')
+      await area.getByRole('button', { name: '删除一条画线' }).click()
+      const toast = page.getByTestId('toast-undo')
+      await expect(toast).toHaveCount(1)
+      await expect(toast.getByText('已删除画线')).toBeVisible()
+      // 这一条是 neutral：没有 role=alert，读屏靠常驻的 polite 视口读。
+      await expect(toast).not.toHaveAttribute('role', /.+/)
+      const arc = toast.locator('[data-slot="toast-countdown-arc"]')
+      const offsetOf = async () => Number(await arc.getAttribute('stroke-dashoffset'))
+      const first = await offsetOf()
+      // 环随剩余时间变短：偏移量只增不减（过了 0.5 秒以上，至少多了一格）。
+      await expect.poll(offsetOf, { timeout: 3000 }).toBeGreaterThan(first + 1)
+      // 环里没有写秒数；撤销钮在，点它。
+      await expect(toast.locator('[data-slot="toast-countdown"]')).toHaveText('')
+      await toast.getByRole('button', { name: '撤销', exact: true }).click()
+      await expect(toast.getByText('已恢复')).toBeVisible()
+      await expect(toast.getByRole('button', { name: '撤销', exact: true })).toHaveCount(0)
+      // 约 1.5 秒后收起、摘掉节点。
+      await expect(toast).toHaveCount(0, { timeout: 5000 })
     })
 
     test('弹出提示的语气：色条与图标取 --k-status-*；neutral 色条是主文字色、图标是强调色；说明文字用 ink-2（对比度够）', async ({
@@ -3426,6 +3923,31 @@ for (const theme of THEMES) {
     })
 
     // —— #1861：学 rare-ui 的交互、本仓库重写的六件。动效用逐帧采样验：点之前在页面里开一个 rAF 采样，点完取回每一帧读到的值，断言中途的样子（不是起点与终点）。
+    test('Tabs：选中页签悬停时字色不变（悬停提亮只给未选中的，否则对比度比静止态低），未选中的悬停才提亮', async ({
+      page,
+    }) => {
+      await open(page, theme, 'tabs')
+      const list = section(page, 'tabs').locator('[data-slot="tabs-list"]').first()
+      const active = list.locator('[data-slot="tabs-trigger"][data-state="active"]')
+      const inactive = list.locator('[data-slot="tabs-trigger"][data-state="inactive"]').first()
+      // 字色有 200ms 的过渡：悬停后先等页面上的动画全部 finished，再量，免得读到过渡起点而空过。
+      const settled = (hovered: ReturnType<typeof list.locator>) =>
+        hovered.evaluate(async () => {
+          await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+          await Promise.all(document.getAnimations().map((animation) => animation.finished.catch(() => undefined)))
+        })
+      await page.mouse.move(0, 0)
+      await settled(active)
+      await expect(inactive).toHaveCSS('color', await token(page, '--k-content-body-foreground'))
+      await active.hover()
+      await settled(active)
+      await expect(active).toHaveCSS('color', await token(page, '--seg-on-ink'))
+      // 对照：未选中的悬停变成主文字色（悬停提亮没有整个失效）。
+      await inactive.hover()
+      await settled(inactive)
+      await expect(inactive).toHaveCSS('color', await token(page, '--k-content-primary-foreground'))
+    })
+
     test('密钥输入：默认遮住；点眼睛显示，输入框不丢焦点与选区，眼睑中途真的在睁开；再点遮回去；禁用时按钮不可点', async ({
       page,
     }) => {
@@ -3458,7 +3980,13 @@ for (const theme of THEMES) {
       await expect(area.locator('[data-gallery-visible]')).toHaveText('显示中')
       const shapes = [...new Set(await lid)]
       expect(shapes[0], '起点是合上的一条线').toBe('M2 12C6 12 18 12 22 12C18 12 6 12 2 12Z')
-      expect(shapes.at(-1), '终点是睁开的杏仁').toBe('M2 12C6 4 18 4 22 12C18 20 6 20 2 12Z')
+      // 终点另等：采样 700ms 一到就收，自建机忙时弹簧还差零点零几没落定（run 45399485013 读到 4.0079），不能拿采样的最后一帧当终点；轮询只给 1500ms（采样 700ms 加约 800ms 容差），慢到几秒才落定的动画仍然红。
+      await expect
+        .poll(() => area.locator('[data-slot="password-input-eye"] path').first().getAttribute('d'), {
+          message: '终点是睁开的杏仁',
+          timeout: 1500,
+        })
+        .toBe('M2 12C6 4 18 4 22 12C18 20 6 20 2 12Z')
       expect(shapes.length, '中间有过渡帧').toBeGreaterThan(3)
       await toggle.click()
       await expect(input).toHaveAttribute('type', 'password')
@@ -4426,7 +4954,9 @@ for (const theme of THEMES) {
       expect(Number(await big.locator('.k-spark-ins-now').getAttribute('y1'))).toBeCloseTo(dotY, 1)
       // 实时：走一步，线延伸、投影谱与当前值线跟着最新点。
       const barWidths = () =>
-        big.locator('.k-spark-ins-bar').evaluateAll((els) => els.map((el) => (el as SVGElement).style.width).join())
+        big
+          .locator('.k-spark-ins-bar')
+          .evaluateAll((els) => els.map((el) => (el as SVGElement).style.getPropertyValue('--fill')).join())
       const before = await barWidths()
       await page.evaluate(() => window.__liveStep?.(1))
       await expect.poll(barWidths).not.toBe(before)
@@ -4681,9 +5211,23 @@ for (const theme of THEMES) {
       const rows = table.locator('tbody tr')
       await expect(rows).toHaveCount(3)
       const rights = await table
-        .locator('tbody td.is-num:not(.k-quote-rows-change)')
+        .locator('tbody td.k-quote-rows-price')
         .evaluateAll((nodes) => nodes.map((node) => Math.round(node.getBoundingClientRect().right)))
+      expect(rights, '每行都有价格格').toHaveLength(3)
       expect(new Set(rights).size, '价格列右缘对齐').toBe(1)
+      // 格内排版跟 DataGrid 同一份（#92）：代码芯片高 24、12px w600；成交量按 zh-CN 缩写（万 / 亿，写法同 cnAmount，#158），数与单位之间是不换行空格 U+00A0（#250，kubai 007），单位「股」是 10px 次要色小字。
+      const chip = rows.nth(0).locator('.k-code-chip')
+      await expect(chip).toBeVisible()
+      expect((await chip.boundingBox())!.height).toBe(24)
+      await expect(chip).toHaveCSS('font-size', '12px')
+      await expect(chip).toHaveCSS('font-weight', '600')
+      const volume = rows.nth(0).locator('.k-quote-rows-volume')
+      await expect(volume).toHaveText(/^\d[\d,]*(\.\d{1,2})?(万|亿)\u00a0股$/)
+      await expect(volume.locator('.k-num-unit')).toHaveCSS('font-size', '10px')
+      await expect(volume.locator('.k-num-unit')).toHaveCSS(
+        'color',
+        await token(page, '--k-content-secondary-foreground'),
+      )
       await expect
         .poll(() => paint(rows.nth(0).locator('.k-quote-rows-change'), 'color'))
         .toEqual(await swatch(page, 'var(--pnl-up)'))
@@ -4793,7 +5337,8 @@ test('每一页写着属性表、组成，有键盘操作的写键盘', async ({
   test.setTimeout(180_000)
   for (const doc of PAGES) {
     await page.goto(`/#/${doc.id}`)
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText(doc.title)
+    // 页名是页上第一个 h1；演示里也可能有 h1（如 Markdown 页的「快速上手」）。
+    await expect(page.getByRole('heading', { level: 1 }).first()).toHaveText(doc.title)
     const guide = guidanceOf(doc.id)
     // 怎么用：什么时候用 / 别用、状态、组成（别用 = 指南里的 avoid + 登记的 donts）。
     await docTab(page, '怎么用')
@@ -5131,6 +5676,11 @@ for (const theme of THEMES) {
     const row = (key: string) => frame.locator(`.k-sr-table tr[data-metric="${key}"]`)
     const cell = (key: string, side: string) => row(key).locator(`td[data-side="${side}"]`)
     await expect(frame.locator('.k-sr-table thead th[data-side]')).toHaveText(['全部', '多', '空'])
+    // 指标表是整页表的一套数（#92，.k-table-comfortable）：行 40、表头 48、正文 14px、首列左 20。
+    expect(Math.round((await row('tradeCount').boundingBox())!.height)).toBe(40)
+    expect(Math.round((await frame.locator('.k-sr-table thead tr').first().boundingBox())!.height)).toBe(48)
+    await expect(cell('tradeCount', 'all')).toHaveCSS('font-size', '14px')
+    await expect(row('tradeCount').locator('th')).toHaveCSS('padding-left', '20px')
     const n = async (side: string) => Number(await cell('tradeCount', side).innerText())
     expect((await n('long')) + (await n('short'))).toBe(await n('all'))
     await expect(cell('tradeCount', 'all')).toHaveAttribute('data-active', '')
@@ -5164,6 +5714,8 @@ for (const theme of THEMES) {
     await expect(grid.getByRole('columnheader', { name: '累计盈亏' })).toBeVisible()
     const first = grid.getByRole('row').nth(1)
     await expect(first).toContainText('140')
+    // 交易列表是 DataGrid comfortable（#92）：行 40。
+    expect((await first.boundingBox())!.height).toBe(40)
     await expect(first).toHaveAttribute('aria-expanded', 'false')
     await first.click()
     await expect(first).toHaveAttribute('aria-expanded', 'true')
@@ -5972,6 +6524,11 @@ for (const theme of THEMES) {
     await expect(frame.locator('.k-hl-row')).toHaveCount(0)
     const table = frame.locator('.k-hl-watch')
     await expect(table.locator('thead th')).toHaveText(['传导层', '核心证据', '最容易混淆的地方'])
+    // 观察表是整页表的一套数（#92）：表头 48、13px 次要色；正文 14px，行至少 40（文字会折行）。
+    expect(Math.round((await table.locator('thead tr').boundingBox())!.height)).toBe(48)
+    await expect(table.locator('thead th').first()).toHaveCSS('font-size', '13px')
+    await expect(table.locator('tbody td').first()).toHaveCSS('font-size', '14px')
+    expect((await table.locator('tbody tr').first().boundingBox())!.height).toBeGreaterThanOrEqual(40)
     await expect(table.locator('tbody tr')).toHaveCount(8)
     await expect(table.locator('tbody tr').first()).toContainText('口号式表述和有预算的安排不是一回事')
     await frame.getByRole('group', { name: '视图' }).getByRole('button', { name: '假说', exact: true }).click()
@@ -5988,21 +6545,21 @@ for (const theme of THEMES) {
         .locator('[data-col="symbol"]')
         .allTextContents()
         .then((all) => all.filter((t) => !t.startsWith('代码')))
-    expect(await codes()).toHaveLength(8)
-    // 预设：价格「高于 100」，副标题「高价股」在浮层里；选了以后胶囊带条件文字，表只剩价格大于 100 的 5 只。
+    expect(await codes()).toHaveLength(16)
+    // 预设：价格「高于 100」，副标题「高价股」在浮层里；选了以后胶囊带条件文字，表只剩价格大于 100 的 7 只（16 只演示股票）。
     await bar.locator('[data-slot="filter-pill"][data-field="price"]').click()
     const pop = page.getByRole('dialog', { name: '价格' })
     await expect(pop.getByText('高价股')).toBeVisible()
     await pop.locator('[data-preset="p-high"]').click()
     await expect(bar.locator('[data-field="price"]')).toContainText('高于 100')
-    await expect.poll(async () => (await codes()).length).toBe(4)
+    await expect.poll(async () => (await codes()).length).toBe(7)
     // 手动设置：涨跌幅 大于 1，应用后与价格条件相且。
     await bar.locator('[data-field="change"]').click()
     const pop2 = page.getByRole('dialog', { name: '涨跌幅' })
     await pop2.getByLabel('值').fill('1')
     await pop2.getByRole('button', { name: '应用' }).click()
     await expect(bar.locator('[data-field="change"]')).toContainText('大于 1')
-    await expect.poll(async () => (await codes()).length).toBe(2)
+    await expect.poll(async () => (await codes()).length).toBe(4)
     // 「+」：加一个字段（分组带计数，进组再选）；移除字段连它的条件一起清。
     await bar.getByRole('button', { name: '添加过滤' }).click()
     const add = page.getByRole('dialog', { name: '添加过滤' })
@@ -6013,11 +6570,11 @@ for (const theme of THEMES) {
     await bar.locator('[data-field="change"]').click()
     await page.getByRole('dialog', { name: '涨跌幅' }).getByRole('button', { name: '移除过滤 涨跌幅' }).click()
     await expect(bar.locator('[data-field="change"]')).toHaveCount(0)
-    await expect.poll(async () => (await codes()).length).toBe(4)
+    await expect.poll(async () => (await codes()).length).toBe(7)
     // 「⋯」重置全部。
     await bar.getByRole('button', { name: '更多' }).click()
     await page.getByRole('button', { name: '重置全部过滤' }).click()
-    await expect.poll(async () => (await codes()).length).toBe(8)
+    await expect.poll(async () => (await codes()).length).toBe(16)
     // 列集标签：概览亮着，点「估值」换成四列（代码、价格、市盈率、市值），涨跌幅列消失。
     const tabs = doc.getByRole('tablist', { name: '列集' })
     await expect(tabs.getByRole('tab', { name: '概览' })).toHaveAttribute('aria-selected', 'true')
@@ -6035,9 +6592,18 @@ for (const theme of THEMES) {
     const rowsOf = () => grid.locator('[data-slot="rating-text"]')
     // 表头：代码列第二行写总数，搜索图标在名字后；市盈率第二行是口径 TTM；排序箭头画在名字前。
     const symbolHead = grid.getByRole('columnheader', { name: /代码/ })
-    await expect(symbolHead.locator('.k-grid-head-sub')).toHaveText('8 / 8')
+    await expect(symbolHead.locator('.k-grid-head-sub')).toHaveText('16 / 16')
     await expect(grid.getByRole('columnheader', { name: /市盈率/ }).locator('.k-grid-head-sub')).toHaveText('TTM')
     await expect(grid.getByRole('img', { name: '搜索代码' })).toBeVisible()
+    // 两行表头与单行表头对齐（#92）：两行的第一行与单行列头同一条线（顶边与基线都相差不到 1px），第二行在第一行下面。
+    const firstLine = async (name: RegExp) =>
+      (await grid.getByRole('columnheader', { name }).locator('.k-grid-head-name > span').first().boundingBox())!
+    const twoLine = await firstLine(/代码/)
+    const oneLine = await firstLine(/价格/)
+    expect(Math.abs(twoLine.y - oneLine.y)).toBeLessThan(1)
+    expect(Math.abs(twoLine.y + twoLine.height - (oneLine.y + oneLine.height))).toBeLessThan(1)
+    const subBox = (await symbolHead.locator('.k-grid-head-sub').boundingBox())!
+    expect(subBox.y).toBeGreaterThanOrEqual(twoLine.y + twoLine.height - 0.5)
     await grid
       .getByRole('columnheader', { name: /价格/ })
       .getByRole('button')
@@ -6053,7 +6619,7 @@ for (const theme of THEMES) {
       .boundingBox())!
     expect(arrowBox.x + arrowBox.width).toBeLessThanOrEqual(nameBox.x + 1)
     // 评级列：五种图标加文字，强力买入取涨色，强力卖出取跌色。
-    await expect(rowsOf()).toHaveCount(8)
+    await expect(rowsOf()).toHaveCount(16)
     const tone = (level: string) =>
       grid
         .locator(`[data-slot="rating-text"][data-level="${level}"]`)
@@ -6061,24 +6627,24 @@ for (const theme of THEMES) {
         .evaluate((el) => getComputedStyle(el).color)
     expect(await tone('strong-buy')).not.toBe(await tone('strong-sell'))
     await expect(grid.locator('[data-slot="rating-text"][data-level="strong-buy"]').first()).toHaveText('强力买入')
-    expect(await grid.locator('[data-slot="rating-text"][data-level="strong-buy"] svg').count()).toBe(2)
-    // 撤销 / 重做：设一个预设，撤销回到 8 行，重做回到筛过的。
+    expect(await grid.locator('[data-slot="rating-text"][data-level="strong-buy"] svg').count()).toBe(3)
+    // 撤销 / 重做：设一个预设，撤销回到 16 行，重做回到筛过的。
     const undo = bar.getByRole('button', { name: '撤销' })
     const redo = bar.getByRole('button', { name: '重做' })
     await expect(undo).toBeDisabled()
     await bar.locator('[data-slot="filter-pill"][data-field="price"]').click()
     await page.getByRole('dialog', { name: '价格' }).locator('[data-preset="p-high"]').click()
-    await expect(rowsOf()).toHaveCount(4)
+    await expect(rowsOf()).toHaveCount(7)
     await undo.click()
-    await expect(rowsOf()).toHaveCount(8)
+    await expect(rowsOf()).toHaveCount(16)
     await expect(redo).toBeEnabled()
     await redo.click()
-    await expect(rowsOf()).toHaveCount(4)
+    await expect(rowsOf()).toHaveCount(7)
     // 标题下拉：切到「高股息」换一组条件；另存为多一项并选中。
     const title = doc.getByRole('button', { name: '已保存的筛选' })
     await title.click()
     await page.getByRole('menuitemradio', { name: '高股息' }).click()
-    await expect(rowsOf()).toHaveCount(4)
+    await expect(rowsOf()).toHaveCount(7)
     await expect(title).toContainText('高股息')
     await title.click()
     await page.getByRole('menuitem', { name: '另存为…' }).click()
@@ -6971,7 +7537,49 @@ const watchAttr = (locator: Locator, name: string) =>
       if (el.hasAttribute(attr)) host.__saw = true
     }).observe(el, { attributes: true, attributeFilter: [attr] })
   }, name)
+/** 同 watchAttr，但属性要等于 value 才算看见（平时就带着这个属性、只是值不同的，用它）。 */
+const watchAttrValue = (locator: Locator, name: string, value: string) =>
+  locator.evaluate(
+    (el, [attr, want]) => {
+      const host = el as Element & { __saw?: boolean }
+      host.__saw = false
+      new MutationObserver(() => {
+        if (el.getAttribute(attr!) === want) host.__saw = true
+      }).observe(el, { attributes: true, attributeFilter: [attr!] })
+    },
+    [name, value],
+  )
 const sawAttr = (locator: Locator) => locator.evaluate((el) => (el as Element & { __saw?: boolean }).__saw === true)
+/**
+ * 推进前挂上：记下 root 子树里出现过的 data-flash 值与那一刻的动画名（「up k-live-flash」这样一条）。
+ * 闪烁只有 600ms（--dur-flash），机器忙时等到断言时标记可能已经摘掉（#190 的 CI 上三条读数刷新就这样红过）；
+ * 读数闪的时候 span 换 key 重挂，所以看整棵子树，不盯某一个元素。
+ */
+const watchFlash = (locator: Locator) =>
+  locator.evaluate((root) => {
+    const seen: string[] = []
+    ;(root as Element & { __flashes?: string[] }).__flashes = seen
+    const note = (node: Node) => {
+      if (!(node instanceof Element)) return
+      for (const el of [node, ...node.querySelectorAll('[data-flash]')]) {
+        const value = el.getAttribute('data-flash')
+        if (value) seen.push(`${value} ${getComputedStyle(el).animationName}`)
+      }
+    }
+    new MutationObserver((records) => {
+      for (const record of records) {
+        if (record.type === 'attributes') note(record.target)
+        else record.addedNodes.forEach(note)
+      }
+    }).observe(root, { subtree: true, childList: true, attributes: true, attributeFilter: ['data-flash'] })
+  })
+/** watchFlash 挂上以后出现过的闪烁里有没有一条匹配 pattern。 */
+const flashed = (locator: Locator, pattern: RegExp) =>
+  locator.evaluate(
+    (root, source) =>
+      ((root as Element & { __flashes?: string[] }).__flashes ?? []).some((entry) => new RegExp(source).test(entry)),
+    pattern.source,
+  )
 const liveStep = (page: Page, count = 1) =>
   page.evaluate(async (n) => {
     window.__liveStep!(n)
@@ -7104,9 +7712,10 @@ test('通知铃刷新（NotificationBell）：新通知来时铃的底色闪、�
   const live = section(page, 'notification-bell').getByTestId('bell-live')
   const bell = live.locator('[data-slot="notification-bell"]')
   await expect(bell).toHaveAccessibleName('实时提醒，0 条未读')
+  await watchFlash(bell)
   await liveStep(page)
   await expect(bell).toHaveAccessibleName('实时提醒，1 条未读')
-  await expect(bell.locator('[data-slot="notification-bell-flash"]')).toHaveAttribute('data-flash', 'up')
+  await expect.poll(() => flashed(bell, /^up /)).toBe(true)
   const items = live.locator('[data-slot="live-notices"] li')
   await expect(items).toHaveCount(1)
   await expect(items.first()).toHaveClass(/k-live-enter/)
@@ -7130,9 +7739,11 @@ test('读数刷新（MetricCard）：大号数值变了闪涨跌色，走势线�
   const line = card.locator('.k-spark .k-spark-line')
   await expect(line).not.toHaveAttribute('data-extending', /.*/)
   await watchAttr(line, 'data-extending')
+  const valueBox = value.locator('xpath=..')
+  await watchFlash(valueBox)
   await liveStep(page)
-  await expect(value).toHaveAttribute('data-flash', /^(up|down)$/)
-  expect(await value.evaluate((el) => getComputedStyle(el).animationName)).toBe('k-live-flash')
+  // 闪的那一刻：方向是 up / down，动画是 k-live-flash。
+  await expect.poll(() => flashed(valueBox, /^(up|down) k-live-flash$/)).toBe(true)
   await expect.poll(() => sawAttr(line)).toBe(true)
   await expect(line).not.toHaveAttribute('data-extending', /.*/, { timeout: 2000 })
 })
@@ -7145,9 +7756,13 @@ test('读数刷新（QuoteCard、PriceTag）：价格变了闪涨跌色，迷你
   const before = await pointCount(line)
   await expect(price).not.toHaveAttribute('data-flash', /.+/)
   await watchAttr(line, 'data-extending')
+  const priceBox = price.locator('xpath=..')
+  const tagBox = demo.locator('.k-price-tag-price .k-live-flash').locator('xpath=..')
+  await watchFlash(priceBox)
+  await watchFlash(tagBox)
   await liveStep(page)
-  await expect(price).toHaveAttribute('data-flash', /^(up|down)$/)
-  await expect(demo.locator('.k-price-tag-price .k-live-flash')).toHaveAttribute('data-flash', /^(up|down)$/)
+  await expect.poll(() => flashed(priceBox, /^(up|down) /)).toBe(true)
+  await expect.poll(() => flashed(tagBox, /^(up|down) /)).toBe(true)
   expect(await pointCount(line)).toBe(before + 1)
   await expect.poll(() => sawAttr(line)).toBe(true)
   await expect(line).not.toHaveAttribute('data-extending', /.*/, { timeout: 2000 })
@@ -7214,9 +7829,9 @@ test('读数刷新（SparkTile）：数值闪涨跌色，走势线延伸，末�
   await expect(tile.locator('.k-spark-tile-value .k-live-flash')).toHaveAttribute('data-flash', /^(up|down)$/)
   await expect(tile.locator('.k-spark-tile-halo')).toHaveAttribute('data-flash', /^(up|down)$/)
   await expect.poll(() => sawAttr(line)).toBe(true)
-  // 末点跟着线一起滑（top 有过渡，时长是 --dur-reorder）。
+  // 末点跟着线一起滑（translate 有过渡，时长是 --dur-reorder；不再对 top 做过渡，#251）。
   expect(await tile.locator('.k-spark-tile-end').evaluate((el) => getComputedStyle(el).transitionProperty)).toContain(
-    'top',
+    'translate',
   )
 })
 
@@ -7657,6 +8272,15 @@ for (const theme of THEMES) {
       await expect(slot(buy, 'ticket-rr')).toContainText('3.17 : 1')
       // 可开：250 / 0.011 / 600 = 37.87 张。
       await expect(slot(buy, 'ticket-max')).toContainText('37.87 Cont')
+      // 保证金模式（kubai 020，#251）：两项分段一直看得见；点「Cross」切过去，再点已选的不会取消。
+      const marginMode = ticket.getByRole('group', { name: 'Margin mode' })
+      await expect(marginMode.getByRole('button')).toHaveCount(2)
+      await expect(marginMode.getByRole('button', { name: 'Isolated' })).toHaveAttribute('aria-pressed', 'true')
+      await marginMode.getByRole('button', { name: 'Cross' }).click()
+      await expect(marginMode.getByRole('button', { name: 'Cross' })).toHaveAttribute('aria-pressed', 'true')
+      await expect(marginMode.getByRole('button', { name: 'Isolated' })).toHaveAttribute('aria-pressed', 'false')
+      await marginMode.getByRole('button', { name: 'Cross' }).click()
+      await expect(marginMode.getByRole('button', { name: 'Cross' })).toHaveAttribute('aria-pressed', 'true')
       // 改杠杆到 10：成本框还是 10，张数变成 0.16（10 / 0.101 = 99.01 → 0.165 → 0.16），两栏都变。
       await ticket.locator('[data-slot="ticket-leverage"]').fill('10')
       await expect(slot(buy, 'ticket-amount')).toHaveValue('10')
@@ -7729,14 +8353,14 @@ for (const theme of THEMES) {
       await expect(area.locator('output').first()).toHaveText('catalog asked next to: table')
       await expect(tab(/Feed/)).toHaveAttribute('aria-selected', 'true')
       // 悬停才出「×」；固定的页签没有「×」，Delete 也关不掉。
-      const close = bar.getByRole('button', { name: 'Remove Feed' })
+      const close = bar.getByRole('button', { name: 'Remove Feed', includeHidden: true })
       await page.mouse.move(0, 0) // 新页签正好长在指针底下，先挪开
       await expect(close).toHaveCSS('opacity', '0')
       await tab(/Feed/).hover()
       await expect(close).toHaveCSS('opacity', '1')
       await close.click()
       await expect(tab(/Feed/)).toHaveCount(0)
-      await expect(bar.getByRole('button', { name: 'Remove Chart' })).toHaveCount(0)
+      await expect(bar.getByRole('button', { name: 'Remove Chart', includeHidden: true })).toHaveCount(0)
       await tab(/Chart/).focus()
       await page.keyboard.press('Delete')
       await expect(tab(/Chart/)).toHaveCount(1)
@@ -8147,9 +8771,10 @@ test('SUI-B Collapsible：点标题展开收起，内容高度从 0 长出来', 
   await expect(content).toBeHidden()
   await trigger.click()
   await expect(content).toBeVisible()
-  expect((await content.boundingBox())!.height).toBeGreaterThan(20)
   // 入场用的是 height 动画（kc-collapsible-down）。
   expect(await content.evaluate((el) => getComputedStyle(el).animationName)).toBe('kc-collapsible-down')
+  // 高度在动画里从 0 长出来，CI 忙时刚点完可能才长到一半：等它长够。
+  await expect.poll(async () => (await content.boundingBox())?.height ?? 0).toBeGreaterThan(20)
 })
 
 test('SUI-B Menubar：点开面板，方向键换到旁边的菜单，Esc 关闭', async ({ page }) => {
@@ -9186,10 +9811,12 @@ test('SmoothUI 动效 过场：点切换后标记 data-transitioning 亮起并�
     const demo = section(page, id).locator(`[data-gallery-motion="${id}"]`)
     const stage = demo.locator('[data-slot="shader-transition"]').first()
     const before = await demo.locator('strong').first().textContent()
+    // data-transitioning 平时就是 'false'，/.+/ 一点下去就过、不等它亮；点之前挂上观察器，记下它亮过（'true'）。
+    await watchAttrValue(stage, 'data-transitioning', 'true')
     await demo.getByRole('button', { name: '切换视图' }).click()
-    await expect(stage).toHaveAttribute('data-transitioning', /.+/)
-    await expect(stage).not.toHaveAttribute('data-transitioning', /true/, { timeout: 4000 })
-    expect(await demo.locator('strong').first().textContent()).not.toBe(before)
+    await expect.poll(() => sawAttr(stage)).toBe(true)
+    await expect(stage).toHaveAttribute('data-transitioning', 'false', { timeout: 4000 })
+    await expect.poll(() => demo.locator('strong').first().textContent()).not.toBe(before)
   }
 })
 

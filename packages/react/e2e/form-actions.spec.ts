@@ -109,9 +109,11 @@ test('HoldToConfirm：单击不触发，按住填满才触发一次；键盘按�
 test('RenderingSettings：开关写到根节点、滑块走格、恢复默认清干净', async ({ page }) => {
   const area = await open(page, 'rendering-settings')
   const html = page.locator('html')
-  const zero = area.getByRole('group', { name: '斜线零' }).first()
-  await zero.getByRole('button', { name: '开' }).click()
-  await expect(zero.getByRole('button', { name: '开' })).toHaveAttribute('aria-pressed', 'true')
+  // 单项设置是开关（kubai 020，#251）：点一下状态立即变、立即写到根节点。
+  const zero = area.getByRole('switch', { name: '斜线零' }).first()
+  await expect(zero).toHaveAttribute('aria-checked', 'false')
+  await zero.click()
+  await expect(zero).toHaveAttribute('aria-checked', 'true')
   await expect(html).toHaveAttribute('data-numerals', 'slashed')
   const weight = area.getByRole('slider', { name: '字重补偿' }).first()
   await weight.focus()

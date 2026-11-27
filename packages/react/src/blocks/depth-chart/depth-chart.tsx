@@ -9,10 +9,9 @@ import { useId, useState, type KeyboardEvent, type PointerEvent } from 'react'
 import { cn } from '../../lib/cn.ts'
 import { LcdTooltip } from '../../lib/chart/chart-kit/lcd-tooltip.tsx'
 import { niceTicks, PLOT_W } from '../../lib/chart/series-geometry.ts'
-import { signed } from '../../lib/num.ts'
 import { formatDecimal, fromUnits, toUnits } from '../../lib/scaled-decimal.ts'
 import type { BookLevel } from '../order-book/order-book-model.ts'
-import { buildDepth, depthAt, depthPrices, stepAreaPath, stepLinePath } from './depth-chart-model.ts'
+import { buildDepth, depthAt, depthPrices, formatDepthOffset, stepAreaPath, stepLinePath } from './depth-chart-model.ts'
 
 /** Texts of DepthChart (the package ships no text). */
 export type DepthChartLabels = {
@@ -57,7 +56,6 @@ export type DepthChartProps = {
 
 const DEFAULT_HEIGHT = 220
 const X_TICKS = 5
-const pctText = (value: number) => signed(value, (v) => `${v.toFixed(2)}%`)
 
 export function DepthChart({
   bids,
@@ -98,8 +96,9 @@ export function DepthChart({
   const pct = (price: number) => `${((price - lo) / span) * 100}%`
 
   const reading = hover === null ? null : depthAt(model, hover)
+  const offsetText = reading ? formatDepthOffset(reading.offsetPct) : ''
   const readingText = reading
-    ? `${reading.side === 'bid' ? labels.bid : labels.ask} ${fmtPrice(reading.price)} · ${labels.total} ${fmtSize(reading.total)} · ${labels.offset} ${pctText(reading.offsetPct)}`
+    ? `${reading.side === 'bid' ? labels.bid : labels.ask} ${fmtPrice(reading.price)} · ${labels.total} ${fmtSize(reading.total)} · ${labels.offset} ${offsetText}`
     : ''
 
   const snap = (price: number) => fromUnits(toUnits(price, priceDecimals), priceDecimals)
@@ -174,7 +173,7 @@ export function DepthChart({
               title={fmtPrice(reading.price)}
               rows={[
                 { key: 'total', label: labels.total, value: fmtSize(reading.total) },
-                { key: 'offset', label: labels.offset, value: pctText(reading.offsetPct) },
+                { key: 'offset', label: labels.offset, value: offsetText },
               ]}
             />
           </>

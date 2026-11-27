@@ -8,9 +8,6 @@
   gap: 10px;
   min-width: 0;
   padding: 10px 12px 12px;
-  border: 1px solid var(--k-separable-tertiary-borderColor);
-  border-radius: var(--radius-control);
-  background: var(--k-surface-base-background);
   color: var(--k-content-primary-foreground);
   font: var(--text-data) var(--font-sans);
   font-variant-numeric: tabular-nums;
@@ -41,6 +38,10 @@
   background: var(--k-selectable-background-selected);
   color: var(--k-content-primary-foreground);
 }
+/* 选中的页签是 selected 底，名字的 ink-300 只有 4.2:1（console，axe #190），提到 body。 */
+.k-symov-tab[data-state='active'] .k-symov-tab-name {
+  color: var(--k-content-body-foreground);
+}
 .k-symov-tab:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: -2px;
@@ -54,7 +55,7 @@
   flex: 0 0 auto;
   width: 8px;
   height: 8px;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
 }
 .k-symov-tab-symbol {
   font-weight: 600;
@@ -74,6 +75,7 @@
 }
 .k-symov-tab-pct {
   font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
 }
 .k-symov-panel {
   min-width: 0;
@@ -142,7 +144,7 @@
 .k-symov-empty {
   display: grid;
   place-items: center;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-symov-ranges {

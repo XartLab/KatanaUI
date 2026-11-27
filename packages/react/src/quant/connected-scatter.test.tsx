@@ -87,4 +87,19 @@ describe('ConnectedScatter', () => {
     expect(html).toContain('--series-1')
     expect(html).toContain('--series-2')
   })
+
+  it('第 8 条轨迹起是 series-other，不从 series-1 循环（dataviz §2）', () => {
+    const nine = Array.from({ length: 9 }, (_, i) => ({
+      id: `s${i}`,
+      label: `轨迹${i}`,
+      points: [{ x: i, y: i, label: `p${i}` }],
+    }))
+    const many = renderToStaticMarkup(<ConnectedScatter {...view} series={nine} label="多" axes={{ x: 'x', y: 'y' }} />)
+    const colors = [...many.matchAll(/class="k-scatter-series"[^>]*style="--k-scatter-color:([^"]+)"/g)].map(
+      (m) => m[1],
+    )
+    expect(colors).toHaveLength(9)
+    expect(colors.slice(0, 7)).toEqual(Array.from({ length: 7 }, (_, i) => `var(--series-${i + 1})`))
+    expect(colors.slice(7)).toEqual(['var(--series-other)', 'var(--series-other)'])
+  })
 })

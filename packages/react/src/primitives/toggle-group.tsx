@@ -16,7 +16,7 @@ const toggleGroupVariants = cva('inline-flex gap-0.5', {
   variants: {
     size: {
       md: 'box-border rounded-[var(--radius-control)] border border-(color:--k-selectable-groupBorderColor) bg-(--k-selectable-groupBackground) p-1',
-      sm: 'box-border rounded-[8px] bg-(--k-selectable-subtle-groupBackground) p-0.5',
+      sm: 'box-border rounded-[var(--radius-overlay)] bg-(--k-selectable-subtle-groupBackground) p-0.5',
     },
   },
   defaultVariants: { size: 'md' },
@@ -25,7 +25,7 @@ const toggleGroupVariants = cva('inline-flex gap-0.5', {
 // split（买卖这类各占一格的开关，#104）：不要容器底与边，每一项自带边、项间留 4px；选中项填满，tone 给涨跌色（买 --pnl-up、卖 --pnl-down，随主题红涨绿跌走）。
 // 没有滑块（选中是整格换色），所以不画 pill。
 const splitItemVariants = cva([
-  'k-text-body relative inline-flex h-(--k-size-base) cursor-pointer items-center justify-center rounded-[6px] border px-3 font-semibold whitespace-nowrap',
+  'k-text-body relative inline-flex h-(--k-size-base) cursor-pointer items-center justify-center rounded-[var(--radius-control)] border px-3 font-semibold whitespace-nowrap',
   'transition-[background-color,color] duration-[120ms] disabled:cursor-not-allowed disabled:opacity-[0.28]',
   'border-line bg-transparent text-ink-3 data-[state=off]:enabled:hover:bg-(--k-actionable-background-hover) data-[state=off]:enabled:hover:text-ink',
   'data-[state=on]:border-transparent data-[state=on]:bg-(--seg-on-bg) data-[state=on]:text-(--seg-on-ink)',
@@ -48,7 +48,7 @@ const toggleItemVariants = cva(
     variants: {
       size: {
         md: 'h-6 rounded-[var(--radius-inner)] px-3 data-[state=on]:bg-(--seg-on-bg) data-[state=on]:font-bold data-[state=on]:text-(--seg-on-ink)',
-        sm: 'h-7 rounded-[6px] px-2 transition-[color,scale] duration-200 enabled:active:scale-[0.96] data-[state=on]:font-medium data-[state=on]:text-(--seg-on-ink)',
+        sm: 'h-7 rounded-[var(--radius-control)] px-2 transition-[color,scale] duration-200 enabled:active:scale-[0.96] data-[state=on]:font-medium data-[state=on]:text-(--seg-on-ink)',
       },
     },
     defaultVariants: { size: 'md' },
@@ -182,7 +182,7 @@ function ToggleGroupItem({
         <motion.span
           aria-hidden="true"
           data-slot="toggle-group-pill"
-          className={cn('absolute inset-0 rounded-[6px] bg-(--seg-on-bg)', group.pillClassName)}
+          className={cn('absolute inset-0 rounded-[var(--radius-control)] bg-(--seg-on-bg)', group.pillClassName)}
           layoutId={group.layoutId}
           transition={snappy}
         />

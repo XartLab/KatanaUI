@@ -6,6 +6,7 @@
 import type { ReactNode } from 'react'
 import type { RowAction } from '../../quotes/row-actions.tsx'
 import type { GridColumn } from './columns.ts'
+import type { GridSummary } from './grid-summary-row.tsx'
 import type { GridMenuEntry } from './host.tsx'
 import type { SortSpec } from './model.ts'
 
@@ -24,12 +25,33 @@ export type GridColumnLayout = {
   sub?: string
 }
 
-/** 行高档：compact 20、default 24、relaxed 32（像素）。 */
-export type GridDensity = 'compact' | 'default' | 'relaxed'
+/**
+ * 行高档：compact 20、default 24、relaxed 32、comfortable 40（像素）。
+ * comfortable（#90，照 TradingView 选股器）给整页的表（选股器、持仓、报告）：格内左右 12、首列左 20、正文 14px、表头 13px、行间横线；
+ * compact / default 留给面板里的密表（自选栏、盘口），三档原值不变（KATANAview 在用）。
+ */
+export type GridDensity = 'compact' | 'default' | 'relaxed' | 'comfortable'
 /** 各档行高（像素）。 */
-export const ROW_HEIGHTS: Readonly<Record<GridDensity, number>> = { compact: 20, default: 24, relaxed: 32 }
-/** 各档表头高（像素）；有列带 sub 时再加 14。 */
-export const HEAD_HEIGHTS: Readonly<Record<GridDensity, number>> = { compact: 22, default: 26, relaxed: 30 }
+export const ROW_HEIGHTS: Readonly<Record<GridDensity, number>> = {
+  compact: 20,
+  default: 24,
+  relaxed: 32,
+  comfortable: 40,
+}
+/** 各档表头高（像素）；有列带 sub 时再加 HEAD_SUB_EXTRA。 */
+export const HEAD_HEIGHTS: Readonly<Record<GridDensity, number>> = {
+  compact: 22,
+  default: 26,
+  relaxed: 30,
+  comfortable: 48,
+}
+/** 有列带 sub（表头第二行）时表头加高多少；comfortable 的 48 本来就放得下两行 13px。 */
+export const HEAD_SUB_EXTRA: Readonly<Record<GridDensity, number>> = {
+  compact: 14,
+  default: 14,
+  relaxed: 14,
+  comfortable: 0,
+}
 /** 拖宽与适应内容的最小列宽（像素）。 */
 export const MIN_WIDTH = 24
 
@@ -198,6 +220,11 @@ export type DataGridProps<Row extends object> = {
    */
   foot?: ReactNode
   /**
+   * Summary rows at the foot (totals, averages): per-column aggregates over all rows, on the same column template and pinned columns; they stick to the bottom while scrolling.
+   * 表尾合计 / 均值行（#77）：按列配聚合，对全部行算，跟表同一份列宽与固定列，滚动时粘在底边。
+   */
+  summary?: readonly GridSummary<Row>[]
+  /**
    * Rows are already sorted by the caller (group rows with children): the header still shows the sort marker but the table does not sort.
    * 行已经由调用方排好（分组行带子行）：表照样画表头的标记，但不再自己排。
    */
@@ -234,8 +261,16 @@ export type DataGridProps<Row extends object> = {
    * 列优先级用的容器宽度（像素）；省略时自己用 ResizeObserver 量。服务端渲染这类量不了、宽度又已知的地方给。
    */
   containerWidth?: number
-  /** Row height tier. */
+  /**
+   * Row height tier: compact, default, relaxed for dense panel tables; comfortable (40px rows, 14px text, ruled) for full-page tables.
+   * 行高档：compact / default / relaxed 是面板里的密表；comfortable 是整页的表（行 40、正文 14px、默认画行间线）。
+   */
   density?: GridDensity
+  /**
+   * Locale of compact numbers (K/M/B/T for en-US, CJK myriad units for zh-CN) and date columns; a column's format.locale wins. Defaults to en-US.
+   * compact 缩写与 date 列用哪种语言（en-US 是 K/M/B/T，zh-CN 是 万/亿）；列的 format.locale 优先。省略是 en-US。
+   */
+  locale?: string
   /**
    * Do not draw the header (a two-column metrics table, say).
    * 不画表头（两列的指标表之类）。
@@ -257,8 +292,8 @@ export type DataGridProps<Row extends object> = {
    */
   autoRowHeight?: boolean
   /**
-   * Draw a thin rule between rows.
-   * 行与行之间画一道细线。
+   * Draw a thin rule between rows; on by default for density comfortable.
+   * 行与行之间画一道细线；comfortable 默认画。
    */
   ruled?: boolean
   /**
@@ -307,6 +342,34 @@ export type DataGridProps<Row extends object> = {
    * 标题跨满整行；拖标题带着整节走，把行拖到它下面就进了这一节。
    */
   rowSection?: (row: Row) => ReactNode
+  /**
+   * Collapsed section ids (controlled); a collapsed section shows only its header row. With it, toggling only notifies through onSectionCollapsedChange.
+   * While a column sort is on, section headers stay in place and the rows are sorted inside each section.
+   * 收起的分节（受控，#87）：收起的节只留标题行；给了它，收起展开只经 onSectionCollapsedChange 通知调用方，表自己不记。
+   * 按列排序时分节标题不参与排序，各节里的行在节内排（照 TradingView 自选表）。
+   */
+  collapsedSections?: ReadonlySet<string>
+  /** Uncontrolled: section ids collapsed at first. 不受控时一开始就收起的节。 */
+  defaultCollapsedSections?: readonly string[]
+  /** Called when a section is collapsed or expanded (the triangle, or ArrowLeft / ArrowRight / Enter on its header row). */
+  onSectionCollapsedChange?: (id: string, collapsed: boolean) => void
+  /**
+   * Summary at the right end of a section header (e.g. the average change of its rows); receives all the rows of the section, collapsed or not.
+   * 分节标题右端的组内汇总（如这一节的平均涨跌）：参数是这一节的全部行（收没收起都给全）。
+   */
+  sectionSummary?: (rows: readonly Row[], section: Row) => ReactNode
+  /**
+   * Per-section aggregates in each section header row, under their columns (same aggregates as summary: sum, avg, min, max, median, count or a function); the first visible column keeps the heading.
+   * The foot summary rows count only data rows, never section headers.
+   * 每一节的组内汇总（#87 补充第 6 条，照 TradingView 自选高级视图按分组汇总）：写在分节标题行里、对齐到各自的列下面，聚合跟表尾 summary 同一套；第一个看得见的列留给标题。
+   * 表尾的 summary 只算数据行，不算分节标题行。
+   */
+  sectionAggregates?: GridSummary<Row>['columns']
+  /**
+   * Called when the keyboard cursor moves to another row (click, arrow keys) or leaves the rows; lets host hotkeys act on the current row (Alt+Enter flags it).
+   * 键盘所在的行变了（点行、方向键）或没了；宿主的快捷键（Alt+Enter 插旗）作用在它上面。
+   */
+  onCursorChange?: (id: string | null) => void
   /** Extra class names per part. */
   classNames?: Partial<Record<GridSlot, string>>
 }

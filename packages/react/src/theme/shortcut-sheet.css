@@ -22,6 +22,41 @@
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
+/* 节名是展开钮（#87 第 3 条）：整行可点，三角朝右是收起、展开转 90°；搜索时节都开着，钮不可点、不显示悬停。 */
+.k-shortcut-toggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  margin: 0;
+  padding: 2px 0;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: start;
+  text-transform: inherit;
+  cursor: pointer;
+}
+.k-shortcut-toggle:hover:enabled {
+  color: var(--k-content-primary-foreground);
+}
+.k-shortcut-toggle:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--focus-ring);
+}
+.k-shortcut-toggle:disabled {
+  cursor: default;
+}
+.k-shortcut-toggle svg {
+  flex: none;
+  transition: rotate 160ms var(--ease-snappy);
+}
+.k-shortcut-toggle[aria-expanded='true'] svg {
+  rotate: 90deg;
+}
 .k-shortcut-list {
   margin: 0;
   padding: 0;

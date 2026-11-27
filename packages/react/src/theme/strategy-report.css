@@ -105,30 +105,15 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* 指标表 */
-.k-sr-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-variant-numeric: tabular-nums;
-}
+/* 指标表：行高、内距、字号是整页表的一套数（.k-table-comfortable，theme/cell-type.css，#92）；这里只留对齐与行头颜色。 */
 .k-sr-table th,
 .k-sr-table td {
-  padding: 5px 10px;
-  border-bottom: 1px solid var(--k-separable-tertiary-borderColor);
   text-align: right;
   white-space: nowrap;
 }
-.k-sr-table thead th {
-  color: var(--k-content-secondary-foreground);
-  font-weight: 500;
-}
 .k-sr-table tbody th {
   color: var(--k-content-secondary-foreground);
-  font-weight: 400;
   text-align: left;
-}
-.k-sr-table td {
-  font-family: var(--font-num);
 }
 .k-sr-table [data-active] {
   background: var(--group-bg);
@@ -192,7 +177,7 @@
   position: relative;
   width: 8px;
   height: 18px;
-  border-radius: 1px;
+  border-radius: var(--radius-sm);
   background: var(--ink-400);
 }
 .k-sr-streak[data-result='win'] {
@@ -213,7 +198,7 @@
   width: 8px;
   height: 8px;
   margin-right: 6px;
-  border-radius: 1px;
+  border-radius: var(--radius-sm);
   background: var(--ink-400);
   content: '';
 }

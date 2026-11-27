@@ -8,6 +8,7 @@ import { InputGroupUsage } from '../gallery/usage/InputGroupUsage.tsx'
 import { TextareaUsage } from '../gallery/usage/TextareaUsage.tsx'
 import { ToastUsage } from '../gallery/usage/ToastUsage.tsx'
 import { mount } from './render.tsx'
+import { settled } from './settle.ts'
 
 const items: Record<string, ReactNode> = {
   toast: <ToastUsage />,
@@ -38,6 +39,7 @@ for (const theme of ['graphite', 'console'] as const) {
           theme,
         )
         await new Promise((r) => setTimeout(r, 250))
+        await settled()
         await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-gaps-${name}`)
       })
   })

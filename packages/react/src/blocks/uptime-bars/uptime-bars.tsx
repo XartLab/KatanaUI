@@ -40,6 +40,7 @@ export function UptimeBars({
   tableHead,
   onExport,
   onFullscreen,
+  onCopyImage,
   source,
   range,
   idle,
@@ -83,6 +84,7 @@ export function UptimeBars({
           onTableView={setTableView}
           onExport={onExport}
           onFullscreen={onFullscreen}
+          onCopyImage={onCopyImage}
         />
       </div>
       {tableView && (

@@ -1,0 +1,164 @@
+/* SPDX-License-Identifier: MIT */
+/* ParallelAttempts（KATANAview #1908）：运行中的条是中性墨色，跑完是 ok、失败是 danger 且停在失败处；最优是 ok 色小标，选中是左边一道强调线。 */
+.k-pa {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-pa-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px var(--space-3);
+}
+.k-pa-title {
+  margin: 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-pa-task {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-pa-counts {
+  margin-left: auto;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
+}
+.k-pa-list {
+  display: flex;
+  flex-direction: column;
+  border: var(--hairline);
+}
+.k-pa-row {
+  display: grid;
+  grid-template-columns: minmax(110px, 1fr) minmax(120px, 1.4fr) minmax(90px, 1fr) minmax(88px, auto) 72px;
+  grid-template-areas: 'name approach bar state use' 'note note note note note';
+  align-items: center;
+  gap: 2px var(--space-3);
+  padding: 7px 10px;
+  border-bottom: var(--hairline);
+  border-left: 2px solid transparent;
+}
+.k-pa-row:last-child {
+  border-bottom: 0;
+}
+.k-pa-row[data-picked] {
+  border-left-color: var(--accent);
+  background: var(--k-selectable-background-selected);
+}
+/* 选中行是 selected 底，ink-300 压在上面只有 4.2:1（console，axe #190），做法与说明提到 body。 */
+.k-pa-row[data-picked] :is(.k-pa-approach, .k-pa-note) {
+  color: var(--k-content-body-foreground);
+}
+.k-pa-name {
+  grid-area: name;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  color: var(--k-content-primary-foreground);
+}
+.k-pa-name small {
+  color: var(--k-status-ok-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-pa-approach {
+  grid-area: approach;
+  overflow: hidden;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-num-small);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-pa-bar {
+  grid-area: bar;
+  position: relative;
+  display: block;
+  height: 6px;
+  background: var(--k-container-track-background);
+}
+.k-pa-bar i {
+  position: absolute;
+  inset: 0;
+  background: var(--k-content-secondary-foreground);
+  transform-origin: left;
+  scale: var(--fill, 0) 1;
+  transition: scale var(--dur-settle) var(--ease-settle);
+}
+.k-pa-row[data-status='done'] .k-pa-bar i {
+  background: var(--k-status-ok-foreground);
+}
+.k-pa-row[data-status='failed'] .k-pa-bar i {
+  background: var(--k-status-danger-foreground);
+}
+.k-pa-state {
+  grid-area: state;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
+}
+.k-pa-state svg {
+  width: 12px;
+  height: 12px;
+}
+.k-pa-state b {
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-num);
+}
+.k-pa-row[data-status='done'] .k-pa-state svg {
+  color: var(--k-status-ok-foreground);
+}
+.k-pa-row[data-status='failed'] .k-pa-state {
+  color: var(--k-status-danger-foreground);
+}
+.k-pa-note {
+  grid-area: note;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-pa-use {
+  grid-area: use;
+  height: 22px;
+  padding: 0 8px;
+  border: 1px solid var(--k-actionable-borderColor);
+  border-radius: var(--radius-control);
+  background: var(--k-actionable-background);
+  color: var(--k-actionable-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  cursor: pointer;
+}
+.k-pa-use:hover {
+  background: var(--k-actionable-background-hover);
+}
+.k-pa-use:focus-visible {
+  outline: 1px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+.k-pa-use[aria-checked='true'] {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.k-pa-empty {
+  margin: 0;
+  padding: var(--space-6);
+  color: var(--k-content-secondary-foreground);
+  text-align: center;
+}
+@media (max-width: 560px) {
+  .k-pa-row {
+    grid-template-columns: 1fr auto auto;
+    grid-template-areas: 'name state use' 'bar bar bar' 'note note note';
+  }
+  .k-pa-approach {
+    display: none;
+  }
+}

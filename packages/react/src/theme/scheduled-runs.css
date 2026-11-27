@@ -1,0 +1,192 @@
+/* SPDX-License-Identifier: MIT */
+/* ScheduledRuns（KATANAview #1908）：左栈右周格；格子等高（一格最多两张卡），底下一道细条是这格已用的额度；
+   过去的格变淡，当前格顶上一道 danger 色线；拿着卡瞄准的格描边（有空位 accent，没有 danger）。窄于 640px 栈在上、周格横向滚动。 */
+.k-sched {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-sched-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px var(--space-3);
+}
+.k-sched-title,
+.k-sched-stack-title {
+  margin: 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-sched-note {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-sched-mode {
+  margin-left: auto;
+}
+.k-sched-body {
+  display: grid;
+  grid-template-columns: minmax(150px, 200px) 1fr;
+  gap: var(--space-3);
+  min-width: 0;
+}
+.k-sched-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 320px;
+  overflow: auto;
+}
+.k-sched-stack-title {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-sched ul {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-sched-empty {
+  margin: 0;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-sched-week {
+  display: grid;
+  grid-template-columns: 52px repeat(var(--k-sched-days), minmax(120px, 1fr));
+  grid-template-rows: 24px repeat(var(--k-sched-sessions), 108px);
+  min-width: 0;
+  overflow-x: auto;
+  border: var(--hairline);
+}
+.k-sched-corner {
+  grid-column: 1;
+  grid-row: 1;
+}
+.k-sched-day,
+.k-sched-session {
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-num-small);
+}
+.k-sched-day {
+  grid-row: 1;
+  border-bottom: var(--hairline);
+}
+.k-sched-session {
+  grid-column: 1;
+  align-items: flex-start;
+  padding-top: 6px;
+}
+.k-sched-cell {
+  position: relative;
+  padding: 6px 6px 8px;
+  border-top: var(--hairline);
+  border-left: var(--hairline);
+}
+/* 过去的格变淡不用整格透明度（0.45 把卡上的字压到 2–3.8:1，axe #190）：卡名降到次要色，额度细条照旧淡。 */
+.k-sched-cell[data-past] .k-sched-card-title {
+  color: var(--k-content-secondary-foreground);
+}
+.k-sched-cell[data-past] .k-sched-fill {
+  opacity: 0.45;
+}
+.k-sched-cell[data-now]::before {
+  content: '';
+  position: absolute;
+  inset: -1px 0 auto;
+  height: 2px;
+  background: var(--k-status-danger-foreground);
+}
+.k-sched-cell[data-aim='room'] {
+  outline: 1px solid var(--accent);
+  outline-offset: -2px;
+}
+.k-sched-cell[data-aim='full'] {
+  outline: 1px dashed var(--k-status-danger-foreground);
+  outline-offset: -2px;
+}
+.k-sched-fill {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--k-content-tertiary-foreground);
+}
+.k-sched-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  min-height: 42px;
+  padding: 4px 8px;
+  border: var(--hairline);
+  border-radius: var(--radius-md);
+  background: var(--k-container-secondary-background);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: grab;
+}
+.k-sched-card:hover {
+  background: var(--k-selectable-background-hover);
+}
+.k-sched-card:focus-visible {
+  outline: 1px solid var(--focus-ring);
+  outline-offset: -1px;
+}
+.k-sched-card[data-kind='auto'] {
+  border-style: dashed;
+}
+.k-sched-card[data-held] {
+  border-color: var(--accent);
+}
+.k-sched-card[data-locked] {
+  cursor: default;
+}
+.k-sched-card-title {
+  overflow: hidden;
+  color: var(--k-content-primary-foreground);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-sched-card-meta {
+  display: flex;
+  gap: 6px;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-sched-usage {
+  font-family: var(--font-num-small);
+  font-variant-numeric: tabular-nums;
+}
+.k-sched-card-detail {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-sched-hint {
+  margin: 0;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-sched-live {
+  min-height: 1lh;
+  margin: 0;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+@container (max-width: 640px) {
+  .k-sched-body {
+    grid-template-columns: 1fr;
+  }
+}

@@ -35,15 +35,16 @@
 }
 .k-hz-plot {
   position: relative;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   background: var(--k-surface-sunken-background);
-  overflow: hidden;
   touch-action: pan-y;
 }
+/* 圆角只裁带（svg），不裁 LCD 窗：窗从指针所在的那一行往下盖住后面几行（KatanaUI #165）。 */
 .k-hz-plot > svg {
   display: block;
   width: 100%;
   height: 100%;
+  clip-path: inset(0 round 2px);
 }
 .k-hz-band[data-sign='up'] {
   fill: var(--div-pos-100);

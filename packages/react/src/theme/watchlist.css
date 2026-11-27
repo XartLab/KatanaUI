@@ -56,9 +56,7 @@
   align-items: center;
   gap: 8px;
 }
-.k-watch-code {
-  font-weight: 600;
-}
+/* 代码是共用的代码芯片（theme/cell-type.css，#92）；行高 32 照旧，芯片 24 放得下。 */
 .k-watch-flag {
   display: inline-flex;
   width: 14px;
@@ -66,7 +64,7 @@
   padding: 0;
   border: 0;
   background: transparent;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   cursor: pointer;
 }
 .k-watch-flag svg {
@@ -96,7 +94,7 @@
 }
 /* 价格尾数的闪烁在共用层 live.css（.k-live-flash）；这里只给尾数块一点圆角，让底色不顶着字边。 */
 .k-watch-flash {
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
 }
 .k-watch-empty {
   margin: 0;

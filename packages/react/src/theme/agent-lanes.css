@@ -1,0 +1,195 @@
+/* SPDX-License-Identifier: MIT */
+/* AgentLanes（KATANAview #1908）：左列 150px 名字（头像缩写、名字、模型、标签），右边时间轴；每条泳道 40px，块 24px 高；
+   完成是中性实心、在跑斜纹、等人 warn 实心、失败 danger；交接线是一道细竖线加落点。窄于 520px 名字列只留头像。 */
+.k-al {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  max-width: 760px;
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-al-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+.k-al-title {
+  margin: 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-al-attention {
+  margin-left: auto;
+  color: var(--k-status-warn-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-al-board {
+  --k-al-names: 150px;
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--k-al-names) minmax(0, 1fr);
+  border: var(--hairline);
+}
+.k-al-axis {
+  position: relative;
+  grid-column: 2;
+  grid-row: 1;
+  border-bottom: var(--hairline);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-num-small);
+}
+.k-al-axis i {
+  position: absolute;
+  top: 50%;
+  font-style: normal;
+  translate: 0 -50%;
+  white-space: nowrap;
+}
+.k-al-axis i[data-align='start'] {
+  left: 4px;
+}
+.k-al-axis i[data-align='mid'] {
+  left: 50%;
+  translate: -50% -50%;
+}
+.k-al-axis i[data-align='end'] {
+  right: 4px;
+}
+.k-al-lane {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+  align-items: center;
+  border-top: var(--hairline);
+}
+.k-al-who {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 0 8px;
+}
+.k-al-avatar {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--k-container-tertiary-background);
+  color: var(--k-content-primary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-al-name {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.k-al-name small {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-mono);
+}
+.k-al-tag {
+  margin-left: auto;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-al-lane[data-tag='needs'] .k-al-tag {
+  color: var(--k-status-warn-foreground);
+}
+.k-al-track {
+  position: relative;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-al-slot {
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+}
+.k-al-block {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  padding: 0 4px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--k-content-tertiary-foreground);
+  color: var(--k-container-primary-background);
+  font: var(--text-caption) var(--font-sans-small);
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.k-al-block:focus-visible {
+  outline: 1px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+.k-al-block[data-status='running'] {
+  background: var(--k-content-secondary-foreground);
+  background-image: var(--hatch);
+}
+.k-al-block[data-status='waiting'] {
+  background: var(--k-status-warn-foreground);
+}
+.k-al-block[data-status='failed'] {
+  background: var(--k-status-danger-foreground);
+}
+.k-al-links {
+  position: relative;
+  grid-column: 2;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.k-al-links line {
+  stroke: var(--accent);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.k-al-links circle {
+  fill: var(--accent);
+}
+.k-al-pop {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 260px;
+}
+.k-al-pop p {
+  margin: 0;
+}
+.k-al-pop-title {
+  color: var(--k-content-primary-foreground);
+}
+.k-al-pop-time,
+.k-al-tools {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-num-small);
+}
+.k-al-ask,
+.k-al-summary {
+  color: var(--k-content-secondary-foreground);
+}
+.k-al-decide {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+@container (max-width: 520px) {
+  .k-al-board {
+    --k-al-names: 36px;
+  }
+  .k-al-name,
+  .k-al-tag {
+    display: none;
+  }
+}

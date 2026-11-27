@@ -135,7 +135,9 @@ export function PanelTabs({
     const fixed = (aside.current?.offsetWidth ?? 0) + (onAdd ? 24 : 0) + 16
     const room = box.clientWidth - fixed
     // 工具想排在页签同一行：页签全放得下、剩下的宽度又够工具的自然宽度才行；不够就落到第二行，页签用整行。
-    const toolsWidth = toolbox.current ? toolbox.current.scrollWidth + 12 : 0
+    // 同一行时工具区带 pl-3（12px，算在 scrollWidth 里），落到第二行时没有：第二行量到的要补上这 12，两种排法算出的才是同一个数。
+    // 不补的话，剩余宽度落在这 12px 的缝里时，同一行判「放不下」、第二行判「放得下」，来回切到 React 报更新过深、整页不渲染。
+    const toolsWidth = toolbox.current ? toolbox.current.scrollWidth + 12 + (stacked ? 12 : 0) : 0
     const tabsWidth = widths.reduce((sum, width) => sum + width, 0)
     const inline = toolsWidth === 0 || tabsWidth + toolsWidth <= room
     setStacked(!inline)
@@ -308,13 +310,15 @@ export function PanelTabs({
                     </span>
                   ) : null}
                   {tab.badge ? (
-                    <span className="font-(family-name:--font-num) text-[11px] text-ink-4">{tab.badge}</span>
+                    <span className="font-(family-name:--font-num) text-[11px] text-ink-3">{tab.badge}</span>
                   ) : null}
                 </button>
                 {closable ? (
+                  // × 只给指针用：它在 tablist 里，tablist 只许有 tab（axe aria-required-children，#190）；键盘与读屏用 Delete 移除。
                   <button
                     type="button"
                     tabIndex={-1}
+                    aria-hidden="true"
                     data-slot="panel-tab-close"
                     aria-label={(labels?.close ?? '').replace('{name}', tab.name)}
                     onClick={() => onClose?.(tab.id)}

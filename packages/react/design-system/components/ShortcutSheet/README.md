@@ -1,6 +1,6 @@
 # ShortcutSheet
 
-按作用域分组列出注册表里现在的快捷键，可搜索，冲突标出来，可接 ShortcutRecorder 改键。照 TradingView 的 Keyboard shortcuts 面板（Ctrl/Cmd+/）。件只是内容，放进 Dialog 或侧栏由调用方定。
+按作用域分组列出注册表里现在的快捷键，可搜索，冲突标出来，可接 ShortcutRecorder 改键。照 TradingView 的 Keyboard shortcuts 面板（Ctrl/Cmd+/）：分节默认收起，点节名展开；搜索时命中的节自动展开。件只是内容，放进 Dialog 或侧栏由调用方定。
 
 ## Provide
 
@@ -8,12 +8,13 @@
 
 ### ShortcutSheet
 
-读 useHotkeyEntries；文案（搜索、空态、或、冲突、作用域名、改键用的录键文案）全由调用方传。
+读 useHotkeyEntries；文案（搜索、空态、或、冲突、作用域名、改键用的录键文案）全由调用方传。defaultOpenScopes 给一开始就展开的节，其余收起。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `labels` * | `ShortcutSheetLabels` | — | Texts written by the caller. |
 | `scopeOrder` | `readonly string[]` | `[]` | Scope order of the sections; scopes not listed follow in first-registered order. |
+| `defaultOpenScopes` | `readonly string[]` | `[]` | Sections open at first; the rest start collapsed (as in TradingView). |
 | `registry` | `HotkeyRegistry` | — | Registry to read; defaults to the one from HotkeysProvider or the module default. |
 | `onComboChange` | `(id: string, combo: string \| null) => void` | — | Turns each row into a ShortcutRecorder; called with the action id and the new combo (null clears). |
 | `className` | `string` | — | Extra class name. |
@@ -49,7 +50,8 @@ export function ShortcutSheetUsage() {
 
 ## States
 
-- 搜索：按名字、作用域、按键过滤；没有匹配显示空态。
+- 收起（默认）：只有节名，三角朝右；点了展开，三角转下。
+- 搜索：按名字、作用域、按键过滤，命中的节都展开（节名钮这时不可点），没命中的节不出；清空回到用户展开过的样子；没有匹配显示空态。
 - 冲突：名字下一行 warn 色小字。
 - 改键：每行是 ShortcutRecorder。
 
@@ -63,12 +65,13 @@ export function ShortcutSheetUsage() {
 ShortcutSheet
   搜索框
   section × 作用域
-    h3
-    ul
+    h3 > button（aria-expanded，展开 / 收起）
+    ul（展开时）
       li（名字 | Kbd 或 ShortcutRecorder）
 ```
 
 ## Keyboard
 
-- `打字`：在搜索框里过滤
+- `打字`：在搜索框里过滤（命中的节自动展开）
+- `Enter / Space`：在节名上：展开 / 收起这一节
 - `Tab`：（改键时）在各行的录键框之间移动

@@ -29,6 +29,9 @@ export type {
   FlowRaceLabels,
   MiniKCardLabels,
   MoveFeedLabels,
+  RangeScrubberLabels,
+  AuctionBarLabels,
+  ThresholdGapLabels,
   SessionLabels,
   StreakLabels,
   ThemeCardLabels,
@@ -139,6 +142,7 @@ export { MiniKCardGrid, type MiniKCardGridProps, type MiniKItem } from './mini-k
 export {
   MOVE_TYPE_TONES,
   clockText,
+  filterBySymbol,
   filterMoves,
   freshIds,
   moveTone,
@@ -151,3 +155,22 @@ export {
   type MoveTypeDef,
 } from './move-feed-model.ts'
 export { MoveFeed, type MoveFeedProps } from './move-feed.tsx'
+export {
+  SCRUB_LUNCH,
+  SCRUB_TICKS,
+  presetRange,
+  scrubBars,
+  scrubClock,
+  scrubIndex,
+  scrubNow,
+  scrubRange,
+  scrubRangeOf,
+  shiftRange,
+  type ScrubBar,
+  type ScrubPoint,
+} from './range-scrubber-model.ts'
+export { RangeScrubber, type RangeScrubberProps } from './range-scrubber.tsx'
+export { auctionBarShares, auctionPending, auctionRatio, type AuctionBarShares } from './auction-bar-model.ts'
+export { AuctionBarCell, type AuctionBarCellProps } from './auction-bar-cell.tsx'
+export { thresholdGap, thresholdState, type ThresholdGapState } from './threshold-gap-model.ts'
+export { ThresholdGap, type ThresholdGapProps } from './threshold-gap.tsx'

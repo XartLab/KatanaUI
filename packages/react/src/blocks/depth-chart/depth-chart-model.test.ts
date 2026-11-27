@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { describe, expect, it } from 'vite-plus/test'
-import { buildDepth, depthAt, depthPrices, stepAreaPath, stepLinePath } from './depth-chart-model.ts'
+import { buildDepth, depthAt, depthPrices, formatDepthOffset, stepAreaPath, stepLinePath } from './depth-chart-model.ts'
 
 const P = { priceDecimals: 2, sizeDecimals: 3 }
 const bids = [
@@ -74,5 +74,21 @@ describe('深度模型', () => {
 
   it('键盘用的价位表：从低到高', () => {
     expect(depthPrices(buildDepth(bids, asks, P))).toEqual([99.8, 99.9, 99.98, 99.99, 100.01, 100.03, 100.2])
+  })
+})
+
+describe('距中间价百分比', () => {
+  it.each([
+    [-0.005, '0.00%'],
+    [-0.006, '-0.01%'],
+    [0.004, '0.00%'],
+    [0.4, '+0.40%'],
+  ])('偏差 %s 显示为 %s', (offset, expected) => {
+    expect(formatDepthOffset(offset)).toBe(expected)
+  })
+
+  it('中间价为 100.005 时，最优买价 100 的偏差显示为 0.00%', () => {
+    const model = buildDepth([{ price: 100, size: 1 }], [{ price: 100.01, size: 1 }], P)
+    expect(formatDepthOffset(depthAt(model, 100)!.offsetPct)).toBe('0.00%')
   })
 })

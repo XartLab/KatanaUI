@@ -317,6 +317,9 @@ const EXAMPLES: Record<string, Record<string, unknown>> = {
     label: 'Prices of two instruments',
     xLabels: ['Mon', 'Tue', 'Wed'],
     onSelect: { event: { name: 'chart.select' } },
+    actionLabels: CHART_ACTIONS,
+    tableLabel: 'Prices table',
+    tableXHead: 'Day',
   },
   KatanaAttributionBars: {
     items: [
@@ -350,6 +353,9 @@ const EXAMPLES: Record<string, Record<string, unknown>> = {
   KatanaHorizonChart: {
     rows: [{ key: 'a', label: 'ACME', values: [1, -2, 3, -1] }],
     label: 'Excess return of one instrument',
+    actionLabels: CHART_ACTIONS,
+    tableLabel: 'Excess return table',
+    tableXHead: 'Point',
   },
   KatanaBrushChart: {
     values: [1, 2, 3, 4, 5],
@@ -357,6 +363,9 @@ const EXAMPLES: Record<string, Record<string, unknown>> = {
     label: 'Price with an overview window',
     labels: { start: 'Window start', end: 'Window end', window: 'Window' },
     onValueChange: { event: { name: 'chart.window' } },
+    actionLabels: CHART_ACTIONS,
+    tableLabel: 'Price table',
+    tableHead: ['Day', 'Price'],
   },
   KatanaTreemap: {
     items: [{ id: 'a', name: 'ACME', group: 'Tech', size: 10, change: 0.01, text: '+1.00%' }],
@@ -761,6 +770,52 @@ describe('A2UI 目录', () => {
       const parsed = api.schema.safeParse(EXAMPLES[api.name])
       expect(parsed.success, `${api.name}: ${parsed.success ? '' : parsed.error.message}`).toBe(true)
     }
+  })
+
+  it('KatanaDataGrid 认 comfortable 档与 #90 的新列类型（bar 用 barMax、分类用 pill）及其格式选项（#92），不认的类型拒绝', () => {
+    const api = KATANA_APIS.find((item) => item.name === 'KatanaDataGrid')!
+    const grid = {
+      label: 'Screener',
+      density: 'comfortable',
+      locale: 'zh-CN',
+      columns: [
+        { id: 'symbol', title: 'Symbol', type: 'symbol', symbolParts: ['logo', 'chip', 'name'] },
+        { id: 'mcap', title: 'Market cap', type: 'compact', unit: 'USD', locale: 'en-US' },
+        { id: 'yield', title: 'Yield', type: 'percent', digits: 2 },
+        {
+          id: 'rating',
+          title: 'Rating',
+          type: 'rating',
+          ratingLabels: { 'strong-sell': 'SS', sell: 'S', neutral: 'N', buy: 'B', 'strong-buy': 'SB' },
+        },
+        { id: 'rvol', title: 'Rel volume', type: 'bar', barMax: 3 },
+        { id: 'trend', title: 'Trend', type: 'spark', label: '30 day trend', sub: '30D' },
+        { id: 'sector', title: 'Sector', type: 'pill' },
+        { id: 'range', title: '52W range', type: 'range' },
+        { id: 'earnings', title: 'Earnings', type: 'date' },
+      ],
+      rows: [
+        {
+          id: 'a',
+          symbol: { code: 'ALFA', name: 'Alpha Inc' },
+          mcap: 4.53e12,
+          yield: 1.2,
+          rating: 0.7,
+          rvol: 1.4,
+          trend: [1, 2, 3],
+          sector: { label: 'Tech', tone: 'accent' },
+          range: { low: 1, high: 3, value: 2 },
+          earnings: '2026-11-20T00:00:00Z',
+        },
+      ],
+    }
+    const parsed = api.schema.safeParse(grid)
+    expect(parsed.success, parsed.success ? '' : parsed.error.message).toBe(true)
+    expect(api.schema.safeParse({ ...grid, density: 'airy' }).success).toBe(false)
+    expect(api.schema.safeParse({ ...grid, columns: [{ id: 'x', title: 'X', type: 'heatmap' }] }).success).toBe(false)
+    expect(api.schema.safeParse({ ...grid, columns: [{ id: 'x', title: 'X', type: 'bar', barMax: 0 }] }).success).toBe(
+      false,
+    )
   })
 
   it('schema 是严格的：多写一个属性就拒绝', () => {

@@ -4,6 +4,7 @@
 // 交互（照 TradingView 底部的时间范围滑条与 Observable 的 brush 的惯例，Arc 的页面没写键位）：
 //   拖窗口中间平移、拖两端缩放、点窗口外的地方把窗口移到那里居中；三处都是 role="slider"，←→ 一点、Shift+←→ 三点、Home / End 到头尾。
 //   主图上指针或 ←→ 扫读，十字线与读数跟着走（useScrubber）。
+// 右上三件（dataviz §4：表格视图是无障碍兜底，必须有，KatanaUI #165）：表格写窗口里的那一段（一行一个点：横轴、值），概览条照旧在下面可拖。
 import { useState, type KeyboardEvent, type PointerEvent } from 'react'
 import { cn } from '../lib/cn.ts'
 import { SCRUB_BIG_STEP, useScrubber } from '../lib/use-scrubber.ts'
@@ -16,6 +17,8 @@ import {
   resizeWindow,
   type BrushWindow,
 } from '../lib/chart/brush-model.ts'
+import { ChartActions } from '../lib/chart/chart-kit/chart-actions.tsx'
+import { ChartTable, type ChartViewProps } from '../lib/chart/chart-kit/chart-table.tsx'
 import { DotFill, useDotId } from '../lib/chart/chart-kit/dot-fill.tsx'
 import { EndMarker } from '../lib/chart/chart-kit/end-marker.tsx'
 import { LcdTooltip } from '../lib/chart/chart-kit/lcd-tooltip.tsx'
@@ -187,7 +190,7 @@ export function BrushStrip({
   )
 }
 
-export type BrushChartProps = {
+export type BrushChartProps = ChartViewProps & {
   /** 整段序列，从旧到新；主图画窗口里的那段，概览条画全部。 */
   values: readonly number[]
   /** 整张图的读屏名。 */
@@ -231,6 +234,13 @@ export function BrushChart({
   minSpan = BRUSH_MIN_SPAN,
   height = 160,
   brushHeight = 40,
+  actionLabels,
+  tableLabel,
+  tableHead,
+  source,
+  onExport,
+  onFullscreen,
+  onCopyImage,
   className,
 }: BrushChartProps) {
   const count = values.length
@@ -251,11 +261,35 @@ export function BrushChart({
   const value = active === null ? null : slice[active]!
   const lastTick = Math.max(0, slice.length - 1)
   const xTicks = Math.min(X_TICKS, slice.length)
+  const [tableView, setTableView] = useState(false)
 
   return (
     <figure className={cn('k-brush', className)} data-slot="brush-chart" aria-label={label}>
+      <div className="k-dist-bar">
+        <ChartActions
+          labels={actionLabels}
+          tableView={tableView}
+          onTableView={setTableView}
+          onExport={onExport}
+          onFullscreen={onFullscreen}
+          onCopyImage={onCopyImage}
+        />
+      </div>
+      {tableView && (
+        <ChartTable
+          slot="brush-table"
+          label={tableLabel}
+          head={tableHead}
+          numeric={[1]}
+          rows={slice.map((v, i) => ({
+            key: String(window[0] + i),
+            cells: [formatX(window[0] + i), Number.isFinite(v) ? formatValue(v) : '—'],
+          }))}
+        />
+      )}
       <div
         className="k-brush-main"
+        hidden={tableView}
         style={{ height }}
         data-slot="brush-main"
         {...scrub.props}
@@ -290,7 +324,7 @@ export function BrushChart({
           </>
         )}
       </div>
-      <div className="k-plot-xaxis" aria-hidden="true">
+      <div className="k-plot-xaxis" aria-hidden="true" hidden={tableView}>
         {Array.from({ length: xTicks }, (_, i) => {
           const at = xTicks === 1 ? 0 : Math.round((i / (xTicks - 1)) * lastTick)
           return (
@@ -304,7 +338,7 @@ export function BrushChart({
           )
         })}
       </div>
-      <div className="k-plot-readout" data-slot="brush-readout" aria-live="polite">
+      <div className="k-plot-readout" data-slot="brush-readout" aria-live="polite" hidden={tableView}>
         {active !== null && value !== null ? `${formatX(window[0] + active)}  ${formatValue(value)}` : null}
       </div>
       <BrushStrip
@@ -316,6 +350,7 @@ export function BrushChart({
         minSpan={minSpan}
         height={brushHeight}
       />
+      {source === undefined ? null : <p className="k-dist-source">{source}</p>}
     </figure>
   )
 }

@@ -231,6 +231,23 @@ export {
   type GateSummary,
 } from './robustness-gate-model.ts'
 
+// 参照 affectUI 补的量化件（KATANAview #1908 第一批）：实验卡、并行尝试、变化摘要、KPI 图。
+export { ExperimentCard, type ExperimentCardLabels, type ExperimentCardProps } from './experiment-card.tsx'
+export {
+  baselineOf,
+  changeVerdict,
+  leaderOf,
+  relativeChange,
+  type ChangeVerdict,
+  type ExperimentMetric,
+  type ExperimentVariant,
+} from './experiment-model.ts'
+export { ParallelAttempts, type ParallelAttemptsLabels, type ParallelAttemptsProps } from './parallel-attempts.tsx'
+export { attemptFill, bestAttempt, countAttempts, type Attempt, type AttemptStatus } from './parallel-attempts-model.ts'
+export { ChangeSummary, type ChangeItem, type ChangeSummaryProps } from './change-summary.tsx'
+export { KpiChart, type KpiChartProps } from './kpi-chart.tsx'
+export { axisIndexes, kpiRange, normalizeValues, type KpiScale, type KpiSeries } from './kpi-chart-model.ts'
+
 // 资金流向桑基图与按发布时间画的宏观序列（#45）。
 export { FlowSankey, type FlowSankeyLabels, type FlowSankeyProps } from './flow-sankey.tsx'
 export {

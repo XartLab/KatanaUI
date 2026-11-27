@@ -18,9 +18,10 @@
   /* 右端的「标的」不贴框边 */
   padding-inline: var(--space-3);
 }
+/* 到期日按钮里的小注跟按钮字同色（未选中 ink-200、选中 --seg-on-ink）：ink-300 压在分段的组底上只有 4.4:1（console，axe #190），压在选中块上更看不见。 */
 .k-opt-note {
   margin-left: 4px;
-  color: var(--k-content-secondary-foreground);
+  color: inherit;
   font: var(--text-caption) var(--font-sans);
 }
 .k-opt-underlying {
@@ -122,8 +123,9 @@
   box-shadow: inset 0 0 0 1px var(--k-content-primary-foreground);
   font-weight: 700;
 }
+/* 平值行是 selected 底再叠行权价格的 tertiary 底，ink-300 只有 3.3:1（console，axe #190），用 body。 */
 .k-opt-atm {
-  color: var(--k-content-secondary-foreground);
+  color: var(--k-content-body-foreground);
   font: var(--text-micro) var(--font-sans);
   line-height: 1;
   margin-top: 2px;

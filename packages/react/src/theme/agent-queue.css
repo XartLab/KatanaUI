@@ -1,0 +1,284 @@
+/* SPDX-License-Identifier: MIT */
+/* AgentQueue（KATANAview #1908）：四列从左到右（排队 → 工位 → 完成 → 失败），窄于 600px 竖排、完成与失败并排；
+   任务前一个种类色点；在跑的有一道进度条，被限流的整条 warn 色；排队超过背压的数 warn 色；深度图是面积加一道背压虚线。 */
+.k-aq {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-aq-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px var(--space-4);
+}
+.k-aq-title {
+  margin: 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-aq-name {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-mono);
+}
+.k-aq-counts {
+  display: flex;
+  gap: var(--space-4);
+  margin: 0;
+}
+.k-aq-counts > div {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+}
+.k-aq-counts dt {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-aq-counts dd {
+  margin: 0;
+  color: var(--k-content-primary-foreground);
+  font-family: var(--font-num-small);
+  font-variant-numeric: tabular-nums;
+}
+.k-aq-counts [data-over] dd {
+  color: var(--k-status-warn-foreground);
+}
+.k-aq-counts [data-status='failed'] dd {
+  color: var(--k-status-danger-foreground);
+}
+.k-aq-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-left: auto;
+}
+.k-aq-stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  border: var(--hairline);
+  border-radius: var(--radius-control);
+}
+.k-aq-stepper output {
+  min-width: 2ch;
+  font-family: var(--font-num-small);
+  text-align: center;
+}
+.k-aq-flow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border: var(--hairline);
+}
+.k-aq-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 6px;
+  border-left: var(--hairline);
+}
+.k-aq-col:first-child {
+  border-left: 0;
+}
+.k-aq-col-head {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 0 2px;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-aq-col-head span {
+  font-family: var(--font-num-small);
+}
+.k-aq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-aq-job {
+  display: grid;
+  grid-template-columns: 6px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 2px 6px;
+  width: 100%;
+  min-height: 30px;
+  padding: 3px 6px;
+  border: var(--hairline);
+  border-radius: var(--radius-md);
+  background: var(--k-container-secondary-background);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.k-aq-job:hover {
+  background: var(--k-selectable-background-hover);
+}
+.k-aq-job:focus-visible {
+  outline: 1px solid var(--focus-ring);
+  outline-offset: -1px;
+}
+.k-aq-job[aria-pressed='true'] {
+  background: var(--k-selectable-background-selected);
+}
+.k-aq-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+.k-aq-job-name {
+  overflow: hidden;
+  color: var(--k-content-primary-foreground);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-aq-tag {
+  color: var(--k-status-warn-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-aq-job-meta {
+  grid-column: 2 / -1;
+  overflow: hidden;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-num-small);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-aq-job[data-status='failed'] .k-aq-job-meta {
+  color: var(--k-status-danger-foreground);
+}
+.k-aq-job[data-limited] .k-aq-job-meta {
+  color: var(--k-status-warn-foreground);
+}
+.k-aq-bar {
+  grid-column: 1 / -1;
+  height: 2px;
+  background: var(--k-container-track-background);
+}
+.k-aq-bar b {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--k-content-secondary-foreground);
+  transform-origin: left;
+  scale: var(--fill, 0) 1;
+  transition: scale var(--dur-snappy) var(--ease-snappy);
+}
+.k-aq-job[data-limited] .k-aq-bar b {
+  background: var(--k-status-warn-foreground);
+}
+.k-aq-idle {
+  display: flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 6px;
+  border: 1px dashed var(--k-separable-primary-borderColor);
+  border-radius: var(--radius-md);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-aq-more {
+  margin: 0;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-aq-details:empty {
+  display: none;
+}
+.k-aq-details {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 8px 10px;
+  border: var(--hairline);
+  background: var(--k-container-secondary-background);
+}
+.k-aq-details dl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px var(--space-4);
+  margin: 0;
+}
+.k-aq-details dl > div {
+  display: inline-flex;
+  gap: 6px;
+}
+.k-aq-details dt {
+  color: var(--k-content-secondary-foreground);
+}
+.k-aq-details dd {
+  margin: 0;
+  font-family: var(--font-num-small);
+}
+.k-aq-details [data-part='error'] dd {
+  color: var(--k-status-danger-foreground);
+}
+.k-aq-actions {
+  display: flex;
+  gap: 6px;
+}
+.k-aq-depth {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px var(--space-3);
+  margin: 0;
+}
+.k-aq-depth figcaption {
+  grid-column: 1 / -1;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-aq-depth svg {
+  width: 100%;
+  height: 40px;
+}
+.k-aq-depth [data-part='area'] {
+  fill: color-mix(in srgb, var(--k-content-secondary-foreground) 28%, transparent);
+  stroke: var(--k-content-secondary-foreground);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.k-aq-depth [data-part='backpressure'] {
+  stroke: var(--k-status-warn-foreground);
+  stroke-dasharray: 3 3;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.k-aq-legend {
+  align-self: end;
+  color: var(--k-status-warn-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-aq-live {
+  min-height: 1lh;
+  margin: 0;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+@container (max-width: 600px) {
+  .k-aq-flow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .k-aq-col[data-col='queued'],
+  .k-aq-col[data-col='workers'] {
+    grid-column: 1 / -1;
+    border-left: 0;
+    border-bottom: var(--hairline);
+  }
+}
+@container (max-width: 440px) {
+  .k-aq-controls {
+    width: 100%;
+    margin-left: 0;
+  }
+}

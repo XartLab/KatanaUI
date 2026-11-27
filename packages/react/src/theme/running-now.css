@@ -1,0 +1,173 @@
+/* SPDX-License-Identifier: MIT */
+/* RunningNow（KATANAview #1908）：胶囊高 26px，有要你的任务时前面的点是 warn 色；弹层 348px 宽（不超过屏宽减 32px），行固定 52px，
+   五行半之后滚动；窄于 360px 的容器里胶囊只写数字（读屏名仍是全文）。 */
+.k-rn {
+  container-type: inline-size;
+  display: inline-flex;
+}
+.k-rn-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px;
+  border: var(--hairline);
+  border-radius: var(--radius-pill);
+  background: var(--k-container-secondary-background);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  cursor: pointer;
+}
+.k-rn-pill:hover {
+  color: var(--k-content-primary-foreground);
+}
+.k-rn-pill:focus-visible {
+  outline: 1px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+.k-rn-pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.k-rn-pill[data-needs] .k-rn-pulse {
+  background: var(--k-status-warn-foreground);
+}
+.k-rn-pill[data-idle] .k-rn-pulse {
+  background: var(--k-content-tertiary-foreground);
+}
+.k-rn-short {
+  display: none;
+}
+@container (max-width: 360px) {
+  .k-rn-long {
+    display: none;
+  }
+  .k-rn-short {
+    display: inline;
+  }
+}
+.k-rn-pop {
+  width: min(348px, calc(100vw - 32px));
+  padding: 4px;
+}
+.k-rn-list {
+  max-height: calc(52px * 5.5);
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+.k-rn-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--k-size-row);
+  align-items: center;
+  gap: 4px;
+  height: 52px;
+}
+.k-rn-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: none;
+  color: inherit;
+  font: var(--text-data) var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+}
+.k-rn-row:hover {
+  background: var(--k-selectable-background-hover);
+}
+.k-rn-row:focus-visible {
+  outline: 1px solid var(--focus-ring);
+  outline-offset: -1px;
+}
+.k-rn-ring {
+  width: 20px;
+  height: 20px;
+  rotate: -90deg;
+}
+.k-rn-ring circle {
+  fill: none;
+  stroke-width: 2.5;
+}
+.k-rn-ring [data-part='track'] {
+  stroke: var(--k-container-track-background);
+}
+.k-rn-ring [data-part='fill'] {
+  stroke: var(--k-content-secondary-foreground);
+  transition: stroke-dasharray var(--dur-snappy) var(--ease-snappy);
+}
+.k-rn-item[data-state='done'] [data-part='fill'] {
+  stroke: var(--k-status-ok-foreground);
+}
+.k-rn-item[data-state='needs'] [data-part='fill'] {
+  stroke: var(--k-status-warn-foreground);
+}
+.k-rn-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.k-rn-title,
+.k-rn-step {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-rn-title {
+  color: var(--k-content-primary-foreground);
+}
+.k-rn-step {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-rn-item[data-state='needs'] .k-rn-step {
+  color: var(--k-status-warn-foreground);
+}
+.k-rn-count {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-num-small);
+  font-variant-numeric: tabular-nums;
+}
+.k-rn-badge {
+  position: absolute;
+  top: 8px;
+  left: 22px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--k-status-warn-foreground);
+}
+.k-rn-gap {
+  width: var(--k-size-row);
+}
+.k-rn-foot {
+  display: flex;
+  justify-content: flex-end;
+  padding: 4px 4px 0;
+  border-top: var(--hairline);
+}
+.k-rn-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+@media (pointer: coarse) {
+  .k-rn-pill {
+    height: 36px;
+  }
+  .k-rn-item {
+    height: 56px;
+  }
+}

@@ -96,7 +96,7 @@
 }
 .k-reel::-webkit-scrollbar-thumb {
   background: transparent;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
 }
 .k-reel:hover::-webkit-scrollbar-thumb,
 .k-reel:focus-visible::-webkit-scrollbar-thumb {

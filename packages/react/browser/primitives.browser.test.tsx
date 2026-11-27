@@ -11,6 +11,15 @@ import {
   Alert,
   AlertDescription,
   AlertTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogBody,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
   Avatar,
   AvatarGroup,
   Breadcrumb,
@@ -116,8 +125,10 @@ import {
   TooltipTrigger,
   useFieldControl,
 } from '../src/index.ts'
+import { CardUsage } from '../gallery/usage/CardUsage.tsx'
 import { OpenFrame } from './open-frame.tsx'
 import { mount } from './render.tsx'
+import { settled, waitUntil } from './settle.ts'
 
 function StopInput() {
   const control = useFieldControl()
@@ -133,6 +144,8 @@ beforeAll(async () => {
 for (const theme of ['graphite', 'console'] as const) {
   const shot = async (name: string, node: React.ReactNode) => {
     await mount(node, theme)
+    // 等浮层定好位、有限时长的动画与过渡走完再截（Breadcrumb 逐项入场、链接 150ms 换色、菜单定位后才开始淡入，CI 忙时截在半路，#190、#219）。
+    await settled()
     await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-${name}`)
   }
   describe(theme, () => {
@@ -190,9 +203,9 @@ for (const theme of ['graphite', 'console'] as const) {
           items={[{ label: 'Strategies', href: '#' }, { label: 'Momentum', href: '#' }, { label: 'Backtest 2026-11' }]}
         />,
       ))
-    test('button', () =>
-      shot(
-        'button',
+    // 带进行中一格（kubai 017，#251）：转圈要等满 300ms 才出，所以先等它出现，再把无限循环的转动停在第 0 刻。
+    test('button', async () => {
+      await mount(
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             <Button variant="primary">Primary</Button>
@@ -206,8 +219,28 @@ for (const theme of ['graphite', 'console'] as const) {
               <Info />
             </Button>
           </div>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <Button variant="primary" pending>
+              Saving
+            </Button>
+            <Button size="sm" pending>
+              Small
+            </Button>
+            <Button variant="icon" size="icon" aria-label="Refresh" pending>
+              <Info />
+            </Button>
+          </div>
         </div>,
-      ))
+        theme,
+      )
+      await waitUntil(
+        () => document.querySelectorAll('[data-slot="button-spinner"]').length === 3,
+        'three pending spinners (they show after 300ms)',
+      )
+      await settled({ freezeInfinite: true })
+      await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-button`)
+    })
+    test('card', () => shot('card', <CardUsage />))
     test('checkbox', () =>
       shot(
         'checkbox',
@@ -284,6 +317,7 @@ for (const theme of ['graphite', 'console'] as const) {
           new MouseEvent('contextmenu', { bubbles: true, cancelable: true, button: 2, clientX: 20, clientY: 20 }),
         )
       await new Promise((r) => setTimeout(r, 500))
+      await settled()
       await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-context-menu`)
     })
     test('dialog', () =>
@@ -308,6 +342,26 @@ for (const theme of ['graphite', 'console'] as const) {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+        </OpenFrame>,
+      ))
+    test('alert-dialog', () =>
+      shot(
+        'alert-dialog',
+        <OpenFrame width={620} height={260}>
+          <AlertDialog open>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Close BTCUSDT long</AlertDialogTitle>
+              </AlertDialogHeader>
+              <AlertDialogBody>
+                <AlertDialogDescription>Sells 0.250 contracts at market. This cannot be undone.</AlertDialogDescription>
+              </AlertDialogBody>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction variant="danger">Close position</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </OpenFrame>,
       ))
     test('dropdown-menu', () =>

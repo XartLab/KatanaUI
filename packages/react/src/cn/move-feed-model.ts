@@ -21,6 +21,9 @@ export const MOVE_TYPE_TONES: Readonly<Record<string, MoveTone>> = {
   sealDown: 'board',
   openUp: 'board',
   openDown: 'board',
+  // 加密市场的异动（OKX 市场异动：「5 分钟涨幅 / 跌幅」，2026-11-26 读，#245）；别的窗口（15 分钟、1 小时）用 types 自定。
+  rise5m: 'up',
+  fall5m: 'down',
 }
 
 /** 调用方自定的异动类型：key、显示的字与色调。盖掉随包的同名类型。 */
@@ -42,6 +45,11 @@ export type MoveItem = {
   name: string
   /** Stock code. */
   code?: string
+  /**
+   * Symbol the row belongs to (`BTC-USDT-SWAP`), compared with `currentSymbol` when only the current symbol is shown.
+   * Falls back to `code`, then `name`. 这一行属于哪个品种；不给就用 code，再不给用 name。
+   */
+  symbol?: string
   /** Key of the move type. */
   type: string
   /** The figure; a dash when missing. */
@@ -71,6 +79,13 @@ export function sortFeed(items: readonly MoveItem[]): MoveItem[] {
     .map((item, index) => ({ item, index, at: parseClock(item.time) ?? -1 }))
     .sort((a, b) => b.at - a.at || b.index - a.index)
     .map((entry) => entry.item)
+}
+
+/** 只留属于 symbol 的行（不分大小写、前后空白不计）；symbol 为空时不筛，原样给出。一行属于哪个品种看 symbol，没有就看 code，再没有就看 name。 */
+export function filterBySymbol(items: readonly MoveItem[], symbol: string | null | undefined): MoveItem[] {
+  const want = symbol?.trim().toLowerCase()
+  if (!want) return [...items]
+  return items.filter((item) => (item.symbol ?? item.code ?? item.name).trim().toLowerCase() === want)
 }
 
 /** 按选中的类型筛；一个都没选是全部。 */

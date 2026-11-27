@@ -58,6 +58,7 @@ export function Ridgeline({
   tableHead,
   onExport,
   onFullscreen,
+  onCopyImage,
   source,
 }: RidgelineProps) {
   const [tableView, setTableView] = useState(false)
@@ -100,6 +101,7 @@ export function Ridgeline({
           onTableView={setTableView}
           onExport={onExport}
           onFullscreen={onFullscreen}
+          onCopyImage={onCopyImage}
         />
       </div>
       {tableView && (

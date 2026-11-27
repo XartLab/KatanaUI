@@ -10,6 +10,8 @@ import {
   ThemeHeatMatrixDemo,
 } from './pages/cn-pack.tsx'
 import { FlagMarkDemo } from './pages/watchlist-order.tsx'
+import { InlineEditDemo, SplitButtonDemo, TagInputDemo } from './pages/arc-inputs.tsx'
+import { RulerSliderDemo } from './pages/ruler-slider.tsx'
 import { DepthChartDemo, OrderBookDemo, TradeTapeDemo } from './pages/market-depth.tsx'
 import {
   AgentAvatarDemo,
@@ -54,7 +56,9 @@ import {
   SvgDrawOnScrollDemo,
 } from './pages/motion-effects.tsx'
 import { RenderingSettingsDemo } from './rendering.tsx'
+import { GridSummaryRowDemo, RefreshControlDemo, TickerTapeDemo } from './pages/ticker-refresh.tsx'
 import { CopyToastDemo, UseUndoStackDemo } from './pages/undo-copy.tsx'
+import { LinkGroupDemo } from './pages/link-group.tsx'
 import { SideNavUsage } from './usage/SideNavUsage.tsx'
 import { LiveUsage } from './usage/LiveUsage.tsx'
 import { TextMeasureUsage } from './usage/TextMeasureUsage.tsx'
@@ -80,7 +84,15 @@ import {
   SymbolMarkDemo,
   TagDemo,
 } from './pages/readouts.tsx'
-import { ContextMenuOpen, DialogOpen, DropdownMenuOpen, PopoverOpen, SelectOpen, TooltipOpen } from './pages/open.tsx'
+import {
+  AlertDialogOpen,
+  ContextMenuOpen,
+  DialogOpen,
+  DropdownMenuOpen,
+  PopoverOpen,
+  SelectOpen,
+  TooltipOpen,
+} from './pages/open.tsx'
 import {
   ChangeTextDemo,
   ConsensusBlockDemo,
@@ -100,6 +112,9 @@ import {
   TechnicalRatingDemo,
 } from './pages/quant.tsx'
 import { FlowSankeyDemo, VintageSeriesDemo } from './pages/flows.tsx'
+import { MarketBrowserDemo } from './pages/market-browser.tsx'
+import { StrategyLauncherDemo } from './pages/strategy-launcher.tsx'
+import { FloatingWindowDemo } from './pages/floating-window.tsx'
 import { KeyStatsDemo, PeerCardsDemo, PerformanceStripDemo, RangeBarTvDemo, WatchlistDemo } from './pages/overview.tsx'
 import {
   CompanyProfileDemo,
@@ -204,9 +219,9 @@ import {
   TextareaDemo,
   ToggleDemo,
 } from './pages/smoothui-forms.tsx'
-import { OrderTicketUsage } from './usage/OrderTicketUsage.tsx'
+import { OrderTicketDemo } from './pages/order-ticket.tsx'
 import { PositionCalculatorUsage } from './usage/PositionCalculatorUsage.tsx'
-import { ComponentCatalogUsage } from './usage/ComponentCatalogUsage.tsx'
+import { ComponentCatalogDemo } from './pages/component-catalog.tsx'
 import { PanelTabsUsage } from './usage/PanelTabsUsage.tsx'
 import { AccordionDemo, TabsDemo } from './pages/layout.tsx'
 import {
@@ -235,7 +250,14 @@ import {
   StackDemo,
   SwitcherDemo,
 } from './pages/typesetting.tsx'
-import { ContextMenuDemo, DialogDemo, DropdownMenuDemo, PopoverDemo, TooltipDemo } from './pages/overlays.tsx'
+import {
+  AlertDialogDemo,
+  ContextMenuDemo,
+  DialogDemo,
+  DropdownMenuDemo,
+  PopoverDemo,
+  TooltipDemo,
+} from './pages/overlays.tsx'
 import {
   ButtonDemo,
   CheckboxDemo,
@@ -293,6 +315,28 @@ import {
 import { ScrubberDemo } from './pages/smoothui-scrub.tsx'
 import { SymbolSearchDemo } from './pages/symbol-search.tsx'
 import {
+  ChangeSummaryDemo,
+  ExperimentCardDemo,
+  KpiChartDemo,
+  ParallelAttemptsDemo,
+  RootCauseTreeDemo,
+} from './pages/affect-quant.tsx'
+import { FallbackChainDemo, PlanVsActualDemo, RateLimitPlannerDemo, TraceWaterfallDemo } from './pages/affect-data.tsx'
+import {
+  AgentLanesDemo,
+  AgentQueueDemo,
+  AgentRecapDemo,
+  AwaySummaryDemo,
+  CostWaterfallDemo,
+  DecisionTreeDemo,
+  FanOutGridDemo,
+  RunningNowDemo,
+  ScheduledRunsDemo,
+  SmartRecommendationDemo,
+} from './pages/affect-agent.tsx'
+import { AgentCrewDemo, AgentFleetDemo, AgentTreeDemo, FlowBuilderDemo } from './pages/affect-flow.tsx'
+import { DerivativesBoardDemo } from './pages/derivatives.tsx'
+import {
   AccountEquityDemo,
   FundingRateDemo,
   OptionsChainDemo,
@@ -307,6 +351,16 @@ import {
   SeatTableDemo,
   TradingDatePickerDemo,
 } from './pages/cn-batch2.tsx'
+import { AuctionBarCellDemo, RangeScrubberDemo, ThresholdGapDemo } from './pages/cn-batch3.tsx'
+import {
+  CalendarDemo,
+  CardDemo,
+  LinkDemo,
+  ListBoxDemo,
+  PanelDemo,
+  PillDemo,
+  SystemStatusDemo,
+} from './pages/salt-gaps.tsx'
 
 /** 每一页的实时预览，键是 registry.ts 里的页 id（registry.test.ts 核对两边一一对应）。 */
 export const DEMOS: Readonly<Record<string, ComponentType>> = {
@@ -331,6 +385,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   tooltip: TooltipDemo,
   popover: PopoverDemo,
   dialog: DialogDemo,
+  'alert-dialog': AlertDialogDemo,
   'dropdown-menu': DropdownMenuDemo,
   'context-menu': ContextMenuDemo,
   tabs: TabsDemo,
@@ -369,8 +424,12 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   loading: LoadingDemo,
   'measured-skeleton': MeasuredSkeletonUsage,
   toast: ToastDemo,
+  'ticker-tape': TickerTapeDemo,
+  'refresh-control': RefreshControlDemo,
+  'grid-summary-row': GridSummaryRowDemo,
   'copy-toast': CopyToastDemo,
   'use-undo-stack': UseUndoStackDemo,
+  'link-group': LinkGroupDemo,
   alert: AlertDemo,
   progress: ProgressDemo,
   sheet: SheetDemo,
@@ -393,6 +452,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'orders-table': OrdersTableDemo,
   'account-equity': AccountEquityDemo,
   'funding-rate': FundingRateDemo,
+  'derivatives-board': DerivativesBoardDemo,
   'options-chain': OptionsChainDemo,
   'order-book': OrderBookDemo,
   'depth-chart': DepthChartDemo,
@@ -409,6 +469,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'company-profile': CompanyProfileDemo,
   'seasonal-chart': SeasonalChartDemo,
   watchlist: WatchlistDemo,
+  'market-browser': MarketBrowserDemo,
   'metric-card': MetricCardDemo,
   'distribution-bars': DistributionBarsDemo,
   'cn-basics': CnBasicsDemo,
@@ -423,6 +484,9 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'auction-step': AuctionStepDemo,
   'trading-date-picker': TradingDatePickerDemo,
   'flow-race': FlowRaceDemo,
+  'range-scrubber': RangeScrubberDemo,
+  'auction-bar-cell': AuctionBarCellDemo,
+  'threshold-gap': ThresholdGapDemo,
   'mini-k-card-grid': MiniKCardGridDemo,
   'move-feed': MoveFeedDemo,
   'decimal-field': DecimalFieldDemo,
@@ -459,6 +523,29 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'param-surface-heatmap': ParamSurfaceHeatmapDemo,
   'walk-forward-matrix': WalkForwardMatrixDemo,
   'robustness-gate': RobustnessGateDemo,
+  'experiment-card': ExperimentCardDemo,
+  'parallel-attempts': ParallelAttemptsDemo,
+  'change-summary': ChangeSummaryDemo,
+  'kpi-chart': KpiChartDemo,
+  'root-cause-tree': RootCauseTreeDemo,
+  'trace-waterfall': TraceWaterfallDemo,
+  'fallback-chain': FallbackChainDemo,
+  'rate-limit-planner': RateLimitPlannerDemo,
+  'plan-vs-actual': PlanVsActualDemo,
+  'scheduled-runs': ScheduledRunsDemo,
+  'agent-queue': AgentQueueDemo,
+  'cost-waterfall': CostWaterfallDemo,
+  'agent-recap': AgentRecapDemo,
+  'away-summary': AwaySummaryDemo,
+  'running-now': RunningNowDemo,
+  'agent-lanes': AgentLanesDemo,
+  'fan-out-grid': FanOutGridDemo,
+  'smart-recommendation': SmartRecommendationDemo,
+  'decision-tree': DecisionTreeDemo,
+  'flow-builder': FlowBuilderDemo,
+  'agent-tree': AgentTreeDemo,
+  'agent-fleet': AgentFleetDemo,
+  'agent-crew': AgentCrewDemo,
   'flow-sankey': FlowSankeyDemo,
   'vintage-series': VintageSeriesDemo,
   'system-monitor': SystemMonitorDemo,
@@ -466,6 +553,9 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'hypothesis-ledger': HypothesisLedgerDemo,
   'password-input': PasswordInputDemo,
   'hold-to-confirm': HoldToConfirmDemo,
+  'split-button': SplitButtonDemo,
+  'tag-input': TagInputDemo,
+  'inline-edit': InlineEditDemo,
   'delete-button': DeleteButtonDemo,
   'notification-bell': NotificationBellDemo,
   'status-icon': StatusIconDemo,
@@ -560,10 +650,12 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'morph-toggle': MorphToggleDemo,
   'morph-icon': MorphIconDemo,
   'swap-panel': SwapPanelDemo,
-  'order-ticket': OrderTicketUsage,
+  'order-ticket': OrderTicketDemo,
   'position-calculator': PositionCalculatorUsage,
   'panel-tabs': PanelTabsUsage,
-  'component-catalog': ComponentCatalogUsage,
+  'component-catalog': ComponentCatalogDemo,
+  'strategy-launcher': StrategyLauncherDemo,
+  'floating-window': FloatingWindowDemo,
   avatar: AvatarDemo,
   breadcrumb: BreadcrumbDemo,
   pagination: PaginationDemo,
@@ -596,6 +688,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'switchboard-card': SwitchboardCardDemo,
   'animated-tags': AnimatedTagsDemo,
   'exposure-slider': ExposureSliderDemo,
+  'ruler-slider': RulerSliderDemo,
   scrubber: ScrubberDemo,
   'power-off-slide': PowerOffSlideDemo,
   'animated-stepper': AnimatedStepperDemo,
@@ -604,6 +697,14 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'motion-loader': MotionLoaderDemo,
   'page-preloader': PagePreloaderDemo,
   'scroll-progress': ScrollProgressDemo,
+  // #104 对照 Salt 补的七件。
+  pill: PillDemo,
+  'system-status': SystemStatusDemo,
+  calendar: CalendarDemo,
+  'list-box': ListBoxDemo,
+  link: LinkDemo,
+  card: CardDemo,
+  panel: PanelDemo,
 }
 
 /**
@@ -614,6 +715,7 @@ export const OPEN_DEMOS: Readonly<Record<string, { Demo: ComponentType; height: 
   tooltip: { Demo: TooltipOpen, height: 80 },
   popover: { Demo: PopoverOpen, height: 160 },
   dialog: { Demo: DialogOpen, height: 260 },
+  'alert-dialog': { Demo: AlertDialogOpen, height: 260 },
   'dropdown-menu': { Demo: DropdownMenuOpen, height: 240 },
   'context-menu': { Demo: ContextMenuOpen, height: 220 },
   select: { Demo: SelectOpen, height: 160 },

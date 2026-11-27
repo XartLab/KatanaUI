@@ -75,7 +75,7 @@ const TONE: Record<TerminalLineType, string> = {
   output: 'text-ink-2',
   error: 'text-danger',
   success: 'text-(--pnl-up)',
-  comment: 'text-ink-4',
+  comment: 'text-ink-3',
 }
 
 const LIGHT = 'size-3 rounded-full'
@@ -268,7 +268,7 @@ export function MacTerminal({
               </span>
             </div>
           ) : null}
-          {idle && labels.start ? <span className="text-ink-4">{labels.start}</span> : null}
+          {idle && labels.start ? <span className="text-ink-3">{labels.start}</span> : null}
         </pre>
         <div className="sr-only">
           {lines.map((line) => (

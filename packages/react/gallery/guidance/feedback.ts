@@ -19,6 +19,8 @@ const feedback: GuidanceMap = {
       '等 React.lazy / use()：pending 这个属性不写，Loading 就是 Suspense 边界；按属性在不在判，pending={undefined} 仍是等数据（当没在等），不会切模式。',
       '文档、测试、截图要看某一段：给 phase（loading / slow / timeout）。',
       '撑满面板主体给 fill，骨架行数按高度量；表头已知就传 header。',
+      '骨架出了至少留 500ms（LOADING_MIN_SHOWN_MS）：510ms 到的数据，骨架留到 1000ms 才换成内容；500ms 内到的不出骨架。只管 pending 模式，Suspense 模式的骨架是 React 自己摘的，没有最短停留。出处：kubai Vibe Design Tips 017。',
+      '一个按钮等一次请求（0.3 到 3 秒）不用 Loading，用 Button 的 pending：满 300ms 才出转圈、出了至少留 500ms、字与宽度不变、期间再按无效（见 button 页）。',
     ],
     avoid: [
       '知道进度时用 progress。',
@@ -37,7 +39,7 @@ const feedback: GuidanceMap = {
     use: [
       '卡片、文章、建议队列这类形状复杂的加载占位，内容到了位置不动。',
       '示例数据排出的版面要和真数据同样的行数与控件。',
-      '前 500ms 整块不可见、只占位（连卡片的边框底色也不露），之后才出骨架条；快的请求不闪。',
+      '前 500ms 整块不可见、只占位（连卡片的边框底色也不露），之后才出骨架条；快的请求不闪。骨架条出了至少留 minShown（默认 500ms），数据早到也等满再揭示（kubai Vibe Design Tips 017）。',
     ],
     avoid: ['表格用按行高的 skeleton，图表自己画占位。', '知道进度时用 progress。'],
     a11y: [
@@ -48,10 +50,21 @@ const feedback: GuidanceMap = {
   },
   toast: {
     aliases: ['Snackbar', 'Notification', 'Banner', 'Flash message'],
-    use: ['操作完成、告警触发这类会自己消失的反馈。', '多条提示排在窗口一角。'],
-    avoid: ['要用户处理的事用 dialog 或 alert。', '一直在页面里的说明用 alert。'],
+    use: [
+      '操作完成这类会自己消失的反馈。',
+      '多条提示排在窗口一角。',
+      '能撤销的操作（删画线、删自选、撤单后恢复）先做、再弹一条带「撤销」的 toast（ToastAction）；撤销后把同一条改成「已恢复」，约 1.5 秒后收。动作 toast 至少停 5 秒，指针或焦点在上面时暂停（计时在应用的 toast-queue，包里不计时）；可加 ToastCountdown：16px 的空心环随剩余比例变短，不写秒数。出处：kubai Vibe Design Tips 016。',
+    ],
+    avoid: [
+      '要用户处理的事用 dialog 或 alert。',
+      '一直在页面里的说明用 alert。',
+      '不能撤销的事先确认（DeleteButton / AlertDialog），不要事后 toast。',
+      '价格告警这类系统消息是通知，不是 toast（不是人刚做的事）：应进铃下的列表（NotificationBell），toast 只是到达提示。',
+    ],
     a11y: [
-      'ToastViewport 是 role=region，aria-live=assertive，新增的条目立刻被读。',
+      'ToastViewport 是 role=region，aria-live=polite：新增的条目读屏等空了再读，不打断；它一直在页面里，往里插的条目才会被读（只靠动态插进来的 role=status 节点，读屏不一定读）。',
+      'warn、danger 那一条自带 role=alert（插入即打断播报）；neutral、ok 不带，走视口。',
+      'Toast 不抢焦点；「撤销」是普通按钮，Tab 能到，Enter 或空格触发。倒计时环是装饰，aria-hidden，不报剩余秒数。',
       '关闭钮与「全部关掉」的读屏名由调用方传。',
       '语气（tone）只是色条与图标的颜色，标题里也要写明；说明文字用 ink-2，各主题都过 4.5:1。',
     ],
@@ -66,14 +79,16 @@ const feedback: GuidanceMap = {
       '剪贴板不支持（非 https、浏览器不认 image/png）或被拒：自动改成下载 <图名>.png，提示写「已改为下载」和原因；拍不出图才算失败。',
       '提示：一条 Toast，2400ms 后自己收，指针或焦点在上面时不收；再点一次是新的一条。语气 ok / warn / danger 对应已复制 / 已改为下载 / 失败。',
       '复制文字（代码、直链）用 copyText，提示同一条 CopyToast（copiedText）。',
+      '接了相机钮的图（#87）：EquityCurve、QuantileLayers 与用 ChartViewProps 的几张（Ridgeline、FlowSankey、VintageSeries、UptimeBars、SymbolGalaxy、ConnectedScatter、SlopeChart、ParamScatter、MaeMfeScatter、UnderwaterChart、BrushChart）都收 onCopyImage，再给 actions 文案的 copyImage 就出钮；MarketHeatmap 的相机钮在工具条上、全屏钮前（照 TradingView 热力图的相机钮），它与全屏钮不进图。',
+      '字体（#87）：图里用到的网页字体内嵌进图片（只嵌用到的族、unicode-range 碰到图里文字的那几片，取过的按地址缓存），拍出来跟页面一致；跨源样式表里的字体（读不到规则）与取失败的照旧退回系统字体。embedFonts: false 关掉。',
     ],
     avoid: [
       '要用户确认的结果（导出了什么文件）不要只靠这条提示，它会自己消失。',
-      '网络字体在拍出的图里会退回系统字体（图片里取不到页面字体）；要字形一致的出版用图，宿主用服务端渲染。',
+      '跨源加载的字体（如 Google Fonts 的样式表）读不到规则，在图里会退回系统字体；要字形一致，字体随站点同源发布（本包的 fonts.css 就是），或宿主用服务端渲染。',
     ],
     a11y: [
       '相机钮是普通 button，读屏名与悬停提示是 labels.copyImage；复制时不禁用钮（禁用会丢焦点、挡住重试）。',
-      '结果经 ToastViewport（aria-live=assertive）读出；每次是新插入的节点，同一句也会再读（modern-web-guidance copy-button）。',
+      '结果经 ToastViewport（aria-live=polite）读出，下载与失败两条自带 role=alert；每次是新插入的节点，同一句也会再读（modern-web-guidance copy-button）。',
       '语气不只靠颜色：标题就是结果，原因写在说明里。',
     ],
   },

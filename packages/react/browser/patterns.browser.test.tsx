@@ -4,6 +4,7 @@ import { beforeAll, describe, expect, test } from 'vite-plus/test'
 import { page } from 'vite-plus/test/browser'
 import { useState } from 'react'
 import {
+  Calendar,
   Combobox,
   ComboboxContent,
   ComboboxEmpty,
@@ -20,6 +21,7 @@ import {
 } from '../src/index.ts'
 import { AnimatedFileUploadUsage } from '../gallery/usage/AnimatedFileUploadUsage.tsx'
 import { ChipGroupUsage } from '../gallery/usage/ChipGroupUsage.tsx'
+import { ListBoxUsage } from '../gallery/usage/ListBoxUsage.tsx'
 import { DateRangePickerUsage } from '../gallery/usage/DateRangePickerUsage.tsx'
 import { DateTimeInputUsage } from '../gallery/usage/DateTimeInputUsage.tsx'
 import { DeleteButtonUsage } from '../gallery/usage/DeleteButtonUsage.tsx'
@@ -46,6 +48,7 @@ import { TimeMachineStackUsage } from '../gallery/usage/TimeMachineStackUsage.ts
 import { TreeViewUsage } from '../gallery/usage/TreeViewUsage.tsx'
 import { OpenFrame } from './open-frame.tsx'
 import { mount } from './render.tsx'
+import { settled } from './settle.ts'
 
 const OPS = [
   { value: 'gt', label: 'greater than' },
@@ -95,6 +98,7 @@ for (const theme of ['graphite', 'console'] as const) {
     await mount(<div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 320 }}>{node}</div>, theme)
     await act?.()
     await settle()
+    await settled()
     await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-${name}`)
   }
   describe(theme, () => {
@@ -193,6 +197,19 @@ for (const theme of ['graphite', 'console'] as const) {
     test('theme-selector', () => shot('theme-selector', <ThemeSelectorUsage />))
     test('time-machine-stack', () => shot('time-machine-stack', <TimeMachineStackUsage />))
     test('tree-view', () => shot('tree-view', <TreeViewUsage />))
+    // A fixed month far from today, so the today mark never lands in the shot.
+    test('calendar', () =>
+      shot(
+        'calendar',
+        <Calendar
+          label="Go to date"
+          locale="en-US"
+          labels={{ previousMonth: 'Previous month', nextMonth: 'Next month' }}
+          defaultValue="2024-03-15"
+          unavailable={(day) => [0, 6].includes(new Date(`${day}T00:00:00Z`).getUTCDay())}
+        />,
+      ))
+    test('list-box', () => shot('list-box', <ListBoxUsage />))
     test('view-switcher', () =>
       shot(
         'view-switcher',

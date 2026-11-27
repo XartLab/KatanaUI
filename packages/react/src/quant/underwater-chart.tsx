@@ -68,6 +68,7 @@ export function UnderwaterChart({
   source,
   onExport,
   onFullscreen,
+  onCopyImage,
   className,
 }: UnderwaterChartProps) {
   const [table, setTable] = useState(false)
@@ -149,6 +150,7 @@ export function UnderwaterChart({
           onTableView={setTable}
           onExport={onExport}
           onFullscreen={onFullscreen}
+          onCopyImage={onCopyImage}
         />
       </div>
       {table ? (

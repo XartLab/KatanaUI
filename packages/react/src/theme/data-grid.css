@@ -109,7 +109,8 @@
   color: var(--k-content-primary-foreground);
 }
 .k-grid-col button.is-sorted {
-  font-weight: 600;
+  /* 排序列亮一档（主前景色）并加到 500，照 TradingView 选股器（#90，原来 600）。 */
+  font-weight: 500;
 }
 /* 列头右缘的拖动把手：窄而可抓，悬停时亮出一道线。 */
 .k-grid-resize {
@@ -274,7 +275,7 @@
   flex: 1;
   min-width: 24px;
   height: 3px;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   background: var(--alpha-white-7);
   overflow: hidden;
 }
@@ -309,6 +310,8 @@
 .k-grid-name {
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 .k-grid-tag {
   flex: none;
@@ -426,6 +429,25 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+/* 两行表头（#92，#91 截图里「走势 / 30 日」比单行列头高半行）：有列带 sub 时（.has-sub），所有列头的名字顶对齐到同一条线，
+   上边距 = (表头高 − 两行块高) / 2，单行列头的字与两行的第一行同一基线，第二行在下；排序箭头的行高等于第一行，跟着第一行走。
+   两行块高：默认 14 + 12 = 26；comfortable 16 + 2 + 16 = 34。表头高由组件写进 --k-grid-head-h。 */
+.k-grid-head {
+  --k-grid-head-line: 14px;
+  --k-grid-head-block: 26px;
+}
+.k-grid-head.has-sub .k-grid-col button,
+.k-grid-head.has-sub .k-grid-head-text {
+  align-items: flex-start;
+  padding-top: calc((var(--k-grid-head-h) - var(--k-grid-head-block)) / 2);
+}
+.k-grid-head.has-sub .k-grid-sort {
+  line-height: var(--k-grid-head-line);
+}
+.k-grid-head.has-sub .k-grid-head-icon {
+  align-items: flex-start;
+  padding-top: calc((var(--k-grid-head-h) - var(--k-grid-head-block)) / 2 + (var(--k-grid-head-line) - 12px) / 2);
+}
 .k-grid-head-sub {
   color: var(--k-content-secondary-foreground);
   font: 400 10px/12px var(--font-sans);
@@ -444,6 +466,7 @@
 }
 .k-grid-head-icon {
   display: inline-flex;
+  align-items: center;
   margin-left: 4px;
   color: var(--k-content-secondary-foreground);
 }
@@ -493,6 +516,108 @@
   font-size: var(--text-body-size);
 }
 
+/* 表尾合计 / 均值行（#77，GridSummaryRow）：跟表体同一份列模板与固定列，横向滚动跟着走，纵向粘在滚动区底边。
+   上面一道 separable-secondary 分隔线、底色 surface-raised 与表体分开；字是主文字色加 600 字重，行首的「合计」是次要文字色。 */
+.k-grid-summary {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  border-top: 1px solid var(--k-separable-secondary-borderColor);
+  background: var(--k-surface-raised-background);
+}
+.k-grid-summary-row {
+  display: grid;
+  align-items: center;
+  color: var(--k-content-primary-foreground);
+  font-weight: 600;
+}
+.k-grid-summary .k-grid-cell.is-fixed {
+  background: var(--k-surface-raised-background);
+}
+.k-grid-summary-label {
+  color: var(--k-content-secondary-foreground);
+  font-weight: 500;
+}
+
+/* —— #90 去电子表格感：照 TradingView 选股器（#90 记录的 2026-11-18 实测），颜色仍是 Graphite 的语义 token —— */
+/* 代码芯片、全称、单位小字是共用层 theme/cell-type.css 的 .k-code-chip / .k-code-name / .k-num-unit（#92，QuoteTable 等密表共用一份）。 */
+/* bar 列给了 format.barMax（#90）：单边中性横条，给相对成交量这类有大小没正负的量；不用涨跌色，也不用品牌橙。
+   轨道 4px 高、最长 48px，数字在它右边；没给 barMax 的仍是上面以 0 为中线的居中条。 */
+.k-grid-bar.is-share {
+  flex: 0 1 48px;
+  min-width: 16px;
+  height: 4px;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: var(--k-container-track-background);
+}
+.k-grid-bar.is-share > i {
+  left: 0;
+  background: color-mix(in srgb, var(--k-content-secondary-foreground) 75%, transparent);
+}
+/* 行内迷你图：高 24，宽跟列宽；只画线、不画末端环。 */
+.k-grid-spark {
+  display: block;
+  flex: 1;
+  min-inline-size: 0;
+  block-size: 24px;
+}
+.k-grid-spark .k-spark {
+  height: 24px;
+}
+.k-grid-range {
+  flex: 1;
+  min-width: 0;
+}
+/* 两端的数定宽（7 个等宽数字位），各行的轨道才对得齐；低端靠右贴着轨道。 */
+.k-grid-range .k-range-end {
+  flex: 0 0 7ch;
+}
+.k-grid-range .k-range-end.is-low {
+  align-items: flex-end;
+}
+.k-grid-range .k-range-end.is-high {
+  align-items: flex-start;
+}
+
+/* comfortable 档：整页的表。行 40、表头 48（组件写在行内样式）；格内左右、首列左、正文与表头字号读 theme/cell-type.css 的 --k-table-*（报告类原生表共用同一套数）；
+   行间 1px 横线（ruled 默认开），没有竖线。 */
+.k-grid[data-density='comfortable'] .k-grid-cell {
+  gap: 8px;
+  padding: 0 var(--k-table-cell-x);
+  font-weight: var(--k-table-weight);
+  font-size: var(--k-table-body-size);
+}
+.k-grid[data-density='comfortable'] .k-grid-row {
+  scroll-margin-top: 49px;
+}
+.k-grid[data-density='comfortable'] .k-grid-col button,
+.k-grid[data-density='comfortable'] .k-grid-head-text {
+  padding: 0 var(--k-table-cell-x);
+  font-weight: var(--k-table-weight);
+  font-size: var(--k-table-head-size);
+}
+.k-grid[data-density='comfortable'] .k-grid-col button.is-sorted {
+  font-weight: calc(500 + var(--k-weight-adjust, 0));
+}
+.k-grid[data-density='comfortable'] .k-grid-row > .k-grid-cell:first-child,
+.k-grid[data-density='comfortable'] .k-grid-summary-row > .k-grid-cell:first-child,
+.k-grid[data-density='comfortable'] .k-grid-col:first-child button,
+.k-grid[data-density='comfortable'] .k-grid-col:first-child .k-grid-head-text {
+  padding-inline-start: var(--k-table-first-x);
+}
+.k-grid[data-density='comfortable'] .k-grid-head {
+  --k-grid-head-line: 16px;
+  --k-grid-head-block: 34px;
+}
+.k-grid[data-density='comfortable'] .k-grid-head-name {
+  gap: 2px;
+  line-height: 16px;
+}
+.k-grid[data-density='comfortable'] .k-grid-head-sub {
+  font-size: inherit;
+  line-height: 16px;
+}
 /* 挪行（#77 G7，做法照 modern-web-guidance drag-and-drop）：拖的时候别的行不动，只在落点画一道 2px 的中性亮线（不用品牌橙，橙只给焦点角括号）；
    被拖的行留在原处、淡到 45%，表示从哪儿拿起；拖动期间整张表是 grabbing 指针。高对比模式下线用系统 Highlight。 */
 .k-grid-row.is-movable {
@@ -536,4 +661,52 @@
   letter-spacing: 0.04em;
   text-transform: uppercase;
   white-space: nowrap;
+}
+/* 分节的收起钮、行数与组内汇总（#87）：三角朝右是收起，展开时转 90°；行数用三级字色、不大写；汇总靠右、跟数据同一套数字字体。 */
+/* 按列的组内汇总（sectionAggregates）：标题占前面没配聚合的几列（行内样式给 span），后面的格子跟表体同一套格子，字用次级色、不大写。 */
+.k-grid-section-aggregate {
+  color: var(--k-content-secondary-foreground);
+}
+.k-grid-section-toggle {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  margin-left: -4px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.k-grid-section-toggle:hover {
+  background: var(--k-actionable-background-hover);
+  color: var(--k-content-primary-foreground);
+}
+.k-grid-section-toggle svg {
+  transition: rotate 160ms var(--ease-snappy);
+}
+.k-grid-section-toggle[aria-expanded='true'] svg {
+  rotate: 90deg;
+}
+.k-grid-section-heading {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-grid-section-count {
+  flex: none;
+  color: var(--k-content-secondary-foreground);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+.k-grid-section-summary {
+  flex: none;
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  text-transform: none;
 }

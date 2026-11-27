@@ -11,11 +11,15 @@ const forms: GuidanceMap = {
       '表单提交，一个区域只放一个主按钮。',
       '尺寸只有 sm（26 高）与 md（30 高，默认）；size="icon" 是 28 的正方形，给只有图标的按钮。旧名 size="default" 等于 md，留一个版本（G1，2026-11-18）。',
       '颜色只读 characteristics（--k-actionable-*），是所有件迁移 token 的模板。',
+      '按钮等一次请求（约 0.3 到 3 秒）用 pending：在按钮原地说，字与宽度不变；pending 满 300ms 才出转圈、出了至少留 500ms（useDelayedFlag，数值在 lib/delayed-flag.ts：PENDING_DELAY_MS、PENDING_MIN_MS），300ms 内结束的不出；不灰整页，不再叠别的加载指示。出处：kubai Vibe Design Tips 017。',
+      '按钮自己的图标就是动作（刷新、同步）：加 spinIcon，按下立刻转那颗图标（不等 300ms、不另出转圈），至少转一整圈（640ms），停在整圈上。',
+      '进行中的结果由调用方说：成功、失败用 toast 或行内状态（Button 不管），失败要用户处理的事留在原处并给重试。',
     ],
     avoid: ['不可撤销的动作（全平、全撤）改用 HoldToConfirm。', '只在两三个选项里切换，用 ToggleGroup。'],
     a11y: [
       '原生 button，读屏名取按钮文字；纯图标按钮必须传 aria-label。',
       '禁用走 disabled 属性，读屏读作「不可用」，同时降到 45% 不透明度。',
+      '进行中（pending）：aria-busy=true，再按无效（aria-disabled 加吞掉点击，Enter 与空格也一样），不用 disabled 属性，所以键盘与读屏仍能到按钮、焦点不丢；不降不透明度；完成或失败由调用方经 toast 或行内状态播报。asChild 时没有转圈，只有 aria 与吞掉传给 Button 的 onClick。',
       '键盘聚焦画 focus-ring 外框，鼠标点击不画。',
     ],
   },
@@ -144,7 +148,11 @@ const forms: GuidanceMap = {
   },
   switch: {
     aliases: ['Toggle', 'Switch (Salt / MUI / Radix)', '开关'],
-    use: ['设置项立即生效，如「实时推送」「深色模式」。', '策略的启停。'],
+    use: [
+      '设置项立即生效，如「实时推送」「深色模式」。',
+      '策略的启停。',
+      '即时生效的单项开关用 Switch，不要做成「开 / 关」两段的分段切换：读的人要读两边才知道状态（kubai Vibe Design Tips 020）。RenderingSettings 的像素对齐、斜线零、中英对齐已换成 Switch。',
+    ],
     avoid: ['要点提交才生效的选项用 Checkbox。', '一次性动作用 Button 或 HoldToConfirm。'],
     a11y: [
       'Radix Switch：role=switch，状态在 aria-checked，读屏读「开 / 关」。',
@@ -163,6 +171,8 @@ const forms: GuidanceMap = {
     use: [
       'K 线周期、买卖方向、视图模式这类二到五项的互斥切换。',
       '设置页里少量选项并排摆开。',
+      '2 到 5 个短选项、互斥、各有名字：用分段，选项一直看得见，不藏进下拉。例：下单面板的保证金模式（全仓 / 逐仓，改错代价大）（kubai Vibe Design Tips 020）。',
+      '例外：下单面板的计量方式（按金额 / 数量 / 风险）保持下拉：它嵌在数量框的标签位里，一行放不下分段；切换会清空数量，藏在一次点击后面反而合适。',
       '尺寸用 size：md（默认，设置页：有边框、按钮 24 高）与 sm（工具条：无边框、选中块滑动）。原来叫 variant="default | sm"，体检认定那是尺寸，改名 size；variant 留一个版本（G1，2026-11-18）。',
     ],
     avoid: ['选项多于五个用 Select。', '切换页面内容用 Tabs。'],
@@ -222,7 +232,8 @@ const forms: GuidanceMap = {
   'shortcut-sheet': {
     aliases: ['Keyboard shortcuts dialog', 'Shortcut cheat sheet', 'Hotkey list', '快捷键总览'],
     use: [
-      '照 TradingView 的 Keyboard shortcuts 面板（Ctrl/Cmd+/，2026-11-18 实看）：顶上「查找快捷键」搜索框，下面按作用域分节，行左名右键，几种按法之间写「或」；TradingView 的分节默认折叠，我们直接摊开。',
+      '照 TradingView 的 Keyboard shortcuts 面板（Ctrl/Cmd+/，2026-11-18 实看）：顶上「查找快捷键」搜索框，下面按作用域分节，行左名右键，几种按法之间写「或」。',
+      '分节跟 TradingView 一样默认收起（#87）：节名是整行宽的展开钮，三角朝右是收起、展开转 90°；defaultOpenScopes 给一开始就展开的节。搜索时命中的节都展开、没命中的不出，节名钮这时不可点；清空搜索回到用户自己展开过的样子。',
       '行高 30、分节标题三级色小号大写；冲突的行名字下一行 warn 色小字写跟谁冲突；关掉的作用域整行 45% 透明。',
       '搜索认动作名、作用域名与按键（⌘K、Ctrl+K 都能搜到）。',
       '给 onComboChange 与 labels.recorder 时每行变成 ShortcutRecorder 改键，占用表是同作用域与 global 的别的动作；键位存哪由调用方定。',
@@ -230,7 +241,7 @@ const forms: GuidanceMap = {
     ],
     avoid: ['设置页里只改一两个键，直接用 shortcut-recorder。'],
     a11y: [
-      '搜索框有屏外 label；每节是带标题的 section（aria-labelledby），行是列表项。',
+      '搜索框有屏外 label；每节是带标题的 section（aria-labelledby 指向节名钮），节名钮带 aria-expanded 与 aria-controls（照 APG Accordion），行是列表项。',
       '按键用 Kbd，读屏念整串（「⌘+K」），不逐块念。',
       '没有匹配时 role=status 念空态文字。',
     ],
@@ -343,6 +354,22 @@ const forms: GuidanceMap = {
       '整份清单的名字取 label。',
     ],
   },
+  'refresh-control': {
+    aliases: ['Auto refresh', 'Refresh interval', 'Polling control', '自动刷新'],
+    use: [
+      '筛选器、行情表、新闻流这类轮询的数据：TradingView 筛选器是「10 秒 / 1 分钟 / 不刷新」三档（#22 G12），演示照这三档；档位由调用方给。',
+      '次序：间隔分段（ToggleGroup sm，26 高）· 立即刷新钮（24 × 24，图标 14px）· 「上次 HH:MM:SS」· 「下次 12s」；时刻主文字色，前缀次要文字色，等宽数字。',
+      '倒计时从 lastRefreshed + interval 算，每秒一格；60 秒以内写 12s，以上写 1:05。',
+      '在刷（refreshing）：图标转圈（1.2s 一圈），倒计时不显示，到点不重复调。',
+      '标签页隐藏时停（不白拉数据），回到前台已过点就马上刷一次。',
+    ],
+    avoid: ['推送来的实时数据（WebSocket）不需要它：用 live 的连接状态。', '一次性的手动刷新只要一个钮，用 Button。'],
+    a11y: [
+      '间隔是 ToggleGroup（读屏名 labels.interval，当前档 aria-pressed）；刷新钮读屏名 labels.refresh。',
+      '在刷时刷新钮是 aria-disabled，不是 disabled：焦点不丢。',
+      '倒计时不放 aria-live（每秒读太吵）；上次时刻用 <time datetime>。',
+    ],
+  },
   'duration-picker': {
     aliases: ['Time duration input', 'Duration field', '时长输入'],
     use: ['订单有效时长、冷却时间、回放步长。', '值在一天以内，用「时 + 分」表达。'],
@@ -367,7 +394,8 @@ const forms: GuidanceMap = {
     a11y: [
       '每项一行：名称、说明、控件，控件读屏名取该项名称。',
       '各字体角色的下拉读屏名取角色标题。',
-      '用的是 Select、Slider、ToggleGroup 等原件，读屏行为随各原件。',
+      '像素对齐、斜线零、中英对齐是 Switch（role=switch，aria-checked 跟值，读屏名取该项名称），点一下立即生效，没有保存钮；文字平滑是互斥的两项，用分段（ToggleGroup）。',
+      '用的是 Select、Slider、Switch、ToggleGroup 等原件，读屏行为随各原件。',
     ],
   },
   'decimal-field': {
@@ -397,12 +425,26 @@ const forms: GuidanceMap = {
     a11y: ['每个标签是按钮，读屏名由 labels.add / labels.remove 给（带标签名）。', '焦点环取自全局 focus-ring。'],
   },
   'exposure-slider': {
-    aliases: ['Dial', 'Ruler slider', 'Bipolar slider', 'Tape measure'],
+    aliases: ['Dial', 'Bipolar slider', 'Tape measure'],
     use: ['调净敞口、仓位偏移、杠杆这类有正有负的量。', '手感想要拨盘。'],
-    avoid: ['单向数值用 slider。', '要输入精确数字用 number-input。'],
+    avoid: ['只有一侧的量（仓位比例、杠杆、数量占可用）用 ruler-slider。', '要输入精确数字用 number-input。'],
     a11y: [
       'role=slider，aria-valuemin / max / now 与 aria-valuetext 齐全。',
       '键盘 ← → 一格、PageUp / PageDown 十格、Home / End 到两端。',
+    ],
+  },
+  'ruler-slider': {
+    aliases: ['Ruler slider', 'Quantity slider', 'Tape measure', '单向刻度尺', '数量滑块'],
+    use: ['下单面板里调数量占可用的百分比、仓位比例。', '调杠杆这类从 min 往上走的量，手感想要拨盘。'],
+    avoid: [
+      '有正有负、中点是 0 的量用 exposure-slider。',
+      '表单里普通的单值与区间用 slider。',
+      '要输入精确数字用 number-input。',
+    ],
+    a11y: [
+      'role=slider，名字取 label，aria-valuemin / max / now 与 aria-valuetext（format 的结果）齐全。',
+      '键盘 ← → 一格、Shift + ← → 或 PageUp / PageDown 一大格、Home / End 到两端。',
+      '环形读数 aria-hidden，大刻度的数字在 role=slider 里面，读屏只读当前值。',
     ],
   },
   scrubber: {

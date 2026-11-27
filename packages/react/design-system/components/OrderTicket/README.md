@@ -24,6 +24,11 @@
 | `includeCloseFee` | `boolean` | `true` | Count the estimated closing fee in the cost. |
 | `exitTemplates` | `readonly ExitTemplate[]` | — | Saved exit templates, as percent distances from the entry. |
 | `stopCustody` | `StopCustody` | `'venue'` | Where stops live: held by the venue, or triggered locally. |
+| `price` | `Partial<Record<OrderSide, string>>` | — | Limit price text per column (controlled), such as a level clicked in an order book; a column left out keeps its own. |
+| `defaultPrice` | `Partial<Record<OrderSide, string>>` | — | Uncontrolled: starting limit price text per column; defaults to the last price on the tick. |
+| `onPriceChange` | `(price: string, side: OrderSide) => void` | — | Called with the new text when a column's price box is typed in or its best-price button is pressed. |
+| `locked` | `boolean` | `false` | Trading is locked: both submit buttons are disabled, the panel still computes and keeps what was typed. |
+| `lockedReason` | `string` | — | Why trading is locked, written under each submit button and read as its description; shown only while locked. |
 | `labels` * | `OrderTicketLabels` | — | All visible text and accessible names. |
 | `locale` | `string` | — | BCP 47 tag for number formatting, defaults to the browser language. |
 | `onSubmit` * | `(order: OrderDraft) => void` | — | Called with the order when a submit button is clicked. |
@@ -39,7 +44,7 @@
 import { useState } from 'react'
 import { OrderTicket, type OrderDraft, type OrderTicketLabels } from '@katana-ui/react/blocks'
 
-const LABELS: OrderTicketLabels = {
+export const ORDER_TICKET_LABELS: OrderTicketLabels = {
   action: 'Open or close',
   actions: { open: 'Open', close: 'Close' },
   side: 'Side',
@@ -114,7 +119,7 @@ export function OrderTicketUsage() {
           { id: 'scalp', name: 'Scalp · TP 1% / SL 0.5%', takeProfit: 0.01, stopLoss: 0.005 },
           { id: 'swing', name: 'Swing · TP 6% / SL 2%', takeProfit: 0.06, stopLoss: 0.02 },
         ]}
-        labels={LABELS}
+        labels={ORDER_TICKET_LABELS}
         locale="en-US"
         onSubmit={setLast}
         onOpenCalculator={() => undefined}
@@ -139,6 +144,8 @@ export function OrderTicketUsage() {
 - 市价：价格框灰掉写 labels.marketPrice，按对手价（买看卖一、卖看买一）算。
 - 没给 maxLeverage（现货、A 股）：杠杆与保证金模式不显示，保证金与强平价两行不显示，等于「按金额买」。
 - stopCustody=local：止盈止损栏右上写「本机触发」并用警示色；venue 写「交易所托管」。
+- 受控价格（price / onPriceChange，#176）：两栏的价格框显示 price 里各自那一份，打字或点最优价回调 onPriceChange(字, 方向)；没给的一栏照旧自己管，defaultPrice 是不受控时一开始的字。订单簿点一档时调用方把两栏都写成这档价。
+- locked（#176）：两个下单钮都灰掉（disabled），lockedReason 写在钮下、警示色加锁形图标，钮经 aria-describedby 读到它；面板照样算数，填的数都留着。
 
 ## Don't
 
@@ -152,14 +159,14 @@ export function OrderTicketUsage() {
 ```
 OrderTicket
   ToggleGroup（开仓 / 平仓）
-  Select（保证金模式）· 杠杆框
+  ToggleGroup sm（保证金模式）· 杠杆框
   Tabs · TabsList line（限价 / 市价）
   买栏 · 卖栏（各一份）
     价格框 · Button（最优价）
     Select（填法）· 仓位框 · Slider（0–100%）
     可用 · 可开
     Checkbox（止盈止损）· Select（出场模板）· 止盈框 · 止损框
-    下单钮
+    下单钮 · 锁住原因（locked 时）
     读数（dl）
   费率 · Button（计算器）
 ```

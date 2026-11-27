@@ -4,17 +4,26 @@
 // 已经在工作区里的打勾，当前品种用不了的置灰；卡片可以拖到工作区。实现原创。
 // OKX 没有、我们加的：搜索框（名字与别名）、「推荐」一组（宿主按当前品种与市场包标 recommended）、置灰的卡写明原因。
 // 只是目录本身：放进 Sheet、Popover 还是侧栏由宿主定；点卡片回调 onToggle，拖放的落点也是宿主的事。
+// variant="menu"（2026-11-26，#245）：OKX 面板页签栏「+」垂下来的紧凑清单（同日在用户的 Chrome 里看的）——每类一个可折叠的标题、每行名字加右边的「+」，
+// 已添加的与不可用的置灰、悬停或聚焦时说明原因；画法在 component-catalog-menu.tsx，分组用同一个 groupCatalog。抽屉样式仍是默认。
 import { Check, RotateCcw } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import { cn } from '../../lib/cn.ts'
 import { focusRing } from '../../lib/focus.ts'
 import { Button } from '../../primitives/button.tsx'
 import { Input } from '../../primitives/input.tsx'
-import { Tabs, TabsList, TabsTrigger } from '../../primitives/tabs.tsx'
-import { groupCatalog, type CatalogCategory, type CatalogItem, type CatalogKind } from './component-catalog-model.ts'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../primitives/tabs.tsx'
+import { CatalogMenu } from './component-catalog-menu.tsx'
+import {
+  CATALOG_ITEM_MIME,
+  groupCatalog,
+  setCatalogDrag,
+  type CatalogCategory,
+  type CatalogItem,
+  type CatalogKind,
+} from './component-catalog-model.ts'
 
-/** The drag payload type set on dataTransfer when a catalog card is dragged. */
-export const CATALOG_ITEM_MIME = 'application/x-katana-component'
+export { CATALOG_ITEM_MIME }
 
 export type ComponentCatalogLabels = {
   title: string
@@ -87,8 +96,9 @@ function Glyph({ kind }: { kind: CatalogKind }) {
   )
 }
 
-/** Component catalog: search and category tabs over a grid of cards; click a card to add or remove it, or drag it out. */
+/** Component catalog: search and category tabs over a grid of cards (drawer), or a compact collapsible list (menu); click to add, or drag out. */
 export function ComponentCatalog({
+  variant = 'drawer',
   items,
   categories,
   thumbnails,
@@ -98,6 +108,11 @@ export function ComponentCatalog({
   labels,
   className,
 }: {
+  /**
+   * drawer (default): title, reset, search, category tabs and a grid of thumbnail cards, for a side drawer or sheet.
+   * menu: the compact list that hangs from a + button (title, hint, reset, search and category tabs are not drawn; every category is a collapsible group, each row a name and a +; rows already in use or unavailable are greyed and say why on hover or focus).
+   */
+  variant?: 'drawer' | 'menu'
   /** Everything that can be added, with its category, in-use and availability flags. */
   items: readonly CatalogItem[]
   /** The categories, in the order their groups appear. */
@@ -106,17 +121,28 @@ export function ComponentCatalog({
   thumbnails?: Readonly<Record<string, ReactNode>>
   /** Kind of the component the user is adding next to (the selected panel tab's kind); items that pair with it are recommended. */
   context?: string
-  /** Called when a card is clicked: `add` is true for a card not yet in the workspace, false to remove one that is. */
+  /** Called when a card is clicked: `add` is true for a card not yet in the workspace, false to remove one that is (the menu variant only adds: rows in use are greyed). */
   onToggle: (id: string, add: boolean) => void
   /** Called when the reset button is clicked; leave out to hide it. */
   onReset?: () => void
-  /** All visible text and accessible names. */
+  /** All visible text and accessible names. The menu variant reads only title (its accessible name), recommended, empty and inUse. */
   labels: ComponentCatalogLabels
   /** Extra class name on the catalog. */
   className?: string
 }) {
   const [category, setCategory] = useState('all')
   const [query, setQuery] = useState('')
+  if (variant === 'menu')
+    return (
+      <CatalogMenu
+        items={items}
+        categories={categories}
+        context={context}
+        onToggle={onToggle}
+        labels={labels}
+        className={className}
+      />
+    )
   const groups = groupCatalog(items, categories, {
     category: category === 'all' ? null : category,
     query,
@@ -143,7 +169,8 @@ export function ComponentCatalog({
         value={query}
         onChange={(event) => setQuery(event.target.value)}
       />
-      <Tabs value={category} onValueChange={setCategory}>
+      {/* 分组列表放进当前页签的 TabsContent：选中页签的 aria-controls 指向它（以前没有面板，axe 报 aria-valid-attr-value，#190）。 */}
+      <Tabs value={category} onValueChange={setCategory} className="gap-3">
         <TabsList variant="line" aria-label={labels.title}>
           <TabsTrigger value="all">{labels.all}</TabsTrigger>
           {categories.map((item) => (
@@ -152,72 +179,70 @@ export function ComponentCatalog({
             </TabsTrigger>
           ))}
         </TabsList>
-      </Tabs>
-      {groups.length === 0 ? (
-        <p data-slot="catalog-empty" className="k-text-caption m-0 py-6 text-center text-ink-3">
-          {labels.empty}
-        </p>
-      ) : null}
-      {groups.map((group) => (
-        <section key={group.id} data-slot="catalog-group" data-group={group.id} className="flex flex-col gap-2">
-          <h3 className="k-text-caption m-0 font-normal text-ink-3">{group.name}</h3>
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(104px,1fr))] gap-x-2 gap-y-3">
-            {group.items.map((item) => {
-              const blocked = Boolean(item.unavailable)
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  data-slot="catalog-item"
-                  data-id={item.id}
-                  aria-pressed={item.inUse === true}
-                  aria-disabled={blocked || undefined}
-                  aria-label={item.inUse ? `${item.name} · ${labels.inUse}` : item.name}
-                  title={item.unavailable}
-                  draggable={!blocked}
-                  onDragStart={(event) => {
-                    event.dataTransfer.effectAllowed = 'copy'
-                    event.dataTransfer.setData(CATALOG_ITEM_MIME, item.id)
-                    event.dataTransfer.setData('text/plain', item.id)
-                  }}
-                  onClick={() => {
-                    if (!blocked) onToggle(item.id, !item.inUse)
-                  }}
-                  className={cn(
-                    'group/card flex cursor-pointer flex-col items-stretch gap-1.5 border-0 bg-transparent p-0 text-center',
-                    blocked && 'cursor-not-allowed opacity-40',
-                    focusRing,
-                  )}
-                >
-                  <span
-                    className={cn(
-                      'relative block aspect-[3/2] overflow-hidden rounded-[var(--radius-control)] border border-line bg-surface-0',
-                      !blocked && 'group-hover/card:border-line-strong',
-                      item.inUse && 'border-line-strong',
-                    )}
-                  >
-                    {thumbnails?.[item.id] ?? <Glyph kind={item.kind ?? 'table'} />}
-                    {item.inUse ? (
+        <TabsContent value={category} className="flex flex-col gap-3">
+          {groups.length === 0 ? (
+            <p data-slot="catalog-empty" className="k-text-caption m-0 py-6 text-center text-ink-3">
+              {labels.empty}
+            </p>
+          ) : null}
+          {groups.map((group) => (
+            <section key={group.id} data-slot="catalog-group" data-group={group.id} className="flex flex-col gap-2">
+              <h3 className="k-text-caption m-0 font-normal text-ink-3">{group.name}</h3>
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(104px,1fr))] gap-x-2 gap-y-3">
+                {group.items.map((item) => {
+                  const blocked = Boolean(item.unavailable)
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      data-slot="catalog-item"
+                      data-id={item.id}
+                      aria-pressed={item.inUse === true}
+                      aria-disabled={blocked || undefined}
+                      aria-label={item.inUse ? `${item.name} · ${labels.inUse}` : item.name}
+                      title={item.unavailable}
+                      draggable={!blocked}
+                      onDragStart={(event) => setCatalogDrag(event, item.id)}
+                      onClick={() => {
+                        if (!blocked) onToggle(item.id, !item.inUse)
+                      }}
+                      className={cn(
+                        'group/card flex cursor-pointer flex-col items-stretch gap-1.5 border-0 bg-transparent p-0 text-center',
+                        blocked && 'cursor-not-allowed opacity-40',
+                        focusRing,
+                      )}
+                    >
                       <span
-                        data-slot="catalog-check"
-                        className="absolute inset-0 grid place-items-center bg-[color-mix(in_srgb,var(--k-surface-sunken-background)_55%,transparent)] text-ink [&_svg]:size-5"
+                        className={cn(
+                          'relative block aspect-[3/2] overflow-hidden rounded-[var(--radius-control)] border border-line bg-surface-0',
+                          !blocked && 'group-hover/card:border-line-strong',
+                          item.inUse && 'border-line-strong',
+                        )}
                       >
-                        <Check aria-hidden="true" />
+                        {thumbnails?.[item.id] ?? <Glyph kind={item.kind ?? 'table'} />}
+                        {item.inUse ? (
+                          <span
+                            data-slot="catalog-check"
+                            className="absolute inset-0 grid place-items-center bg-[color-mix(in_srgb,var(--k-surface-sunken-background)_55%,transparent)] text-ink [&_svg]:size-5"
+                          >
+                            <Check aria-hidden="true" />
+                          </span>
+                        ) : null}
                       </span>
-                    ) : null}
-                  </span>
-                  <span className={cn('k-text-caption', item.inUse ? 'font-semibold text-ink' : 'text-ink-2')}>
-                    {item.name}
-                  </span>
-                  {item.unavailable ? (
-                    <span className="k-text-caption -mt-1 text-ink-4">{item.unavailable}</span>
-                  ) : null}
-                </button>
-              )
-            })}
-          </div>
-        </section>
-      ))}
+                      <span className={cn('k-text-caption', item.inUse ? 'font-semibold text-ink' : 'text-ink-2')}>
+                        {item.name}
+                      </span>
+                      {item.unavailable ? (
+                        <span className="k-text-caption -mt-1 text-ink-3">{item.unavailable}</span>
+                      ) : null}
+                    </button>
+                  )
+                })}
+              </div>
+            </section>
+          ))}
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

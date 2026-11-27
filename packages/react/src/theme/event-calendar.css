@@ -68,7 +68,7 @@
 .k-ecal-today {
   margin-left: 8px;
   padding: 1px 7px;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   background: var(--alpha-white-5);
   color: var(--k-content-body-foreground);
   font: 500 var(--text-caption-size)/16px var(--font-sans);
@@ -117,7 +117,7 @@
 }
 .k-ecal-level i {
   width: 4px;
-  border-radius: 1px;
+  border-radius: var(--radius-sm);
   background: var(--alpha-white-10);
 }
 .k-ecal-level i:nth-child(1) {
@@ -340,7 +340,7 @@
   min-height: 64px;
   padding: 6px 8px;
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--radius-overlay);
   background: var(--k-actionable-background);
   color: var(--k-content-body-foreground);
   font: 400 var(--text-caption-size)/15px var(--font-sans);
@@ -384,7 +384,7 @@
   height: 28px;
   padding: 0 12px;
   border: 0;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   background: var(--k-actionable-subtle-background-hover);
   color: var(--k-content-body-foreground);
   font: var(--text-data) var(--font-sans);
@@ -411,7 +411,7 @@
   width: 28px;
   height: 28px;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   background: transparent;
   color: var(--k-content-body-foreground);
   cursor: pointer;
@@ -446,17 +446,14 @@
 .k-ecal-num[data-tone='down'] {
   color: var(--pnl-down);
 }
-.k-ecal-unit {
-  color: var(--k-content-secondary-foreground);
-  font-size: var(--text-micro-size);
-}
+/* 币种单位是共用的单位小字 .k-num-unit（theme/cell-type.css，#92）。 */
 .k-ecal-session {
   display: inline-flex;
   color: var(--k-content-secondary-foreground);
 }
 .k-ecal-code {
   padding: 0 6px;
-  border-radius: 4px;
+  border-radius: var(--radius-md);
   background: var(--alpha-white-5);
   font-weight: 600;
 }
@@ -468,7 +465,7 @@
   margin-right: 6px;
   padding: 2px 8px;
   border: 1px solid var(--k-actionable-background-active);
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   background: transparent;
   color: var(--k-content-body-foreground);
   font: 500 var(--text-caption-size)/16px var(--font-sans);

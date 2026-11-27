@@ -1,0 +1,37 @@
+/* SPDX-License-Identifier: MIT */
+/* 异动阈值差读数（ThresholdGap，KatanaUI #11）：上面是 Meter 的条（名字后面跟偏离口径的小字），下面一行档位标签、「差 x%」与备注。
+   「差 x%」临近时取琥珀、已触发取红（--k-status-*），其余中性；不写色值。 */
+.k-tg {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-tg-name {
+  color: var(--k-content-primary-foreground);
+}
+.k-tg-period {
+  margin-left: var(--space-1);
+  color: var(--ink-300);
+}
+.k-tg-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--ink-300);
+}
+.k-tg-gap {
+  color: var(--k-content-primary-foreground);
+}
+.k-tg[data-state='near'] .k-tg-gap {
+  color: var(--k-status-warn-foreground);
+}
+.k-tg[data-state='triggered'] .k-tg-gap {
+  color: var(--k-status-danger-foreground);
+}
+.k-tg-note {
+  margin-left: auto;
+}

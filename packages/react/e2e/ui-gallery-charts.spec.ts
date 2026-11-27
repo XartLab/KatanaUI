@@ -109,12 +109,16 @@ for (const theme of THEMES) {
       await expect(demo.locator('[data-slot="horizon-row"]')).toHaveCount(4)
       const readout = demo.locator('[data-slot="horizon-readout"]')
       await expect(readout).toBeEmpty()
-      await demo.getByRole('group').first().focus()
+      // 第一个 group 是右上三件（KatanaUI #165），行的那一组按读屏名找。
+      await demo.getByRole('group', { name: '示例：四个品种的日内收益（共用刻度）' }).focus()
       await page.keyboard.press('ArrowRight')
       await expect(readout).not.toBeEmpty()
       await expect(demo.locator('[data-slot="horizon-cross"]').first()).toBeVisible()
       await page.keyboard.press('Escape')
       await expect(readout).toBeEmpty()
+      await demo.getByRole('button', { name: '表格视图' }).click()
+      await expect(demo.getByRole('region', { name: '四个品种的日内收益（表格视图）' })).toBeVisible()
+      await expect(demo.locator('[data-slot="horizon-row"]').first()).toBeHidden()
     })
 
     test('SmallMultiples：六格同步十字线、键盘扫读与 Esc；点标题触发 onSelect', async ({ page }) => {
@@ -122,7 +126,8 @@ for (const theme of THEMES) {
       const demo = sec.locator('[data-gallery-multiples="each"]')
       await expect(demo.locator('[data-slot="small-multiple"]')).toHaveCount(6)
       const readout = demo.locator('[data-slot="small-multiples-readout"]')
-      await demo.getByRole('group').first().focus()
+      // 第一个 group 是右上三件（KatanaUI #165），网格那一组按读屏名找。
+      await demo.getByRole('group', { name: '示例：六个品种的走势（各自范围）' }).focus()
       await page.keyboard.press('Home')
       await expect(readout).toContainText('第 1 点')
       // 十字线在每一格都画（同步）。
@@ -167,6 +172,11 @@ for (const theme of THEMES) {
       await tiles.first().click()
       await ok.getByRole('button', { name: '表格视图' }).click()
       await expect(ok.locator('[data-slot="series-table"]')).toBeVisible()
+      // 表格视图是整页表的一套数（#92，.k-table-comfortable）：行 40、表头 48、正文 14px。
+      const seriesTable = ok.locator('[data-slot="series-table"] table')
+      expect(Math.round((await seriesTable.locator('tbody tr').first().boundingBox())!.height)).toBe(40)
+      expect(Math.round((await seriesTable.locator('thead tr').boundingBox())!.height)).toBe(48)
+      await expect(seriesTable.locator('tbody td').first()).toHaveCSS('font-size', '14px')
       await expect(ok.locator('[data-slot="series-reconcile"]')).toHaveAttribute('data-tone', 'ok')
       await expect(sec.locator('[data-gallery-explorer="mismatch"] [data-slot="series-reconcile"]')).toHaveAttribute(
         'data-tone',

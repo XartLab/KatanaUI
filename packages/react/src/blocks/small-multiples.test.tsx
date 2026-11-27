@@ -44,6 +44,19 @@ describe('SmallMultiples', () => {
     expect(render({ formatX: String })).toContain('small-multiples-readout')
   })
 
+  it('给了 actionLabels、tableLabel、tableXHead 才有右上三件（表格视图开关）；不给是嵌在别的积木里的用法', () => {
+    expect(render()).not.toContain('data-slot="chart-actions"')
+    const html = render({
+      actionLabels: { group: '图工具', table: '表格视图', exportCsv: '导出', fullscreen: '全屏' },
+      tableLabel: '表',
+      tableXHead: '点',
+      onExport: () => {},
+    })
+    expect(html).toContain('data-action="table" aria-pressed="false"')
+    expect(html).toContain('data-action="export"')
+    expect(html).not.toContain('data-slot="small-multiples-table"')
+  })
+
   it('没有任何数据：不报错，值写破折号', () => {
     const html = render({ items: [{ key: 'x', label: 'X', values: [] }] })
     expect(html).toContain('>—<')
