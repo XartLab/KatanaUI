@@ -11573,6 +11573,200 @@ export const PAGES: readonly DocPage[] = [
     keys: [],
   },
   {
+    id: 'intraday-series',
+    group: 'cn',
+    cardHeight: 360,
+    title: 'IntradaySeries 盘中分钟线',
+    summary:
+      'A 股交易时段的分钟序列图（#260）：时间轴 09:30–15:00（集合竞价 09:15–09:25 可选，auction），午休 11:30–13:00 压成一道细缝，不按分钟占宽；多条序列共用 X 轴，单位不同的放左右两轴；每条折线可叠「昨日同时段」同色虚线；十字光标（移动鼠标，或聚焦后 ← → 一格、Shift 三格、Home / End、Esc）一次读出全部序列在这一分钟的值；缺分钟留空，线不连过去。序列可选折线或柱（量能，轴自动包进 0）。时段边界与分钟换算复用 cn/session，不另写。数据与文字都由调用方给：包里不带数据源、不带交易日历，默认文案是英文。用在：市场温度、炸板率、涨跌家数趋势、昨日涨停 / 连板 / 破板的分时表现与量能。',
+    exports: [
+      'IntradaySeries',
+      'defaultIntradayLabels',
+      'INTRADAY_SEAM',
+      'intradayX',
+      'intradayPoints',
+      'intradayRuns',
+      'intradayTicks',
+    ],
+    propParts: [
+      {
+        part: 'IntradaySeries',
+        note: 'series 是 IntradaySeriesItem[]：{ key, name, points: { time: "09:31", value }[], previous?, axis?: left | right, kind?: line | bar, format? }。',
+      },
+      {
+        part: 'intradayX(minutes, { auction })',
+        note: '纯函数：时刻（自 0 点起的分钟数）在轴上的位置 0–1；缝里的时刻贴到前一段末尾，不在轴上返回 null。',
+      },
+      {
+        part: 'intradayRuns(points, gapMinutes)',
+        note: '纯函数：折线分段；值取不到或隔了超过 gapMinutes 个交易分钟（默认 1）就断开。',
+      },
+      {
+        part: 'intradayPoints / intradayTicks / INTRADAY_SEAM',
+        note: '整理序列、轴下刻度，以及缝宽常量（占整条轴的 1.2%，待定：没有出处，按约 700px 宽时 8px 取）。',
+      },
+    ],
+    states: [
+      '缺分钟：两点之间隔了超过 gapMinutes 个交易分钟（默认 1，缺一分钟就留空）、或值是 null，线在这里断开；午休前后相邻两分钟（11:30、13:01）不算缺。5 分钟线给 gapMinutes=5。',
+      '午休缝：轴上 11:30 与 13:00 之间一道固定宽的浅色窄带（画竞价时 09:25 与 09:30 之间也有一道），刻度写成一个「11:30/13:00」。',
+      '昨日同时段：同色虚线、淡一档，只有折线有；十字光标窗里多一行「xx · 昨日同时段」。',
+      '单位不同：axis: "right" 的序列用右轴（刻度字在绘图区右边的留白里），左右轴各自取整刻度；网格画左轴的（没有左轴画右轴的）。',
+      '柱（kind: "bar"）：从 0 画起，轴包进 0；一分钟一根 3 单位宽（viewBox）的柱。',
+      '十字光标：落在全部序列出现过的分钟上（鼠标取最近的一分钟）；窗里每条序列一行，缺的写「—」。',
+      '没有数据（没有序列，或每条都没有有限值）：写 empty 的字，不画样本。',
+    ],
+    donts: [
+      '不要把午休的 90 分钟按钟点占宽：这是一道缝，交易分钟才占宽。',
+      '不要用涨跌色画线：线是名字（series-1..7），不是涨跌；要读涨跌看数。',
+      '不要拿它画日线以上的序列：日序列图用 SeriesExplorer、BrushChart 一类。',
+      '不要在包里取分钟线或判断开市日：数据与交易日历由调用方给。',
+    ],
+    composition:
+      'IntradaySeries\n  图例（钥匙 · 名字 · 最新值 · 昨日虚线钥匙）\n  绘图区（svg：网格 · 缝 · 折线 / 柱 / 昨日虚线；左轴字 · 右轴字 · 十字线 · LCD 悬停窗）\n  时间轴（09:30 · 10:30 · 11:30/13:00 · 14:00 · 15:00）',
+    keys: [
+      ['← / →', '十字光标走一分钟（没选中时先落到最新一分钟）'],
+      ['Shift + ← / →', '一次三格'],
+      ['Home / End', '到最早 / 最晚一分钟'],
+      ['Esc', '清掉十字光标'],
+    ],
+  },
+  {
+    id: 'grouped-table',
+    group: 'blocks',
+    cardHeight: 560,
+    title: 'GroupedTable 分组表',
+    summary:
+      'DataGrid 加上分组（#260），不另造表：按 groupBy 把行分进组，每组一个可收起的组头（点三角，或聚焦后 ← 收起、→ 展开、Enter 切换），组头写这组的行数与汇总（晋级 k/n、合计金额…，groupSummary），按列的组内汇总（groupAggregates，如成交额合计）对齐在各列下面；组按汇总数排序（groupMetric，默认行数，默认大的在前）；没分进组的行放最后一组「其他」（otherLabel）。点列头排序时组头不动、行在组内排；表尾合计只算数据行。底下是 DataGrid 的分节（rowSection、sectionSummary、sectionAggregates），列、密度、右键菜单、导出等 DataGrid 的能力都在。调用方的列函数与回调只会收到自己的行，组头是合成的、从不会传给它们。用在：连板梯队、新高按板块、龙虎榜按概念、竞价龙头分组。',
+    exports: ['GroupedTable', 'buildGroups', 'flattenGroups', 'countPassed'],
+    propParts: [
+      {
+        part: 'GroupedTable',
+        note: '除了 rows、rowId、columns 是调用方自己的行，其余同 DataGrid；分组的属性是 groupBy、groupHeading、otherLabel、groupMetric、groupOrder、groupSummary、groupAggregates、collapsed。',
+      },
+      {
+        part: 'buildGroups(rows, { groupBy, metric, order })',
+        note: '纯函数：分组并排序；没有组键（null、undefined、空白）的行进尾部 key 为 null 的「其他」组。',
+      },
+      { part: 'flattenGroups(groups)', note: '纯函数：摊平成「组头 + 行」的列表，DataGrid 的分节认它。' },
+      { part: 'countPassed(rows, passed)', note: '纯函数：{ k, n }，n 是组内行数，k 是满足条件的行数（晋级 k/n）。' },
+    ],
+    states: [
+      '组头：三角 · 标题 · 行数 · 汇总（右端）；收起时三角转向、只留组头，行数照写。',
+      '组的次序：按 groupMetric 从大到小（groupOrder: "asc" 反过来）；没写 groupMetric 按行数；metric 返回 null 的组排在有数的后面；同数保持首次出现的次序。',
+      '「其他」：groupBy 返回 null、undefined 或空白的行；永远在最后，不参与排序；没有这样的行就没有这一组。',
+      '按列排序：组头与组的次序不动，行在组内排；表尾合计（summary）只算数据行，不算组头。',
+      '收起：collapsed（组键的集合，「其他」的键是空串）受控，给了它收起展开只经 onCollapsedChange 通知；不给就自己记，defaultCollapsed 是一开始收起的组。',
+    ],
+    donts: [
+      '不要为分组另做一张表：要分节、要汇总，用它或 DataGrid 的 rowSection。',
+      '不要在列函数里假设会收到组头：它们只会收到调用方自己的行。',
+      '不要把组的排序数写进 groupSummary 的字里再解析：排序用 groupMetric 给数。',
+    ],
+    composition:
+      'GroupedTable\n  DataGrid\n    表头\n    组头行（三角 · 标题 · 行数 · 汇总 · 按列的组内汇总）\n    数据行 × 组内行数\n    …（每组一段，「其他」在最后）\n    表尾合计',
+    keys: [
+      ['←', '在组头上：收起这一组'],
+      ['→', '在组头上：展开这一组'],
+      ['Enter', '在组头上：切换收起 / 展开'],
+    ],
+  },
+  {
+    id: 'matrix-heat',
+    group: 'quant',
+    cardHeight: 520,
+    title: 'MatrixHeat 矩阵热力',
+    summary:
+      '行 × 列的格子按值着色（#260）：格内写数，悬停或聚焦一格出值与原因（空格出为什么空）；点列头把行按这一列排（降 → 升 → 取消），点行头把列按这一行排，空格永远排最后；空格写「—」、不着色，零也不着色。色阶两种：顺序（sequential，默认，计数、晋级率这类非负量：中性前景色的五档浓度，档位 = ⌊(值 − 0) / (最大值 − 0) × 5⌋，封顶 4，规则同 ThemeHeatMatrix）与发散（diverging，涨跌、净额：正数涨色、负数跌色，档位按两端绝对值较大的一边，红涨还是绿涨由根上的 data-updown 定）。ThemeHeatMatrix 的一般形：行、列、值、文字、原因都由调用方给。用在：连板区间对比（板位 × 交易日）、题材连榜（题材 × 交易日）。',
+    exports: [
+      'MatrixHeat',
+      'defaultMatrixLabels',
+      'matrixShade',
+      'nextMatrixSort',
+      'sortRowsByColumn',
+      'sortColumnsByRow',
+    ],
+    propParts: [
+      {
+        part: 'MatrixHeat',
+        note: 'columns 是 { id, label }[]，rows 是 { id, label, cells }[]，cells 跟 columns 一一对应：{ value, text?, reason? }，空格给 null 或 value: null。',
+      },
+      {
+        part: 'matrixShade(value, scale, domain)',
+        note: '纯函数：一个值的底色档 { level: 0–4, tone }；空格、零（顺序色阶里 ≤ 下界）返回 null。',
+      },
+      {
+        part: 'sortRowsByColumn / sortColumnsByRow',
+        note: '纯函数：行按某一列排、列按某一行排（返回原列序号的新次序）；空格永远最后，稳定。',
+      },
+      {
+        part: 'nextMatrixSort(current, axis, key)',
+        note: '纯函数：点表头的循环：没排 → 降序 → 升序 → 不排；点别的表头从降序起。',
+      },
+    ],
+    states: [
+      '空格：value 为 null、不是有限数或整格没给：格内写 labels.empty（默认「—」），不着色；悬停窗只写调用方给的 reason。',
+      '零：顺序色阶里值不大于下界（默认 0）不着色，跟空格一样是容器底色，但格内照写 0；发散色阶里 0 不着色。',
+      '字色：顺序色阶 0–2 档主文字色，3–4 档换深色字；发散色阶读主文字色（颜色封顶 64% 混透明，待浏览器 axe 实测对比度）。',
+      '排序：点列头 = 行按这一列排，点行头 = 列按这一行排；一次只有一个排序；表头带 aria-sort 与小箭头；sort 受控，sortable=false 表头是普通的字。',
+      '悬停与聚焦：悬停窗在格子上方（格子在右半边时窗靠左），聚焦的格子也出窗；选中的格子内描 1px 主文字色。',
+    ],
+    donts: [
+      '不要拿涨跌色画计数：计数用顺序色阶（中性浓度），涨跌色只给有正负的量。',
+      '不要在包里写原因的文字：reason 由调用方给（口径、样本数、为什么空）。',
+      '不要用饼图或把矩阵拆成许多小图：行列一眼对比就是它的用处。',
+    ],
+    composition:
+      'MatrixHeat\n  grid\n    表头行：角 | 列头按钮 × N\n    行：行头按钮 | 格 × N（数 · 悬停窗）\n  图例：低 | 五档 | 高（发散：跌五档 · 空 · 涨五档）',
+    keys: [
+      ['← / → / ↑ / ↓', '在格子之间走（Tab 只停一个格子）'],
+      ['Home / End', '到这一行的第一格 / 最后一格'],
+      ['Enter / Space', '选中这一格（onSelect）'],
+    ],
+  },
+  {
+    id: 'valuation-band',
+    group: 'quant',
+    cardHeight: 480,
+    title: 'ValuationBand 估值带',
+    summary:
+      '估值（市盈率、市净率…）的历史曲线（#260），背后铺历史分位带（默认 20 / 50 / 80 分位，percentiles 可配）：带是中性前景色的浓度，由低到高越来越深，不用涨跌色（估值高低不是涨跌，也不是好坏）；分位线是细虚线（中位线实线），右边标「分位 · 估值」；当前点（最后一个有值的点）标「估值 · P分位」；移动鼠标或聚焦后 ← → 逐点读（时间、估值、这个值在整段历史里的分位）。分位的口径：按传进来的整段历史算（含当前点，线性插值），不是滚动窗口，也不剔除极端值；要看近五年就只传近五年。缺值（null）断线，不当 0，也不进分位；亏损的市盈率没有意义，调用方给 null。用在：A / 港 / 美股指数与品种的估值历史。',
+    exports: ['ValuationBand', 'defaultValuationLabels', 'valuationLevels', 'valuationPercentile'],
+    propParts: [
+      {
+        part: 'ValuationBand',
+        note: 'points 是 { time, value }[]（旧在前），value 为 null 是缺值；percentiles 默认 [20, 50, 80]。',
+      },
+      {
+        part: 'valuationLevels(points, percentiles)',
+        note: '纯函数：各分位线的 { p, value }（线性插值，只收 0–100 之间的有限数、升序去重）。',
+      },
+      {
+        part: 'valuationPercentile(points, value)',
+        note: '纯函数：一个值在历史里的分位名次 0–100：历史里不大于它的点占的百分比（含自己）。',
+      },
+    ],
+    states: [
+      '分位带：n 条分位线隔出 n + 1 块，由低到高越来越深；区间上下沿取整成好看的刻度。',
+      '当前点：最后一个有值的点，标强调色圆点与「估值 · P分位」；在图右半边时标在点左边。',
+      '十字光标：悬停窗写时间、估值与分位名次；落在缺值点上写「—」。',
+      '缺值：线在缺值处断开；缺值不进分位，也不当 0。',
+      '没有数据（没有有限值）：写 empty 的字，不画样本。',
+    ],
+    donts: [
+      '不要用涨跌色或红绿给估值高低上色：高估值不是涨，也不是坏。',
+      '不要在包里取估值历史：数据由调用方给；窗口（近 3 年、5 年、10 年）也由调用方截。',
+      '不要把分位当成预测：它只说当前值在这段历史里的位置。',
+    ],
+    composition:
+      'ValuationBand\n  绘图区（svg：分位带 · 网格 · 分位线 · 估值曲线；左轴字 · 右侧分位标注 · 当前点 · 十字线 · LCD 悬停窗）\n  时间轴（首 · 中 · 末）',
+    keys: [
+      ['← / →', '十字光标走一个点（没选中时先落到最新一个点）'],
+      ['Shift + ← / →', '一次三个点'],
+      ['Home / End', '到第一个 / 最后一个点'],
+      ['Esc', '清掉十字光标'],
+    ],
+  },
+  {
     id: 'layout-rules',
     group: 'layout-primitives',
     cardHeight: 560,

@@ -352,6 +352,7 @@ import {
   TradingDatePickerDemo,
 } from './pages/cn-batch2.tsx'
 import { AuctionBarCellDemo, RangeScrubberDemo, ThresholdGapDemo } from './pages/cn-batch3.tsx'
+import { GroupedTableDemo, IntradaySeriesDemo, MatrixHeatDemo, ValuationBandDemo } from './pages/cn-batch4.tsx'
 import {
   CalendarDemo,
   CardDemo,
@@ -487,6 +488,10 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'range-scrubber': RangeScrubberDemo,
   'auction-bar-cell': AuctionBarCellDemo,
   'threshold-gap': ThresholdGapDemo,
+  'intraday-series': IntradaySeriesDemo,
+  'grouped-table': GroupedTableDemo,
+  'matrix-heat': MatrixHeatDemo,
+  'valuation-band': ValuationBandDemo,
   'mini-k-card-grid': MiniKCardGridDemo,
   'move-feed': MoveFeedDemo,
   'decimal-field': DecimalFieldDemo,
