@@ -409,6 +409,7 @@ const blocks: GuidanceMap = {
       '进度条是 role=slider，带 aria-valuetext（当前时刻文字），方向键、Home、End、PageUp、PageDown 可用。',
       '倍速是一组带 aria-pressed 的按钮；输入框都有读屏名，读不出时 aria-invalid 并出 role=alert 提示。',
       '快捷键 k . [ ] 在焦点不在输入框与进度条时生效。',
+      '「跳到时刻」「跳过 tick 数」框在输入法组字时（isComposing 或 keyCode 229）Enter 不提交，选字上屏不会误跳。',
     ],
   },
   'run-mode-badge': {
