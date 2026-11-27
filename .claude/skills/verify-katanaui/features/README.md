@@ -50,6 +50,7 @@
 | [FloatingWindow 悬浮窗](floating-window.md) | `drive floating-window` | 开页内浮层、拖与方向键移动、Esc 关、状态不丢；真 PiP 路径手点验收 |
 | [ComponentCatalog menu 样式](component-catalog.md) | `drive component-catalog` | 分组折叠、点行添加、灰行点不动、悬停与聚焦出原因、推荐一组 |
 | [对照 Salt 补的七件](salt-gaps.md) | 还没有流程（手走） | Pill 改与删、SystemStatus 关闭、Calendar 选日与不可选日、ListBox 单选与多选、Link / Card / Panel 的样子 |
+| [NewsFeed 新闻流](news-feed.md) | 还没有流程（手走） | 标题后的标签与来源数（悬停另见）、外部筛选、滚到底加载（加载中 / 出错重试 / 到底了）、分组小标题、bare 侧栏、1 万条虚拟滚动 |
 
 ## 待补
 

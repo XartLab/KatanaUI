@@ -150,6 +150,31 @@ export function NewsFeedUsage() {
           </PanelFrameBody>
         </PanelFrame>
       </div>
+      <div style={{ height: 300 }} data-testid="news-tagged">
+        <NewsFeed
+          items={NEWS_ITEMS.slice(0, 4).map((item, index) => ({
+            ...item,
+            tags: [
+              { label: index % 2 ? '政策' : '公告' },
+              { label: ['利好', '中性', '利空', '未标'][index]!, tone: index === 3 ? 'warn' : 'info' },
+            ],
+            sourcesCount: index === 0 ? 3 : undefined,
+            alsoFrom: index === 0 ? ['演示快讯', '演示财经'] : undefined,
+          }))}
+          channels={[]}
+          sources={NEWS_SOURCES}
+          now={NEWS_NOW}
+          labels={{
+            ...NEWS_LABELS,
+            sourceCount: (n) => `${n} 源`,
+            alsoFrom: (names) => `另见：${names.join('、')}`,
+            end: { endReached: '没有更多了' },
+          }}
+          chrome="bare"
+          groupBy={(item) => ({ key: item.channel, label: item.channel === 'flash' ? '快讯' : '要闻' })}
+          endState="end"
+        />
+      </div>
       <div style={{ height: 420 }} data-testid="news-cards">
         <NewsFeed
           items={NEWS_ITEMS}

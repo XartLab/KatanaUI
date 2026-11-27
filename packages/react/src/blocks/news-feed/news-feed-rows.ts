@@ -24,6 +24,13 @@ const CHIP_HEIGHT = 20 // 胶囊 height: 20px
 const CHIP_EXTRA_WIDTH = 2 + 3 + 8 + 14 + 4 // 边框 + 左内距 + 右内距 + 图标 14 + 图标与代码的缝
 const CHIP_GAP = 4 // .k-news-symbols 的 gap
 const ACTIONS_MARGIN = 64 // 有快捷操作时品种徽标让出的 margin-inline-end
+const BODY_GAP = 8 // .k-news-body（列表排法下是 flex）的 gap：标题与标签、来源数那一段之间
+const EXTRAS_GAP = 6 // .k-news-extras 的 gap：标签之间、标签与来源数之间
+const EXTRAS_MAX_SHARE = 0.5 // .k-news-extras 的 max-width: 50%，再多就裁掉，免得把标题挤没
+const TAG_HEIGHT = 18 // .k-news-tag：16px 行高 + 上下边框各 1px
+const TAG_EXTRA_WIDTH = 2 * 6 + 2 // .k-news-tag 左右内距各 6px（固定值，不随密度变）+ 左右边框各 1px
+/** 组小标题那一行的高度（含下边框），与 theme/news-feed.css 的 .k-news-group 的 height 同源。 */
+export const GROUP_ROW_HEIGHT = 24
 
 export type RowFonts = {
   /** 文字行高（px）：取自 --text-data 的行高，随 --k-text-scale 变。 */
@@ -33,6 +40,8 @@ export type RowFonts = {
   source: string
   meta: string
   num: string
+  /** 标签字：比正文小一号（字号减 1px）、500 字重。 */
+  tag: string
 }
 
 /** 从滚动区元素读出当前的字号、字重、行高与具名字体（字体与缩放都由 CSS 变量决定，所以每次从元素读）。 */
@@ -47,6 +56,7 @@ export function readRowFonts(element: Element): RowFonts {
     source: fontFor(600, size, '--font-sans', element),
     meta: fontFor(weight, size, '--font-sans', element),
     num: fontFor(weight, size, '--font-num', element),
+    tag: fontFor(500, size - 1, '--font-sans', element),
   }
 }
 
@@ -61,6 +71,10 @@ export type RowInput = {
   symbolCodes: readonly string[]
   symbolStyle: 'stack' | 'chips'
   hasActions: boolean
+  /** 标题后的标签文字（按顺序）；没有就不传。 */
+  tags?: readonly string[]
+  /** 已按 labels.sourceCount 排好的来源数文字（来源数大于 1 才有）；没有就不传。 */
+  sourcesText?: string
 }
 
 /** 元信息列（148px、flex-wrap）：按顺序 时间、来源、阅读分钟、重要标记，贪心折行，返回行数。 */
@@ -94,12 +108,23 @@ function symbolsBox(input: RowInput, fonts: RowFonts): { width: number; height: 
   return { width, height: CHIP_HEIGHT }
 }
 
+/** 标题后面那一段（标签加来源数）的宽度，已按最多占 EXTRAS_MAX_SHARE 封顶；没有就是 0。bodyWidth 是 .k-news-body 的宽。 */
+function extrasWidth(input: RowInput, fonts: RowFonts, bodyWidth: number): number {
+  const widths = (input.tags ?? []).map((tag) => measureText(tag, fonts.tag) + TAG_EXTRA_WIDTH)
+  if (input.sourcesText) widths.push(measureText(input.sourcesText, fonts.meta))
+  if (widths.length === 0) return 0
+  const natural = widths.reduce((sum, width) => sum + width, 0) + (widths.length - 1) * EXTRAS_GAP
+  return Math.min(natural, Math.max(0, bodyWidth) * EXTRAS_MAX_SHARE)
+}
+
 /** 一行（含下边框）的高度，宽度是 .k-news-items 的宽（滚动区去掉滚动条）。 */
 export function listRowHeight(input: RowInput, fonts: RowFonts, width: number): number {
   if (width <= 0) return ROW_MIN_HEIGHT
   const symbols = symbolsBox(input, fonts)
   const margin = symbols.width > 0 && input.hasActions ? ACTIONS_MARGIN : 0
-  const titleWidth = width - 2 * ROW_PAD_X - META_WIDTH - 2 * COLUMN_GAP - symbols.width - margin
+  const bodyWidth = width - 2 * ROW_PAD_X - META_WIDTH - 2 * COLUMN_GAP - symbols.width - margin
+  const extras = extrasWidth(input, fonts, bodyWidth)
+  const titleWidth = bodyWidth - (extras > 0 ? extras + BODY_GAP : 0)
   const titleLines = Math.min(
     TITLE_MAX_LINES,
     Math.max(
@@ -107,6 +132,11 @@ export function listRowHeight(input: RowInput, fonts: RowFonts, width: number): 
       Math.round(textHeight(input.title, fonts.title, Math.max(1, titleWidth), fonts.lineHeight) / fonts.lineHeight),
     ),
   )
-  const content = Math.max(titleLines * fonts.lineHeight, metaLines(input, fonts) * fonts.lineHeight, symbols.height)
+  const content = Math.max(
+    titleLines * fonts.lineHeight,
+    metaLines(input, fonts) * fonts.lineHeight,
+    symbols.height,
+    input.tags?.length ? TAG_HEIGHT : 0,
+  )
   return Math.max(ROW_MIN_HEIGHT, ROW_PAD_Y * 2 + ROW_BORDER + content)
 }
