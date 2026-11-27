@@ -2,6 +2,8 @@
 // 区间条：一条横线从最低到最高，上面一个标记指着现价在区间里的位置，两端写最低与最高。常用来看当日区间与 52 周区间。
 // 功能参照 TradingView 小组件 Symbol Info 的区间（tradingview.com/widget-docs，2026-11-14 读：页面只说有「显示品种详情」，没写区间条的样子）与 ATAS 的区间读数，
 // 画法我们自己定：标记按弹簧（snappy）滑到新位置；数据在区间外就贴边；最高等于最低时不画标记（没有位置可说）。不嵌、不抄其代码与样式。
+import { fillVar } from '../lib/fill.ts'
+
 export type RangeBarProps = {
   /** Lowest value; no marker is drawn when high is not greater than low. */
   low: number
@@ -79,8 +81,8 @@ export function RangeBar({
       <span className="k-range-track" aria-hidden="true">
         {share !== null && (
           <>
-            <span className="k-range-fill" style={{ width: `${share * 100}%` }} />
-            <span className="k-range-mark" data-slot="range-mark" style={{ left: `${share * 100}%` }} />
+            <span className="k-range-fill" style={fillVar(share)} />
+            <span className="k-range-mark" data-slot="range-mark" style={fillVar(share)} />
           </>
         )}
       </span>
@@ -151,11 +153,7 @@ export function CompareBar({ a, b, label, className }: CompareBarProps) {
             <span className="k-compare-text">{side.text}</span>
           </span>
           <span className="k-compare-track" aria-hidden="true">
-            <span
-              className="k-compare-fill"
-              data-slot="compare-fill"
-              style={{ width: `${share(side.value) * 100}%` }}
-            />
+            <span className="k-compare-fill" data-slot="compare-fill" style={fillVar(share(side.value))} />
           </span>
         </div>
       ))}

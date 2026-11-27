@@ -18,8 +18,8 @@
 .k-run-mode-glyph {
   flex: none;
 }
+/* 不用透明度：0.75 把回放的蓝、前向的绿压到 4.4:1（axe #190）。 */
 .k-run-mode-detail {
-  opacity: 0.75;
   font-variant-numeric: tabular-nums;
 }
 

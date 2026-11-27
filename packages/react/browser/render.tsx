@@ -8,6 +8,7 @@ import '../src/fonts.css'
 import '../src/ui.css'
 import type { ReactNode } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
+import { userEvent } from 'vite-plus/test/browser'
 import { flushSync } from 'react-dom'
 
 let root: Root | undefined
@@ -21,6 +22,10 @@ document.head.append(reset)
 export async function mount(node: ReactNode, theme: 'graphite' | 'console' = 'graphite'): Promise<HTMLElement> {
   root?.unmount()
   document.body.replaceChildren()
+  // 上一个测试开着的模态层（Radix 的 Dialog、Select、Command）连同节点一起被换掉，来不及收尾：body 上留着 pointer-events: none 与
+  // data-scroll-locked，下面停指针的 hover 就等不到「可接收指针」、超时 60 秒（#237 的 CI：select、command-palette）。先清干净。
+  document.body.removeAttribute('style')
+  document.body.removeAttribute('data-scroll-locked')
   if (theme === 'graphite') delete document.documentElement.dataset.theme
   else document.documentElement.dataset.theme = theme
   document.body.style.margin = '0'
@@ -36,6 +41,10 @@ export async function mount(node: ReactNode, theme: 'graphite' | 'console' = 'gr
   document.body.append(frame)
   root = createRoot(frame)
   flushSync(() => root!.render(node))
+  // 鼠标指针在同一个页面里跨测试、跨文件留在原处（maxWorkers 限并发后，几个文件轮流用同一页）：上一个测试停过的位置若正好压在这次的按钮上，
+  // 按钮就是悬停态（Cancel 的字从 205 变 255，#234 的 CI）。每次挂载把指针挪到 body 的左上角（框有 12px 内边距，那里没有件）。
+  // 要写明 position：unhover / hover 不带位置时 Playwright 移到元素正中，body 的正中常压在件上（#237 的 CI：symbol-galaxy 出了悬停卡）。
+  await userEvent.hover(document.body, { position: { x: 0, y: 0 }, force: true })
   await document.fonts.ready
   return frame
 }

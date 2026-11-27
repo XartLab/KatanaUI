@@ -230,7 +230,7 @@ export function AiPromptInput({
         onBlur={() => setFocused(false)}
         // 高度由 CSS field-sizing: content 跟着内容长；上限 8 行 = 8lh + 上下内边距（pt-3 + pb-2 = 1.25rem），超出再滚。
         style={{ maxHeight: `calc(${MAX_ROWS}lh + 1.25rem)` }}
-        className="k-text-body m-0 block [field-sizing:content] overflow-y-auto w-full resize-none rounded-none border-0 bg-transparent px-4 pt-3 pb-2 text-ink outline-0 placeholder:text-ink-4"
+        className="k-text-body m-0 block [field-sizing:content] overflow-y-auto w-full resize-none rounded-none border-0 bg-transparent px-4 pt-3 pb-2 text-ink outline-0 placeholder:text-ink-3"
       />
       <div className="flex items-center justify-between gap-2 px-2 pb-2">
         <div className="flex min-w-0 items-center gap-1">

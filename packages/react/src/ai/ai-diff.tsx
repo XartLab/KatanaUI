@@ -25,7 +25,7 @@ const ROW_TONE: Readonly<Record<AiDiffLineKind, string>> = {
 const PREFIX_TONE: Readonly<Record<AiDiffLineKind, string>> = {
   added: 'text-(color:--k-status-ok-foreground)',
   removed: 'text-(color:--k-status-danger-foreground)',
-  context: 'text-ink-4',
+  context: 'text-ink-3',
 }
 
 export type AiDiffLabels = {
@@ -112,7 +112,7 @@ export function AiDiff({ lines, labels, title, onAccept, onReject, className }: 
                 >
                   <span className="sr-only">{kindLabel[line.kind]}</span>
                   {line.number !== undefined ? (
-                    <span aria-hidden="true" className="w-6 shrink-0 text-right text-ink-4 select-none tabular-nums">
+                    <span aria-hidden="true" className="w-6 shrink-0 text-right text-ink-3 select-none tabular-nums">
                       {line.number}
                     </span>
                   ) : null}

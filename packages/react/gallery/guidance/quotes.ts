@@ -161,6 +161,29 @@ const quotes: GuidanceMap = {
       '价格闪色只是视觉，不播报；涨跌另有文字列。',
     ],
   },
+  'market-browser': {
+    aliases: ['Market list', 'Market picker', 'Symbol browser', 'Markets panel', '市场', '品种列表', '行情列表'],
+    use: [
+      '要用户在一批品种里找一个、点了去看它：永续页的「市场」组件、侧边栏的品种选择；只读的概览用 QuoteTable。',
+      '分类页签由调用方给，第一个常是「自选」：它就是一个普通分类，行是调用方按 favorite 筛出来的；页签不超过 10 个，多了横向滚动，不换行。',
+      '列：星标 + 徽标 + 代码芯片 + 全称 | 最新价 | 24h 涨跌；只有价格与涨跌可排序，次序是升序、降序、回原顺序，三角画在当前列。',
+      '搜索只在当前分类里找（代码、名称、keywords 里的别名，不分大小写）；排序与搜索词换分类时保留。',
+      '星标常亮：未标描边、已标实心主文字色，点它不选品种。行高 32，跟 Watchlist 一样，面板里放得下 10 行以上。',
+      '空态分两种：分类里本来没有行（自选还没标）写 labels.empty，要告诉用户怎么加；搜索没找到写 labels.noResults。',
+    ],
+    avoid: [
+      '要几十列、虚拟滚动、列拖动时用 data-grid。',
+      '只是一屏概览、不需要搜索与星标时用 quote-table。',
+      '右侧常驻的自选栏（只有一个列表、有旗标）用 watchlist。',
+    ],
+    a11y: [
+      '搜索框 type=search，读屏名取 labels.search；分类是 role=tablist，←→ 在页签间移动。',
+      '列表是真表格（aria-label 取 labels.list），行首格是 th scope=row；当前排序列的 th 带 aria-sort，列头是按钮。',
+      '星标是 aria-pressed 按钮，读屏名取 labels.favorite(row)（「自选 BTC-USDT」），状态不靠颜色，靠描边与实心；它的点击不冒泡到行。',
+      '给了 onSelect 行可聚焦，Enter 选；焦点在星标上按 Enter 只切星标。',
+      '空态是 role=status。价格闪色只是视觉，涨跌另有带 + / − 号的文字。',
+    ],
+  },
   'range-bar': {
     aliases: ['Range slider', '52-week range', 'Min-max bar', 'Position bar'],
     use: ['当日区间、52 周区间里现价的位置。', '用 CompareBar 对比两个区间。'],

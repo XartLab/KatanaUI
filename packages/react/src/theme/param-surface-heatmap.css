@@ -63,7 +63,7 @@
   place-items: center;
   min-width: 0;
   height: 30px;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   background: var(--k-container-secondary-background);
   color: var(--k-content-primary-foreground);
   font: var(--text-caption) var(--font-num-small);
@@ -120,7 +120,7 @@
   display: inline-block;
   width: 140px;
   height: 8px;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
 }
 .k-ps-panel {
   display: flex;

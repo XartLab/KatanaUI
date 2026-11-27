@@ -9,7 +9,7 @@
       "title": "Style",
       "description": "设计 token（Console 与 Graphite 两个主题、红涨绿跌切换）、Tailwind v4 主题与动效 CSS。ui.css 最后引。",
       "dependencies": [
-        "@katana-ui/tokens@0.3.0",
+        "@katana-ui/tokens@0.5.0",
         "tailwindcss@4.3.5"
       ],
       "files": [
@@ -249,6 +249,11 @@
           "target": "~/src/katana/ui/theme/depth-chart.css"
         },
         {
+          "path": "src/theme/derivatives.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/derivatives.css"
+        },
+        {
           "path": "src/theme/dialog.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/dialog.css"
@@ -302,6 +307,11 @@
           "path": "src/theme/flag-mark.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/flag-mark.css"
+        },
+        {
+          "path": "src/theme/floating-window.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/floating-window.css"
         },
         {
           "path": "src/theme/flow-builder.css",
@@ -432,6 +442,11 @@
           "path": "src/theme/markdown.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/markdown.css"
+        },
+        {
+          "path": "src/theme/market-browser.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/market-browser.css"
         },
         {
           "path": "src/theme/market-heatmap.css",
@@ -739,6 +754,11 @@
           "target": "~/src/katana/ui/theme/status-bar.css"
         },
         {
+          "path": "src/theme/strategy-launcher.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/strategy-launcher.css"
+        },
+        {
           "path": "src/theme/strategy-report.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/strategy-report.css"
@@ -834,6 +854,11 @@
           "target": "~/src/katana/ui/theme/treemap.css"
         },
         {
+          "path": "src/theme/typesetting.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/typesetting.css"
+        },
+        {
           "path": "src/theme/underwater-chart.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/underwater-chart.css"
@@ -917,6 +942,32 @@
           "path": "src/lib/date.ts",
           "type": "registry:lib",
           "target": "~/src/katana/ui/lib/date.ts"
+        }
+      ]
+    },
+    {
+      "name": "delayed-flag",
+      "type": "registry:lib",
+      "title": "Delayed Flag",
+      "description": "「晚出、出了就留够」的旗子：等了 delay 才出、出了至少留 min（Button 的 pending 与 Loading 的骨架共用），以及图标停在整圈上的 useSpinWholeTurns。",
+      "files": [
+        {
+          "path": "src/lib/delayed-flag.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/delayed-flag.ts"
+        }
+      ]
+    },
+    {
+      "name": "fill",
+      "type": "registry:lib",
+      "title": "Fill",
+      "description": "条长与标记位置的写法：把 0 到 1 的比例写成自定义属性 --fill（带起点的写 --from），样式用 scale / translate 画，不对 width / left 做过渡。盘口深度条、行情条、仪表条用。",
+      "files": [
+        {
+          "path": "src/lib/fill.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/fill.ts"
         }
       ]
     },
@@ -1037,7 +1088,7 @@
       "title": "Motion",
       "description": "三条弹簧参数（snappy、gentle、settle），给 motion/react 用。",
       "dependencies": [
-        "@katana-ui/tokens@0.3.0"
+        "@katana-ui/tokens@0.5.0"
       ],
       "files": [
         {
@@ -1170,6 +1221,19 @@
           "path": "src/lib/tone.ts",
           "type": "registry:lib",
           "target": "~/src/katana/ui/lib/tone.ts"
+        }
+      ]
+    },
+    {
+      "name": "truncation-title",
+      "type": "registry:lib",
+      "title": "Truncation Title",
+      "description": "真被截断时悬停出全文：installTruncationTitles() 装一个委托监听，只给真放不下的省略号文字补 title（#250）。",
+      "files": [
+        {
+          "path": "src/lib/truncation-title.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/truncation-title.ts"
         }
       ]
     },
@@ -1431,6 +1495,28 @@
       ]
     },
     {
+      "name": "alert-dialog",
+      "type": "registry:ui",
+      "title": "Alert Dialog",
+      "description": "要用户明确选一个才关的对话框：平仓、撤单、删除这类不能撤回的事。点背板不关，打开时焦点落在「取消」，Esc 关掉（不点任何钮）；样子同 Dialog，Console 下边粗一档。",
+      "dependencies": [
+        "radix-ui@1.8.1"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/opener-focus",
+        "@katana/overlay"
+      ],
+      "files": [
+        {
+          "path": "src/primitives/alert-dialog.tsx",
+          "type": "registry:ui",
+          "target": "~/src/katana/ui/primitives/alert-dialog.tsx"
+        }
+      ]
+    },
+    {
       "name": "alert",
       "type": "registry:ui",
       "title": "Alert",
@@ -1503,6 +1589,7 @@
       ],
       "registryDependencies": [
         "@katana/cn",
+        "@katana/delayed-flag",
         "@katana/focus"
       ],
       "files": [
@@ -1531,6 +1618,35 @@
           "path": "src/primitives/card.tsx",
           "type": "registry:ui",
           "target": "~/src/katana/ui/primitives/card.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cascade-controller",
+      "type": "registry:ui",
+      "title": "Cascade Controller",
+      "description": "级联菜单的悬停控制器（#250）：在父菜单 Content 的捕获阶段接管子菜单的悬停开合、安全三角、1.2s 安全窗口与 360ms 关闭延时；下拉菜单与右键菜单共用。",
+      "registryDependencies": [
+        "@katana/cascade-model"
+      ],
+      "files": [
+        {
+          "path": "src/primitives/cascade-controller.ts",
+          "type": "registry:ui",
+          "target": "~/src/katana/ui/primitives/cascade-controller.ts"
+        }
+      ]
+    },
+    {
+      "name": "cascade-model",
+      "type": "registry:ui",
+      "title": "Cascade Model",
+      "description": "CommandDialog 加「最近」分组：选过的命令放最前（去重、最多 5 条），没输入时显示；记录可受控、存 localStorage 或只在页内存。照 TradingView 的 Ctrl/Cmd+K 快速搜索。",
+      "files": [
+        {
+          "path": "src/primitives/cascade-model.ts",
+          "type": "registry:ui",
+          "target": "~/src/katana/ui/primitives/cascade-model.ts"
         }
       ]
     },
@@ -1817,6 +1933,7 @@
         "lucide-react@1.67.0"
       ],
       "registryDependencies": [
+        "@katana/cascade-controller",
         "@katana/cn",
         "@katana/focus"
       ],
@@ -2240,7 +2357,7 @@
       "name": "tooltip",
       "type": "registry:ui",
       "title": "Tooltip",
-      "description": "悬停或聚焦时出现的短说明，从触发处轻升；默认没有延迟。",
+      "description": "悬停或聚焦时出现的短说明，从触发处轻升；悬停停 500ms 才出，出了以后 400ms 内移到邻居立即出。",
       "dependencies": [
         "radix-ui@1.8.1"
       ],
@@ -2881,6 +2998,9 @@
       "type": "registry:lib",
       "title": "Loading Gate",
       "description": "Loading 的计时与行数量取（纯函数）。",
+      "registryDependencies": [
+        "@katana/delayed-flag"
+      ],
       "files": [
         {
           "path": "src/katana/loading-gate.ts",
@@ -2893,7 +3013,7 @@
       "name": "loading-view",
       "type": "registry:component",
       "title": "Loading View",
-      "description": "加载态的唯一入口：给 pending 等数据，不给 pending 当 Suspense 边界，给 phase 钉在某一段直接画。500ms 内到了什么也不画；超过了出点阵骨架，2s 说「仍在加载」，10s 转琥珀条加重试。",
+      "description": "加载态的唯一入口：给 pending 等数据，不给 pending 当 Suspense 边界，给 phase 钉在某一段直接画。500ms 内到了什么也不画；超过了出点阵骨架，出了至少留 500ms，2s 说「仍在加载」，10s 转琥珀条加重试。",
       "registryDependencies": [
         "@katana/button",
         "@katana/led",
@@ -2929,7 +3049,7 @@
       "name": "loading",
       "type": "registry:component",
       "title": "Loading",
-      "description": "加载态的唯一入口：给 pending 等数据，不给 pending 当 Suspense 边界，给 phase 钉在某一段直接画。500ms 内到了什么也不画；超过了出点阵骨架，2s 说「仍在加载」，10s 转琥珀条加重试。",
+      "description": "加载态的唯一入口：给 pending 等数据，不给 pending 当 Suspense 边界，给 phase 钉在某一段直接画。500ms 内到了什么也不画；超过了出点阵骨架，出了至少留 500ms，2s 说「仍在加载」，10s 转琥珀条加重试。",
       "registryDependencies": [
         "@katana/loading-gate",
         "@katana/loading-view",
@@ -3002,6 +3122,7 @@
       ],
       "registryDependencies": [
         "@katana/cn",
+        "@katana/delayed-flag",
         "@katana/loading-gate"
       ],
       "files": [
@@ -3210,7 +3331,8 @@
       "title": "Scrubber",
       "description": "一条带填充的擦洗控件：左边写名字，右边写读数，在条上按下并拖动就把值擦到那里，松手停住，值按步长吸附。拿来擦回测的回看时间点、拖下单数量、调价格偏移。把手平时小而淡，悬停、聚焦与拖动时变实。",
       "registryDependencies": [
-        "@katana/cn"
+        "@katana/cn",
+        "@katana/fill"
       ],
       "files": [
         {
@@ -3372,7 +3494,7 @@
       "name": "toast",
       "type": "registry:component",
       "title": "Toast",
-      "description": "固定在窗口一角的弹出提示：只管样子与读屏语义（live region），条目表、定时、暂停由调用方管（应用里 AlertToasts 配 toast-queue.ts）。进出走 translate 与不透明度的过渡。",
+      "description": "固定在窗口一角的弹出提示：只管样子与读屏语义（live region），条目表、定时、暂停由调用方管（应用里 AlertToasts 配 toast-queue.ts）。进出走 translate 与不透明度的过渡。视口 polite 礼貌播报，warn / danger 单条 role=alert；能撤销的操作配 ToastAction 与可选的 ToastCountdown。",
       "dependencies": [
         "lucide-react@1.67.0"
       ],
@@ -4073,6 +4195,7 @@
         "@katana/font-catalog",
         "@katana/select",
         "@katana/slider",
+        "@katana/switch",
         "@katana/toggle-group"
       ],
       "files": [
@@ -4491,7 +4614,8 @@
       "title": "Gauge Bar",
       "description": "上面一行名字、数和档位词，中间一条进度条标出数的位置，下面一句说明数是怎么来的。取不到时不画填充，数那里写原因。从应用的分析视图提来。",
       "registryDependencies": [
-        "@katana/emphasis"
+        "@katana/emphasis",
+        "@katana/fill"
       ],
       "files": [
         {
@@ -4519,6 +4643,50 @@
       ]
     },
     {
+      "name": "market-browser-model",
+      "type": "registry:lib",
+      "title": "Market Browser Model",
+      "description": "找品种的入口（照 OKX 永续页的「市场」组件，2026-11-26 实测）：一个搜索框、一排分类页签（自选 / 全部 / 主流币……由调用方给，每类带自己的行）、下面是当前分类的列表：星标、徽标、代码与全称、最新价、24h 涨跌。点价格或涨跌的列头排序（升、降、回原顺序）；点行回调 onSelect；点星标回调 onToggleFavorite，不触发 onSelect。搜索在当前分类里按代码、名称与别名找。表的版式、价格尾数闪色、列头排序都沿用 Watchlist，不另写一份；数据与文字全由调用方传，包里没有数据源。",
+      "files": [
+        {
+          "path": "src/quotes/market-browser-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/quotes/market-browser-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "market-browser",
+      "type": "registry:component",
+      "title": "Market Browser",
+      "description": "找品种的入口（照 OKX 永续页的「市场」组件，2026-11-26 实测）：一个搜索框、一排分类页签（自选 / 全部 / 主流币……由调用方给，每类带自己的行）、下面是当前分类的列表：星标、徽标、代码与全称、最新价、24h 涨跌。点价格或涨跌的列头排序（升、降、回原顺序）；点行回调 onSelect；点星标回调 onToggleFavorite，不触发 onSelect。搜索在当前分类里按代码、名称与别名找。表的版式、价格尾数闪色、列头排序都沿用 Watchlist，不另写一份；数据与文字全由调用方传，包里没有数据源。",
+      "dependencies": [
+        "@katana-ui/logos@0.5.0",
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cell-type",
+        "@katana/change-text",
+        "@katana/cn",
+        "@katana/flash-price",
+        "@katana/focus",
+        "@katana/input",
+        "@katana/live",
+        "@katana/market-browser-model",
+        "@katana/quote-row",
+        "@katana/symbol-mark",
+        "@katana/tabs",
+        "@katana/watchlist-model"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/market-browser.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/market-browser.tsx"
+        }
+      ]
+    },
+    {
       "name": "metric-card",
       "type": "registry:component",
       "title": "Metric Card",
@@ -4526,6 +4694,7 @@
       "registryDependencies": [
         "@katana/change-text",
         "@katana/cn",
+        "@katana/fill",
         "@katana/metric-tile",
         "@katana/quote-tone",
         "@katana/readout-value",
@@ -4741,6 +4910,9 @@
       "type": "registry:component",
       "title": "Range Bar",
       "description": "一条横线从最低到最高，标记指着现价在区间里的位置，两端写最低与最高。用来看当日区间、52 周区间。",
+      "registryDependencies": [
+        "@katana/fill"
+      ],
       "files": [
         {
           "path": "src/quotes/range-bar.tsx",
@@ -4884,6 +5056,7 @@
       "title": "Sparkline Instrument",
       "description": "Sparkline 的 instrument 画风：点阵、对位角标、投影谱、极值十字与批注、档案编号与 SOURCES。",
       "registryDependencies": [
+        "@katana/fill",
         "@katana/live-line",
         "@katana/sparkline",
         "@katana/sparkline-model",
@@ -5000,7 +5173,7 @@
       "title": "Symbol Mark",
       "description": "品种名前的小圆标（学 TradingView 列表里企业 / 币种标志）：有图显示圆形裁切的图片，加载失败退回字母；没有图就是字母圆标，底 bg-400、字 ink-200，不按代码随机上色。尺寸两档：sm 18（行高 28 的一行，默认）、md 28（卡片）；热力图格子这类要别的直径的仍可传数。字号跟直径走（28 以上 16，其余 12），在 css 里按 data-size 取字号 token，不内联。",
       "dependencies": [
-        "@katana-ui/logos@0.2.0"
+        "@katana-ui/logos@0.5.0"
       ],
       "registryDependencies": [
         "@katana/cn"
@@ -5681,7 +5854,8 @@
       "registryDependencies": [
         "@katana/button",
         "@katana/cn",
-        "@katana/fan-out-model"
+        "@katana/fan-out-model",
+        "@katana/fill"
       ],
       "files": [
         {
@@ -6784,6 +6958,7 @@
       "description": "把一批品种按涨跌幅分成 9 或 11 档（跌停…涨停），每档一根柱，柱顶标家数，底部一行汇总（涨 x / 平 y / 跌 z）。档的边界、档名与汇总的名字都由调用方传，件只按家数画柱、按色调汇总；没有数据显示空态，不画样本。",
       "registryDependencies": [
         "@katana/cn",
+        "@katana/fill",
         "@katana/gauge-bar"
       ],
       "files": [
@@ -7327,6 +7502,7 @@
       ],
       "registryDependencies": [
         "@katana/cn",
+        "@katana/fill",
         "@katana/parallel-attempts-model"
       ],
       "files": [
@@ -8024,7 +8200,7 @@
       "name": "cn-move-feed-model",
       "type": "registry:lib",
       "title": "Cn Move Feed Model",
-      "description": "盘口异动的流：一行一条，时间 · 名称（带代码）· 类型胶囊 · 数值；按时间从新到旧排，新来的从顶上进（淡入一下，reduced-motion 时不播）。类型胶囊按涨 / 跌 / 量 / 板着色（涨跌读 --pnl-up / --pnl-down 跟 data-updown，量是中性强调，板是警示色），顶上一排类型多选筛（点一个只看它、再点取消，一个都没选是全部，带条数）。点行触发 onSelect 联动个股页，selectedId 标出联动的那一行。随包认识十一种类型（火箭发射、封涨停板、大笔卖出…），也可以传自己的类型表。条目由调用方给。与 NewsFeed（新闻阅读器）、EventTimeline（公司事件）不同。",
+      "description": "盘口异动的流：一行一条，时间 · 名称（带代码）· 类型胶囊 · 数值；按时间从新到旧排，新来的从顶上进（淡入一下，reduced-motion 时不播）。类型胶囊按涨 / 跌 / 量 / 板着色（涨跌读 --pnl-up / --pnl-down 跟 data-updown，量是中性强调，板是警示色），顶上一排类型多选筛（点一个只看它、再点取消，一个都没选是全部，带条数）。点行触发 onSelect 联动个股页，selectedId 标出联动的那一行。随包认识十三种类型（火箭发射、封涨停板、大笔卖出、5 分钟涨幅 / 跌幅…），也可以传自己的类型表。加密市场的用法（#245，照 OKX 的「市场异动」）：条目的 symbol 写币对，传 currentSymbol 就多一个「只看当前品种」开关（onlyCurrent 受控或 defaultOnlyCurrent 不受控），类型文字走 labels.types（「5 分钟涨幅」「15 分钟跌幅」…，没有的窗口用 types 自定）。条目由调用方给。与 NewsFeed（新闻阅读器）、EventTimeline（公司事件）不同。",
       "registryDependencies": [
         "@katana/cn-format",
         "@katana/cn-session",
@@ -8042,8 +8218,9 @@
       "name": "cn-move-feed",
       "type": "registry:component",
       "title": "Cn Move Feed",
-      "description": "盘口异动的流：一行一条，时间 · 名称（带代码）· 类型胶囊 · 数值；按时间从新到旧排，新来的从顶上进（淡入一下，reduced-motion 时不播）。类型胶囊按涨 / 跌 / 量 / 板着色（涨跌读 --pnl-up / --pnl-down 跟 data-updown，量是中性强调，板是警示色），顶上一排类型多选筛（点一个只看它、再点取消，一个都没选是全部，带条数）。点行触发 onSelect 联动个股页，selectedId 标出联动的那一行。随包认识十一种类型（火箭发射、封涨停板、大笔卖出…），也可以传自己的类型表。条目由调用方给。与 NewsFeed（新闻阅读器）、EventTimeline（公司事件）不同。",
+      "description": "盘口异动的流：一行一条，时间 · 名称（带代码）· 类型胶囊 · 数值；按时间从新到旧排，新来的从顶上进（淡入一下，reduced-motion 时不播）。类型胶囊按涨 / 跌 / 量 / 板着色（涨跌读 --pnl-up / --pnl-down 跟 data-updown，量是中性强调，板是警示色），顶上一排类型多选筛（点一个只看它、再点取消，一个都没选是全部，带条数）。点行触发 onSelect 联动个股页，selectedId 标出联动的那一行。随包认识十三种类型（火箭发射、封涨停板、大笔卖出、5 分钟涨幅 / 跌幅…），也可以传自己的类型表。加密市场的用法（#245，照 OKX 的「市场异动」）：条目的 symbol 写币对，传 currentSymbol 就多一个「只看当前品种」开关（onlyCurrent 受控或 defaultOnlyCurrent 不受控），类型文字走 labels.types（「5 分钟涨幅」「15 分钟跌幅」…，没有的窗口用 types 自定）。条目由调用方给。与 NewsFeed（新闻阅读器）、EventTimeline（公司事件）不同。",
       "registryDependencies": [
+        "@katana/checkbox",
         "@katana/cn",
         "@katana/cn-labels",
         "@katana/cn-move-feed-model"
@@ -8947,6 +9124,7 @@
       "title": "Meter",
       "description": "横向仪表，三种形态：条（进度、负载、敞口）、刻度（0 到 100 的读数带指针）、同步率条（带齿分段加琥珀评估刻度与右侧大百分比）；限额板传预警线与硬限，越线自己换色；颜色只传 tone。",
       "registryDependencies": [
+        "@katana/fill",
         "@katana/severity"
       ],
       "files": [
@@ -8996,6 +9174,9 @@
       "type": "registry:component",
       "title": "Flow Gauges",
       "description": "订单流四个仪表一行：Market Pressure、Price Change（零轴居中，−100…+100）、DOM Pressure（前 N 档买卖挂单柱）、Delta Divergence（多周期 LED 矩阵）；只收算好的数，窗口不足写 N/A。",
+      "registryDependencies": [
+        "@katana/fill"
+      ],
       "files": [
         {
           "path": "src/blocks/flow-gauges/flow-gauges-model.ts",
@@ -9090,7 +9271,7 @@
       "name": "component-catalog",
       "type": "registry:component",
       "title": "Component Catalog",
-      "description": "PanelTabs 的「+」打开的目录（照 OKX 的「添加组件」抽屉，2026-11-19 实测）：标题与「重置布局」、一句说明、搜索框、类别页签，下面按类别分组的卡片，每张一个缩略图加名字；已在工作区里的打勾，当前品种用不了的置灰并写明原因；卡片可拖（带 CATALOG_ITEM_MIME）。我们加的：搜索（名字与别名）、最前面一组「推荐」：宿主按当前品种与市场包标 recommended，或组件自己声明 pairsWith（适合放在哪种组件旁边），传入 context（当前页签的 kind）后自动推荐，已在用的不再推荐。点卡片回调 onToggle（加或移除）。没给缩略图时按 kind 画一张示意。只是目录本身，放进 Sheet 还是侧栏由宿主定。",
+      "description": "PanelTabs 的「+」打开的目录（照 OKX 的「添加组件」抽屉，2026-11-19 实测）：标题与「重置布局」、一句说明、搜索框、类别页签，下面按类别分组的卡片，每张一个缩略图加名字；已在工作区里的打勾，当前品种用不了的置灰并写明原因；卡片可拖（带 CATALOG_ITEM_MIME）。variant=\"menu\"（2026-11-26，OKX 页签栏「+」垂下来的清单）是紧凑样式：没有标题、搜索与类别页签，每类一个可折叠标题，每行名字加右边的「+」，已添加的与不可用的置灰、悬停或聚焦时用提示说明原因（已添加写 labels.inUse，不可用写条目自带的 unavailable）。我们加的：搜索（名字与别名）、最前面一组「推荐」：宿主按当前品种与市场包标 recommended，或组件自己声明 pairsWith（适合放在哪种组件旁边），传入 context（当前页签的 kind）后自动推荐，已在用的不再推荐。点卡片回调 onToggle（加或移除）。没给缩略图时按 kind 画一张示意。只是目录本身，放进 Sheet 还是侧栏由宿主定。",
       "dependencies": [
         "lucide-react@1.67.0"
       ],
@@ -9099,9 +9280,15 @@
         "@katana/cn",
         "@katana/focus",
         "@katana/input",
-        "@katana/tabs"
+        "@katana/tabs",
+        "@katana/tooltip"
       ],
       "files": [
+        {
+          "path": "src/blocks/component-catalog/component-catalog-menu.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/component-catalog/component-catalog-menu.tsx"
+        },
         {
           "path": "src/blocks/component-catalog/component-catalog-model.ts",
           "type": "registry:component",
@@ -9205,6 +9392,7 @@
         "@katana/attribution-bars",
         "@katana/change-text",
         "@katana/cn",
+        "@katana/fill",
         "@katana/quant-format",
         "@katana/symbol-mark",
         "@katana/tag"
@@ -9338,6 +9526,53 @@
       ]
     },
     {
+      "name": "derivatives",
+      "type": "registry:component",
+      "title": "Derivatives",
+      "description": "永续合约的「交易数据」（OKX 永续页，XartLab/KatanaUI#245）：六张卡的网格，每张自己的标题、信息提示与周期按钮。持仓量及成交量（成交量柱在左轴、持仓量线在右轴，两轴共用一套网格）、资金费率（柱按正负着色，零线居中，周期近 7 / 14 天）、主动买卖量（买入在零线上、卖出镜像在零线下）、多空账户比与精英多空趋向（多空 100% 堆叠柱，加多空比折线在右轴）、合约基差（上面合约价与指数价两条线，下面基差柱）。数据按卡由调用方给（时间戳加数值的序列），缺哪张就显示那张的空态，不画假数；没有数的点留缺口，不当零画。周期可受控（period）也可不受控（defaultPeriod），切换只发 onPeriodChange(kind, period)，换数据是调用方的事。悬停或 ← → 扫读出悬停窗。卡可以单独用：DerivativesCard 一个 kind 一张。文字走 labels（必填，包里不带语言；演示用的简体中文那份在 gallery/usage/derivatives-labels-zh.ts）。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/cn",
+        "@katana/funding-rate",
+        "@katana/num",
+        "@katana/quant-format",
+        "@katana/series-geometry",
+        "@katana/toggle-group",
+        "@katana/tooltip",
+        "@katana/use-scrubber"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/derivatives/derivatives-board.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/derivatives/derivatives-board.tsx"
+        },
+        {
+          "path": "src/blocks/derivatives/derivatives-card.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/derivatives/derivatives-card.tsx"
+        },
+        {
+          "path": "src/blocks/derivatives/derivatives-labels.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/derivatives/derivatives-labels.ts"
+        },
+        {
+          "path": "src/blocks/derivatives/derivatives-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/derivatives/derivatives-model.ts"
+        },
+        {
+          "path": "src/blocks/derivatives/derivatives-plots.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/derivatives/derivatives-plots.tsx"
+        }
+      ]
+    },
+    {
       "name": "options-chain",
       "type": "registry:component",
       "title": "Options Chain",
@@ -9366,6 +9601,7 @@
       "description": "买卖挂单的阶梯：买卖并列（卖在上买在下，中间一行是最新价与价差）、只看买、只看卖三种模式；档位按 tick 合并（选项由调用方给，合并在 model 里按整数算：买盘向下取整、卖盘向上取整，同档的量十进制精确相加，不会出现 0.30000000000000004）；每行底下一条累计量深度条；底部买卖占比条（买量 /（买 + 卖），保留一位小数，两个数相加恒为 100）；点一行回调 onPriceSelect(价, 买或卖)，下单面板拿去回填价格，件不认下单面板。变了量的档位闪一下涨跌色（共用层 live.ts）。只吃 props，快照与增量由调用方合并好整份传，不连交易所。",
       "registryDependencies": [
         "@katana/cn",
+        "@katana/fill",
         "@katana/flash-price",
         "@katana/live",
         "@katana/scaled-decimal",
@@ -9670,7 +9906,8 @@
       "registryDependencies": [
         "@katana/button",
         "@katana/chart-kit",
-        "@katana/cn"
+        "@katana/cn",
+        "@katana/fill"
       ],
       "files": [
         {
@@ -9794,6 +10031,7 @@
         "@katana/button",
         "@katana/cn",
         "@katana/dialog",
+        "@katana/fill",
         "@katana/select",
         "@katana/textarea"
       ],
@@ -9807,6 +10045,60 @@
           "path": "src/blocks/agent-crew/crew-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/agent-crew/crew-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "strategy-launcher",
+      "type": "registry:component",
+      "title": "Strategy Launcher",
+      "description": "一列策略与工具的入口卡（照 OKX 永续页的「工具」组件，2026-11-26 实测）：顶上一条可关的风险提示（文字由调用方给，点关闭钮收起并回调），下面每张卡是图标、名字、可选的「新」角标、标签串（默认用「 / 」连成一行，tagStyle=\"chips\" 画成小标签）、右箭头。点卡回调 onOpen(id)。件只列入口，入口指向什么（下单策略、运行中心、信号）由宿主定，包里不带任何策略。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/alert",
+        "@katana/button",
+        "@katana/cn",
+        "@katana/focus",
+        "@katana/tag"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/strategy-launcher/strategy-launcher.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/strategy-launcher/strategy-launcher.tsx"
+        }
+      ]
+    },
+    {
+      "name": "floating-window",
+      "type": "registry:component",
+      "title": "Floating Window",
+      "description": "把任意子树放进一个置顶的小窗（照 OKX 下单面板的「在悬浮窗中交易」，2026-11-26 实测）：浏览器有 Document Picture-in-Picture（Chrome / Edge 116+）时开真窗口，开窗时复制当前文档的样式表、根元素的 data-theme 与正文底色字色；没有时退成页内可拖的浮层（popover 顶层，标题栏拖动或方向键移动，关闭钮与 Esc 关）。受控：open 与 onClose，配 useFloatingWindow。子树始终渲染进同一个 host 元素、换窗只搬这个元素，所以输入的半截字、滚动位置、组件状态都不丢；关窗回到原处。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/focus"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/floating-window/floating-window-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/floating-window/floating-window-model.ts"
+        },
+        {
+          "path": "src/blocks/floating-window/floating-window.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/floating-window/floating-window.tsx"
+        },
+        {
+          "path": "src/blocks/floating-window/pip-window.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/floating-window/pip-window.ts"
         }
       ]
     },
