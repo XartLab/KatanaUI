@@ -22,6 +22,8 @@ const TARGET_ROOT = '~/src/katana/ui'
 const INTERNAL = {
   'tag-input-model':
     'TagInput 的纯逻辑：草稿与粘贴的拆分（逗号、分号、换行、制表符）、判重（不分大小写）、校验与上限，以及键盘在标签之间怎么走。',
+  'delayed-flag':
+    '「晚出、出了就留够」的旗子：等了 delay 才出、出了至少留 min（Button 的 pending 与 Loading 的骨架共用），以及图标停在整圈上的 useSpinWholeTurns。',
   'scaled-decimal':
     '盘口三件（订单簿、深度图、成交明细）共用的十进制整数运算：价格与数量按小数位乘成整数再加减比，不经浮点累加。',
   'research-color':
@@ -33,6 +35,12 @@ const INTERNAL = {
   'sparkline-ascii': 'Sparkline 的 ascii 画风：方块或盲文字形画走势，一个 pre，新列乱码落定。',
   'sparkline-instrument': 'Sparkline 的 instrument 画风：点阵、对位角标、投影谱、极值十字与批注、档案编号与 SOURCES。',
   'sparkline-shared': 'Sparkline 各画风共用的钩子：量容器、设备像素比、文字测量重置。',
+  'cascade-model':
+    '级联菜单的时间与几何（#250）：打开 220ms、安全窗口 1200ms、关闭 360ms 等具名常量，安全三角（三条边叉积同号）与保护带的纯函数。',
+  'cascade-controller':
+    '级联菜单的悬停控制器（#250）：在父菜单 Content 的捕获阶段接管子菜单的悬停开合、安全三角、1.2s 安全窗口与 360ms 关闭延时；下拉菜单与右键菜单共用。',
+  'truncation-title':
+    '真被截断时悬停出全文：installTruncationTitles() 装一个委托监听，只给真放不下的省略号文字补 title（#250）。',
   'flash-price': '最新价只闪变了的尾数（照 TradingView 自选栏）：Watchlist 与 QuoteTable 的价格格共用。',
   'cell-type':
     '表格的格内排版（#92）：代码芯片 CodeChip、全称 CodeName、单位小字 UnitValue、按 locale 缩写的 CompactValue；DataGrid、QuoteTable、Watchlist、LimitLadder、EventCalendar 共用，样式在 theme/cell-type.css。',
@@ -102,6 +110,7 @@ const INTERNAL = {
     'ThemeHeatMatrix 的数据形状、五档档位（与 CalendarHeatmap 换手视图同一条规则）与键盘走格（纯函数）。',
   'calendar-model': 'CalendarHeatmap 的格子排布、档位与键盘（纯函数）：日历日按 UTC 算，一周一列。',
   'horizon-model': 'HorizonChart 的分带（纯函数）：把带正负的一列数折成几条叠起来的窄带。',
+  fill: '条长与标记位置的写法：把 0 到 1 的比例写成自定义属性 --fill（带起点的写 --from），样式用 scale / translate 画，不对 width / left 做过渡。盘口深度条、行情条、仪表条用。',
   'live-line':
     '走势线新点追加时的延伸过场（钩子加纯函数）：旧线各点平滑走到新位置，新点从末端长出来，Sparkline、SparkTile、EquityCurve 用。',
   'live-readout':
@@ -316,6 +325,8 @@ function collectItems() {
       'orders-table',
       'account-equity',
       'funding-rate',
+      // #245 交易数据看板：六张卡、画法与纯函数在一个子目录里。
+      'derivatives',
       'options-chain',
       // #104 盘口三件：订单簿、深度图、成交明细，各一个子目录（组件与它的纯函数一起装；深度图用订单簿的档位合并）。
       'order-book',
@@ -339,6 +350,9 @@ function collectItems() {
       'agent-tree',
       'agent-fleet',
       'agent-crew',
+      // #245 模块 2：策略入口。
+      'strategy-launcher',
+      'floating-window',
     ])
       add(
         dir,

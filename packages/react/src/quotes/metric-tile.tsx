@@ -3,7 +3,7 @@
 // KPI 瓦片：点阵小标签 + LCD 数值 + 24px 迷你折线 + 一行变化说明。迷你线的折点与纵坐标用 quotes/sparkline 的 sparkCoords、sparkY，所以阈值线与折线落在同一个刻度上。
 // 实时刷新：数值变了闪涨跌色（有 rollValue 的走 RollingText 的滚轮加闪），新点追加时线平滑延伸、末点放一圈光晕闪一次（共用层 lib/live-*.ts）。
 // 数据全由调用方给（数组、当前值、变化）：没有数据就是空态（数值「—」、线的位置写「—」），不补样本。文案（标签、说明、读屏名）一律由调用方传，包里不写。
-import { useRef, type AriaAttributes, type ReactNode } from 'react'
+import { useRef, type AriaAttributes, type CSSProperties, type ReactNode } from 'react'
 import { useLineExtend } from '../lib/live-line.ts'
 import { useValueFlash } from '../lib/live.ts'
 import { ChangeText } from './change-text.tsx'
@@ -12,6 +12,9 @@ import { pointsText, sparkCoords, sparkY } from './sparkline.tsx'
 
 const W = 100
 const H = 24
+
+/** 末点的高度：图高固定 H（24px），写成 --k-end-y（px），样式用 translate 画，不动 top。 */
+const endY = (y: number): CSSProperties => ({ '--k-end-y': Math.round(y * 100) / 100 }) as CSSProperties
 
 /** normal 平常；near 接近阈值（边框转暗橙，说明转琥珀）；over 越过阈值（同 near，另有一次脉冲在 CSS 里：状态一变就播一遍）。 */
 export type SparkTileState = 'normal' | 'near' | 'over'
@@ -86,10 +89,10 @@ export function MetricTile({
             key={end.key}
             className="k-spark-tile-halo k-live-flash"
             data-flash={end.flash ?? undefined}
-            style={{ top: `${(shape.endY / H) * 100}%` }}
+            style={endY(shape.endY)}
             aria-hidden="true"
           />
-          <i className={`k-spark-tile-end is-${trendTone}`} style={{ top: `${(shape.endY / H) * 100}%` }} />
+          <i className={`k-spark-tile-end is-${trendTone}`} style={endY(shape.endY)} />
         </span>
       ) : (
         <span className="k-spark-tile-chart is-empty" role="img" aria-label={sparkLabel}>

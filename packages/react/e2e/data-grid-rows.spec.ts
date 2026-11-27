@@ -30,6 +30,9 @@ test('data-grid 挪行：Alt+↓ 挪一格并播报，右键「Move to top」', 
 
 test('data-grid 挪行：鼠标拖一行到另一行前，拖到一半 Esc 取消', async ({ page }) => {
   await open(page)
+  // 自选表排在这页第五个演示（前面有 380 高的 grid-demo、列操作、实时刷新、A 股列两张表），落在 1500 高的视口下面；
+  // page.mouse 按坐标发事件、不会自己滚，视口外的坐标点不到行上，先把这张表滚进来再量。
+  await demo(page).scrollIntoViewIfNeeded()
   const from = await row(page, 'QQQ').boundingBox()
   const to = await row(page, 'BTCUSDT').boundingBox()
   if (!from || !to) throw new Error('rows not laid out')
@@ -142,8 +145,12 @@ test('data-grid 旗标：Alt+Enter 给键盘所在的行插旗、再按拔掉', 
   const flag = row(page, 'QQQ').locator('.k-flag-mark')
   await expect(flag).toHaveAttribute('aria-pressed', 'false')
   await row(page, 'QQQ').getByText('QQQ').click()
-  await page.keyboard.press('Alt+Enter')
-  await expect(flag).toHaveAttribute('aria-pressed', 'true')
+  // 点行以后，演示页要经「焦点 → 键盘所在的行 → 重新登记快捷键」几轮 effect 才把 Alt+Enter 开出来；CI 忙时紧跟着按键会落在登记之前，
+  // 什么也没发生（2026-11-26 main 与 #258 的 run 都见过首跑红、重跑过）。没开的时候按键是空操作，所以按到插上旗为止是安全的。
+  await expect(async () => {
+    await page.keyboard.press('Alt+Enter')
+    await expect(flag).toHaveAttribute('aria-pressed', 'true', { timeout: 1000 })
+  }).toPass({ timeout: 10_000 })
   await page.keyboard.press('Alt+Enter')
   await expect(flag).toHaveAttribute('aria-pressed', 'false')
   // 焦点离开表：Alt+Enter 不再作用在表上

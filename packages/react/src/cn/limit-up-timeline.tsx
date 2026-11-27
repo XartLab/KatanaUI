@@ -130,19 +130,19 @@ export function LimitUpTimeline({
   }
 
   return (
-    <section ref={root} className={cn('k-tl', className)} data-slot="limit-up-timeline" aria-label={labels.region}>
-      <header className="k-tl-head">
-        <h3 className="k-tl-title">{labels.title}</h3>
-        <span className="k-tl-summary" data-slot="timeline-summary">
+    <section ref={root} className={cn('k-cntl', className)} data-slot="limit-up-timeline" aria-label={labels.region}>
+      <header className="k-cntl-head">
+        <h3 className="k-cntl-title">{labels.title}</h3>
+        <span className="k-cntl-summary" data-slot="timeline-summary">
           {labels.summary(
             stations.reduce((sum, station) => sum + station.items.length, 0),
             stations.length,
           )}
         </span>
       </header>
-      <div className="k-tl-bar">
-        <div className="k-tl-field">
-          <span className="k-tl-field-label">{labels.sort.label}</span>
+      <div className="k-cntl-bar">
+        <div className="k-cntl-field">
+          <span className="k-cntl-field-label">{labels.sort.label}</span>
           <ToggleGroup
             variant="sm"
             aria-label={labels.sort.label}
@@ -157,7 +157,7 @@ export function LimitUpTimeline({
             <ToggleGroupItem value="earliest">{labels.sort.earliestFirst}</ToggleGroupItem>
           </ToggleGroup>
         </div>
-        <ul className="k-tl-legend" data-slot="timeline-legend">
+        <ul className="k-cntl-legend" data-slot="timeline-legend">
           {PHASES.map((phase) => (
             <li key={phase} data-phase={phase}>
               <i aria-hidden="true" />
@@ -167,15 +167,15 @@ export function LimitUpTimeline({
           ))}
         </ul>
         {chips.length > 0 && (
-          <div className="k-tl-chips" role="group" aria-label={labels.themeFilter} data-slot="timeline-chips">
-            <button type="button" className="k-tl-chip" aria-pressed={theme === null} onClick={() => pickTheme(null)}>
+          <div className="k-cntl-chips" role="group" aria-label={labels.themeFilter} data-slot="timeline-chips">
+            <button type="button" className="k-cntl-chip" aria-pressed={theme === null} onClick={() => pickTheme(null)}>
               {labels.allThemes}
             </button>
             {chips.map((chip) => (
               <button
                 key={chip.name}
                 type="button"
-                className="k-tl-chip"
+                className="k-cntl-chip"
                 aria-pressed={theme === chip.name}
                 onClick={() => pickTheme(chip.name)}
               >
@@ -186,16 +186,16 @@ export function LimitUpTimeline({
         )}
       </div>
       {untimed.length > 0 && (
-        <p className="k-tl-untimed" data-slot="timeline-untimed">
+        <p className="k-cntl-untimed" data-slot="timeline-untimed">
           {labels.noTime(untimed.length)}
         </p>
       )}
       {stations.length === 0 ? (
-        <p className="k-tl-empty" data-slot="timeline-empty">
+        <p className="k-cntl-empty" data-slot="timeline-empty">
           {labels.empty}
         </p>
       ) : (
-        <div className="k-tl-rows" style={{ '--tl-cols': size } as CSSProperties}>
+        <div className="k-cntl-rows" style={{ '--tl-cols': size } as CSSProperties}>
           {rows.map((row, position) => {
             const first = row.sequence[0]!
             const last = row.sequence[row.sequence.length - 1]!
@@ -205,14 +205,14 @@ export function LimitUpTimeline({
             return (
               <div
                 key={row.index}
-                className="k-tl-row"
+                className="k-cntl-row"
                 data-slot="timeline-row"
                 data-flow={row.flow}
                 data-last={position === rows.length - 1 ? 'true' : undefined}
               >
-                <span className="k-tl-rowhead">
-                  <span className="k-tl-range">{labels.rowRange(row.index, first.key, last.key)}</span>
-                  <span className="k-tl-hint" aria-hidden="true">
+                <span className="k-cntl-rowhead">
+                  <span className="k-cntl-range">{labels.rowRange(row.index, first.key, last.key)}</span>
+                  <span className="k-cntl-hint" aria-hidden="true">
                     {row.flow === 'ltr' ? '' : '← '}
                     {order === 'latest' ? labels.towardsEarlier : labels.towardsLater}
                     {row.flow === 'ltr' ? ' →' : ''}
@@ -220,7 +220,7 @@ export function LimitUpTimeline({
                 </span>
                 {row.display.length >= 2 && (
                   <i
-                    className="k-tl-arrow"
+                    className="k-cntl-arrow"
                     data-dir={towardsNewer}
                     aria-hidden="true"
                     style={{
@@ -228,45 +228,45 @@ export function LimitUpTimeline({
                     }}
                   />
                 )}
-                <ol className="k-tl-stations">
+                <ol className="k-cntl-stations">
                   {row.display.map((station, slot) => (
                     <li
                       key={station.key}
-                      className="k-tl-station"
+                      className="k-cntl-station"
                       data-slot="timeline-station"
                       data-key={station.key}
                       data-phase={station.phase}
                       style={row.flow === 'rtl' ? { gridColumnStart: missing + slot + 1 } : undefined}
                     >
-                      <span className="k-tl-time" title={labels.station(station.key, station.items.length)}>
+                      <span className="k-cntl-time" title={labels.station(station.key, station.items.length)}>
                         {station.key}
                       </span>
-                      <span className="k-tl-track" aria-hidden="true">
+                      <span className="k-cntl-track" aria-hidden="true">
                         <i />
                       </span>
-                      <ul className="k-tl-cards">
+                      <ul className="k-cntl-cards">
                         {station.items.map((item) => {
                           const body = (
                             <>
-                              <span className="k-tl-card-line">
-                                <b className="k-tl-card-name">{item.name}</b>
+                              <span className="k-cntl-card-line">
+                                <b className="k-cntl-card-name">{item.name}</b>
                                 {item.board ? <BoardMark kind={item.board} /> : null}
-                                <span className="k-tl-card-amount">{formatCnAmount(item.amount)}</span>
+                                <span className="k-cntl-card-amount">{formatCnAmount(item.amount)}</span>
                               </span>
-                              <span className="k-tl-card-line">
+                              <span className="k-cntl-card-line">
                                 <StreakBadge streak={item.streak} />
-                                <span className="k-tl-card-theme">{item.themes?.[0] ?? DASH}</span>
+                                <span className="k-cntl-card-theme">{item.themes?.[0] ?? DASH}</span>
                               </span>
                             </>
                           )
                           return (
                             <li key={item.code} data-slot="timeline-card" data-code={item.code}>
                               {onSelect ? (
-                                <button type="button" className="k-tl-card" onClick={() => onSelect(item)}>
+                                <button type="button" className="k-cntl-card" onClick={() => onSelect(item)}>
                                   {body}
                                 </button>
                               ) : (
-                                <div className="k-tl-card">{body}</div>
+                                <div className="k-cntl-card">{body}</div>
                               )}
                             </li>
                           )
@@ -275,7 +275,7 @@ export function LimitUpTimeline({
                     </li>
                   ))}
                 </ol>
-                {position < rows.length - 1 && <i className="k-tl-turn" aria-hidden="true" />}
+                {position < rows.length - 1 && <i className="k-cntl-turn" aria-hidden="true" />}
               </div>
             )
           })}

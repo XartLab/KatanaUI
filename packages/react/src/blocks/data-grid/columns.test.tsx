@@ -138,7 +138,7 @@ describe('#90 新列类型与单位', () => {
     expect(html).toContain('is-ruled')
     expect(html).toContain('<span class="k-code-chip">ALFA</span>')
     expect(html).toContain('<span class="k-code-name">Alpha Inc</span>')
-    expect(html).toContain('4.53 T <span class="k-num-unit">USD</span>')
+    expect(html).toContain('4.53 T\u00a0<span class="k-num-unit">USD</span>')
     expect(html).toContain('data-slot="rating-text"')
     expect(html).toContain('data-slot="grid-pills"')
     expect(html).toContain('k-grid-bar is-share')

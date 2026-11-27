@@ -148,7 +148,7 @@ export function FolderReveal({
       </span>
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 rounded-b-[14px]"
+        className="pointer-events-none absolute inset-x-0 bottom-0 rounded-b-[var(--radius-dialog)]"
         style={{
           top: height * 0.132,
           boxShadow: 'inset 0 14px 16px -14px color-mix(in srgb, var(--bg-000) 45%, transparent)',
@@ -174,7 +174,7 @@ export function FolderReveal({
                 ...SPRING,
                 delay: open ? index * STAGGER_STEP : (items.length - 1 - index) * CLOSE_STAGGER_STEP,
               }}
-              className="absolute bottom-0 origin-bottom overflow-hidden rounded-[10px] border border-alpha-white-8 bg-surface-3 shadow-[0_8px_18px_-8px_color-mix(in_srgb,var(--bg-000)_50%,transparent)]"
+              className="absolute bottom-0 origin-bottom overflow-hidden rounded-[var(--radius-overlay)] border border-alpha-white-8 bg-surface-3 shadow-[0_8px_18px_-8px_color-mix(in_srgb,var(--bg-000)_50%,transparent)]"
               style={{ width: cardWidth, height: cardHeight, zIndex: index }}
             >
               {item.content}
@@ -193,7 +193,10 @@ export function FolderReveal({
         onFocus={() => trigger === 'hover' && setOpen(true)}
         onBlur={() => trigger === 'hover' && setOpen(false)}
         onKeyDown={onKeyDown}
-        className={cn('absolute inset-x-0 bottom-0 cursor-pointer rounded-t-[8px] rounded-b-[14px]', focusRing)}
+        className={cn(
+          'absolute inset-x-0 bottom-0 cursor-pointer rounded-t-[var(--radius-overlay)] rounded-b-[var(--radius-dialog)]',
+          focusRing,
+        )}
         style={{
           height: flapHeight,
           backgroundImage: `linear-gradient(to bottom, ${skin.flap}, ${skin.flapDeep})`,

@@ -52,6 +52,7 @@
 .k-tape-count {
   color: var(--k-content-secondary-foreground);
   font-size: 11px;
+  font-variant-numeric: tabular-nums;
 }
 .k-tape-row.is-large {
   --k-large-tone: var(--k-tone-up-foreground);
@@ -62,6 +63,10 @@
 }
 .k-tape-row.is-large .k-tape-size {
   font-weight: 700;
+}
+/* 大单行铺着 12% 的涨跌色底，时间的 ink-300 只有 3.9 / 4.2:1（console，axe #190），用 body。 */
+.k-tape-row.is-large .k-tape-time {
+  color: var(--k-content-body-foreground);
 }
 .k-tape-row.k-tape-enter {
   animation:

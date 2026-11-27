@@ -38,7 +38,7 @@
   grid-column: 2;
   grid-row: 1;
   border-bottom: var(--hairline);
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-num-small);
 }
 .k-al-axis i {
@@ -91,12 +91,12 @@
   white-space: nowrap;
 }
 .k-al-name small {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-mono);
 }
 .k-al-tag {
   margin-left: auto;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-al-lane[data-tag='needs'] .k-al-tag {
@@ -120,7 +120,7 @@
   overflow: hidden;
   padding: 0 4px;
   border: 0;
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
   background: var(--k-content-tertiary-foreground);
   color: var(--k-container-primary-background);
   font: var(--text-caption) var(--font-sans-small);
@@ -172,7 +172,7 @@
 }
 .k-al-pop-time,
 .k-al-tools {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-num-small);
 }
 .k-al-ask,

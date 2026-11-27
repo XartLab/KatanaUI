@@ -12,6 +12,8 @@
   border: var(--hairline);
   border-radius: var(--radius-md);
   background: var(--bg-200);
+  /* 把手的位置用 translate 画，百分比要量轨宽：轨是容器，把手取 cqw（kubai Vibe Design Tips 011，#251）。 */
+  container-type: inline-size;
   cursor: pointer;
   touch-action: none;
   outline-offset: 2px;
@@ -21,11 +23,12 @@
 }
 .k-scrubber-fill {
   position: absolute;
-  inset-block: 0;
-  left: 0;
+  inset: 0;
   background: color-mix(in srgb, var(--accent) 22%, transparent);
   pointer-events: none;
-  transition: width var(--dur-snappy) var(--ease-snappy);
+  transform-origin: left;
+  scale: var(--fill, 0) 1;
+  transition: scale var(--dur-snappy) var(--ease-snappy);
 }
 .k-scrubber-ticks {
   position: absolute;
@@ -44,6 +47,7 @@
 .k-scrubber-thumb {
   position: absolute;
   top: 50%;
+  left: 0;
   width: 4px;
   height: 22px;
   border-radius: var(--radius-pill);
@@ -51,8 +55,9 @@
   opacity: 0.15;
   pointer-events: none;
   transform: translate(-50%, -50%) scale(0.7);
+  translate: calc(var(--fill, 0) * 100cqw) 0;
   transition:
-    left var(--dur-snappy) var(--ease-snappy),
+    translate var(--dur-snappy) var(--ease-snappy),
     opacity var(--dur-snappy) var(--ease-snappy),
     transform var(--dur-snappy) var(--ease-snappy);
 }

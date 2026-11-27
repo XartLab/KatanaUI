@@ -24,3 +24,31 @@
   background: var(--k-surface-overlay-background);
   box-shadow: var(--k-overlay-shadow);
 }
+
+/* 连续曲率（kubai Vibe Design Tips 004，2026-11-27，#251）：只给 ≥ 8px 的面（浮层、悬停卡、对话框、抽屉、8px 的块），渐进增强。
+   border-radius 照旧写在上面，Chrome / Edge 139+ 把圆弧换成 superellipse(1.25)；Safari、Firefox 不认 corner-shape，整块跳过，仍是圆弧。
+   2 到 6px 的控件不加（看不出差别，还多算一层）；胶囊与圆（--radius-pill、50%）保持 round，不会被它改成方的。
+   与 katana/squircle.tsx 分工：Squircle 用 clip-path 生成路径，给要明显超椭圆的地方；这里只是顺带的渐进增强。 */
+@supports (corner-shape: superellipse(1.25)) {
+  :where(
+    .k-mat-overlay,
+    .k-mat-block,
+    .k-pop,
+    .k-glass,
+    .k-dlg,
+    [data-slot='popover-content'],
+    [data-slot='hover-card-content'],
+    [data-slot='dropdown-menu-content'],
+    [data-slot='dropdown-menu-sub-content'],
+    [data-slot='context-menu-content'],
+    [data-slot='context-menu-sub-content'],
+    [data-slot='menubar-content'],
+    [data-slot='select-content'],
+    [data-slot='dialog-content'],
+    [data-slot='alert-dialog-content'],
+    [data-slot='sheet-content'],
+    [data-slot='symbol-search-dialog']
+  ) {
+    corner-shape: superellipse(1.25);
+  }
+}

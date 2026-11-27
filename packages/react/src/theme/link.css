@@ -11,8 +11,8 @@
   text-underline-offset: 3px;
   cursor: pointer;
   transition:
-    color 0.12s,
-    text-decoration-color 0.12s;
+    color var(--dur-hover) var(--ease-hover),
+    text-decoration-color var(--dur-hover) var(--ease-hover);
 }
 .k-link[data-tone='secondary'] {
   color: var(--k-content-secondary-foreground);
