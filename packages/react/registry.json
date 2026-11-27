@@ -799,6 +799,11 @@
           "target": "~/src/katana/ui/theme/system-status.css"
         },
         {
+          "path": "src/theme/tag-combobox.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/tag-combobox.css"
+        },
+        {
           "path": "src/theme/tag-input.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/tag-input.css"
@@ -4321,6 +4326,40 @@
           "path": "src/patterns/split-button.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/split-button.tsx"
+        }
+      ]
+    },
+    {
+      "name": "tag-combobox-model",
+      "type": "registry:lib",
+      "title": "Tag Combobox Model",
+      "description": "TagCombobox 的纯逻辑：过滤与命中位置（大小写、重音不分，几个词都要命中）、高亮项怎么走、键盘在标签、输入框与列表之间怎么走。",
+      "files": [
+        {
+          "path": "src/patterns/tag-combobox-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/patterns/tag-combobox-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "tag-combobox",
+      "type": "registry:component",
+      "title": "Tag Combobox",
+      "description": "字段本身是输入框：已选项以小标签排在框里（可换行、可带头像或图标、每个有 ×），光标跟在最后一个标签后面，打字就过滤，命中的字加强。列表每行主文字加可选第二行说明与前缀节点，已选行尾画勾；选或取消后列表不收、输入清空。输入框空着时退格第一次选中最后一个标签、第二次删掉；← → 在标签间移。弹层锚在整个字段上，标签多到换行字段长高时弹层跟着下移。交互参照 Jamie Merrill 的 Multi select combobox，只借交互，样子是我们的。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/popover",
+        "@katana/tag-combobox-model"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/tag-combobox.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/tag-combobox.tsx"
         }
       ]
     },

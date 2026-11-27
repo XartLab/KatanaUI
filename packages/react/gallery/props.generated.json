@@ -10451,6 +10451,18 @@
           "required": false,
           "default": "false",
           "description": "Selected: draws a check mark on the left and sets data-checked."
+        },
+        {
+          "name": "prefix",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Node before the text (avatar, icon, flag)."
+        },
+        {
+          "name": "description",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Second line under the text (a role, an exchange)."
         }
       ]
     },
@@ -58518,6 +58530,272 @@
           "required": false,
           "default": "false",
           "description": "Draw a 1px edge in the text color on a transparent fill instead of a tinted fill."
+        }
+      ]
+    },
+    "TagCombobox": {
+      "kind": "component",
+      "source": "src/patterns/tag-combobox.tsx",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the field."
+        },
+        {
+          "name": "options",
+          "type": "readonly TagComboboxOption[]",
+          "required": true,
+          "description": "Rows, in the order shown."
+        },
+        {
+          "name": "value",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Ids of the selected options (controlled)."
+        },
+        {
+          "name": "defaultValue",
+          "type": "readonly string[]",
+          "required": false,
+          "default": "[]",
+          "description": "Starting ids (uncontrolled)."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(value: string[]) => void",
+          "required": false,
+          "description": "Called with the new list of ids after one option is picked or removed."
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false,
+          "description": "Hint shown while there are no tags and nothing is typed."
+        },
+        {
+          "name": "labels",
+          "type": "TagComboboxLabels",
+          "required": true,
+          "description": "Texts: remove and empty are required."
+        },
+        {
+          "name": "defaultOpen",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "The list starts open (uncontrolled)."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(open: boolean) => void",
+          "required": false,
+          "description": "Called when the list opens or closes."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Grey out the field and its tags."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "description": "Id of the text box, for a visible label's htmlFor."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the field."
+        },
+        {
+          "name": "contentClassName",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the popup list."
+        },
+        {
+          "name": "ref",
+          "type": "Ref<HTMLInputElement>",
+          "required": false,
+          "description": "Ref to the text input, for focusing it from outside."
+        }
+      ]
+    },
+    "TagComboboxLabels": {
+      "kind": "type",
+      "source": "src/patterns/tag-combobox.tsx",
+      "props": [
+        {
+          "name": "remove",
+          "type": "(label: string) => string",
+          "required": true,
+          "description": "Accessible name of the remove button on a tag, for example (label) => `Remove ${label}`."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Shown (and announced) when nothing matches what is typed."
+        },
+        {
+          "name": "list",
+          "type": "string",
+          "required": false,
+          "description": "Accessible name of the list."
+        },
+        {
+          "name": "toggle",
+          "type": "string",
+          "required": false,
+          "description": "Accessible name of the arrow button at the right end; leave it out to draw no button."
+        },
+        {
+          "name": "added",
+          "type": "(label: string) => string",
+          "required": false,
+          "description": "Announced after an option is picked."
+        },
+        {
+          "name": "removed",
+          "type": "(label: string) => string",
+          "required": false,
+          "description": "Announced after a tag is removed."
+        },
+        {
+          "name": "picked",
+          "type": "(label: string) => string",
+          "required": false,
+          "description": "Announced when Backspace or an arrow key selects a tag, for example \"Aisha selected, Backspace removes it\"."
+        }
+      ]
+    },
+    "TagComboboxOption": {
+      "kind": "type",
+      "source": "src/patterns/tag-combobox.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable id reported in value."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Main text of the row and the tag."
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "required": false,
+          "description": "Second line of the row, for example a role."
+        },
+        {
+          "name": "prefix",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Node before the text in the row and in the tag (avatar, icon)."
+        },
+        {
+          "name": "keywords",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Extra words that match without showing."
+        }
+      ]
+    },
+    "TagComboboxProps": {
+      "kind": "type",
+      "source": "src/patterns/tag-combobox.tsx",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the field."
+        },
+        {
+          "name": "options",
+          "type": "readonly TagComboboxOption[]",
+          "required": true,
+          "description": "Rows, in the order shown."
+        },
+        {
+          "name": "value",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Ids of the selected options (controlled)."
+        },
+        {
+          "name": "defaultValue",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Starting ids (uncontrolled)."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(value: string[]) => void",
+          "required": false,
+          "description": "Called with the new list of ids after one option is picked or removed."
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false,
+          "description": "Hint shown while there are no tags and nothing is typed."
+        },
+        {
+          "name": "labels",
+          "type": "TagComboboxLabels",
+          "required": true,
+          "description": "Texts: remove and empty are required."
+        },
+        {
+          "name": "defaultOpen",
+          "type": "boolean",
+          "required": false,
+          "description": "The list starts open (uncontrolled)."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(open: boolean) => void",
+          "required": false,
+          "description": "Called when the list opens or closes."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Grey out the field and its tags."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "description": "Id of the text box, for a visible label's htmlFor."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the field."
+        },
+        {
+          "name": "contentClassName",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the popup list."
+        },
+        {
+          "name": "ref",
+          "type": "Ref<HTMLInputElement>",
+          "required": false,
+          "description": "Ref to the text input, for focusing it from outside."
         }
       ]
     },
