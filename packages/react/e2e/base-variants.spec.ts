@@ -92,7 +92,7 @@ test('Tabs line：文字页签没有药丸底块，当前项下划线随点击�
   expect(await underline('日线')).toBe('1')
   expect(await underline('周线')).toBe('0')
   await tabs.getByRole('tab', { name: '周线' }).click()
-  await expect(tabs.getByRole('tab', { name: '周线' })).toHaveAttribute('data-state', 'active')
+  await expect(tabs.getByRole('tab', { name: '周线' })).toHaveAttribute('data-selected', '')
   await expect.poll(() => underline('周线')).toBe('1')
   expect(await underline('日线')).toBe('0')
   await expect(tabs.getByText('周线的内容')).toBeVisible()

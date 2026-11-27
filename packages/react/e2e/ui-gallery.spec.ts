@@ -3928,8 +3928,8 @@ for (const theme of THEMES) {
     }) => {
       await open(page, theme, 'tabs')
       const list = section(page, 'tabs').locator('[data-slot="tabs-list"]').first()
-      const active = list.locator('[data-slot="tabs-trigger"][data-state="active"]')
-      const inactive = list.locator('[data-slot="tabs-trigger"][data-state="inactive"]').first()
+      const active = list.locator('[data-slot="tabs-trigger"][data-selected]')
+      const inactive = list.locator('[data-slot="tabs-trigger"]:not([data-selected])').first()
       // 字色有 200ms 的过渡：悬停后先等页面上的动画全部 finished，再量，免得读到过渡起点而空过。
       const settled = (hovered: ReturnType<typeof list.locator>) =>
         hovered.evaluate(async () => {
@@ -9054,7 +9054,7 @@ test('SUI-B TiltCard：指针在卡上移动时卡转动，离开后回正', asy
 
 test('SUI-B 并入已有件：页签内容淡入、对话框头身脚依次进场、滚动条悬停变宽', async ({ page }) => {
   await open(page, THEMES[0], 'tabs')
-  const panel = section(page, 'tabs').locator('[data-slot="tabs-content"][data-state="active"]').first()
+  const panel = section(page, 'tabs').locator('[data-slot="tabs-content"][data-selected]').first()
   expect(await panel.evaluate((el) => getComputedStyle(el).animationName)).toBe('kc-fade-in')
   await open(page, THEMES[0], 'dialog')
   await section(page, 'dialog').getByRole('button').first().click()
