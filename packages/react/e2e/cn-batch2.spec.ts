@@ -72,13 +72,13 @@ test('TradingDatePicker：前后按钮跳过周末，休市日点不了，选一
   await expect(picked).toHaveText('已选：2026-11-20')
   // 开日历：休市的格是 unavailable，点了不改值；开市的格能选。
   await picker.locator('[data-slot="trading-date-trigger"]').click()
-  const unavailable = page.locator('[role="dialog"] [data-unavailable]:not([data-outside-month])')
+  const unavailable = page.locator('[role="dialog"] [data-unavailable]:not([data-outside])')
   await expect(unavailable.first()).toBeVisible()
   expect(await unavailable.count()).toBeGreaterThanOrEqual(8)
   await unavailable.first().click({ force: true })
   await expect(picked).toHaveText('已选：2026-11-20')
   const day = page
-    .locator('[role="dialog"] [role="gridcell"] [role="button"]:not([data-unavailable]):not([data-outside-month])')
+    .locator('[role="dialog"] [role="gridcell"]:not([data-unavailable]):not([data-outside])')
     .filter({ hasText: /^18$/ })
   await day.first().click()
   await expect(picked).toHaveText('已选：2026-11-18')
