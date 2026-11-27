@@ -26,11 +26,13 @@ Popover 加 Command 拼出来：触发器跟单选下拉一个样，打开后焦
 
 ### ComboboxItem
 
-同 CommandItem。
+同 CommandItem，另加三个可选属性：selected 画勾；prefix 是文字前的节点（头像、图标，纯装饰，读屏不读）；description 是文字下的第二行说明（带它时行自己长高，不带还是 30 高）。带 prefix 或 description 时 value 默认取主文字（children 是字符串时），说明不进搜索、onSelect 收到的也是主文字；要按说明搜就把它放进 keywords，children 不是字符串时一定要自己传 value。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `selected` | `boolean` | `false` | Selected: draws a check mark on the left and sets data-checked. |
+| `prefix` | `ReactNode` | — | Node before the text (avatar, icon, flag). |
+| `description` | `ReactNode` | — | Second line under the text (a role, an exchange). |
 
 ### ComboboxTrigger / ComboboxInput / ComboboxList / ComboboxEmpty / ComboboxGroup
 
@@ -87,9 +89,11 @@ export function ComboboxUsage() {
 - 打开：焦点在搜索框，列表可过滤。
 - 单选：选中后收起；多选：点一项不收，触发器写已选个数。
 - 已选的行 data-checked 且前面有勾。
+- 带 prefix / description：前缀在勾与文字之间，说明在文字下一行，行长高到放得下两行。
 
 ## Don't
 
+- 要在输入框里带标签的多选，用 TagCombobox，不要拿触发器写已选个数硬凑。
 - 不要少于十来项就用它，少的用 Select。
 - 不要忘了给搜索框与列表传 label。
 - 行的 aria-selected 是高亮不是已选，已选用 selected。

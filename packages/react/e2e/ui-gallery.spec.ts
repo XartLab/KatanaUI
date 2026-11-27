@@ -6816,6 +6816,211 @@ for (const theme of THEMES) {
     await expect(rows.first()).not.toHaveAttribute('aria-setsize', /.*/)
   })
 
+  test(`新闻流（${theme}）：1 万条——只渲染可见行（行数不超过可见行加预渲染行）、带标签与来源数的行高算得对、滚到底最后一条可见；滚动帧时间只记录`, async ({
+    page,
+  }, testInfo) => {
+    await open(page, theme, 'news-feed')
+    const doc = section(page, 'news-feed')
+    await doc.getByTestId('news-10k').click()
+    const frame = doc.getByTestId('news-10k-frame')
+    const scroll = frame.locator('.k-news-scroll')
+    const rows = frame.locator('.k-news-item')
+    await expect(frame.locator('.k-news-items')).toHaveAttribute('data-virtual', '')
+    await expect(rows.first()).toHaveAttribute('aria-setsize', '10000')
+    // DOM 行数 ≤ 可见行 + 预渲染行：可见行按最小行高 32px 估（行只会更高、可见的更少），预渲染是虚拟列表的 overscan（8，上下各一份）。
+    const VIRTUAL_OVERSCAN = 8
+    const viewport = await scroll.evaluate((el) => el.clientHeight)
+    const bound = Math.ceil(viewport / 32) + 1 + 2 * VIRTUAL_OVERSCAN
+    const counts: number[] = []
+    for (const top of [0, 5000, 123_456, 200_000]) {
+      await scroll.evaluate((el, y) => (el.scrollTop = y), top)
+      await expect.poll(() => rows.count()).toBeGreaterThan(3)
+      counts.push(await rows.count())
+    }
+    expect(Math.max(...counts)).toBeLessThanOrEqual(bound)
+    // 带标签与来源数的行：算的行高 = 渲染出来的自然高度（标题折行要扣掉标签与来源数占的宽）。
+    await scroll.evaluate((el) => (el.scrollTop = 0))
+    await expect(rows.first().locator('.k-news-tag').first()).toBeVisible()
+    const mismatch = await rows.evaluateAll((nodes) =>
+      nodes
+        .map((node) => {
+          const el = node as HTMLElement
+          const set = el.getBoundingClientRect().height
+          const keep = el.style.height
+          el.style.height = 'auto'
+          el.style.minHeight = '32px'
+          const natural = el.getBoundingClientRect().height
+          el.style.height = keep
+          el.style.minHeight = ''
+          return { id: el.dataset.newsId, set, natural }
+        })
+        .filter((row) => Math.abs(row.set - row.natural) > 0.6),
+    )
+    expect(mismatch).toEqual([])
+    // 滚动帧时间（只记录，不断言上限：目标 p95 ≤ 16.7ms，机器忙时会飘，实测数写在 PR 里）：
+    // 每帧滚 120px（约 7000px/s，快速甩动）与 480px（整屏换一遍，极端）各滚 150 帧，量相邻两个 requestAnimationFrame 的间隔；
+    // 先让起点落在不同位置（从 3000 起），免得头一屏的缓存影响。
+    const measure = (step: number) =>
+      scroll.evaluate(
+        async (el, { step, from }) => {
+          el.scrollTop = from
+          await new Promise((resolve) => requestAnimationFrame(() => resolve(null)))
+          const out: number[] = []
+          let last = performance.now()
+          for (let i = 0; i < 150; i++) {
+            el.scrollTop += step
+            await new Promise((resolve) => requestAnimationFrame(() => resolve(null)))
+            const now = performance.now()
+            out.push(now - last)
+            last = now
+          }
+          return out
+        },
+        { step, from: 3000 },
+      )
+    for (const step of [120, 480]) {
+      const deltas = await measure(step)
+      const sorted = deltas.toSorted((a, b) => a - b)
+      const at = (share: number) => sorted[Math.ceil(sorted.length * share) - 1]!.toFixed(1)
+      const report = `${step}px/frame: frames=${deltas.length} p50=${at(0.5)}ms p95=${at(0.95)}ms max=${sorted.at(-1)!.toFixed(1)}ms`
+      testInfo.annotations.push({ type: `news-10k-scroll-frame-${step}`, description: report })
+      console.log(`news-feed 10000 rows scroll ${report}`)
+      expect(deltas).toHaveLength(150)
+    }
+    // 滚到最后一条：1 万条都在（最后一行的 aria-posinset 是 10000）。
+    await scroll.evaluate((el) => (el.scrollTop = el.scrollHeight))
+    await expect(frame.locator('.k-news-item[aria-posinset="10000"]')).toBeVisible()
+  })
+
+  test(`新闻流（${theme}）：标题后的标签（中性 / 信息 / 警示，没有涨跌色）、来源数大于 1 才写、悬停出另外几家`, async ({
+    page,
+  }) => {
+    await open(page, theme, 'news-feed')
+    const frame = section(page, 'news-feed').getByTestId('news-server')
+    const rows = frame.locator('.k-news-item')
+    const first = rows.first()
+    // 第一条：两枚标签在标题后面（标题的右边缘在标签的左边缘之内），来源数是「N 源」。
+    const [title, tag] = await Promise.all([
+      first.locator('.k-news-title').boundingBox(),
+      first.locator('.k-news-tag').first().boundingBox(),
+    ])
+    expect(tag!.x).toBeGreaterThanOrEqual(title!.x + title!.width - 1)
+    await expect(first.locator('.k-news-tag')).toHaveCount(2)
+    await expect(first.locator('.k-news-sources')).toHaveText(/^\d+ 源$/)
+    // 只有 sourcesCount 大于 1 的条目才有来源数（演示里每 5 条第 1 条有）。
+    await expect(rows.nth(1).locator('.k-news-sources')).toHaveCount(0)
+    // 标签的颜色取自语气：info 与 warn 不同于 neutral，也不是涨跌色。
+    const colors = await frame
+      .locator('.k-news-tag')
+      .evaluateAll((nodes) =>
+        Object.fromEntries(nodes.map((n) => [(n as HTMLElement).dataset.tone!, getComputedStyle(n).color] as const)),
+      )
+    expect(new Set(Object.values(colors)).size).toBe(Object.keys(colors).length)
+    const pnl = await page.evaluate(() => {
+      const read = (name: string) => {
+        const probe = document.createElement('i')
+        probe.style.color = `var(${name})`
+        document.body.append(probe)
+        const color = getComputedStyle(probe).color
+        probe.remove()
+        return color
+      }
+      return [read('--pnl-up'), read('--pnl-down')]
+    })
+    for (const color of Object.values(colors)) expect(pnl).not.toContain(color)
+    // 悬停来源数：出提示，写另外几家（labels.alsoFrom）；键盘聚焦也出。
+    const sources = first.locator('.k-news-sources[data-also]')
+    await sources.hover()
+    await expect(page.getByRole('tooltip').first()).toContainText('另见：演示快讯')
+    await page.keyboard.press('Escape')
+    await expect(page.getByRole('tooltip')).toHaveCount(0)
+    await sources.focus()
+    await expect(page.getByRole('tooltip').first()).toContainText('另见：')
+  })
+
+  test(`新闻流（${theme}）：外部筛选 + 滚到底加载——条件交给服务端、件不自己筛；底部那一行依次是加载中、出错可重试、到底了；换条件回到顶部且不冒「新消息」`, async ({
+    page,
+  }) => {
+    await open(page, theme, 'news-feed')
+    const doc = section(page, 'news-feed')
+    const frame = doc.getByTestId('news-server')
+    const scroll = frame.locator('.k-news-scroll')
+    const rows = frame.locator('.k-news-item')
+    const count = doc.getByTestId('news-server-count')
+    const end = frame.locator('.k-news-end')
+    await expect(count).toHaveText('40')
+    await expect(rows).toHaveCount(40)
+    // 滚到底：触发加载，底部先是「加载中」，到了以后 80 条；比已显示的最新一条旧，所以不冒「n 条新消息」。
+    await scroll.evaluate((el) => (el.scrollTop = el.scrollHeight))
+    await expect(end).toHaveAttribute('data-state', 'loading')
+    await expect(end).toContainText('加载中…')
+    await expect(count).toHaveText('80')
+    await expect(frame.getByTestId('news-new')).toHaveCount(0)
+    // 下一页失败：底部写原因和「重试」，点了接着取；没点之前不再自己请求（请求数不变）。
+    await doc.getByTestId('news-server-fail').click()
+    await scroll.evaluate((el) => (el.scrollTop = el.scrollHeight))
+    await expect(end).toHaveAttribute('data-state', 'error')
+    await expect(end).toContainText('这一页没取到')
+    const requests = await doc.getByTestId('news-server-requests').textContent()
+    await page.waitForTimeout(400)
+    await expect(doc.getByTestId('news-server-requests')).toHaveText(requests!)
+    await end.getByRole('button', { name: '重试' }).click()
+    await expect(count).toHaveText('120')
+    // 取到底（200 条）：写「没有更多了」。
+    for (const total of ['160', '200']) {
+      await scroll.evaluate((el) => (el.scrollTop = el.scrollHeight))
+      await expect(count).toHaveText(total)
+    }
+    await expect(end).toHaveAttribute('data-state', 'end')
+    await expect(end).toHaveText('没有更多了')
+    // 换条件：滚在底部时在搜索框打字，服务端按条件取回，件里列出的全是命中的（件自己没筛），回到顶部，且没有「新消息」。
+    await scroll.evaluate((el) => (el.scrollTop = el.scrollHeight))
+    await frame.getByRole('searchbox', { name: '搜索关键词' }).fill('第 7')
+    // 假服务端里标题含「第 7」的是第 7 条与第 70–79 条，共 11 条；等数目变了再看（旧列表尾部的「第 79 条」也含「第 7」，不能拿它当到了的信号）。
+    await expect(count).toHaveText('11')
+    const titles = await rows.locator('.k-news-title').allTextContents()
+    expect(titles.length).toBeGreaterThan(0)
+    expect(titles.every((t) => t.includes('第 7'))).toBe(true)
+    await expect(count).toHaveText(String(titles.length))
+    expect(await scroll.evaluate((el) => el.scrollTop)).toBe(0)
+    await expect(frame.getByTestId('news-new')).toHaveCount(0)
+  })
+
+  test(`新闻流（${theme}）：侧栏——chrome=bare 没有标题行与过滤区，分组小标题 24px，虚拟列表里小标题与条目不重叠`, async ({
+    page,
+  }) => {
+    await open(page, theme, 'news-feed')
+    const bare = section(page, 'news-feed').getByTestId('news-bare')
+    const feed = bare.locator('.k-news')
+    await expect(feed).toHaveAttribute('data-chrome', 'bare')
+    for (const gone of ['.k-news-top', '.k-news-head', '[data-slot="news-facets"]', '.k-chips'])
+      await expect(feed.locator(gone)).toHaveCount(0)
+    const list = bare.locator('.k-news-items')
+    await expect(list).toHaveAttribute('data-virtual', '')
+    const groups = bare.locator('.k-news-group')
+    await expect(groups.first()).toContainText('第 1–50 条')
+    await expect(groups.first().locator('.k-news-group-count')).toHaveText('50')
+    await expect(groups.first().getByRole('heading', { level: 3 })).toHaveText('第 1–50 条')
+    expect((await groups.first().boundingBox())!.height).toBe(24)
+    // 滚到第二组附近：行按下标排好、互不重叠（小标题也算一行）。
+    const scroll = bare.locator('.k-news-scroll')
+    await scroll.evaluate((el) => (el.scrollTop = 50 * 60))
+    await expect(groups.first()).toBeVisible()
+    const overlaps = await bare.evaluate((root) => {
+      const boxes = [...root.querySelectorAll<HTMLElement>('.k-news-items > li')]
+        .map((li) => li.getBoundingClientRect())
+        .sort((a, b) => a.top - b.top)
+      const bad: number[] = []
+      for (let i = 1; i < boxes.length; i++) if (boxes[i]!.top < boxes[i - 1]!.bottom - 0.6) bad.push(i)
+      return bad
+    })
+    expect(overlaps).toEqual([])
+    // 读屏的条数只算条目（小标题不占 posinset）：最后一条是 1000。
+    await scroll.evaluate((el) => (el.scrollTop = el.scrollHeight))
+    await expect(bare.locator('.k-news-item[aria-posinset="1000"]')).toBeVisible()
+    await expect(bare.locator('.k-news-item').first()).toHaveAttribute('aria-setsize', '1000')
+  })
+
   test(`新闻阅读窗（${theme}）：品种涨跌上色、要点、操作按钮`, async ({ page }) => {
     await open(page, theme, 'news-reader')
     const reader = section(page, 'news-reader').locator('[data-slot="news-reader"]')

@@ -1,6 +1,6 @@
 # TradingDatePicker
 
-只能选交易日的日期选择：日期按钮点开日历（沿用 DateTimeInput 的日历皮肤，行为底座是 react-aria 的 Calendar），休市的日子灰着点不了；两侧的按钮直接跳到上一个 / 下一个交易日（跳过周末与长假）。交易日历由调用方传，可以是一组 YYYY-MM-DD（数组或 Set），也可以是判定函数；包里不带日历数据，也不读时钟。min / max 圈出能选的范围，前后按钮到边界禁用。
+只能选交易日的日期选择：日期按钮点开日历（沿用 DateTimeInput 的日历皮肤，行为底座是 UI SDK 的 Calendar），休市的日子灰着点不了；两侧的按钮直接跳到上一个 / 下一个交易日（跳过周末与长假）。交易日历由调用方传，可以是一组 YYYY-MM-DD（数组或 Set），也可以是判定函数；包里不带日历数据，也不读时钟。min / max 圈出能选的范围，前后按钮到边界禁用。
 
 ## Provide
 
@@ -18,7 +18,7 @@
 | `min` | `string` | — | Earliest selectable day (YYYY-MM-DD); earlier days are disabled and the previous button stops there. |
 | `max` | `string` | — | Latest selectable day (YYYY-MM-DD); later days are disabled and the next button stops there. |
 | `labels` | `TradingDatePickerLabels` | `cnLabelsZh.tradingDate` | Text pack; the Simplified Chinese default is used when omitted. |
-| `locale` | `string` | `'zh-CN'` | Locale for react-aria (month names, week start): zh-CN by default. |
+| `locale` | `string` | `'zh-CN'` | Locale for month names and week start: zh-CN by default. |
 | `className` | `string` | — | Extra class names. |
 
 ### tradingDayTest(calendar)
@@ -89,7 +89,7 @@ export function TradingDatePickerUsage() {
 TradingDatePicker
   上一个交易日按钮
   日期按钮 → Popover
-    Calendar（react-aria，休市日 unavailable）
+    Calendar（UI SDK，休市日 unavailable）
   下一个交易日按钮
 ```
 

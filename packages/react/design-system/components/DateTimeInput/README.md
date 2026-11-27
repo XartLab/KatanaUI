@@ -24,7 +24,7 @@
 | `autoFocus` | `boolean` | — | Focus the field on mount, like the native attribute. |
 | `className` | `string` | — | Extra class name on the root. |
 | `labels` * | `DateTimeLabels` | — | Accessible names and button names (the package ships no text; the caller passes them in the UI language). |
-| `locale` * | `string` | — | Locale for react-aria: zh-CN or en-CA, both year-month-day. |
+| `locale` * | `string` | — | Locale for the date and time segments: zh-CN or en-CA, both year-month-day. |
 
 ## Usage
 

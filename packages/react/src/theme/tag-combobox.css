@@ -1,0 +1,238 @@
+/* SPDX-License-Identifier: MIT */
+/* TagCombobox（patterns/tag-combobox.tsx）：字段是我们输入框的皮（跟 TagInput 同一张：--k-editable-* 底与边、圆角 6、聚焦边提亮），标签与光标在框里换行排。
+   框最小 30 高：标签 22 高 = 30 − 上下 1px 边 − 上下各 3px 内距；右端留 28px 给箭头按钮（绝对定位，不参与换行）。
+   标签的底与边跟按钮一档（--k-actionable-*）；Backspace 或 ← → 选中的标签画一圈焦点色的环。
+   弹层（PopoverContent）宽等于字段宽；行：主文字 + 可选第二行说明，前缀节点在左、勾在行尾；高亮行 --k-selectable-subtle-background-hover，
+   高亮行与已选行的主文字提亮（已选再加粗）；说明用 body 档（secondary 档压在高亮行的底上 Console 下只有 3.95:1，axe 查出）；过滤时命中的字加强（粗 + 提亮，不用底色，免得跟高亮行的底混）。数值取自 combobox 的行（圆角 6、内距 8）。 */
+.k-tagcb {
+  min-width: 0;
+}
+.k-tagcb-box {
+  --k-tagcb-pad: 3px;
+  --k-tagcb-tag: 22px;
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  box-sizing: border-box;
+  min-height: 30px;
+  padding: var(--k-tagcb-pad) 28px var(--k-tagcb-pad) 6px;
+  background: var(--k-editable-background);
+  border: 1px solid var(--k-editable-borderColor);
+  border-radius: var(--radius-control);
+  cursor: text;
+  transition: border-color var(--dur-hover) var(--ease-hover);
+}
+.k-tagcb-box:focus-within {
+  border-color: var(--k-editable-borderColor-active);
+}
+.k-tagcb-box:has(.k-tagcb-input:focus-visible) {
+  outline: var(--k-focused-outlineWidth) solid var(--k-focused-outlineColor);
+  outline-offset: -2px;
+}
+.k-tagcb[data-disabled] .k-tagcb-box {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+.k-tagcb-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  box-sizing: border-box;
+  height: var(--k-tagcb-tag);
+  max-width: 100%;
+  padding: 0 2px 0 3px;
+  background: var(--k-actionable-background);
+  border: 1px solid var(--k-actionable-borderColor);
+  border-radius: var(--radius-pill);
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+  line-height: 1;
+  white-space: nowrap;
+  cursor: default;
+  user-select: none;
+}
+.k-tagcb-tag:not(:has(.k-tagcb-tag-prefix)) {
+  padding-left: 8px;
+}
+.k-tagcb-tag[data-picked] {
+  background: var(--k-actionable-background-hover);
+  box-shadow: 0 0 0 1px var(--k-focused-outlineColor);
+}
+.k-tagcb-tag-prefix {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  overflow: hidden;
+  border-radius: 50%;
+}
+.k-tagcb-tag-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.k-tagcb-remove {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  color: var(--k-actionable-subtle-foreground);
+  cursor: pointer;
+}
+.k-tagcb-remove:hover:not(:disabled) {
+  background: var(--k-actionable-subtle-background-hover);
+  color: var(--k-content-primary-foreground);
+}
+.k-tagcb-remove:disabled {
+  cursor: not-allowed;
+}
+.k-tagcb-remove svg {
+  width: 12px;
+  height: 12px;
+}
+.k-tagcb-input {
+  flex: 1 0 64px;
+  min-width: 64px;
+  height: var(--k-tagcb-tag);
+  padding: 0;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-body) var(--font-sans);
+}
+.k-tagcb-input::placeholder {
+  color: var(--k-content-secondary-foreground);
+}
+.k-tagcb-input:disabled {
+  cursor: not-allowed;
+}
+.k-tagcb-toggle {
+  position: absolute;
+  top: var(--k-tagcb-pad);
+  right: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--k-tagcb-tag);
+  height: var(--k-tagcb-tag);
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: var(--k-content-secondary-foreground);
+  cursor: pointer;
+}
+.k-tagcb-toggle:hover:not(:disabled) {
+  background: var(--k-actionable-subtle-background-hover);
+  color: var(--k-content-primary-foreground);
+}
+.k-tagcb-toggle:disabled {
+  cursor: not-allowed;
+}
+.k-tagcb-toggle svg {
+  width: 12px;
+  height: 12px;
+  transition: transform 150ms var(--ease-snappy);
+}
+.k-tagcb[data-open] .k-tagcb-toggle svg {
+  transform: rotate(180deg);
+}
+
+/* 弹层里的列表：超过 280 高自己滚（再受可用高度限制），高亮行靠 JS 滚进视野。position: relative 让行的 offsetTop 相对列表。 */
+.k-tagcb-list {
+  position: relative;
+  box-sizing: border-box;
+  max-height: min(280px, var(--radix-popover-content-available-height, 280px));
+  padding: 6px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.k-tagcb-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  min-height: 30px;
+  padding: 6px 8px;
+  border-radius: var(--radius-inner);
+  color: var(--k-content-body-foreground);
+  cursor: pointer;
+  user-select: none;
+}
+.k-tagcb-option[data-active] {
+  background: var(--k-selectable-subtle-background-hover);
+}
+.k-tagcb-option[data-active] .k-tagcb-label,
+.k-tagcb-option[data-checked] .k-tagcb-label {
+  color: var(--k-content-primary-foreground);
+}
+.k-tagcb-option[data-checked] .k-tagcb-label {
+  font-weight: 500;
+}
+.k-tagcb-prefix {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  overflow: hidden;
+  border-radius: 50%;
+}
+.k-tagcb-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.k-tagcb-label {
+  overflow: hidden;
+  color: var(--k-content-body-foreground);
+  font: var(--text-body) var(--font-sans);
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-tagcb-desc {
+  overflow: hidden;
+  color: var(--k-content-body-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-tagcb-hit {
+  color: var(--k-content-primary-foreground);
+  font-weight: 700;
+}
+.k-tagcb-check {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: var(--k-content-primary-foreground);
+}
+.k-tagcb-check svg {
+  width: 14px;
+  height: 14px;
+}
+.k-tagcb-empty {
+  padding: 16px 8px;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-data) var(--font-sans);
+  text-align: center;
+}

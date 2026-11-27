@@ -799,6 +799,11 @@
           "target": "~/src/katana/ui/theme/system-status.css"
         },
         {
+          "path": "src/theme/tag-combobox.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/tag-combobox.css"
+        },
+        {
           "path": "src/theme/tag-input.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/tag-input.css"
@@ -2910,8 +2915,9 @@
       "title": "Json Viewer",
       "description": "只读的 JSON 树：对象与数组可折叠，叶子按类型上色，上面一个查找框，命中的键名与值高亮、祖先自动展开。原始消息、Agent 调用结果、连接调试用它。功能参照 Arc，实现原创。",
       "dependencies": [
-        "lucide-react@1.67.0",
-        "react-aria-components@1.22.1"
+        "@ui-sdk/core@0.1.0-beta.17",
+        "@ui-sdk/react@0.1.0-beta.17",
+        "lucide-react@1.67.0"
       ],
       "registryDependencies": [
         "@katana/cn",
@@ -3562,15 +3568,11 @@
       "name": "calendar",
       "type": "registry:component",
       "title": "Calendar",
-      "description": "单独摆在页上的月历：选一天、翻月，非交易日用 unavailable 灰掉并加删除线。样子与 DateTimeInput 弹层里的日历同一套（.k-cal*），外面多一圈 container 的边与底；今天字提亮加下划线。行为底座是 react-aria 的 Calendar，日期一律 YYYY-MM-DD 字符串。",
-      "dependencies": [
-        "lucide-react@1.67.0",
-        "react-aria-components@1.22.1"
-      ],
+      "description": "单独摆在页上的月历：选一天、翻月，非交易日用 unavailable 灰掉并加删除线。样子与 DateTimeInput 弹层里的日历同一套（.k-cal*），外面多一圈 container 的边与底；今天字提亮加下划线。行为底座是 UI SDK 的 Calendar，日期一律 YYYY-MM-DD 字符串。",
       "registryDependencies": [
         "@katana/cn",
-        "@katana/date-range-model",
-        "@katana/date-time-model"
+        "@katana/date-parts",
+        "@katana/date-range-model"
       ],
       "files": [
         {
@@ -3637,6 +3639,27 @@
       ]
     },
     {
+      "name": "date-parts",
+      "type": "registry:component",
+      "title": "Date Parts",
+      "description": "Calendar、DateTimeInput、DateRangePicker、TradingDatePicker 共用的月历头与格、分段输入的段（UI SDK 上的薄封装）。",
+      "dependencies": [
+        "@ui-sdk/core@0.1.0-beta.17",
+        "@ui-sdk/react@0.1.0-beta.17",
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/date-parts.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/date-parts.tsx"
+        }
+      ]
+    },
+    {
       "name": "date-range-model",
       "type": "registry:lib",
       "title": "Date Range Model",
@@ -3658,12 +3681,13 @@
       "title": "Date Range Picker",
       "description": "起点—终点两个可逐段打字的日期框，右边的日历按钮打开双月日历，左边一列预设：今天、本周、本月、年初至今，不在预设里的显示「自定义」。回放、台账、报告的区间用它。功能参照 Arc，实现原创。",
       "dependencies": [
-        "@internationalized/date@3.12.4",
-        "lucide-react@1.67.0",
-        "react-aria-components@1.22.1"
+        "@ui-sdk/core@0.1.0-beta.17",
+        "@ui-sdk/react@0.1.0-beta.17",
+        "lucide-react@1.67.0"
       ],
       "registryDependencies": [
         "@katana/cn",
+        "@katana/date-parts",
         "@katana/date-range-model",
         "@katana/popover"
       ],
@@ -3681,11 +3705,12 @@
       "title": "Date Time Input",
       "description": "可以逐段打字的「年-月-日」与「时:分」，日期框右边的日历按钮打开日历；不随浏览器语言变格式。",
       "dependencies": [
-        "lucide-react@1.67.0",
-        "react-aria-components@1.22.1"
+        "@ui-sdk/core@0.1.0-beta.17",
+        "@ui-sdk/react@0.1.0-beta.17",
+        "lucide-react@1.67.0"
       ],
       "registryDependencies": [
-        "@katana/date-time-model",
+        "@katana/date-parts",
         "@katana/popover"
       ],
       "files": [
@@ -3693,22 +3718,6 @@
           "path": "src/patterns/date-time-input.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/date-time-input.tsx"
-        }
-      ]
-    },
-    {
-      "name": "date-time-model",
-      "type": "registry:lib",
-      "title": "Date Time Model",
-      "description": "DateTimeInput 的解析与格式化（纯函数）。",
-      "dependencies": [
-        "@internationalized/date@3.12.4"
-      ],
-      "files": [
-        {
-          "path": "src/patterns/date-time-model.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/patterns/date-time-model.ts"
         }
       ]
     },
@@ -4008,10 +4017,11 @@
       "name": "list-box",
       "type": "registry:component",
       "title": "List Box",
-      "description": "常驻页面的选项列表（listbox 角色）：单选或多选、可分组、每项可带图标、第二行说明与右端数值，选中的项右端出对勾。项高 28、圆角 --radius-inner，bordered 时外面一圈 container 的边与底；maxHeight 之后自己滚。行为底座是 react-aria 的 ListBox。",
+      "description": "常驻页面的选项列表（listbox 角色）：单选或多选、可分组、每项可带图标、第二行说明与右端数值，选中的项右端出对勾。项高 28、圆角 --radius-inner，bordered 时外面一圈 container 的边与底；maxHeight 之后自己滚。行为底座是 UI SDK 的 Listbox。",
       "dependencies": [
-        "lucide-react@1.67.0",
-        "react-aria-components@1.22.1"
+        "@ui-sdk/core@0.1.0-beta.17",
+        "@ui-sdk/react@0.1.0-beta.17",
+        "lucide-react@1.67.0"
       ],
       "registryDependencies": [
         "@katana/cn"
@@ -4325,6 +4335,40 @@
       ]
     },
     {
+      "name": "tag-combobox-model",
+      "type": "registry:lib",
+      "title": "Tag Combobox Model",
+      "description": "TagCombobox 的纯逻辑：过滤与命中位置（大小写、重音不分，几个词都要命中）、高亮项怎么走、键盘在标签、输入框与列表之间怎么走。",
+      "files": [
+        {
+          "path": "src/patterns/tag-combobox-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/patterns/tag-combobox-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "tag-combobox",
+      "type": "registry:component",
+      "title": "Tag Combobox",
+      "description": "字段本身是输入框：已选项以小标签排在框里（可换行、可带头像或图标、每个有 ×），光标跟在最后一个标签后面，打字就过滤，命中的字加强。列表每行主文字加可选第二行说明与前缀节点，已选行尾画勾；选或取消后列表不收、输入清空。输入框空着时退格第一次选中最后一个标签、第二次删掉；← → 在标签间移。弹层锚在整个字段上，标签多到换行字段长高时弹层跟着下移。交互参照 Jamie Merrill 的 Multi select combobox，只借交互，样子是我们的。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/popover",
+        "@katana/tag-combobox-model"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/tag-combobox.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/tag-combobox.tsx"
+        }
+      ]
+    },
+    {
       "name": "tag-input-model",
       "type": "registry:lib",
       "title": "Tag Input Model",
@@ -4454,8 +4498,9 @@
       "title": "Tree View",
       "description": "可展开收起的层级列表：数据集目录、品种分类树用它。方向键走、→ 展开、← 收起，单选或多选，展开与选中都可受控。功能参照 Arc，实现原创。",
       "dependencies": [
-        "lucide-react@1.67.0",
-        "react-aria-components@1.22.1"
+        "@ui-sdk/core@0.1.0-beta.17",
+        "@ui-sdk/react@0.1.0-beta.17",
+        "lucide-react@1.67.0"
       ],
       "registryDependencies": [
         "@katana/cn"
@@ -8427,7 +8472,7 @@
       "name": "cn-trading-date-model",
       "type": "registry:lib",
       "title": "Cn Trading Date Model",
-      "description": "只能选交易日的日期选择：日期按钮点开日历（沿用 DateTimeInput 的日历皮肤，行为底座是 react-aria 的 Calendar），休市的日子灰着点不了；两侧的按钮直接跳到上一个 / 下一个交易日（跳过周末与长假）。交易日历由调用方传，可以是一组 YYYY-MM-DD（数组或 Set），也可以是判定函数；包里不带日历数据，也不读时钟。min / max 圈出能选的范围，前后按钮到边界禁用。",
+      "description": "只能选交易日的日期选择：日期按钮点开日历（沿用 DateTimeInput 的日历皮肤，行为底座是 UI SDK 的 Calendar），休市的日子灰着点不了；两侧的按钮直接跳到上一个 / 下一个交易日（跳过周末与长假）。交易日历由调用方传，可以是一组 YYYY-MM-DD（数组或 Set），也可以是判定函数；包里不带日历数据，也不读时钟。min / max 圈出能选的范围，前后按钮到边界禁用。",
       "files": [
         {
           "path": "src/cn/trading-date-model.ts",
@@ -8440,16 +8485,15 @@
       "name": "cn-trading-date-picker",
       "type": "registry:component",
       "title": "Cn Trading Date Picker",
-      "description": "只能选交易日的日期选择：日期按钮点开日历（沿用 DateTimeInput 的日历皮肤，行为底座是 react-aria 的 Calendar），休市的日子灰着点不了；两侧的按钮直接跳到上一个 / 下一个交易日（跳过周末与长假）。交易日历由调用方传，可以是一组 YYYY-MM-DD（数组或 Set），也可以是判定函数；包里不带日历数据，也不读时钟。min / max 圈出能选的范围，前后按钮到边界禁用。",
+      "description": "只能选交易日的日期选择：日期按钮点开日历（沿用 DateTimeInput 的日历皮肤，行为底座是 UI SDK 的 Calendar），休市的日子灰着点不了；两侧的按钮直接跳到上一个 / 下一个交易日（跳过周末与长假）。交易日历由调用方传，可以是一组 YYYY-MM-DD（数组或 Set），也可以是判定函数；包里不带日历数据，也不读时钟。min / max 圈出能选的范围，前后按钮到边界禁用。",
       "dependencies": [
-        "lucide-react@1.67.0",
-        "react-aria-components@1.22.1"
+        "lucide-react@1.67.0"
       ],
       "registryDependencies": [
         "@katana/cn",
         "@katana/cn-labels",
         "@katana/cn-trading-date-model",
-        "@katana/date-range-model",
+        "@katana/date-parts",
         "@katana/popover"
       ],
       "files": [
@@ -8882,9 +8926,15 @@
         "@katana/symbol-mark",
         "@katana/text-measure",
         "@katana/toggle-group",
+        "@katana/tooltip",
         "@katana/view-switcher"
       ],
       "files": [
+        {
+          "path": "src/blocks/news-feed/news-end.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/news-feed/news-end.tsx"
+        },
         {
           "path": "src/blocks/news-feed/news-facets.tsx",
           "type": "registry:component",
