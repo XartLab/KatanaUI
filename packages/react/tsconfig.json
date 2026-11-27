@@ -21,6 +21,7 @@
     "ds",
     "scripts",
     "e2e",
+    "bombadil",
     "browser",
     "vitest.browser.config.ts",
     "vite.config.ts",
