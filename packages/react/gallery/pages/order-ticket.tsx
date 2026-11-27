@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// OrderTicket 页的预览：先是「用法」那份最小例子，下面是受控价格与锁住态的示例（#176）：订单簿点一档，两栏的限价跟着变；
+// OrderTicket 页的预览：先是「用法」那份最小例子，下面是受控价格与锁住态的示例（#176）：订单簿点一档，限价框跟着变；
 // 交易锁开着时两个下单钮灰掉、钮下写原因。盘口是写死的示例档位，不是行情。
 import { useState } from 'react'
 import { OrderBook, OrderTicket, type OrderSide } from '../../src/blocks'
@@ -38,7 +38,7 @@ function ControlledTicket() {
   return (
     <div className="gal-stack" data-gallery-ticket-controlled style={{ width: '100%' }}>
       <p className="gal-note">
-        示例：盘口是写死的示例档位，不是行情。点一档，两栏的限价都换成这档价；打开交易锁，两个下单钮灰掉、钮下写原因，填的数都留着。
+        示例：盘口是写死的示例档位，不是行情。点一档，限价框换成这档价；打开交易锁，两个下单钮灰掉、钮下写原因，填的数都留着。
       </p>
       <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <Switch checked={locked} onCheckedChange={setLocked} aria-label="Trading lock" />

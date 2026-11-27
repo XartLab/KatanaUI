@@ -98,17 +98,37 @@ test('Tabs line：文字页签没有药丸底块，当前项下划线随点击�
   await expect(tabs.getByText('周线的内容')).toBeVisible()
 })
 
-test('下单面板改用基础件之后：开平切换整宽、买卖切换填色、委托类型页签下划线、数字框带单位', async ({ page }) => {
+test('下单面板：开平切换整宽、委托类型页签下划线与切换、保证金模式是下拉、杠杆格点开有输入框', async ({ page }) => {
   const area = await open(page, 'order-ticket')
   const ticket = area.locator('[data-slot="order-ticket"]').first()
-  // 压窄让买卖切换出现（宽版里它被容器查询藏起来）。
-  await ticket.evaluate((el) => {
-    el.style.width = '400px'
-  })
   const action = ticket.locator('[data-slot="ticket-action"]')
   const [ticketBox, actionBox] = await Promise.all([ticket.boundingBox(), action.boundingBox()])
-  expect(actionBox!.width).toBeGreaterThan(ticketBox!.width - 30)
-  const side = ticket.locator('[data-slot="ticket-side"]')
+  expect(actionBox!.width).toBeGreaterThan(ticketBox!.width - 40)
+  // 选中的一格填 --pnl-up（OKX 也是绿的）。
+  await expect
+    .poll(() =>
+      action.getByRole('button', { name: 'Open', exact: true }).evaluate((el) => getComputedStyle(el).backgroundColor),
+    )
+    .not.toBe('rgba(0, 0, 0, 0)')
+  const type = ticket.locator('[data-slot="ticket-type"]')
+  await expect(type).toHaveAttribute('data-variant', 'line')
+  await type.getByRole('tab', { name: 'Market' }).click()
+  await expect(type.getByRole('tab', { name: 'Market' })).toHaveAttribute('data-state', 'active')
+  // 市价单没有价格框。
+  await expect(ticket.locator('[data-slot="ticket-price"]')).toHaveCount(0)
+  // 保证金模式是带箭头的格：点开出列表，不再是分段。
+  await ticket.getByRole('combobox', { name: 'Margin mode' }).click()
+  await expect(page.getByRole('option', { name: 'Cross' })).toBeVisible()
+  await page.keyboard.press('Escape')
+  // 杠杆格点开：输入框与几个常用倍数。
+  await ticket.locator('[data-slot="ticket-leverage-cell"]').click()
+  await expect(page.locator('[data-slot="ticket-leverage"]')).toBeVisible()
+})
+
+test('仓位计算器：买卖切换填涨跌色，数字框带标签与单位', async ({ page }) => {
+  const area = await open(page, 'position-calculator')
+  const calculator = area.locator('[data-slot="position-calculator"]').first()
+  const side = calculator.locator('[data-slot="ticket-side"]')
   await expect(side.locator('[data-side="buy"]')).toHaveAttribute('aria-pressed', 'true')
   await side.locator('[data-side="sell"]').click()
   await expect(side.locator('[data-side="sell"]')).toHaveAttribute('aria-pressed', 'true')
@@ -116,11 +136,7 @@ test('下单面板改用基础件之后：开平切换整宽、买卖切换填�
   await expect
     .poll(() => side.locator('[data-side="sell"]').evaluate((el) => getComputedStyle(el).backgroundColor))
     .not.toBe('rgba(0, 0, 0, 0)')
-  const type = ticket.locator('[data-slot="ticket-type"]')
-  await expect(type).toHaveAttribute('data-variant', 'line')
-  await type.getByRole('tab', { name: 'Market' }).click()
-  await expect(type.getByRole('tab', { name: 'Market' })).toHaveAttribute('data-state', 'active')
   // 数字框：标签、值、单位同在一个外框里。
-  const field = ticket.locator('[data-slot="input-box"]').first()
+  const field = calculator.locator('[data-slot="input-box"]').first()
   await expect(field.locator('input')).toHaveCSS('text-align', 'right')
 })

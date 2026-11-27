@@ -55,8 +55,8 @@ const INSTRUMENT = {
   sizeUnit: '张',
 }
 const ACCOUNT = { available: 250, fees: { open: 0.0005, close: 0.0005 }, maintenanceMarginRate: 0.004 }
-const MARKET = { last: 60000, bid: 59999.9, ask: 60000.1 }
-// 演示盘口：写死的几档，不跳动；点一档回填下单面板两栏的限价。
+const MARKET = { last: 60000, bid: 59999.9, ask: 60000.1, maxBuy: 61200, minSell: 58800 }
+// 演示盘口：写死的几档，不跳动；点一档回填下单面板的限价。
 const BOOK_BIDS = [
   { price: 59999.9, size: 1.2 },
   { price: 59999.5, size: 0.8 },
@@ -119,6 +119,14 @@ const TICKET_LABELS: OrderTicketLabels = {
   submitClose: { buy: '平空', sell: '平多' },
   feeRate: '费率',
   calculator: '计算器',
+  contractValue: '单张委托价值',
+  maxBuyPrice: '最高买价',
+  minSellPrice: '最低卖价',
+  positionBuilder: '仓位创建器',
+  transfer: '划转资金',
+  help: '委托类型说明',
+  stepUp: '价格加一档',
+  stepDown: '价格减一档',
 }
 
 const BOOK_LABELS: OrderBookLabels = {
@@ -378,12 +386,12 @@ const pattern: Pattern = {
     { page: 'switch', role: '一键下单（跳过确认）是用户自己打开的设置，默认关' },
     {
       page: 'order-book',
-      role: '点一档回调 onPriceSelect，回填下单面板两栏的限价（OrderTicket 的受控 price）',
+      role: '点一档回调 onPriceSelect，回填下单面板的限价（OrderTicket 的受控 price）',
     },
   ],
   rules: [
     '次序固定：填单 → 读数区看数 → 下单钮 → 确认窗 → 网关 → 弹出提示 → 委托表；每一步只有一个去处，不在面板里另画一份结果',
-    '点订单簿一档：两栏的限价都换成这档价（OrderTicket 受控 price，onPriceSelect 里写回），不直接下单，仍走下单钮与确认窗；照 TradingView 的 DOM，点档按这档价下限价单、默认先确认（帮助中心「Depth of market (DOM)」，2026-11-23 读）。点档是否顺带切回限价页签，页面没写，待核对；这里不切',
+    '点订单簿一档：限价框换成这档价（OrderTicket 受控 price，onPriceSelect 里写回），不直接下单，仍走下单钮与确认窗；照 TradingView 的 DOM，点档按这档价下限价单、默认先确认（帮助中心「Depth of market (DOM)」，2026-11-23 读）。点档是否顺带切回限价页签，页面没写，待核对；这里不切',
     '确认窗默认弹（照 TradingView：一键下单默认关，下单与平仓都先给预览，2026-11-23 读其帮助中心「How to place an order」）；一键下单是用户在设置里自己打开的，打开后点下单直接发出',
     '确认窗只摆读数区里已有的数（方向、价格、张数与杠杆、总占用、预估强平价、止盈止损与托管方式），不另算一遍；数与面板对不上就是 bug',
     '超过可用、不足最小下单量、止损在盈利一侧：面板那一栏当场报错、下单钮变灰，不等网关来拒',
