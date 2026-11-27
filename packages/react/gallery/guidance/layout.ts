@@ -82,7 +82,7 @@ const layout: GuidanceMap = {
     use: ['数据集目录、品种分类这类有层级的列表。', '要在层级里选一个节点，并能展开收起。'],
     avoid: ['不分层的列表，用 command 或 data-grid。', '站内导航，用 side-nav。', '几千个节点，先在数据层折叠。'],
     a11y: [
-      '基于 react-aria-components 的 Tree：treegrid 角色，展开的行带 aria-expanded。',
+      '基于 UI SDK 的 Tree：tree 角色，展开的项带 aria-expanded，层级在 aria-level。',
       '树整体的读屏名取自 label，行名取自文字。',
       '箭头图标对读屏隐藏。',
     ],

@@ -37,7 +37,7 @@ const cnBatch2: GuidanceMap = {
     ],
     avoid: ['任意日期或区间用 DateTimeInput、DateRangePicker。'],
     a11y: [
-      '日历是 react-aria 的 Calendar：方向键走日子，PageUp / PageDown 换月，Enter 选中。',
+      '日历是 UI SDK 的 Calendar：方向键走日子，PageUp / PageDown 换月，Enter 选中。',
       '休市的日子是 aria-disabled（灰色加删除线），不只靠颜色。',
       '前后按钮有读屏名（上一个 / 下一个交易日），到边界时禁用。',
     ],

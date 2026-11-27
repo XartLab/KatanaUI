@@ -56,7 +56,7 @@ const saltGaps: GuidanceMap = {
       'A 股按交易日跳的选择器用 trading-date-picker。',
     ],
     a11y: [
-      'react-aria 的 Calendar：日格是 grid，月份标题是它的读屏名的一部分；翻页钮的读屏名由 labels 给。',
+      'UI SDK 的 Calendar：日格是 grid，月份标题是它的读屏名的一部分；翻页钮的读屏名由 labels 给；不可选的日子仍能用方向键走到（读作不可用），选不中。',
       '不可选的日子读作「不可用」，画法上既降色又加删除线；今天加下划线，不只靠颜色。',
       '方向键按天走、PageUp / PageDown 按月，焦点始终在一格上。',
     ],
@@ -75,8 +75,9 @@ const saltGaps: GuidanceMap = {
       '页面导航用 side-nav。',
     ],
     a11y: [
-      'react-aria 的 ListBox：listbox 角色，项是 option，Tab 只停整个列表一次，里面用方向键走。',
+      'UI SDK 的 Listbox：listbox 角色，项是 option，Tab 只停整个列表一次，里面用方向键走。',
       '选中读作「已选」，画法上换底色并出对勾，不只靠底色。',
+      '没有项时画空态文字，外层退成 group（listbox 里只许有 option 与分组，空态不能放进去）。',
       '分组读出组名；禁用的项读作「不可用」并被跳过。',
       '项里不放可聚焦的子项（按钮、链接），否则违反 listbox 的结构。',
     ],
