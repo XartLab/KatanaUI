@@ -9,6 +9,7 @@
 // 压力不是盈亏：零轴居中的条用 series-1（正）/ series-2（负），不用涨跌色；方向同时靠左右位置与带符号的数字，不只靠颜色。
 // 窗口不足就是 N/A，不填零（value 传 null、或矩阵那一行给 null）；无逐笔方向的估算值标「估算」，且灰显。不做声音、不做闪烁：这是读数，不是告警。
 import type { ReactNode } from 'react'
+import { spanVar } from '../../lib/fill.ts'
 import { depthHeights, signedSpan } from './flow-gauges-model.ts'
 
 /** 零轴居中的两个量：Market Pressure 与 Price Change，−100…+100。 */
@@ -100,7 +101,7 @@ function Signed({ gauge, naText, estimateText }: { gauge: FlowSignedGauge; naTex
         {span && (
           <i
             className={negative ? 'is-neg' : 'is-pos'}
-            style={{ left: `${span.left}%`, width: `${span.width}%` }}
+            style={spanVar(span.left / 100, span.width / 100)}
             aria-hidden="true"
           />
         )}

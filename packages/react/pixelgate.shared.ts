@@ -35,6 +35,7 @@ export const PAPER_PAGES = [
   'combobox',
   'multi-select',
   'dialog',
+  'alert-dialog',
   'sheet',
   'toast',
   'switch',

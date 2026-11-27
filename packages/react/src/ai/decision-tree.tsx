@@ -161,11 +161,11 @@ export function DecisionTree({ decisions, onChoose, allowOther = true, title, la
   }
 
   return (
-    <section ref={root} className={cn('k-dt', className)} data-slot="decision-tree" onKeyDown={onKeyDown}>
-      <header className="k-dt-head">
-        <h4 className="k-dt-title">{title}</h4>
+    <section ref={root} className={cn('k-dtree', className)} data-slot="decision-tree" onKeyDown={onKeyDown}>
+      <header className="k-dtree-head">
+        <h4 className="k-dtree-title">{title}</h4>
         {pending.length > 1 && (
-          <span className="k-dt-nav">
+          <span className="k-dtree-nav">
             <Button
               size="sm"
               variant="ghost"
@@ -189,29 +189,29 @@ export function DecisionTree({ decisions, onChoose, allowOther = true, title, la
         )}
       </header>
       {decision === undefined ? (
-        <p className="k-dt-empty">{labels.empty}</p>
+        <p className="k-dtree-empty">{labels.empty}</p>
       ) : (
-        <div className="k-dt-body" data-slot="decision" data-id={decision.id}>
-          <div className="k-dt-question">
-            <p className="k-dt-ask">{decision.question}</p>
-            {decision.context !== undefined && <p className="k-dt-context">{decision.context}</p>}
-            <p className="k-dt-agent">
+        <div className="k-dtree-body" data-slot="decision" data-id={decision.id}>
+          <div className="k-dtree-question">
+            <p className="k-dtree-ask">{decision.question}</p>
+            {decision.context !== undefined && <p className="k-dtree-context">{decision.context}</p>}
+            <p className="k-dtree-agent">
               <span>{decision.agent}</span>
               {decision.model !== undefined && <small>{decision.model}</small>}
               {(decision.risk === 'high' || decision.risk === 'medium') && (
-                <small className="k-dt-risk" data-risk={decision.risk}>
+                <small className="k-dtree-risk" data-risk={decision.risk}>
                   {labels.risk[decision.risk]}
                 </small>
               )}
             </p>
           </div>
-          <ol className="k-dt-branches">
+          <ol className="k-dtree-branches">
             {decision.options.map((option, n) => (
-              <li key={option.id} className="k-dt-branch" data-pick={option.pick ? '' : undefined}>
+              <li key={option.id} className="k-dtree-branch" data-pick={option.pick ? '' : undefined}>
                 <Button
                   size="sm"
                   variant={option.pick ? 'primary' : 'default'}
-                  className="k-dt-choose"
+                  className="k-dtree-choose"
                   data-slot="decision-option"
                   aria-keyshortcuts={String(n + 1)}
                   aria-label={option.pick ? `${option.label}，${labels.agentPick}` : option.label}
@@ -220,18 +220,18 @@ export function DecisionTree({ decisions, onChoose, allowOther = true, title, la
                   <kbd aria-hidden="true">{n + 1}</kbd>
                   {option.label}
                 </Button>
-                {option.pick && <small className="k-dt-pick">{labels.agentPick}</small>}
+                {option.pick && <small className="k-dtree-pick">{labels.agentPick}</small>}
                 {option.effects !== undefined && option.effects.length > 0 && (
-                  <ul className="k-dt-effects">
+                  <ul className="k-dtree-effects">
                     {option.effects.map((effect, e) => {
                       if (typeof effect === 'string') return <li key={e}>{effect}</li>
                       const noteId = `${baseId}-${option.id}-${e}`
                       return (
-                        <li key={e} className="k-dt-flagged">
+                        <li key={e} className="k-dtree-flagged">
                           <span tabIndex={0} data-flag="" aria-describedby={noteId}>
                             {effectText(effect)}
                           </span>
-                          <span id={noteId} role="tooltip" className="k-dt-note">
+                          <span id={noteId} role="tooltip" className="k-dtree-note">
                             {effect.note}
                             {effect.source !== undefined && <small> · {effect.source}</small>}
                           </span>
@@ -243,11 +243,11 @@ export function DecisionTree({ decisions, onChoose, allowOther = true, title, la
               </li>
             ))}
             {allowOther && (
-              <li className="k-dt-branch" data-other="">
+              <li className="k-dtree-branch" data-other="">
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="k-dt-choose"
+                  className="k-dtree-choose"
                   data-slot="decision-other"
                   aria-expanded={otherOpen}
                   aria-keyshortcuts={String(decision.options.length + 1)}
@@ -257,7 +257,7 @@ export function DecisionTree({ decisions, onChoose, allowOther = true, title, la
                   {labels.other}
                 </Button>
                 {otherOpen && (
-                  <div className="k-dt-other">
+                  <div className="k-dtree-other">
                     <label htmlFor={`${baseId}-other`}>{labels.otherField}</label>
                     <textarea
                       id={`${baseId}-other`}
@@ -279,7 +279,7 @@ export function DecisionTree({ decisions, onChoose, allowOther = true, title, la
                   </div>
                 )}
                 {replies[decision.id] !== undefined && (
-                  <p className="k-dt-reply" data-slot="decision-reply">
+                  <p className="k-dtree-reply" data-slot="decision-reply">
                     {replies[decision.id]}
                   </p>
                 )}
@@ -288,7 +288,7 @@ export function DecisionTree({ decisions, onChoose, allowOther = true, title, la
           </ol>
         </div>
       )}
-      <p className="k-dt-live" aria-live="polite">
+      <p className="k-dtree-live" aria-live="polite">
         {said}
       </p>
     </section>

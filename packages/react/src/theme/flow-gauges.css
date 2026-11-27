@@ -54,6 +54,8 @@
   margin: 6px 0;
   background: var(--k-container-secondary-background);
   border: 1px solid var(--k-separable-tertiary-borderColor);
+  /* 净额条的起点与长度用 translate 加 scale 画，起点要量轨宽：轨是容器，取 cqw（kubai Vibe Design Tips 011，#251）。 */
+  container-type: inline-size;
 }
 .k-flow-zero::before {
   content: '';
@@ -69,9 +71,14 @@
   top: 0;
   bottom: 0;
   background: var(--series-1);
+  left: 0;
+  width: 100%;
+  transform-origin: left;
+  translate: calc(var(--from, 0) * 100cqw) 0;
+  scale: var(--fill, 0) 1;
   transition:
-    left var(--dur-gentle) var(--ease-gentle),
-    width var(--dur-gentle) var(--ease-gentle);
+    translate var(--dur-gentle) var(--ease-gentle),
+    scale var(--dur-gentle) var(--ease-gentle);
 }
 .k-flow-zero i.is-neg {
   background: var(--series-2);

@@ -71,7 +71,9 @@ describe('排查树的纯逻辑', () => {
 
 describe('排查树的渲染', () => {
   it('一个 Tab 停点；每行是带层级的 treeitem；点亮与根因写在 data 上', () => {
-    const html = renderToStaticMarkup(<RootCauseTree failure={FAILURE} title="排查" label="示例排查树" labels={LABELS} />)
+    const html = renderToStaticMarkup(
+      <RootCauseTree failure={FAILURE} title="排查" label="示例排查树" labels={LABELS} />,
+    )
     expect(html).toContain('role="tree"')
     expect(html.match(/role="treeitem"/g)).toHaveLength(6)
     expect(html.match(/tabindex="0"/g)).toHaveLength(1)

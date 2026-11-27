@@ -63,7 +63,7 @@
   display: grid;
   max-width: 720px;
   border: 1px solid var(--k-separable-tertiary-borderColor);
-  border-radius: 8px;
+  border-radius: var(--radius-overlay);
   background: var(--k-surface-base-background);
 }
 .k-render-row {

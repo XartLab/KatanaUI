@@ -117,7 +117,11 @@ export function TraceWaterfall({
   const tint = assignSeries(kinds)
   const kindName = labels.kind ?? ((kind: string) => kind)
   const find = (span: TraceSpan, id: string | null): TraceSpan | null =>
-    id === null ? null : span.id === id ? span : (span.children ?? []).reduce<TraceSpan | null>((hit, c) => hit ?? find(c, id), null)
+    id === null
+      ? null
+      : span.id === id
+        ? span
+        : (span.children ?? []).reduce<TraceSpan | null>((hit, c) => hit ?? find(c, id), null)
   const open = find(root, openId)
 
   const toggle = (id: string) => {

@@ -329,6 +329,20 @@ export {
   type PanelTabsProps,
 } from './panel-tabs/panel-tabs.tsx'
 export {
+  FloatingWindow,
+  isFloatingWindowSupported,
+  useFloatingWindow,
+  type FloatingWindowLabels,
+  type FloatingWindowMode,
+  type FloatingWindowProps,
+} from './floating-window/floating-window.tsx'
+export {
+  StrategyLauncher,
+  type StrategyEntry,
+  type StrategyLauncherLabels,
+  type StrategyLauncherProps,
+} from './strategy-launcher/strategy-launcher.tsx'
+export {
   CATALOG_ITEM_MIME,
   ComponentCatalog,
   type ComponentCatalogLabels,
@@ -427,6 +441,32 @@ export {
   type FundingRateProps,
 } from './funding-rate/funding-rate.tsx'
 export { countdownTo, formatCountdown, formatRate, fundingBars, rateTone } from './funding-rate/funding-model.ts'
+export { DerivativesBoard, type DerivativesBoardProps } from './derivatives/derivatives-board.tsx'
+export {
+  DerivativesCard,
+  type DerivativesCardCommon,
+  type DerivativesCardProps,
+} from './derivatives/derivatives-card.tsx'
+export type { DerivativesLabels } from './derivatives/derivatives-labels.ts'
+export {
+  DEFAULT_PERIODS,
+  DERIVATIVES_KINDS,
+  alignedAxes,
+  basisOf,
+  hasData,
+  longShare,
+  longShortRatioOf,
+  signedBars,
+  symmetricAxis,
+  type AxisSpec,
+  type BasisPoint,
+  type DerivativesData,
+  type DerivativesKind,
+  type FundingRatePoint,
+  type LongShortPoint,
+  type OpenInterestVolumePoint,
+  type TakerVolumePoint,
+} from './derivatives/derivatives-model.ts'
 export {
   OptionsChain,
   type OptionExpiry,

@@ -84,7 +84,15 @@ import {
   SymbolMarkDemo,
   TagDemo,
 } from './pages/readouts.tsx'
-import { ContextMenuOpen, DialogOpen, DropdownMenuOpen, PopoverOpen, SelectOpen, TooltipOpen } from './pages/open.tsx'
+import {
+  AlertDialogOpen,
+  ContextMenuOpen,
+  DialogOpen,
+  DropdownMenuOpen,
+  PopoverOpen,
+  SelectOpen,
+  TooltipOpen,
+} from './pages/open.tsx'
 import {
   ChangeTextDemo,
   ConsensusBlockDemo,
@@ -104,6 +112,9 @@ import {
   TechnicalRatingDemo,
 } from './pages/quant.tsx'
 import { FlowSankeyDemo, VintageSeriesDemo } from './pages/flows.tsx'
+import { MarketBrowserDemo } from './pages/market-browser.tsx'
+import { StrategyLauncherDemo } from './pages/strategy-launcher.tsx'
+import { FloatingWindowDemo } from './pages/floating-window.tsx'
 import { KeyStatsDemo, PeerCardsDemo, PerformanceStripDemo, RangeBarTvDemo, WatchlistDemo } from './pages/overview.tsx'
 import {
   CompanyProfileDemo,
@@ -210,7 +221,7 @@ import {
 } from './pages/smoothui-forms.tsx'
 import { OrderTicketDemo } from './pages/order-ticket.tsx'
 import { PositionCalculatorUsage } from './usage/PositionCalculatorUsage.tsx'
-import { ComponentCatalogUsage } from './usage/ComponentCatalogUsage.tsx'
+import { ComponentCatalogDemo } from './pages/component-catalog.tsx'
 import { PanelTabsUsage } from './usage/PanelTabsUsage.tsx'
 import { AccordionDemo, TabsDemo } from './pages/layout.tsx'
 import {
@@ -239,7 +250,14 @@ import {
   StackDemo,
   SwitcherDemo,
 } from './pages/typesetting.tsx'
-import { ContextMenuDemo, DialogDemo, DropdownMenuDemo, PopoverDemo, TooltipDemo } from './pages/overlays.tsx'
+import {
+  AlertDialogDemo,
+  ContextMenuDemo,
+  DialogDemo,
+  DropdownMenuDemo,
+  PopoverDemo,
+  TooltipDemo,
+} from './pages/overlays.tsx'
 import {
   ButtonDemo,
   CheckboxDemo,
@@ -317,6 +335,7 @@ import {
   SmartRecommendationDemo,
 } from './pages/affect-agent.tsx'
 import { AgentCrewDemo, AgentFleetDemo, AgentTreeDemo, FlowBuilderDemo } from './pages/affect-flow.tsx'
+import { DerivativesBoardDemo } from './pages/derivatives.tsx'
 import {
   AccountEquityDemo,
   FundingRateDemo,
@@ -368,6 +387,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   tooltip: TooltipDemo,
   popover: PopoverDemo,
   dialog: DialogDemo,
+  'alert-dialog': AlertDialogDemo,
   'dropdown-menu': DropdownMenuDemo,
   'context-menu': ContextMenuDemo,
   tabs: TabsDemo,
@@ -434,6 +454,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'orders-table': OrdersTableDemo,
   'account-equity': AccountEquityDemo,
   'funding-rate': FundingRateDemo,
+  'derivatives-board': DerivativesBoardDemo,
   'options-chain': OptionsChainDemo,
   'order-book': OrderBookDemo,
   'depth-chart': DepthChartDemo,
@@ -450,6 +471,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'company-profile': CompanyProfileDemo,
   'seasonal-chart': SeasonalChartDemo,
   watchlist: WatchlistDemo,
+  'market-browser': MarketBrowserDemo,
   'metric-card': MetricCardDemo,
   'distribution-bars': DistributionBarsDemo,
   'cn-basics': CnBasicsDemo,
@@ -633,7 +655,9 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'order-ticket': OrderTicketDemo,
   'position-calculator': PositionCalculatorUsage,
   'panel-tabs': PanelTabsUsage,
-  'component-catalog': ComponentCatalogUsage,
+  'component-catalog': ComponentCatalogDemo,
+  'strategy-launcher': StrategyLauncherDemo,
+  'floating-window': FloatingWindowDemo,
   avatar: AvatarDemo,
   breadcrumb: BreadcrumbDemo,
   pagination: PaginationDemo,
@@ -694,6 +718,7 @@ export const OPEN_DEMOS: Readonly<Record<string, { Demo: ComponentType; height: 
   tooltip: { Demo: TooltipOpen, height: 80 },
   popover: { Demo: PopoverOpen, height: 160 },
   dialog: { Demo: DialogOpen, height: 260 },
+  'alert-dialog': { Demo: AlertDialogOpen, height: 260 },
   'dropdown-menu': { Demo: DropdownMenuOpen, height: 240 },
   'context-menu': { Demo: ContextMenuOpen, height: 220 },
   select: { Demo: SelectOpen, height: 160 },

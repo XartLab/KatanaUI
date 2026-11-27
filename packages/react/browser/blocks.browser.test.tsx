@@ -5,6 +5,7 @@ import { page } from 'vite-plus/test/browser'
 import { AttributionBarsUsage } from '../gallery/usage/AttributionBarsUsage.tsx'
 import { ColumnSetTabsUsage } from '../gallery/usage/ColumnSetTabsUsage.tsx'
 import { ComponentCatalogUsage } from '../gallery/usage/ComponentCatalogUsage.tsx'
+import { ComponentCatalogMenuUsage } from '../gallery/usage/ComponentCatalogMenuUsage.tsx'
 import { ConsensusBlockUsage } from '../gallery/usage/ConsensusBlockUsage.tsx'
 import { DataGridUsage } from '../gallery/usage/DataGridUsage.tsx'
 import { DepthChartUsage } from '../gallery/usage/DepthChartUsage.tsx'
@@ -26,6 +27,8 @@ import { RegimeStripUsage } from '../gallery/usage/RegimeStripUsage.tsx'
 import { SeriesExplorerUsage } from '../gallery/usage/SeriesExplorerUsage.tsx'
 import { SmallMultiplesUsage } from '../gallery/usage/SmallMultiplesUsage.tsx'
 import { StatusBarUsage } from '../gallery/usage/StatusBarUsage.tsx'
+import { FloatingWindowUsage } from '../gallery/usage/FloatingWindowUsage.tsx'
+import { StrategyLauncherUsage } from '../gallery/usage/StrategyLauncherUsage.tsx'
 import { StrategyReportUsage } from '../gallery/usage/StrategyReportUsage.tsx'
 import { SwapPanelUsage } from '../gallery/usage/SwapPanelUsage.tsx'
 import { SymbolGalaxyUsage } from '../gallery/usage/SymbolGalaxyUsage.tsx'
@@ -47,6 +50,7 @@ import { STOCKS, STOCK_COLUMNS, STOCK_LAYOUT } from '../gallery/pages/screener-d
 import { UseUndoStackUsage } from '../gallery/usage/UseUndoStackUsage.tsx'
 import { RuleBuilderUsage } from '../gallery/usage/RuleBuilderUsage.tsx'
 import { mount } from './render.tsx'
+import { settled } from './settle.ts'
 
 // comfortable 档的整页选股器（#90）：16 行演示数据，列覆盖代码芯片、单位小字、缩写、横条、评级、标签、迷你图、区间。
 const COMFORTABLE_COLUMNS = [
@@ -146,6 +150,9 @@ const items: Record<string, React.ReactNode> = {
   'position-calculator': <PositionCalculatorUsage />,
   'panel-tabs': <PanelTabsUsage />,
   'component-catalog': <ComponentCatalogUsage />,
+  'component-catalog-menu': <ComponentCatalogMenuUsage />,
+  'strategy-launcher': <StrategyLauncherUsage />,
+  'floating-window': <FloatingWindowUsage />,
   'regime-strip': <RegimeStripUsage />,
   'series-explorer': <SeriesExplorerUsage />,
   'small-multiples': <SmallMultiplesUsage />,
@@ -198,6 +205,7 @@ for (const theme of ['graphite', 'console'] as const) {
           theme,
         )
         await new Promise((r) => setTimeout(r, settle[name] ?? 250)) // let measuring / enter transitions finish
+        await settled()
         await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-blocks-${name}`)
       })
     }

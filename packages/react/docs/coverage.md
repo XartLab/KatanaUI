@@ -84,7 +84,7 @@
 | OrderBasket | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |
 | OrderBlotter | 组合 | 面板 | `src/panels/orders` | 已做 |  |
 | OrderTicket | 交易 | 面板 | `src/panels/order-ticket` | 已做 |  |
-| Overlays | 基元 | 基础件 | `Dialog`、`Sheet`、`Popover`、`Tooltip`、`HoverCard`、`DropdownMenu`、`ContextMenu`、`Toast` | 已做 |  |
+| Overlays | 基元 | 基础件 | `Dialog`、`AlertDialog`、`Sheet`、`Popover`、`Tooltip`、`HoverCard`、`DropdownMenu`、`ContextMenu`、`Toast` | 已做 |  |
 | PanelFrame | 工作台 | 积木 | `PanelFrame`、`EmptyState`、`Toolbar`、`src/workspace/PaneFrame.tsx` | 已做 | #1901：PanelFrame 是壳（标题栏、联动色点、可折叠、焦点括号、状态内容区）；应用的 PaneFrame 是挂旧类名的薄适配层 |
 | ParamScatter | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | PerformanceReport | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |

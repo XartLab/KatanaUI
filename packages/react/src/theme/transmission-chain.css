@@ -109,7 +109,7 @@
 .k-tc-edge {
   cursor: pointer;
   outline: none;
-  transition: opacity 120ms;
+  transition: opacity var(--dur-hover) var(--ease-hover);
 }
 .k-tc-hit {
   fill: none;
@@ -148,7 +148,7 @@
 .k-tc-node {
   cursor: pointer;
   outline: none;
-  transition: opacity 120ms;
+  transition: opacity var(--dur-hover) var(--ease-hover);
 }
 .k-tc-node rect {
   fill: var(--k-container-secondary-background);

@@ -64,7 +64,7 @@
   padding: 0;
   border: 0;
   background: transparent;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   cursor: pointer;
 }
 .k-watch-flag svg {
@@ -94,7 +94,7 @@
 }
 /* 价格尾数的闪烁在共用层 live.css（.k-live-flash）；这里只给尾数块一点圆角，让底色不顶着字边。 */
 .k-watch-flash {
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
 }
 .k-watch-empty {
   margin: 0;
