@@ -781,6 +781,46 @@ const EXAMPLES: Record<string, Record<string, unknown>> = {
       empty: 'No usable multiple',
     },
   },
+  KatanaCompanyProfile: {
+    name: 'Example Corp',
+    facts: [
+      { id: 'sector', label: 'Sector', value: 'Technology' },
+      { id: 'employees', label: 'Employees' },
+    ],
+    description: 'Makes things.',
+    labels: { more: 'More', less: 'Less', empty: 'No profile' },
+  },
+  KatanaKpiChart: {
+    title: 'Revenue',
+    label: 'Revenue and margin',
+    value: '1.2B',
+    delta: 3.4,
+    labels: ['Q1', 'Q2', 'Q3'],
+    series: [
+      { key: 'rev', label: 'Revenue', values: [1, 1.1, null] },
+      { key: 'margin', label: 'Margin', values: [0.3, 0.32, 0.31], format: { style: 'percent' } },
+    ],
+    scale: 'normalized',
+    emptyText: 'No data',
+  },
+  KatanaSeasonalChart: {
+    years: [
+      {
+        year: 2025,
+        points: [
+          { day: 0, pct: 0 },
+          { day: 30, pct: 2.5 },
+        ],
+      },
+    ],
+    highlight: 2025,
+    labels: {
+      chart: 'Seasonality',
+      legend: 'Years',
+      months: ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+      empty: 'No years',
+    },
+  },
   KatanaFlowGauges: {
     gauges: [
       { kind: 'pressure', id: 'g1', title: 'Market pressure 1m', value: 62, valueText: '+62' },

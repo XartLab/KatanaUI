@@ -19552,6 +19552,394 @@
       ],
       "unevaluatedProperties": false
     },
+    "KatanaCompanyProfile": {
+      "type": "object",
+      "properties": {
+        "component": {
+          "const": "KatanaCompanyProfile"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Company name; heading and accessible name of the card."
+        },
+        "facts": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Stable id of the fact (sector, industry, employees)."
+                  },
+                  "label": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Small grey label of the fact."
+                  },
+                  "value": {
+                    "type": "string",
+                    "description": "The value, already written; omit to draw an em dash."
+                  }
+                },
+                "required": [
+                  "id",
+                  "label"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 24
+            },
+            {
+              "$ref": "common_types.json#/$defs/DataBinding"
+            }
+          ],
+          "description": "Facts under the name in reading order, or {\"@path\": \"/facts\"}."
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 8000,
+          "description": "Plain-text company description."
+        },
+        "collapsedLines": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20,
+          "description": "Lines shown before the description is expanded."
+        },
+        "labels": {
+          "type": "object",
+          "properties": {
+            "more": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Text of the expand button."
+            },
+            "less": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Text of the collapse button."
+            },
+            "empty": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Text when there are no facts and no description."
+            }
+          },
+          "required": [
+            "more",
+            "less",
+            "empty"
+          ],
+          "additionalProperties": false,
+          "description": "All visible words of the card."
+        },
+        "source": {
+          "type": "string",
+          "description": "Small line at the bottom (source, as-of date)."
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 0.000001,
+          "description": "Relative share of the free space inside a Row or Column, like CSS flex-grow. Only valid for a direct child of a Row or Column."
+        }
+      },
+      "required": [
+        "component",
+        "name",
+        "labels"
+      ],
+      "unevaluatedProperties": false
+    },
+    "KatanaKpiChart": {
+      "type": "object",
+      "properties": {
+        "component": {
+          "const": "KatanaKpiChart"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Title of the chart."
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Accessible name of the chart."
+        },
+        "value": {
+          "type": "string",
+          "description": "The headline value, already written."
+        },
+        "delta": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Change against the previous period as a percentage (1.5 means +1.50%)."
+        },
+        "labels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 2000,
+          "description": "What each point is called (its date), in order."
+        },
+        "series": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "minLength": 1
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Line name in the legend and tooltip."
+              },
+              "values": {
+                "type": "array",
+                "items": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "maxItems": 2000,
+                "description": "One value per point; null breaks the line."
+              },
+              "format": {
+                "type": "object",
+                "properties": {
+                  "style": {
+                    "type": "string",
+                    "enum": [
+                      "number",
+                      "percent",
+                      "money",
+                      "compact"
+                    ],
+                    "description": "'number' is plain with thousands separators; 'money' is the same with a unit suffix; 'percent' treats the value as a percentage already (1.5 means 1.50%); 'compact' abbreviates to K, M or B."
+                  },
+                  "digits": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 8,
+                    "description": "Decimal places. Defaults to 2."
+                  },
+                  "unit": {
+                    "type": "string",
+                    "maxLength": 12,
+                    "description": "Unit written after the number, for example \"USDT\". Ignored for percent."
+                  },
+                  "signed": {
+                    "type": "boolean",
+                    "description": "Put + in front of positive values."
+                  }
+                },
+                "required": [
+                  "style"
+                ],
+                "additionalProperties": false,
+                "description": "How this line is written in the tooltip."
+              }
+            },
+            "required": [
+              "key",
+              "label",
+              "values"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 8,
+          "description": "The lines."
+        },
+        "scale": {
+          "type": "string",
+          "enum": [
+            "shared",
+            "normalized"
+          ],
+          "description": "'shared' uses one axis; 'normalized' scales each line to the same height."
+        },
+        "format": {
+          "type": "object",
+          "properties": {
+            "style": {
+              "type": "string",
+              "enum": [
+                "number",
+                "percent",
+                "money",
+                "compact"
+              ],
+              "description": "'number' is plain with thousands separators; 'money' is the same with a unit suffix; 'percent' treats the value as a percentage already (1.5 means 1.50%); 'compact' abbreviates to K, M or B."
+            },
+            "digits": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 8,
+              "description": "Decimal places. Defaults to 2."
+            },
+            "unit": {
+              "type": "string",
+              "maxLength": 12,
+              "description": "Unit written after the number, for example \"USDT\". Ignored for percent."
+            },
+            "signed": {
+              "type": "boolean",
+              "description": "Put + in front of positive values."
+            }
+          },
+          "required": [
+            "style"
+          ],
+          "additionalProperties": false,
+          "description": "Default way values are written."
+        },
+        "emptyText": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Text when there is no data."
+        },
+        "footer": {
+          "type": "string",
+          "description": "One line under the chart (source)."
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 0.000001,
+          "description": "Relative share of the free space inside a Row or Column, like CSS flex-grow. Only valid for a direct child of a Row or Column."
+        }
+      },
+      "required": [
+        "component",
+        "title",
+        "label",
+        "labels",
+        "series",
+        "emptyText"
+      ],
+      "unevaluatedProperties": false
+    },
+    "KatanaSeasonalChart": {
+      "type": "object",
+      "properties": {
+        "component": {
+          "const": "KatanaSeasonalChart"
+        },
+        "years": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "year": {
+                "type": "integer"
+              },
+              "points": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "day": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 366,
+                      "description": "Day of the year from 0."
+                    },
+                    "pct": {
+                      "type": "number",
+                      "description": "Change since the start of the year in percent."
+                    }
+                  },
+                  "required": [
+                    "day",
+                    "pct"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 400
+              }
+            },
+            "required": [
+              "year",
+              "points"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 20,
+          "description": "One entry per year."
+        },
+        "highlight": {
+          "type": "integer",
+          "description": "The year drawn in front."
+        },
+        "digits": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4,
+          "description": "Decimal places of the percentages."
+        },
+        "labels": {
+          "type": "object",
+          "properties": {
+            "chart": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Accessible name of the chart."
+            },
+            "legend": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Accessible name of the year legend."
+            },
+            "months": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 12,
+              "maxItems": 12,
+              "description": "The twelve month names, January first."
+            },
+            "empty": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Text when there are no years."
+            }
+          },
+          "required": [
+            "chart",
+            "legend",
+            "months",
+            "empty"
+          ],
+          "additionalProperties": false,
+          "description": "All visible words of the chart."
+        },
+        "source": {
+          "type": "string",
+          "description": "Source line under the chart."
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 0.000001,
+          "description": "Relative share of the free space inside a Row or Column, like CSS flex-grow. Only valid for a direct child of a Row or Column."
+        }
+      },
+      "required": [
+        "component",
+        "years",
+        "labels"
+      ],
+      "unevaluatedProperties": false
+    },
     "KatanaFlowGauges": {
       "type": "object",
       "properties": {
@@ -20822,6 +21210,15 @@
         },
         {
           "$ref": "#/components/KatanaValuationBand"
+        },
+        {
+          "$ref": "#/components/KatanaCompanyProfile"
+        },
+        {
+          "$ref": "#/components/KatanaKpiChart"
+        },
+        {
+          "$ref": "#/components/KatanaSeasonalChart"
         },
         {
           "$ref": "#/components/KatanaFlowGauges"
