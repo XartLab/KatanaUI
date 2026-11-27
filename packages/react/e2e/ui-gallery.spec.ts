@@ -8252,71 +8252,87 @@ for (const theme of THEMES) {
       await expect(panel.getByRole('textbox', { name: '卖出' })).toHaveValue('25000')
     })
 
-    test('OrderTicket：买卖两栏并排，按成本算张数，改杠杆成本不变，超可用报错，模板按方向填，按风险要止损，平仓只减仓', async ({
+    test('OrderTicket：一份表单两个钮并排，按成本算张数，改杠杆成本不变，超可用报错，模板按方向填，按风险要止损，平仓只减仓', async ({
       page,
     }) => {
       await open(page, theme, 'order-ticket')
       const ticket = section(page, 'order-ticket').locator('[data-slot="order-ticket"]').first()
-      const buy = ticket.locator('[data-slot="ticket-form"][data-side="buy"]')
-      const sell = ticket.locator('[data-slot="ticket-form"][data-side="sell"]')
-      const slot = (form: typeof buy, name: string) => form.locator(`[data-slot="${name}"]`)
-      // 版式照 OKX：两栏并排（买在左、卖在右），各有自己的下单钮。
-      await expect(buy).toBeVisible()
-      await expect(sell).toBeVisible()
-      const [left, right] = [await buy.boundingBox(), await sell.boundingBox()]
+      const slot = (name: string, side?: 'buy' | 'sell') =>
+        ticket.locator(`[data-slot="${name}"]${side ? `[data-side="${side}"]` : ''}`)
+      // 版式照 OKX：价格、数量、止盈止损只有一份；买、卖两个钮并排（买在左），钮下读数两栏。
+      await expect(ticket.locator('[data-slot="ticket-amount"]')).toHaveCount(1)
+      await expect(ticket.locator('[data-slot="ticket-price"]')).toHaveCount(1)
+      const [left, right] = [
+        await slot('ticket-submit', 'buy').boundingBox(),
+        await slot('ticket-submit', 'sell').boundingBox(),
+      ]
       expect(left!.x + left!.width).toBeLessThanOrEqual(right!.x)
       expect(Math.abs(left!.y - right!.y)).toBeLessThan(2)
       // 10 USDT、100 倍、开平各 0.05%：10 / 0.011 = 909.09 → 1.51 张，占用 9.97。
-      await expect(slot(buy, 'ticket-size')).toContainText('1.51 Cont')
-      await expect(slot(buy, 'ticket-cost')).toContainText('9.97 USDT')
-      await expect(slot(buy, 'ticket-rr')).toContainText('3.17 : 1')
+      await expect(slot('ticket-size', 'buy')).toContainText('1.51 Cont')
+      await expect(slot('ticket-cost', 'buy')).toContainText('9.97 USDT')
+      await expect(slot('ticket-rr', 'buy')).toContainText('3.17 : 1')
       // 可开：250 / 0.011 / 600 = 37.87 张。
-      await expect(slot(buy, 'ticket-max')).toContainText('37.87 Cont')
-      // 保证金模式（kubai 020，#251）：两项分段一直看得见；点「Cross」切过去，再点已选的不会取消。
-      const marginMode = ticket.getByRole('group', { name: 'Margin mode' })
-      await expect(marginMode.getByRole('button')).toHaveCount(2)
-      await expect(marginMode.getByRole('button', { name: 'Isolated' })).toHaveAttribute('aria-pressed', 'true')
-      await marginMode.getByRole('button', { name: 'Cross' }).click()
-      await expect(marginMode.getByRole('button', { name: 'Cross' })).toHaveAttribute('aria-pressed', 'true')
-      await expect(marginMode.getByRole('button', { name: 'Isolated' })).toHaveAttribute('aria-pressed', 'false')
-      await marginMode.getByRole('button', { name: 'Cross' }).click()
-      await expect(marginMode.getByRole('button', { name: 'Cross' })).toHaveAttribute('aria-pressed', 'true')
-      // 改杠杆到 10：成本框还是 10，张数变成 0.16（10 / 0.101 = 99.01 → 0.165 → 0.16），两栏都变。
-      await ticket.locator('[data-slot="ticket-leverage"]').fill('10')
-      await expect(slot(buy, 'ticket-amount')).toHaveValue('10')
-      await expect(slot(buy, 'ticket-size')).toContainText('0.16 Cont')
-      await expect(slot(sell, 'ticket-size')).toContainText('0.16 Cont')
-      await ticket.locator('[data-slot="ticket-leverage"]').fill('100')
-      // 超过可用 250：这一栏报错、下单钮禁用，另一栏不受影响。
-      await slot(buy, 'ticket-amount').fill('300')
-      await expect(slot(buy, 'ticket-issue')).toContainText('available balance')
-      await expect(slot(buy, 'ticket-submit')).toBeDisabled()
-      await expect(slot(sell, 'ticket-submit')).toBeEnabled()
-      await slot(buy, 'ticket-amount').fill('10')
-      await expect(slot(buy, 'ticket-submit')).toBeEnabled()
-      // 卖栏：勾止盈止损，出场模板按空头方向填（止盈在下、止损在上，1% / 0.5%）。
-      await sell.getByRole('checkbox').click()
-      await sell.getByRole('combobox', { name: 'Exit template' }).click()
+      await expect(slot('ticket-max', 'buy')).toContainText('37.87 Cont')
+      // 保证金模式：带箭头的格，点开选「Cross」。
+      const marginMode = ticket.getByRole('combobox', { name: 'Margin mode' })
+      await expect(marginMode).toContainText('Isolated')
+      await marginMode.click()
+      await page.getByRole('option', { name: 'Cross' }).click()
+      await expect(marginMode).toContainText('Cross')
+      // 改杠杆到 10：成本框还是 10，张数变成 0.16（10 / 0.101 = 99.01 → 0.165 → 0.16），两个方向都变。
+      await slot('ticket-leverage-cell').click()
+      await page.locator('[data-slot="ticket-leverage"]').fill('10')
+      await expect(slot('ticket-amount')).toHaveValue('10')
+      await expect(slot('ticket-size', 'buy')).toContainText('0.16 Cont')
+      await expect(slot('ticket-size', 'sell')).toContainText('0.16 Cont')
+      await page.locator('[data-slot="ticket-leverage"]').fill('100')
+      await page.keyboard.press('Escape')
+      // 滑杆：点 50%，成本框填可用的一半。
+      await ticket.locator('[data-slot="ticket-percent"] button', { hasText: '50%' }).click()
+      await expect(slot('ticket-amount')).toHaveValue('125.00')
+      // 超过可用 250：报错、两个下单钮都禁用。
+      await slot('ticket-amount').fill('300')
+      await expect(slot('ticket-issue')).toContainText('available balance')
+      await expect(slot('ticket-submit', 'buy')).toBeDisabled()
+      await expect(slot('ticket-submit', 'sell')).toBeDisabled()
+      await slot('ticket-amount').fill('10')
+      await expect(slot('ticket-submit', 'buy')).toBeEnabled()
+      // 价格框的上下箭头按一格 tick（0.1）走。
+      const price0 = Number(await slot('ticket-price').inputValue())
+      await ticket.getByRole('button', { name: 'Raise price one tick' }).click()
+      await expect(slot('ticket-price')).toHaveValue((price0 + 0.1).toFixed(1))
+      // 出场模板按多头方向填（默认方向 buy：止盈在上、止损在下，1% / 0.5%，价格已被上面步进到 60000.1）。
+      await expect(slot('ticket-take-profit')).toHaveValue('61200')
+      await ticket.getByRole('combobox', { name: 'Exit template' }).click()
       await page.getByRole('option', { name: /Scalp/ }).click()
-      await expect(slot(sell, 'ticket-take-profit')).toHaveValue('59400.0')
-      await expect(slot(sell, 'ticket-stop-loss')).toHaveValue('60300.0')
-      // 按风险：止损填在盈利一侧报错；填对了按风险算张数（50 / (3 + 0.3 + 0.3015) = 13.88）。
-      await sell.getByRole('combobox', { name: 'Size by' }).click()
+      await expect(slot('ticket-take-profit')).toHaveValue('60600.1')
+      await expect(slot('ticket-stop-loss')).toHaveValue('59700.1')
+      // 按风险：止损填在盈利一侧，只有那个方向的钮灰掉并写明原因（止盈止损共用一份，另一个方向本来就该在另一边）；填对了按风险算张数。
+      await ticket.getByRole('combobox', { name: 'Size by' }).click()
       await page.getByRole('option', { name: 'Risk' }).click()
-      await slot(sell, 'ticket-amount').fill('50')
-      await slot(sell, 'ticket-stop-loss').fill('59000')
-      await expect(slot(sell, 'ticket-issue')).toContainText('profit side')
-      await slot(sell, 'ticket-stop-loss').fill('60300')
-      await expect(slot(sell, 'ticket-size')).toContainText('13.88 Cont')
-      await slot(sell, 'ticket-submit').click()
+      await slot('ticket-amount').fill('50')
+      await slot('ticket-stop-loss').fill('60500')
+      await expect(slot('ticket-submit', 'buy')).toBeDisabled()
+      await expect(slot('ticket-submit', 'buy')).toHaveAttribute('title', /profit side/)
+      await expect(slot('ticket-submit', 'sell')).toBeEnabled()
+      await expect(slot('ticket-issue')).toHaveCount(0)
+      await slot('ticket-stop-loss').fill('59700')
+      await expect(slot('ticket-submit', 'buy')).toBeEnabled()
+      await expect(slot('ticket-submit', 'sell')).toBeDisabled()
+      await slot('ticket-submit', 'buy').click()
       const out = section(page, 'order-ticket').locator('output').first()
-      await expect(out).toContainText('open sell 13.88')
+      await expect(out).toContainText('open buy')
+      // 没填数量点下单：不下单，光标回到数量框。
+      await slot('ticket-amount').fill('')
+      await slot('ticket-submit', 'buy').click()
+      await expect(slot('ticket-amount')).toBeFocused()
       // 平仓页：钮上的字换成平空 / 平多，下的是只减仓的单，不显示保证金。
       await ticket.getByRole('button', { name: 'Close', exact: true }).click()
-      await expect(slot(buy, 'ticket-submit')).toHaveText('Close short')
-      await expect(slot(buy, 'ticket-margin')).toHaveCount(0)
-      await slot(buy, 'ticket-amount').fill('2')
-      await slot(buy, 'ticket-submit').click()
+      await expect(slot('ticket-submit', 'buy')).toHaveText('Close short')
+      await expect(slot('ticket-margin', 'buy')).toHaveCount(0)
+      await slot('ticket-amount').fill('2')
+      await slot('ticket-submit', 'buy').click()
       await expect(out).toContainText('close buy 2')
     })
 

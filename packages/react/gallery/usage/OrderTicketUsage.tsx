@@ -27,6 +27,11 @@ export const ORDER_TICKET_LABELS: OrderTicketLabels = {
   takeProfit: 'Take profit',
   stopLoss: 'Stop loss',
   custody: { venue: 'Held by exchange', local: 'Local trigger' },
+  exitUnits: { change: 'Change %', roe: 'ROE %', pnl: 'PnL' },
+  exitUnit: 'TP / SL unit',
+  triggerPrice: 'Trigger',
+  triggerPrices: { last: 'Last', mark: 'Mark', index: 'Index' },
+  exitSides: { buy: 'Long', sell: 'Short' },
   size: 'Size',
   notional: 'Notional',
   margin: 'Margin',
@@ -47,6 +52,14 @@ export const ORDER_TICKET_LABELS: OrderTicketLabels = {
   submitClose: { buy: 'Close short', sell: 'Close long' },
   feeRate: 'Fees',
   calculator: 'Calculator',
+  contractValue: 'Value per contract',
+  maxBuyPrice: 'Max buy',
+  minSellPrice: 'Min sell',
+  positionBuilder: 'Position builder',
+  transfer: 'Add funds',
+  help: 'About order types',
+  stepUp: 'Raise price one tick',
+  stepDown: 'Lower price one tick',
 }
 
 // Demo numbers, not live data: a BTCUSDT perpetual where one contract is 0.01 BTC.
@@ -66,13 +79,14 @@ export function OrderTicketUsage() {
           sizeUnit: 'Cont',
         }}
         account={{ available: 250, fees: { open: 0.0005, close: 0.0005 }, maintenanceMarginRate: 0.004 }}
-        market={{ last: 60000, bid: 59999.9, ask: 60000.1 }}
+        market={{ last: 60000, bid: 59999.9, ask: 60000.1, maxBuy: 61200, minSell: 58800 }}
         maxLeverage={125}
         defaultLeverage={100}
         marginModes={['isolated', 'cross']}
         hedged
         defaultAmount="10"
         defaultExits={{ buy: { takeProfit: '61200', stopLoss: '59700' } }}
+        triggerPriceTypes={['last', 'mark', 'index']}
         exitTemplates={[
           { id: 'scalp', name: 'Scalp · TP 1% / SL 0.5%', takeProfit: 0.01, stopLoss: 0.005 },
           { id: 'swing', name: 'Swing · TP 6% / SL 2%', takeProfit: 0.06, stopLoss: 0.02 },
@@ -81,6 +95,9 @@ export function OrderTicketUsage() {
         locale="en-US"
         onSubmit={setLast}
         onOpenCalculator={() => undefined}
+        onOpenPositionBuilder={() => undefined}
+        onTransfer={() => undefined}
+        onOpenHelp={() => undefined}
       />
       {last ? (
         <output className="k-text-caption text-ink-3">
