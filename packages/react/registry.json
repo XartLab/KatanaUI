@@ -5557,6 +5557,7 @@
         "@katana/cn",
         "@katana/focus",
         "@katana/motion",
+        "@katana/severity",
         "@katana/spring"
       ],
       "files": [
@@ -5609,7 +5610,8 @@
       "title": "Ai Core",
       "description": "AI 件共用的状态名（与 MatrixOrb 的 OrbState 同一组）与各态动效参数、语义色。",
       "registryDependencies": [
-        "@katana/matrix-orb-model"
+        "@katana/matrix-orb-model",
+        "@katana/severity"
       ],
       "files": [
         {
@@ -5806,6 +5808,7 @@
         "@katana/ai-task-model",
         "@katana/cn",
         "@katana/motion",
+        "@katana/severity",
         "@katana/spring"
       ],
       "files": [
@@ -5842,6 +5845,7 @@
         "@katana/cn",
         "@katana/focus",
         "@katana/motion",
+        "@katana/severity",
         "@katana/spring"
       ],
       "files": [

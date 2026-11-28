@@ -4,6 +4,7 @@
 // 只搬了「状态与动效参数」；原件里的麦克风振幅钩子（useAudioAmplitude）不搬：我们的件不碰麦克风，聆听电平由调用方传给 MatrixOrb。
 // 状态名与 MatrixOrb 的 OrbState 是同一组，所以这里直接取它的类型，不再造一份。
 import type { OrbState } from '../katana/matrix-orb-model.ts'
+import { statusColor } from '../lib/severity.ts'
 
 /** 六种状态：待命、聆听、思考、流式输出、完成、出错。 */
 export type AiState = OrbState
@@ -34,10 +35,10 @@ export const AI_STATE_MOTION: Readonly<Record<AiState, AiStateMotion>> = {
   error: { accent: 'danger', motif: 'fault', speed: 1, pulseSeconds: 0.9 },
 }
 
-/** 语义色走 token：绿用 --signal-green，红用 --signal-red（不是涨跌色，涨跌色会按市场习惯互换）。 */
+/** 语义色走 lib/severity.ts 的状态色（--k-status-ok / danger-foreground；不是涨跌色，涨跌色会按市场习惯互换）。 */
 export const AI_ACCENT_COLORS: Readonly<Record<'success' | 'danger', string>> = {
-  success: 'var(--signal-green)',
-  danger: 'var(--signal-red)',
+  success: statusColor('ok'),
+  danger: statusColor('danger'),
 }
 
 /** 某状态的动效参数；没传或不认识的状态当 idle。 */

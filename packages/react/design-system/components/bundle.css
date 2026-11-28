@@ -13,6 +13,7 @@
   --ink-200: #cdcdcd;
   --ink-300: #a0a0a0;
   --ink-400: #6e6e6e;
+  --status-neutral: var(--ink-300);
   --signal-orange: #d97757;
   --signal-orange-dim: #533429;
   --accent: var(--signal-orange);
@@ -261,7 +262,7 @@
   --k-status-info-foreground: var(--signal-blue);
   --k-status-info-background: color-mix(in srgb, var(--signal-blue) 10%, transparent);
   --k-status-info-borderColor: color-mix(in srgb, var(--signal-blue) 30%, transparent);
-  --k-status-neutral-foreground: var(--ink-300);
+  --k-status-neutral-foreground: var(--status-neutral);
   --k-status-neutral-background: var(--alpha-white-4);
   --k-status-neutral-borderColor: var(--alpha-white-7);
   --k-tone-up-foreground: var(--pnl-up);
@@ -369,6 +370,7 @@
   --ink-200: #b8b0a0;
   --ink-300: #8f887a;
   --ink-400: #4a453c;
+  --status-neutral: #9f9889;
   --signal-orange: #ff6a1f;
   --signal-orange-dim: #5c2e12;
   --signal-amber: #ffc03a;
@@ -413,6 +415,7 @@
   --ink-200: #3f3b33;
   --ink-300: #6a655a;
   --ink-400: #a9a497;
+  --status-neutral: #59544a;
   --signal-orange: #d14e0a;
   --signal-orange-dim: #f1c9b2;
   --signal-amber: #9a6e00;
@@ -523,6 +526,7 @@
   --ink-200: #b9c3ce;
   --ink-300: #98a3b0;
   --ink-400: #6c7684;
+  --status-neutral: #aab5c1;
   --signal-orange: #d4804f;
   --signal-amber: #c99a3e;
   --signal-green: #62b375;
@@ -2744,6 +2748,36 @@
   }
 }
 
+.bg-\[color-mix\(in_srgb\,var\(--k-status-danger-foreground\)_11\%\,transparent\)\] {
+  background-color: var(--k-status-danger-foreground);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .bg-\[color-mix\(in_srgb\,var\(--k-status-danger-foreground\)_11\%\,transparent\)\] {
+    background-color: var(--ds-c-yy0hh8);
+  }
+}
+
+.bg-\[color-mix\(in_srgb\,var\(--k-status-danger-foreground\)_12\%\,transparent\)\] {
+  background-color: var(--k-status-danger-foreground);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .bg-\[color-mix\(in_srgb\,var\(--k-status-danger-foreground\)_12\%\,transparent\)\] {
+    background-color: var(--ds-c-97ukvx);
+  }
+}
+
+.bg-\[color-mix\(in_srgb\,var\(--k-status-ok-foreground\)_13\%\,transparent\)\] {
+  background-color: var(--k-status-ok-foreground);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .bg-\[color-mix\(in_srgb\,var\(--k-status-ok-foreground\)_13\%\,transparent\)\] {
+    background-color: var(--ds-c-17f8r47);
+  }
+}
+
 .bg-\[color-mix\(in_srgb\,var\(--k-surface-sunken-background\)_55\%\,transparent\)\] {
   background-color: var(--k-surface-sunken-background);
 }
@@ -2751,36 +2785,6 @@
 @supports (color: color-mix(in lab, red, red)) {
   .bg-\[color-mix\(in_srgb\,var\(--k-surface-sunken-background\)_55\%\,transparent\)\] {
     background-color: var(--ds-c-1hjhp0x);
-  }
-}
-
-.bg-\[color-mix\(in_srgb\,var\(--signal-green\)_13\%\,transparent\)\] {
-  background-color: var(--signal-green);
-}
-
-@supports (color: color-mix(in lab, red, red)) {
-  .bg-\[color-mix\(in_srgb\,var\(--signal-green\)_13\%\,transparent\)\] {
-    background-color: var(--ds-c-nsurc);
-  }
-}
-
-.bg-\[color-mix\(in_srgb\,var\(--signal-red\)_11\%\,transparent\)\] {
-  background-color: var(--signal-red);
-}
-
-@supports (color: color-mix(in lab, red, red)) {
-  .bg-\[color-mix\(in_srgb\,var\(--signal-red\)_11\%\,transparent\)\] {
-    background-color: var(--ds-c-147ckf4);
-  }
-}
-
-.bg-\[color-mix\(in_srgb\,var\(--signal-red\)_12\%\,transparent\)\] {
-  background-color: var(--signal-red);
-}
-
-@supports (color: color-mix(in lab, red, red)) {
-  .bg-\[color-mix\(in_srgb\,var\(--signal-red\)_12\%\,transparent\)\] {
-    background-color: var(--ds-c-eh6ntt);
   }
 }
 
@@ -3463,14 +3467,6 @@
 
 .text-\(color\:--pnl-…\) {
   color: var(--pnl-…);
-}
-
-.text-\(color\:--signal-green\) {
-  color: var(--signal-green);
-}
-
-.text-\(color\:--signal-red\) {
-  color: var(--signal-red);
 }
 
 .text-\[color-mix\(in_srgb\,var\(--cb-accent\)_22\%\,var\(--k-content-primary-foreground\)\)\] {
@@ -33970,10 +33966,10 @@ button.k-pill-main {
   --ds-c-2xn4aw: #0000;
   --ds-c-1bafxfs: color-mix(in oklab, var(--k-content-primary-foreground) 18%, transparent);
   --ds-c-aih9sr: color-mix(in srgb,var(--cb-accent) 12%,transparent);
+  --ds-c-yy0hh8: color-mix(in srgb,var(--k-status-danger-foreground) 11%,transparent);
+  --ds-c-97ukvx: color-mix(in srgb,var(--k-status-danger-foreground) 12%,transparent);
+  --ds-c-17f8r47: color-mix(in srgb,var(--k-status-ok-foreground) 13%,transparent);
   --ds-c-1hjhp0x: color-mix(in srgb,var(--k-surface-sunken-background) 55%,transparent);
-  --ds-c-nsurc: color-mix(in srgb,var(--signal-green) 13%,transparent);
-  --ds-c-147ckf4: color-mix(in srgb,var(--signal-red) 11%,transparent);
-  --ds-c-eh6ntt: color-mix(in srgb,var(--signal-red) 12%,transparent);
   --ds-c-3udv02: #00000073;
   --ds-c-12ixrfp: color-mix(in oklab, var(--color-black) 45%, transparent);
   --ds-c-1u5fcve: color-mix(in srgb,var(--cb-accent) 22%,var(--k-content-primary-foreground));
