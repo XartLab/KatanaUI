@@ -23,7 +23,7 @@ const clickAdd = (page: Page) =>
 
 test('Popover：页面滚动就关；浮层里滚、侧栏滚不关；滚过以后再开不会刚开就关', async ({ page }) => {
   await open(page, 'news-feed')
-  const pop = page.locator('[data-slot="popover-content"][data-state="open"]')
+  const pop = page.locator('[data-slot="popover-content"][data-open]')
 
   await clickAdd(page)
   await expect(pop).toHaveCount(1)

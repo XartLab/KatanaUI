@@ -48,3 +48,33 @@
 .k-dlg.confirm {
   border-color: var(--k-separable-bold-borderColor);
 }
+
+@layer base {
+  /* UI SDK 的对话框、抽屉是原生 <dialog popover>，带浏览器自己的边、内边距、居中与背景（#263）；
+   放进 @layer base（Tailwind 的类在 utilities 层，压得过它），只清掉这些默认值，位置、边、背景由 Dialog / AlertDialog / Sheet 自己的类给。 */
+  :where(
+    dialog[data-slot='dialog-content'],
+    dialog[data-slot='alert-dialog-content'],
+    dialog[data-slot='sheet-content']
+  ) {
+    inset: auto;
+    margin: 0;
+    padding: 0;
+    border: 0 solid;
+    width: auto;
+    height: auto;
+    max-width: none;
+    max-height: none;
+    overflow: visible;
+    color: inherit;
+    background: transparent;
+  }
+  /* 弹层、提示、悬停卡同理：popover 属性的默认外观（内边距、边、背景、overflow: auto）清掉，箭头才不会被裁。 */
+  [popover][data-slot$='-content'] {
+    padding: 0;
+    border: 0 solid;
+    overflow: visible;
+    color: inherit;
+    background: transparent;
+  }
+}

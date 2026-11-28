@@ -1117,19 +1117,6 @@
       ]
     },
     {
-      "name": "opener-focus",
-      "type": "registry:lib",
-      "title": "Opener Focus",
-      "description": "对话框与抽屉共用：关闭后把焦点还给打开前拿着它的元素。",
-      "files": [
-        {
-          "path": "src/lib/opener-focus.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/lib/opener-focus.ts"
-        }
-      ]
-    },
-    {
       "name": "overlay",
       "type": "registry:lib",
       "title": "Overlay",
@@ -1139,6 +1126,23 @@
           "path": "src/lib/overlay.tsx",
           "type": "registry:lib",
           "target": "~/src/katana/ui/lib/overlay.tsx"
+        }
+      ]
+    },
+    {
+      "name": "radix-compat",
+      "type": "registry:lib",
+      "title": "Radix Compat",
+      "description": "浮层的 Radix 写法兼容层：asChild、onOpenAutoFocus / onCloseAutoFocus、onEscapeKeyDown 等翻成 UI SDK 的 render、initialFocus / finalFocus、onOpenChange。",
+      "dependencies": [
+        "@ui-sdk/core@0.1.0-beta.17",
+        "@ui-sdk/react@0.1.0-beta.17"
+      ],
+      "files": [
+        {
+          "path": "src/lib/radix-compat.tsx",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/radix-compat.tsx"
         }
       ]
     },
@@ -1520,13 +1524,14 @@
       "title": "Alert Dialog",
       "description": "要用户明确选一个才关的对话框：平仓、撤单、删除这类不能撤回的事。点背板不关，打开时焦点落在「取消」，Esc 关掉（不点任何钮）；样子同 Dialog，Console 下边粗一档。",
       "dependencies": [
-        "radix-ui@1.8.1"
+        "@ui-sdk/core@0.1.0-beta.17",
+        "@ui-sdk/react@0.1.0-beta.17"
       ],
       "registryDependencies": [
         "@katana/button",
         "@katana/cn",
-        "@katana/opener-focus",
-        "@katana/overlay"
+        "@katana/overlay",
+        "@katana/radix-compat"
       ],
       "files": [
         {
@@ -1782,14 +1787,15 @@
       "title": "Dialog",
       "description": "模态对话框，560 宽，从下方升起。由代码打开（没有触发器）的对话框，关闭后焦点回到打开前的元素。",
       "dependencies": [
-        "lucide-react@1.67.0",
-        "radix-ui@1.8.1"
+        "@ui-sdk/core@0.1.0-beta.17",
+        "@ui-sdk/react@0.1.0-beta.17",
+        "lucide-react@1.67.0"
       ],
       "registryDependencies": [
         "@katana/button",
         "@katana/cn",
-        "@katana/opener-focus",
-        "@katana/overlay"
+        "@katana/overlay",
+        "@katana/radix-compat"
       ],
       "files": [
         {
@@ -1848,11 +1854,12 @@
       "title": "Hover Card",
       "description": "指针停在触发器上（或键盘焦点到了它）弹出的一小块补充信息，跟弹层同一块材质；延迟用 Radix 默认（700ms 开、300ms 关）。卡里不放必须操作的东西。",
       "dependencies": [
-        "radix-ui@1.8.1"
+        "@ui-sdk/core@0.1.0-beta.17",
+        "@ui-sdk/react@0.1.0-beta.17"
       ],
       "registryDependencies": [
         "@katana/cn",
-        "@katana/overlay"
+        "@katana/radix-compat"
       ],
       "files": [
         {
@@ -2083,12 +2090,14 @@
       "title": "Popover",
       "description": "点触发器打开的一块浮层，跟菜单同一块材质；三种皮肤：panel（带内边的面板）、menu（菜单容器）、bare（只给定位）。",
       "dependencies": [
-        "radix-ui@1.8.1"
+        "@ui-sdk/core@0.1.0-beta.17",
+        "@ui-sdk/react@0.1.0-beta.17"
       ],
       "registryDependencies": [
         "@katana/cn",
         "@katana/menu-parts",
         "@katana/overlay",
+        "@katana/radix-compat",
         "@katana/scroll-dismiss"
       ],
       "files": [
@@ -2214,15 +2223,16 @@
       "title": "Sheet",
       "description": "贴着窗口一边滑出来的面板，行为同对话框（Radix Dialog）：Esc 关、焦点锁在里面、点背板关、关了焦点回打开前拿着它的元素。左右宽 360，上下最高半屏。",
       "dependencies": [
+        "@ui-sdk/core@0.1.0-beta.17",
+        "@ui-sdk/react@0.1.0-beta.17",
         "class-variance-authority@0.7.1",
-        "lucide-react@1.67.0",
-        "radix-ui@1.8.1"
+        "lucide-react@1.67.0"
       ],
       "registryDependencies": [
         "@katana/button",
         "@katana/cn",
-        "@katana/opener-focus",
-        "@katana/overlay"
+        "@katana/overlay",
+        "@katana/radix-compat"
       ],
       "files": [
         {
@@ -2352,14 +2362,16 @@
       "title": "Toggle Group",
       "description": "一组互斥的按钮，选中块是一块跟着滑的底（弹簧）。default 是设置页样式，sm 是工具条样式。",
       "dependencies": [
+        "@ui-sdk/core@0.1.0-beta.17",
+        "@ui-sdk/react@0.1.0-beta.17",
         "class-variance-authority@0.7.1",
-        "motion@14.9.0",
-        "radix-ui@1.8.1"
+        "motion@14.9.0"
       ],
       "registryDependencies": [
         "@katana/cn",
         "@katana/focus",
-        "@katana/motion"
+        "@katana/motion",
+        "@katana/slot-name"
       ],
       "files": [
         {
@@ -2396,11 +2408,12 @@
       "title": "Tooltip",
       "description": "悬停或聚焦时出现的短说明，从触发处轻升；悬停停 500ms 才出，出了以后 400ms 内移到邻居立即出。",
       "dependencies": [
-        "radix-ui@1.8.1"
+        "@ui-sdk/core@0.1.0-beta.17",
+        "@ui-sdk/react@0.1.0-beta.17"
       ],
       "registryDependencies": [
         "@katana/cn",
-        "@katana/overlay"
+        "@katana/radix-compat"
       ],
       "files": [
         {
@@ -4255,13 +4268,15 @@
       "title": "Rich Popover",
       "description": "点触发器弹出的一张小卡：标题（可带外链）、一段说明、一枚元信息小标和一个主动作，带小尖角；入场是模糊加缩放一起收敛。品种悬停预览用 HoverCard，需要带动作、要点开的用它。",
       "dependencies": [
-        "lucide-react@1.67.0",
-        "radix-ui@1.8.1"
+        "@ui-sdk/core@0.1.0-beta.17",
+        "@ui-sdk/react@0.1.0-beta.17",
+        "lucide-react@1.67.0"
       ],
       "registryDependencies": [
         "@katana/button",
         "@katana/cn",
-        "@katana/overlay"
+        "@katana/overlay",
+        "@katana/radix-compat"
       ],
       "files": [
         {

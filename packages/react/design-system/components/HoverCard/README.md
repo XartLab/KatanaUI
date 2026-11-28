@@ -10,6 +10,11 @@
 
 其余属性透传给 Radix HoverCard.Root。openDelay、closeDelay 在这里改。
 
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `openDelay` | `number` | `700` | Milliseconds the pointer rests before it opens. |
+| `closeDelay` | `number` | `300` | Milliseconds before it closes once the pointer leaves. |
+
 ### HoverCardContent
 
 其余属性透传给 Radix HoverCard.Content。

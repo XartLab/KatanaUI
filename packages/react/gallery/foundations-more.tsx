@@ -255,11 +255,19 @@ import { EquityCurve } from '@katana-ui/react/quant'`}
           ],
           [code('ScrollArea'), 'UI SDK 的 ScrollArea', '滚动条显示读 data-visible，不卸载，用 opacity 过渡'],
           [
-            code(
-              'Dialog / AlertDialog / Sheet / Popover / HoverCard / Tooltip / 各类菜单 / Select / NavigationMenu / Command / OtpField / Slider / ToggleGroup',
-            ),
+            code('ToggleGroup（分段）'),
+            'UI SDK 的 ToggleGroup',
+            '选中 data-pressed；方向键走、Tab 只停一个（以前每个按钮都是 Tab 停靠点）',
+          ],
+          [
+            code('Popover / Tooltip / HoverCard / RichPopover / Dialog / AlertDialog / Sheet'),
+            'UI SDK 同名件，外面包一层 Radix 写法的兼容层（lib/radix-compat.tsx）',
+            '开合读 data-open / data-closed（原来是 data-state），定位变量是 --transform-origin / --available-height（原来是 --radix-*）；浮层在浏览器顶层，不进 Portal，Dialog 与 Sheet 是原生 <dialog>；对外的 asChild、onOpenAutoFocus、onCloseAutoFocus、onEscapeKeyDown、onPointerDownOutside、onFocusOutside 不变；TooltipProvider 的 skipDelayDuration 不再起作用',
+          ],
+          [
+            code('各类菜单 / Select / NavigationMenu / Command / OtpField / Slider / Button 的 asChild'),
             'Radix 或 cmdk，暂留',
-            '有 UI SDK 对应件，但换了会改对外 props（asChild、onOpenAutoFocus、onEscapeKeyDown 等 Radix 专有的口子）、data-state 与 --radix-* 变量，见 PR 说明；没有逐件列入的先不动',
+            '菜单的级联悬停（#250 的安全三角与延时）是我们接管的 Radix 子菜单，换底座要重做；Select、NavigationMenu、Command、OtpField、Slider 等另批；所以 radix-ui 依赖还在',
           ],
         ]}
       />

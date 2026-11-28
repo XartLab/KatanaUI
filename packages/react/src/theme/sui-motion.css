@@ -92,13 +92,10 @@
     filter: blur(8px);
   }
 }
-[data-slot='rich-popover-content'] {
-  transform-origin: var(--radix-popover-content-transform-origin);
-}
-[data-slot='rich-popover-content'][data-state='open'] {
+[data-slot='rich-popover-content'][data-open] {
   animation: kc-rich-in var(--dur-snappy) var(--ease-snappy) both;
 }
-[data-slot='rich-popover-content'][data-state='closed'] {
+[data-slot='rich-popover-content'][data-closed] {
   animation: kc-rich-out var(--dur-exit) var(--ease-exit) both;
 }
 
@@ -168,16 +165,16 @@
     translate: 0 8px;
   }
 }
-[data-slot='dialog-content']:not([data-bare])[data-state='open'] > [data-slot='dialog-header'],
-[data-slot='alert-dialog-content'][data-state='open'] > [data-slot='alert-dialog-header'] {
+[data-slot='dialog-content']:not([data-bare])[data-open] > [data-slot='dialog-header'],
+[data-slot='alert-dialog-content'][data-open] > [data-slot='alert-dialog-header'] {
   animation: kc-dialog-part-in var(--dur-snappy) var(--ease-snappy) 20ms both;
 }
-[data-slot='dialog-content']:not([data-bare])[data-state='open'] > [data-slot='dialog-body'],
-[data-slot='alert-dialog-content'][data-state='open'] > [data-slot='alert-dialog-body'] {
+[data-slot='dialog-content']:not([data-bare])[data-open] > [data-slot='dialog-body'],
+[data-slot='alert-dialog-content'][data-open] > [data-slot='alert-dialog-body'] {
   animation: kc-dialog-part-in var(--dur-snappy) var(--ease-snappy) 60ms both;
 }
-[data-slot='dialog-content']:not([data-bare])[data-state='open'] > [data-slot='dialog-footer'],
-[data-slot='alert-dialog-content'][data-state='open'] > [data-slot='alert-dialog-footer'] {
+[data-slot='dialog-content']:not([data-bare])[data-open] > [data-slot='dialog-footer'],
+[data-slot='alert-dialog-content'][data-open] > [data-slot='alert-dialog-footer'] {
   animation: kc-dialog-part-in var(--dur-snappy) var(--ease-snappy) 100ms both;
 }
 

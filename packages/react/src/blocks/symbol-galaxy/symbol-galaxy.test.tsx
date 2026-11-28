@@ -117,7 +117,8 @@ describe('SymbolGalaxy', () => {
     const html = renderToStaticMarkup(<SymbolGalaxy {...props} />)
     expect(html).toContain('data-render="svg"')
     expect(html.match(/k-galaxy-node/g)).toHaveLength(30)
-    expect(html.match(/tabindex="0"/g)).toHaveLength(3)
+    // 团的 Tab 停靠点之外，分组分段（ToggleGroup）现在也有一个（方向键走、Tab 只停一个，#263），所以多 1。
+    expect(html.match(/tabindex="0"/g)).toHaveLength(4)
     expect(html).toContain('aria-label="金融，10 只"')
     expect(html.match(/aria-pressed="true"/g)).toHaveLength(1)
     // 另一个 aria-pressed=false 是图右上的「表格视图」按钮。
@@ -130,12 +131,12 @@ describe('SymbolGalaxy', () => {
     expect(html).toContain('data-render="canvas"')
     expect(html).toContain('<canvas')
     expect(html).not.toContain('k-galaxy-node')
-    expect(html.match(/tabindex="0"/g)).toHaveLength(3)
+    expect(html.match(/tabindex="0"/g)).toHaveLength(4)
   })
   it('受控的分组方式：groupBy 说了算', () => {
     const html = renderToStaticMarkup(<SymbolGalaxy {...props} groupBy="market" />)
     expect(html).toContain('aria-label="主板，15 只"')
-    expect(html.match(/tabindex="0"/g)).toHaveLength(2)
+    expect(html.match(/tabindex="0"/g)).toHaveLength(3)
   })
 })
 

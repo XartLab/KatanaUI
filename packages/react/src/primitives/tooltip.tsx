@@ -1,10 +1,14 @@
 // SPDX-License-Identifier: MIT
 // 起步代码取自 shadcn/ui（https://ui.shadcn.com ，MIT，Copyright (c) 2023 shadcn），2026-11-11 用 `shadcn add` 生成（#1777），行为底座是 Radix；
 // 拷进来以后归我们改：样子（尺寸、颜色、动效）按 OpenMarket 实测样式与我们的 token 重写（决策记录 0049）。
-import { Tooltip as TooltipPrimitive } from 'radix-ui'
+import {
+  Tooltip as TooltipRoot,
+  TooltipContent as TooltipPanel,
+  TooltipTrigger as TooltipButton,
+} from '@ui-sdk/react/tooltip'
 import { createContext, useContext, type ComponentProps, type ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
-import { OverlayPortal } from '../lib/overlay.tsx'
+import { childrenOf, partRender, slotOf } from '../lib/radix-compat.tsx'
 
 // 提示：照 OpenMarket q-tooltip。6px 8px 内边 · 圆角 6 · 最深底 + 细边 · 0 2 10 阴影；没有小箭头。
 // 内容里有快捷键键帽（.k-kbd）时压成浅色块：照 OpenMarket 提示里的 kbd。
@@ -19,62 +23,90 @@ const tooltipContentClass = [
   '[&_.k-kbd]:border-transparent [&_.k-kbd]:bg-(--k-content-primary-foreground) [&_.k-kbd]:font-semibold [&_.k-kbd]:text-(color:--k-surface-sunken-background)',
 ].join(' ')
 
-// 400ms 的「邻居立即出」只在同一个 Provider 底下的几个提示之间有效（Radix 的 skipDelayDuration 记在 Provider 上）。
-// 所以一排按钮要共用一个 Provider：Toolbar、DecimalField 在整排外面包一个；单个按钮单独用时（没有外层 Provider）由 EnsureTooltipProvider 自己包一层。
+// 行为底座是 UI SDK 的 Tooltip（#263 从 Radix 换来）：邻居之间的「立即出」它自己记（全局，不要 Provider），所以 TooltipProvider 只剩「给里面的提示定默认延迟」，
+// skipDelayDuration 保留这个名字但不再起作用（UI SDK 的预热时长是它自己定的）。
 const InsideProvider = createContext(false)
+const DelayContext = createContext<number>(500)
 
 /** 首个提示停多久才出（毫秒）。出处：kubai Vibe Design Tips 025；与 TradingView 工具栏一致（#720）。 */
 const TOOLTIP_DELAY_MS = 500
-/** 提示出过以后，多久内移到邻居立即出（毫秒，Radix 的 skipDelayDuration）。出处：kubai Vibe Design Tips 025。 */
+/** 提示出过以后，多久内移到邻居立即出（毫秒，Radix 的 skipDelayDuration）。出处：kubai Vibe Design Tips 025；UI SDK 自己管这段，这个常量只留作文档。 */
 const TOOLTIP_SKIP_MS = 400
 
 function TooltipProvider({
   delayDuration = TOOLTIP_DELAY_MS,
-  skipDelayDuration = TOOLTIP_SKIP_MS,
-  ...props
-}: ComponentProps<typeof TooltipPrimitive.Provider>) {
+  children,
+}: {
+  /** Milliseconds the pointer rests before a tooltip inside opens. */
+  delayDuration?: number
+  /** Kept for compatibility; UI SDK decides how long the next tooltip opens at once. */
+  skipDelayDuration?: number
+  /** The content. */
+  children?: ReactNode
+}) {
   return (
     <InsideProvider.Provider value>
-      <TooltipPrimitive.Provider
-        data-slot="tooltip-provider"
-        delayDuration={delayDuration}
-        skipDelayDuration={skipDelayDuration}
-        {...props}
-      />
+      <DelayContext value={delayDuration}>{children}</DelayContext>
     </InsideProvider.Provider>
   )
 }
 
-/** 已经在 TooltipProvider 里就直接用外层那个（邻居之间才共用 400ms 的立即出）；不在就自己包一层。给「一排按钮可能共用、也可能单独用」的件。 */
+/** 已经在 TooltipProvider 里就直接用外层那个；不在就自己包一层。给「一排按钮可能共用、也可能单独用」的件。 */
 function EnsureTooltipProvider({ children }: { children: ReactNode }) {
   return useContext(InsideProvider) ? children : <TooltipProvider>{children}</TooltipProvider>
 }
 
-function Tooltip({ ...props }: ComponentProps<typeof TooltipPrimitive.Root>) {
-  return <TooltipPrimitive.Root data-slot="tooltip" {...props} />
+/** 现在这个位置上生效的悬停延迟（毫秒）：外层 TooltipProvider 给的，没有就是默认。 */
+export const useTooltipDelay = () => useContext(DelayContext)
+
+function Tooltip({
+  delayDuration,
+  disableHoverableContent: _ignored,
+  ...props
+}: Omit<ComponentProps<typeof TooltipRoot>, 'delay'> & {
+  /** Kept for compatibility; a UI SDK tooltip never takes the pointer. */
+  disableHoverableContent?: boolean
+  /** Milliseconds the pointer rests before it opens; the provider's value by default. */
+  delayDuration?: number
+}) {
+  const inherited = useTooltipDelay()
+  return <TooltipRoot delay={delayDuration ?? inherited} {...props} />
 }
 
-function TooltipTrigger({ ...props }: ComponentProps<typeof TooltipPrimitive.Trigger>) {
-  return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />
+function TooltipTrigger({
+  asChild,
+  children,
+  ...props
+}: Omit<ComponentProps<typeof TooltipButton>, 'render' | 'children'> & {
+  /** Merge the trigger's props onto its only child. */
+  asChild?: boolean
+  /** The content. */
+  children?: ReactNode
+}) {
+  return (
+    <TooltipButton render={partRender(slotOf(props, 'tooltip-trigger'), 'button', asChild, children)} {...props}>
+      {childrenOf(asChild, children)}
+    </TooltipButton>
+  )
 }
 
 function TooltipContent({
   className,
-  sideOffset = 6,
+  sideOffset = 8,
   children,
   ...props
-}: ComponentProps<typeof TooltipPrimitive.Content>) {
+}: Omit<ComponentProps<typeof TooltipPanel>, 'render'>) {
   return (
-    <OverlayPortal portal={TooltipPrimitive.Portal}>
-      <TooltipPrimitive.Content
-        data-slot="tooltip-content"
-        sideOffset={sideOffset}
-        className={cn(tooltipContentClass, 'pointer-events-none', className)}
-        {...props}
-      >
-        {children}
-      </TooltipPrimitive.Content>
-    </OverlayPortal>
+    <TooltipPanel
+      sideOffset={sideOffset}
+      // 离视口边的最小距离：UI SDK 默认 8，迁移前的截图里提示贴边时离边 12（逐像素对过，#269）。
+      collisionPadding={12}
+      render={partRender(slotOf(props, 'tooltip-content'), 'div')}
+      className={cn(tooltipContentClass, 'pointer-events-none', className)}
+      {...props}
+    >
+      {children}
+    </TooltipPanel>
   )
 }
 

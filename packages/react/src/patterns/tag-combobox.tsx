@@ -367,6 +367,8 @@ export function TagCombobox({
           sideOffset={4}
           collisionPadding={8}
           // 焦点一直在输入框：打开不抢、关上不还给别处；点到字段本身不算「点外面」。
+          // UI SDK 的弹层外壳是 role=dialog，要有名字（axe aria-dialog-name）；取与列表同一个名字。
+          aria-label={labels.list ?? label}
           onOpenAutoFocus={(event) => event.preventDefault()}
           onCloseAutoFocus={(event) => event.preventDefault()}
           // Esc 只走输入框自己的逻辑（先收列表、再取消标签选中）：Radix 在 document 捕获阶段先接到 Esc，不拦的话 onOpenChange(false) 会被调两次。
@@ -377,7 +379,7 @@ export function TagCombobox({
             if (fieldRef.current?.contains(event.target as Node)) event.preventDefault()
           }}
           className={cn(
-            'k-tagcb-pop w-[var(--radix-popover-trigger-width)] overflow-hidden rounded-[var(--radius-overlay)] border-(color:--k-overlay-compact-borderColor) p-0 shadow-(--k-overlay-compact-shadow)',
+            'k-tagcb-pop w-[var(--anchor-width)] overflow-hidden rounded-[var(--radius-overlay)] border-(color:--k-overlay-compact-borderColor) p-0 shadow-(--k-overlay-compact-shadow)',
             contentClassName,
           )}
         >

@@ -45,7 +45,7 @@ export const SUBMENU_ALIGN_OFFSET = -7
 
 /** 可用高度取 Radix Popper 给的 --radix-popper-available-height（菜单、弹层内容都继承得到）。 */
 export const menuContainerClass =
-  'k-pop k-mat-overlay k-text-body z-50 max-h-[min(var(--radix-popper-available-height),calc(100dvh-16px))] min-w-[180px] overflow-x-hidden overflow-y-auto p-1.5 leading-none text-(color:--k-content-body-foreground) outline-0'
+  'k-pop k-mat-overlay k-text-body z-50 max-h-[min(var(--radix-popper-available-height,var(--available-height)),calc(100dvh-16px))] min-w-[180px] overflow-x-hidden overflow-y-auto p-1.5 leading-none text-(color:--k-content-body-foreground) outline-0'
 
 /**
  * Menu row skin without the disabled state; rows whose library writes data-disabled="false" on enabled rows (cmdk) add their own.

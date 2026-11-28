@@ -12,7 +12,12 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
+| `open` | `boolean` | — | Whether the popover is open (controlled). |
+| `defaultOpen` | `boolean` | `false` | Whether it starts open (uncontrolled). |
+| `onOpenChange` | `(open: boolean) => void` | — | Called when it opens or closes. |
 | `closeOnScroll` | `boolean` | `true` | Closes the popover when the page or a container holding its trigger scrolls, so it never floats away open. |
+| `modal` | `boolean` | — | Whether the rest of the page is inert while it is open; false by default. |
+| `children` | `ReactNode` | — | The content. |
 
 ### PopoverContent
 
@@ -20,11 +25,27 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
+| `onEscapeKeyDown` | `(event: KeyboardEvent) => void` | — | Called when Escape is pressed; call `preventDefault()` to keep it open. |
+| `onPointerDownOutside` | `(event: Event) => void` | — | Called on a pointer press outside; call `preventDefault()` to keep it open. |
+| `onFocusOutside` | `(event: Event) => void` | — | Called when focus moves outside; call `preventDefault()` to keep it open. |
+| `onInteractOutside` | `(event: Event) => void` | — | Called on any interaction outside (pointer or focus); call `preventDefault()` to keep it open. |
+| `onOpenAutoFocus` | `(event: Event) => void` | — | Called when focus moves into the content; preventDefault keeps focus where it is. |
+| `onCloseAutoFocus` | `(event: Event) => void` | — | Called when focus returns on close; preventDefault keeps focus where it is. |
+| `forceMount` | `true` | — | Keep the content in the page while closed (hidden). |
+| `asChild` | `boolean` | — | Merge the content's props onto its only child. |
+| `hideWhenDetached` | `boolean` | — | Close when the anchor scrolls out of view; ignored (closeOnScroll on Popover decides). |
+| `avoidCollisions` | `boolean` | — | Whether the popover flips to stay on screen; always on. |
 | `variant` | `keyof typeof skin` | `'panel'` | Skin of the popup. |
+| `children` | `ReactNode` | — | The content. |
 
 ### PopoverTrigger / PopoverAnchor / PopoverClose
 
 透传 Radix 同名部件；Anchor 用来把弹层定位在触发器以外的元素上。
+
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `asChild` | `boolean` | — | Merge the trigger's props onto its only child instead of rendering a button. |
+| `children` | `ReactNode` | — | The content. |
 
 ### PopoverHeader / PopoverTitle / PopoverDescription
 

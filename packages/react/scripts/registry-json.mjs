@@ -144,7 +144,8 @@ const INTERNAL = {
   'task-list-model': 'TaskList 的任务形状与次序：没完成的保持原位，划完的按沉下去的先后排到底部（纯函数）。',
   'theme-selector-model': 'ThemeSelector 的键盘规则：方向键与 Home / End 移到哪一张，到头循环（纯函数）。',
   'loading-gate': 'Loading 的计时与行数量取（纯函数）。',
-  'opener-focus': '对话框与抽屉共用：关闭后把焦点还给打开前拿着它的元素。',
+  'radix-compat':
+    '浮层的 Radix 写法兼容层：asChild、onOpenAutoFocus / onCloseAutoFocus、onEscapeKeyDown 等翻成 UI SDK 的 render、initialFocus / finalFocus、onOpenChange。',
   label: 'Radix Label，Field 用它做标签（文档站在 field 页）。',
   'chart-scale':
     '分布与关系类的图（Ridgeline、SlopeChart、ConnectedScatter）共用的纯函数：线性比例尺、好看的刻度、分位数。',
