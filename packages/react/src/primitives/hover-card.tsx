@@ -46,7 +46,7 @@ function HoverCardTrigger({
 function HoverCardContent({
   className,
   align = 'center',
-  sideOffset = 4,
+  sideOffset = 8,
   ...props
 }: Omit<ComponentProps<typeof HoverCardPanel>, 'render'>) {
   return (

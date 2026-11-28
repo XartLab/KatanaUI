@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-import type { ComponentProps, ReactNode } from 'react'
+import type { ComponentProps, ReactNode, Ref } from 'react'
 import { cn } from '../lib/cn.ts'
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '../primitives/command.tsx'
 import { Popover, PopoverContent, PopoverTrigger } from '../primitives/popover.tsx'
@@ -19,12 +19,24 @@ function Combobox({ ...props }: ComponentProps<typeof Popover>) {
   return <Popover {...props} />
 }
 
+// UI SDK 的弹层触发器自己写 aria-haspopup="dialog"（写在调用方的 props 之后）；combobox 的弹出物是 listbox（迁移前也是），
+// 所以挂载后盯着这个属性，被改就写回。
+function keepListbox(node: HTMLButtonElement | null) {
+  if (!node) return
+  const set = () => node.getAttribute('aria-haspopup') !== 'listbox' && node.setAttribute('aria-haspopup', 'listbox')
+  set()
+  const observer = new MutationObserver(set)
+  observer.observe(node, { attributes: true, attributeFilter: ['aria-haspopup'] })
+  return () => observer.disconnect()
+}
+
 function ComboboxTrigger({ className, children, ...props }: ComponentProps<typeof PopoverTrigger>) {
   return (
     <PopoverTrigger
       data-slot="combobox-trigger"
       role="combobox"
       aria-haspopup="listbox"
+      ref={keepListbox as Ref<HTMLButtonElement>}
       className={cn(selectTriggerVariants(), className)}
       {...props}
     >

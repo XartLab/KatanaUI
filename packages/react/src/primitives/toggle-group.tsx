@@ -27,7 +27,7 @@ const toggleGroupVariants = cva('inline-flex gap-0.5', {
 // 没有滑块（选中是整格换色），所以不画 pill。
 const splitItemVariants = cva([
   'k-text-body relative inline-flex h-(--k-size-base) cursor-pointer items-center justify-center rounded-[var(--radius-control)] border px-3 font-semibold whitespace-nowrap',
-  'transition-[background-color,color] duration-[120ms] disabled:cursor-not-allowed disabled:opacity-[0.28]',
+  'transition-[background-color,color] duration-[120ms] disabled:cursor-not-allowed disabled:opacity-[0.28] data-[disabled]:cursor-not-allowed data-[disabled]:opacity-[0.28]',
   'border-line bg-transparent text-ink-3 not-data-pressed:enabled:hover:bg-(--k-actionable-background-hover) not-data-pressed:enabled:hover:text-ink',
   'data-pressed:border-transparent data-pressed:bg-(--seg-on-bg) data-pressed:text-(--seg-on-ink)',
   focusRing,
@@ -41,7 +41,7 @@ const toggleItemVariants = cva(
   [
     'k-text-data relative inline-flex cursor-pointer items-center border-0 bg-transparent leading-none whitespace-nowrap text-(color:--k-content-body-foreground)',
     'transition-[color,background-color] duration-[120ms] enabled:hover:text-(color:--k-content-primary-foreground)',
-    'disabled:cursor-not-allowed disabled:opacity-[0.28]',
+    'disabled:cursor-not-allowed disabled:opacity-[0.28] data-[disabled]:cursor-not-allowed data-[disabled]:opacity-[0.28]',
     'data-pressed:enabled:hover:text-(--seg-on-ink)',
     focusRingInset,
   ],

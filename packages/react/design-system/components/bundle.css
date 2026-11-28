@@ -4704,6 +4704,10 @@
   opacity: .6;
 }
 
+.data-\[disabled\]\:opacity-\[0\.28\][data-disabled] {
+  opacity: .28;
+}
+
 .data-\[disabled\=true\]\:pointer-events-none[data-disabled="true"] {
   pointer-events: none;
 }

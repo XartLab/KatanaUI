@@ -26,10 +26,23 @@ export const slotOf = (props: object, fallback: string) =>
  */
 export function partRender(name: string, tag: ElementType, asChild?: boolean, children?: ReactNode) {
   const child = asChild && isValidElement(children) ? (children as ReactElement<Record<string, unknown>>) : undefined
+  // 迁移前（Radix）的状态属性：data-state="open" | "closed"（提示的开是 "delayed-open"）。UI SDK 写的是 data-open / data-closed，两套都留着，
+  // 用户 2026-11-28 定：属性名与取值以迁移前为准（外部样式与测试按 data-state 找）。
+  const stateOf = (props: Record<string, unknown>) => {
+    const open = props['data-open'] !== undefined
+    if (!open && props['data-closed'] === undefined) return undefined
+    return open ? (name.startsWith('tooltip-') ? 'delayed-open' : 'open') : 'closed'
+  }
   return (props: Record<string, unknown>) =>
     child
-      ? cloneElement(child, mergeProps(props, child.props, { 'data-slot': child.props['data-slot'] ?? name }))
-      : createElement(tag, { ...props, 'data-slot': name })
+      ? cloneElement(
+          child,
+          mergeProps(props, child.props, {
+            'data-slot': child.props['data-slot'] ?? name,
+            'data-state': child.props['data-state'] ?? stateOf(props),
+          }),
+        )
+      : createElement(tag, { ...props, 'data-slot': name, 'data-state': stateOf(props) })
 }
 
 /** asChild 时部件不再渲染我们传的 children（子元素自己带着），否则原样传。 */

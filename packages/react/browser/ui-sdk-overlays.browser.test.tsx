@@ -11,6 +11,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
   Button,
+  Combobox,
+  ComboboxContent,
+  ComboboxTrigger,
   Dialog,
   DialogContent,
   DialogTitle,
@@ -39,6 +42,33 @@ const shown = (selector: string) => {
   const el = q(selector)
   return !!el && !el.hidden && el.hasAttribute('data-open')
 }
+
+describe('迁移前的属性', () => {
+  test('data-state 与 aria-haspopup=listbox 照 Radix 时期', async () => {
+    await mount(
+      <>
+        <Popover>
+          <PopoverTrigger data-testid="p">开</PopoverTrigger>
+          <PopoverContent>里面</PopoverContent>
+        </Popover>
+        <Combobox>
+          <ComboboxTrigger aria-label="周期">1h</ComboboxTrigger>
+          <ComboboxContent label="搜周期">x</ComboboxContent>
+        </Combobox>
+      </>,
+    )
+    const trigger = q('[data-testid=p]')!
+    expect(trigger.dataset.state).toBe('closed')
+    await userEvent.click(trigger)
+    await settle()
+    expect(trigger.dataset.state).toBe('open')
+    expect(q('[data-slot=popover-content]')!.dataset.state).toBe('open')
+    const combo = q('[data-slot=combobox-trigger]')!
+    await userEvent.click(combo)
+    await settle()
+    expect(combo.getAttribute('aria-haspopup')).toBe('listbox')
+  })
+})
 
 describe('调用方自己的 data-slot', () => {
   test('触发器与内容上写的 data-slot 不被默认名盖掉', async () => {

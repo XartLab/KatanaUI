@@ -92,7 +92,7 @@ function TooltipTrigger({
 
 function TooltipContent({
   className,
-  sideOffset = 6,
+  sideOffset = 8,
   children,
   ...props
 }: Omit<ComponentProps<typeof TooltipPanel>, 'render'>) {
