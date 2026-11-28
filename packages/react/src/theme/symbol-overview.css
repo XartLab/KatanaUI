@@ -34,12 +34,12 @@
 .k-symov-tab:hover {
   background: var(--k-selectable-background-hover);
 }
-.k-symov-tab[data-selected] {
+.k-symov-tab[data-state='active'] {
   background: var(--k-selectable-background-selected);
   color: var(--k-content-primary-foreground);
 }
 /* 选中的页签是 selected 底，名字的 ink-300 只有 4.2:1（console，axe #190），提到 body。 */
-.k-symov-tab[data-selected] .k-symov-tab-name {
+.k-symov-tab[data-state='active'] .k-symov-tab-name {
   color: var(--k-content-body-foreground);
 }
 .k-symov-tab:focus-visible {

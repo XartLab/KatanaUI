@@ -240,7 +240,7 @@ describe('Collapsible / Accordion / Tabs', () => {
     expect(seen.at(-1)?.toSorted()).toEqual(['a', 'b'])
   })
 
-  test('Tabs：automatic 方向键移动并选中，manual 只移焦点；选中的带 data-selected，只渲染当前面板', async () => {
+  test('Tabs：automatic 方向键移动并选中，manual 只移焦点；选中的带 data-state=active，只渲染当前面板', async () => {
     await mount(
       <>
         <Tabs defaultValue="a">
@@ -265,7 +265,9 @@ describe('Collapsible / Accordion / Tabs', () => {
     await userEvent.keyboard('{ArrowRight}')
     expect(active()?.textContent).toBe('乙')
     expect(active()?.hasAttribute('data-selected')).toBe(true)
+    expect(active()?.getAttribute('data-state')).toBe('active')
     expect(active()?.getAttribute('aria-selected')).toBe('true')
+    expect(document.querySelector('[data-slot="tabs-content"]')?.getAttribute('data-state')).toBe('active')
     expect(document.body.textContent).toContain('乙的内容')
     expect(document.body.textContent).not.toContain('甲的内容')
     await userEvent.tab()
@@ -274,8 +276,44 @@ describe('Collapsible / Accordion / Tabs', () => {
     await userEvent.keyboard('{ArrowRight}')
     expect(active()?.textContent).toBe('丁')
     expect(active()?.hasAttribute('data-selected')).toBe(false)
+    expect(active()?.getAttribute('data-state')).toBe('inactive')
     await userEvent.keyboard('{Enter}')
     expect(active()?.hasAttribute('data-selected')).toBe(true)
+  })
+
+  test('Tabs：方向键、Home / End 跳过禁用的页签，两头回绕；禁用的页签画成 30% 不透明、不接指针', async () => {
+    await mount(
+      <Tabs defaultValue="a">
+        <TabsList aria-label="周期">
+          <TabsTrigger value="a">甲</TabsTrigger>
+          <TabsTrigger value="b" disabled>
+            乙
+          </TabsTrigger>
+          <TabsTrigger value="c">丙</TabsTrigger>
+          <TabsTrigger value="d" disabled>
+            丁
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="a">甲的内容</TabsContent>
+        <TabsContent value="c">丙的内容</TabsContent>
+      </Tabs>,
+    )
+    const [, b] = document.querySelectorAll<HTMLElement>('[data-slot="tabs-trigger"]')
+    expect(getComputedStyle(b!).opacity).toBe('0.3')
+    expect(getComputedStyle(b!).cursor).toBe('not-allowed')
+    await userEvent.tab()
+    expect(active()?.textContent).toBe('甲')
+    await userEvent.keyboard('{ArrowRight}')
+    expect(active()?.textContent).toBe('丙')
+    expect(active()?.getAttribute('aria-selected')).toBe('true')
+    await userEvent.keyboard('{ArrowRight}')
+    expect(active()?.textContent).toBe('甲')
+    await userEvent.keyboard('{End}')
+    expect(active()?.textContent).toBe('丙')
+    await userEvent.keyboard('{Home}')
+    expect(active()?.textContent).toBe('甲')
+    await userEvent.keyboard('{ArrowLeft}')
+    expect(active()?.textContent).toBe('丙')
   })
 })
 

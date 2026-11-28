@@ -3933,8 +3933,8 @@ for (const theme of THEMES) {
     }) => {
       await open(page, theme, 'tabs')
       const list = section(page, 'tabs').locator('[data-slot="tabs-list"]').first()
-      const active = list.locator('[data-slot="tabs-trigger"][data-selected]')
-      const inactive = list.locator('[data-slot="tabs-trigger"]:not([data-selected])').first()
+      const active = list.locator('[data-slot="tabs-trigger"][data-state="active"]')
+      const inactive = list.locator('[data-slot="tabs-trigger"][data-state="inactive"]').first()
       // 字色有 200ms 的过渡：悬停后先等页面上的动画全部 finished，再量，免得读到过渡起点而空过。
       const settled = (hovered: ReturnType<typeof list.locator>) =>
         hovered.evaluate(async () => {
@@ -5212,7 +5212,7 @@ for (const theme of THEMES) {
       await open(page, theme, 'quote-table')
       const table = page.locator('[data-gallery-qtable]')
       await expect(table.getByRole('tab')).toHaveCount(3)
-      await expect(table.getByRole('tab', { name: '示例一组' })).toHaveAttribute('aria-selected', 'true')
+      await expect(table.getByRole('tab', { name: '示例一组' })).toHaveAttribute('data-state', 'active')
       const rows = table.locator('tbody tr')
       await expect(rows).toHaveCount(3)
       const rights = await table
@@ -5661,7 +5661,7 @@ for (const theme of THEMES) {
     await expect(frame.locator('[data-slot="equity-curve"]')).toBeVisible()
     expect((await frame.locator('[data-slot="equity-curve"]').boundingBox())!.height).toBeGreaterThan(180)
     // 页签行与小标。
-    await expect(frame.getByRole('tab', { name: '概览' })).toHaveAttribute('aria-selected', 'true')
+    await expect(frame.getByRole('tab', { name: '概览' })).toHaveAttribute('data-state', 'active')
     await expect(frame.locator('.k-sr-badge')).toHaveText('演示数据')
     // 多空切换：交易次数变，读数跟着。
     const all = Number(await frame.locator('.k-sr-kpi[data-metric="tradeCount"] .k-sr-kpi-value').innerText())
@@ -9265,7 +9265,7 @@ test('SUI-B TiltCard：指针在卡上移动时卡转动，离开后回正', asy
 
 test('SUI-B 并入已有件：页签内容淡入、对话框头身脚依次进场、滚动条悬停变宽', async ({ page }) => {
   await open(page, THEMES[0], 'tabs')
-  const panel = section(page, 'tabs').locator('[data-slot="tabs-content"][data-selected]').first()
+  const panel = section(page, 'tabs').locator('[data-slot="tabs-content"][data-state="active"]').first()
   // 首次渲染不播淡入；点另一个页签换内容才播。
   expect(await panel.evaluate((el) => getComputedStyle(el).animationName)).toBe('none')
   await section(page, 'tabs').getByRole('tab', { name: '成交额榜', exact: true }).click()
