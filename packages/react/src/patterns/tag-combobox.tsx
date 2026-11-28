@@ -377,7 +377,7 @@ export function TagCombobox({
             if (fieldRef.current?.contains(event.target as Node)) event.preventDefault()
           }}
           className={cn(
-            'k-tagcb-pop w-[var(--radix-popover-trigger-width)] overflow-hidden rounded-[var(--radius-overlay)] border-(color:--k-overlay-compact-borderColor) p-0 shadow-(--k-overlay-compact-shadow)',
+            'k-tagcb-pop w-[var(--anchor-width)] overflow-hidden rounded-[var(--radius-overlay)] border-(color:--k-overlay-compact-borderColor) p-0 shadow-(--k-overlay-compact-shadow)',
             contentClassName,
           )}
         >

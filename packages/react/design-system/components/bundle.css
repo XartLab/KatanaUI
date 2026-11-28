@@ -1537,8 +1537,8 @@
   max-height: min(420px, 60dvh);
 }
 
-.max-h-\[min\(var\(--radix-popover-content-available-height\)\,calc\(100dvh-16px\)\)\] {
-  max-height: min(var(--radix-popover-content-available-height), calc(100dvh - 16px));
+.max-h-\[min\(var\(--available-height\)\,calc\(100dvh-16px\)\)\] {
+  max-height: min(var(--available-height), calc(100dvh - 16px));
 }
 
 .max-h-\[min\(var\(--radix-popper-available-height\,var\(--available-height\)\)\,calc\(100dvh-16px\)\)\] {
@@ -1693,8 +1693,8 @@
   width: 88%;
 }
 
-.w-\[max\(var\(--radix-popover-trigger-width\)\,220px\)\] {
-  width: max(var(--radix-popover-trigger-width), 220px);
+.w-\[max\(var\(--anchor-width\)\,220px\)\] {
+  width: max(var(--anchor-width), 220px);
 }
 
 .w-\[min\(320px\,calc\(100vw-24px\)\)\] {
@@ -1721,8 +1721,8 @@
   width: min(640px, 100vw - 24px);
 }
 
-.w-\[var\(--radix-popover-trigger-width\)\] {
-  width: var(--radix-popover-trigger-width);
+.w-\[var\(--anchor-width\)\] {
+  width: var(--anchor-width);
 }
 
 .w-auto {
@@ -1817,8 +1817,8 @@
   min-width: 200px;
 }
 
-.min-w-\[var\(--radix-popover-trigger-width\)\] {
-  min-width: var(--radix-popover-trigger-width);
+.min-w-\[var\(--anchor-width\)\] {
+  min-width: var(--anchor-width);
 }
 
 .min-w-\[var\(--radix-select-trigger-width\)\] {
@@ -6249,7 +6249,7 @@
 
 .k-tagcb-list {
   box-sizing: border-box;
-  max-height: min(280px, var(--radix-popover-content-available-height, 280px));
+  max-height: min(280px, var(--available-height, 280px));
   overscroll-behavior: contain;
   padding: 6px;
   position: relative;
@@ -34055,6 +34055,7 @@ button.k-pill-main {
 /* 运行时才有值的变量：声明成 initial 等于没声明，带 fallback 的 var() 照常走 fallback；声明它们只是让设计系统的检查认得。 */
 :root {
   --accordion-panel-height: initial;
+  --anchor-width: initial;
   --available-height: initial;
   --cb-accent: initial;
   --chart-end-radius: initial;
@@ -34131,8 +34132,6 @@ button.k-pill-main {
   --radix-menubar-content-transform-origin: initial;
   --radix-navigation-menu-viewport-height: initial;
   --radix-navigation-menu-viewport-width: initial;
-  --radix-popover-content-available-height: initial;
-  --radix-popover-trigger-width: initial;
   --radix-popper-anchor-height: initial;
   --radix-popper-anchor-width: initial;
   --radix-popper-available-height: initial;

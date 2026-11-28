@@ -867,7 +867,7 @@ for (const theme of THEMES) {
       await expect(dialog).toBeVisible()
       const button = dialog.getByRole('button', { name: '带提示的按钮' })
       await button.hover()
-      await expect(page.locator('[data-slot="tooltip-content"]')).toBeVisible()
+      await expect(page.locator('[data-slot="tooltip-content"][data-open]')).toBeVisible()
       // 点按钮：提示立刻转 closed 开始收起，紧接着按 Esc（不等）。提示若还带着退场动画，它仍是最上层，会吞掉这一下。
       await button.click()
       await page.keyboard.press('Escape')
@@ -1048,7 +1048,7 @@ for (const theme of THEMES) {
         '500',
       ])
       await show(page, 'tooltip')
-      expect(await font(page.locator('[data-slot="tooltip-content"]'))).toEqual(['12px', '400'])
+      expect(await font(page.locator('[data-slot="tooltip-content"][data-open]'))).toEqual(['12px', '400'])
       await show(page, 'dropdown-menu')
       const trigger = section(page, 'dropdown-menu').getByRole('button', { name: '菜单', exact: true })
       await trigger.click()
@@ -1434,7 +1434,7 @@ for (const theme of THEMES) {
       const list = page.getByRole('listbox', { name: '显示的列' })
       await expect(list).toBeVisible()
       await settled(page)
-      const pop = page.locator('[data-slot="popover-content"]')
+      const pop = page.locator('[data-slot="popover-content"][data-open]')
       // .k-sel-pop（ui.css 287-300）：4 内边 · 9% 白边 · 阴影 0 8 24 · overflow auto · max-height min(可用高, 100dvh-16)。
       // 圆角：旧值写死 7；#256（kubai 004）起读 --radius-overlay（Graphite 8、Console 10）。Graphite：边、影子、底是玻璃。
       expect(await css(pop, ['padding-left', 'border-top-left-radius', 'border-top-width', 'overflow-y'])).toEqual([
@@ -3540,7 +3540,8 @@ for (const theme of THEMES) {
       await open(page, theme, 'toolbar')
       await page.clock.pauseAt(60_000)
       const bar = section(page, 'toolbar').getByRole('toolbar', { name: 'Example toolbar' })
-      const tip = page.locator('[data-slot="tooltip-content"]')
+      // UI SDK 的提示收起后不卸载（hidden、data-closed）：「出」指带 data-open 的那一个。
+      const tip = page.locator('[data-slot="tooltip-content"][data-open]')
       const centerOf = async (name: string) => {
         const box = (await bar.getByRole('button', { name, exact: true }).boundingBox())!
         return { x: box.x + box.width / 2, y: box.y + box.height / 2 }
@@ -3557,6 +3558,8 @@ for (const theme of THEMES) {
       await expect(tip).toContainText('Draw')
       // 离开超过 400ms 再回来：重新等。
       await page.mouse.move(0, 0)
+      // UI SDK 的悬停意图用计时器收起（钟停着不走）：往前拨一点；预热 400ms 从它收起那一刻算。
+      await page.clock.runFor(50)
       await expect(tip).toHaveCount(0)
       await page.clock.runFor(401)
       await page.mouse.move(alerts.x, alerts.y)
@@ -3720,12 +3723,21 @@ for (const theme of THEMES) {
       const box = (await sheet.boundingBox())!
       expect(Math.round(box.width)).toBe(360)
       expect(Math.round(box.height)).toBe(page.viewportSize()!.height)
-      // 焦点陷阱：Tab 走多圈，焦点一直在抽屉里。
-      const inside = () => sheet.evaluate((el) => el.contains(document.activeElement))
+      // 焦点陷阱：Tab 走多圈，焦点要么在抽屉里，要么在 body（原生模态在最后一项之后先落到文档 / 浏览器界面，下一下回到第一项）；绝不落到页面别处的控件上，抽屉里的 4 项都轮到过。
+      const where = () =>
+        sheet.evaluate((el) => {
+          const active = document.activeElement
+          if (active === document.body) return 'body'
+          return el.contains(active) ? active?.getAttribute('aria-label') || active?.textContent || 'input' : 'outside'
+        })
+      const visited = new Set<string>()
       for (let step = 0; step < 8; step++) {
         await page.keyboard.press('Tab')
-        expect(await inside(), `Tab 第 ${step + 1} 下焦点在抽屉里`).toBe(true)
+        const now = await where()
+        expect(now, `Tab 第 ${step + 1} 下焦点没落到页面别处`).not.toBe('outside')
+        visited.add(now)
       }
+      expect([...visited].sort()).toEqual(['body', 'input', '关闭抽屉', '取消', '确定'].sort())
       await page.keyboard.press('Escape')
       await expect(sheet).toBeHidden()
       await expect(trigger).toBeFocused()
@@ -3749,7 +3761,12 @@ for (const theme of THEMES) {
       await expect(card).toContainText('BTCUSDT 永续')
       await page.mouse.move(5, 5)
       await expect(card).toHaveCount(0)
+      // UI SDK 只认键盘来的焦点（程序 focus() 或点击来的不开卡，Radix 是任何焦点都开）：用 Shift+Tab 再 Tab 走回触发器。
       await trigger.focus()
+      await page.keyboard.press('Shift+Tab')
+      await expect(card).toHaveCount(0)
+      await page.keyboard.press('Tab')
+      await expect(trigger).toBeFocused()
       await expect(card).toBeVisible()
       await page.keyboard.press('Escape')
       await expect(card).toHaveCount(0)
@@ -3835,8 +3852,11 @@ for (const theme of THEMES) {
       await expect(search).toBeFocused()
       await page.keyboard.press('Escape')
       await expect(trigger).toBeFocused()
+      // UI SDK 的退场动画期间旧列表还在页上，等它收完再开下一个，免得两个列表里同名的项叠在一起。
+      await expect(search).toBeHidden()
       // 多选：点两项，列表不收，触发器写已选个数。
-      const many = area.getByRole('combobox', { name: '常用周期' })
+      // 弹层现在原地渲染在 area 里（没有 portal），搜索框「搜常用周期」也在范围内，所以名字要精确匹配。
+      const many = area.getByRole('combobox', { name: '常用周期', exact: true })
       await many.click()
       await page.getByRole('option', { name: '1 分钟' }).click()
       await page.getByRole('option', { name: '日线' }).click()
