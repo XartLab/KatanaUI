@@ -102,7 +102,7 @@ export function RichPopover({
               ) : null}
             </div>
           ) : null}
-          <PopoverArrow className="size-2.5 bg-surface-4 [clip-path:polygon(0_0,100%_0,50%_100%)] data-[side=bottom]:rotate-180 data-[side=left]:-rotate-90 data-[side=right]:rotate-90" />
+          <PopoverArrow className="absolute size-2.5 bg-surface-4 data-[side=bottom]:-top-2.5 data-[side=top]:-bottom-2.5 data-[side=left]:-right-2.5 data-[side=right]:-left-2.5 [clip-path:polygon(0_0,100%_0,50%_100%)] data-[side=bottom]:rotate-180 data-[side=left]:-rotate-90 data-[side=right]:rotate-90" />
         </PopoverContent>
       }
     </Popover>
