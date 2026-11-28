@@ -99,6 +99,8 @@ function TooltipContent({
   return (
     <TooltipPanel
       sideOffset={sideOffset}
+      // 离视口边的最小距离：UI SDK 默认 8，迁移前的截图里提示贴边时离边 12（逐像素对过，#269）。
+      collisionPadding={12}
       render={partRender(slotOf(props, 'tooltip-content'), 'div')}
       className={cn(tooltipContentClass, 'pointer-events-none', className)}
       {...props}
