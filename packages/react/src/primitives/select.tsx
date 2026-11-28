@@ -18,7 +18,7 @@ const selectTriggerVariants = cva([
   'transition-[background-color] duration-[120ms]',
   'disabled:cursor-not-allowed disabled:opacity-45',
   '[&_[data-slot=select-icon]]:transition-transform [&_[data-slot=select-icon]]:duration-150',
-  'data-[state=open]:[&_[data-slot=select-icon]]:rotate-180',
+  'data-[state=open]:[&_[data-slot=select-icon]]:rotate-180 data-[open]:[&_[data-slot=select-icon]]:rotate-180',
   focusRing,
 ])
 
