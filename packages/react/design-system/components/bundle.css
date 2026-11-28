@@ -4783,16 +4783,32 @@
   color: var(--k-content-primary-foreground);
 }
 
+.data-\[side\=bottom\]\:-top-2\.5[data-side="bottom"] {
+  top: -10px;
+}
+
 .data-\[side\=bottom\]\:rotate-180[data-side="bottom"] {
   rotate: 180deg;
+}
+
+.data-\[side\=left\]\:-right-2\.5[data-side="left"] {
+  right: -10px;
 }
 
 .data-\[side\=left\]\:-rotate-90[data-side="left"] {
   rotate: -90deg;
 }
 
+.data-\[side\=right\]\:-left-2\.5[data-side="right"] {
+  left: -10px;
+}
+
 .data-\[side\=right\]\:rotate-90[data-side="right"] {
   rotate: 90deg;
+}
+
+.data-\[side\=top\]\:-bottom-2\.5[data-side="top"] {
+  bottom: -10px;
 }
 
 .data-\[size\=sm\]\:top-\[27px\][data-size="sm"] {
@@ -4986,7 +5002,7 @@
   transition-duration: .15s;
 }
 
-.data-\[state\=open\]\:\[\&_\[data-slot\=select-icon\]\]\:rotate-180[data-state="open"] [data-slot="select-icon"] {
+.data-\[open\]\:\[\&_\[data-slot\=select-icon\]\]\:rotate-180[data-open] [data-slot="select-icon"], .data-\[state\=open\]\:\[\&_\[data-slot\=select-icon\]\]\:rotate-180[data-state="open"] [data-slot="select-icon"] {
   rotate: 180deg;
 }
 
