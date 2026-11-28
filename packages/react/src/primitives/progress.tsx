@@ -5,6 +5,7 @@ import { cva } from 'class-variance-authority'
 import { Progress as ProgressRoot, ProgressIndicator } from '@ui-sdk/react/progress'
 import type { ComponentProps } from 'react'
 import { cn } from '../lib/cn.ts'
+import { part } from '../lib/legacy-attrs.ts'
 import type { Severity } from '../lib/severity.ts'
 import { severityOf } from './alert.tsx'
 
@@ -41,15 +42,38 @@ function Progress({
    */
   value?: number | null
 }) {
+  const shown = value == null ? null : Math.min(max, Math.max(0, value))
+  const percent = shown === null ? null : Math.min(100, Math.max(0, (shown / max) * 100))
+  // 迁移前（Radix）的属性：data-state 是 loading / complete / indeterminate，root 与填充都带 data-value、data-max。
+  const legacy = {
+    state: () => (shown === null ? 'indeterminate' : shown >= max ? 'complete' : 'loading'),
+    extra: () => ({ 'data-value': shown ?? undefined, 'data-max': max }),
+  }
   return (
     <ProgressRoot
-      data-slot="progress"
-      value={value == null ? null : Math.min(max, Math.max(0, value))}
+      render={part('div', { slot: 'progress', ...legacy })}
+      value={shown}
       max={max}
       className={cn('relative h-1 w-full overflow-hidden rounded-full bg-(--k-container-track-background)', className)}
       {...props}
     >
-      <ProgressIndicator data-slot="progress-indicator" className={indicatorVariants({ tone: severityOf(tone) })} />
+      <ProgressIndicator
+        render={(p) =>
+          part('div', {
+            slot: 'progress-indicator',
+            state: legacy.state,
+            // 迁移前填充是整宽、用 translate 推出去（theme/motion.css 对 translate 做过渡）；UI SDK 默认写行内百分比宽度，这里写回整宽加 translate。
+            extra: () => ({
+              ...legacy.extra(),
+              style:
+                percent === null
+                  ? p.style
+                  : { ...(p.style as object), width: '100%', translate: `-${100 - percent}% 0` },
+            }),
+          })(p)
+        }
+        className={indicatorVariants({ tone: severityOf(tone) })}
+      />
     </ProgressRoot>
   )
 }

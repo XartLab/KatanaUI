@@ -168,8 +168,22 @@ describe('Progress / Separator / Avatar', () => {
     expect(a?.getAttribute('aria-valuenow')).toBe('60')
     expect(b?.hasAttribute('aria-valuenow')).toBe(false)
     expect(b?.querySelector('[data-slot="progress-indicator"]')?.hasAttribute('data-indeterminate')).toBe(true)
+    // 迁移前的 data-state / data-value / data-max（root 与填充都带）。
+    expect(b?.getAttribute('data-state')).toBe('indeterminate')
+    expect(b?.querySelector('[data-slot="progress-indicator"]')?.getAttribute('data-state')).toBe('indeterminate')
+    expect(a?.getAttribute('data-state')).toBe('loading')
+    expect(a?.getAttribute('data-value')).toBe('60')
+    expect(a?.getAttribute('data-max')).toBe('100')
     const fill = a!.querySelector<HTMLElement>('[data-slot="progress-indicator"]')!
-    expect(Math.round((fill.getBoundingClientRect().width / a!.getBoundingClientRect().width) * 100)).toBe(60)
+    // 填充是整宽、用 translate 推出去（迁移前的写法，过渡走 translate 不触发重排）：右缘落在 60% 处，宽度还是 100%。
+    expect(getComputedStyle(fill).translate).not.toBe('none')
+    expect(Math.round((fill.getBoundingClientRect().width / a!.getBoundingClientRect().width) * 100)).toBe(100)
+    expect(
+      Math.round(
+        ((fill.getBoundingClientRect().right - a!.getBoundingClientRect().left) / a!.getBoundingClientRect().width) *
+          100,
+      ),
+    ).toBe(60)
   })
 
   test('Separator：默认只是装饰（role=none），decorative={false} 才是 separator 并带方向', async () => {

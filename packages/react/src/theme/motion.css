@@ -268,10 +268,9 @@
   }
 }
 [data-slot='progress-indicator'] {
-  /* 宽度由 UI SDK 按百分比写在行内，过渡跟着宽度走（原来是整宽加 translate）。 */
-  transition: width var(--dur-snappy) var(--ease-snappy);
+  transition: translate var(--dur-snappy) var(--ease-snappy);
 }
-[data-slot='progress-indicator'][data-indeterminate] {
+[data-slot='progress-indicator'][data-state='indeterminate'] {
   width: 40%;
   animation: kc-progress-slide var(--dur-settle) linear infinite;
 }
