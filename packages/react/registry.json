@@ -1029,6 +1029,19 @@
       ]
     },
     {
+      "name": "legacy-attrs",
+      "type": "registry:lib",
+      "title": "Legacy Attrs",
+      "description": "把迁移前（Radix 时代）的 data-slot、data-state 与几个属性写回 UI SDK 部件（样式、测试与调用方的选择器认它们）。",
+      "files": [
+        {
+          "path": "src/lib/legacy-attrs.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/legacy-attrs.ts"
+        }
+      ]
+    },
+    {
       "name": "link-group",
       "type": "registry:lib",
       "title": "Link Group",
@@ -1139,6 +1152,19 @@
           "path": "src/lib/overlay.tsx",
           "type": "registry:lib",
           "target": "~/src/katana/ui/lib/overlay.tsx"
+        }
+      ]
+    },
+    {
+      "name": "roving-keys",
+      "type": "registry:lib",
+      "title": "Roving Keys",
+      "description": "方向键、Home / End 在一组部件里走：跳过禁用项、两头回绕（UI SDK 的部件默认不跳过禁用项）。",
+      "files": [
+        {
+          "path": "src/lib/roving-keys.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/roving-keys.ts"
         }
       ]
     },
@@ -1504,7 +1530,8 @@
       "registryDependencies": [
         "@katana/cn",
         "@katana/focus",
-        "@katana/slot-name"
+        "@katana/legacy-attrs",
+        "@katana/roving-keys"
       ],
       "files": [
         {
@@ -1699,7 +1726,8 @@
       ],
       "registryDependencies": [
         "@katana/cn",
-        "@katana/focus"
+        "@katana/focus",
+        "@katana/legacy-attrs"
       ],
       "files": [
         {
@@ -1722,7 +1750,7 @@
       "registryDependencies": [
         "@katana/cn",
         "@katana/focus",
-        "@katana/slot-name"
+        "@katana/legacy-attrs"
       ],
       "files": [
         {
@@ -2006,8 +2034,8 @@
       "registryDependencies": [
         "@katana/cn",
         "@katana/focus",
+        "@katana/legacy-attrs",
         "@katana/motion",
-        "@katana/slot-name",
         "@katana/spring"
       ],
       "files": [
@@ -2112,6 +2140,7 @@
       "registryDependencies": [
         "@katana/alert",
         "@katana/cn",
+        "@katana/legacy-attrs",
         "@katana/severity"
       ],
       "files": [
@@ -2134,7 +2163,7 @@
       "registryDependencies": [
         "@katana/cn",
         "@katana/focus",
-        "@katana/slot-name"
+        "@katana/legacy-attrs"
       ],
       "files": [
         {
@@ -2296,7 +2325,8 @@
       ],
       "registryDependencies": [
         "@katana/cn",
-        "@katana/focus"
+        "@katana/focus",
+        "@katana/legacy-attrs"
       ],
       "files": [
         {
@@ -2319,6 +2349,8 @@
       "registryDependencies": [
         "@katana/cn",
         "@katana/focus",
+        "@katana/legacy-attrs",
+        "@katana/roving-keys",
         "@katana/slot-name"
       ],
       "files": [
@@ -2380,7 +2412,8 @@
       ],
       "registryDependencies": [
         "@katana/button",
-        "@katana/cn"
+        "@katana/cn",
+        "@katana/legacy-attrs"
       ],
       "files": [
         {
@@ -3625,7 +3658,9 @@
         "lucide-react@1.67.0"
       ],
       "registryDependencies": [
-        "@katana/cn"
+        "@katana/cn",
+        "@katana/legacy-attrs",
+        "@katana/roving-keys"
       ],
       "files": [
         {
