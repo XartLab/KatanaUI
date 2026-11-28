@@ -2,6 +2,8 @@
 import { X } from 'lucide-react'
 import { Toggle, ToggleGroup } from '@ui-sdk/react/toggle'
 import { cn } from '../lib/cn.ts'
+import { legacyState, part } from '../lib/legacy-attrs.ts'
+import { rovingKeys } from '../lib/roving-keys.ts'
 
 // 功能参照 Arc Chip group（uiarc.dev，2026-11-14 读：分面筛选，一组可开关的小标签），实现原创；外观在 theme/chip-group.css。
 // 用途：筛选器、自选分组的快速过滤。每个芯片是 aria-pressed 的开关（同包里分段切换的约定），整组 role=group；
@@ -55,12 +57,25 @@ export function ChipGroup({
       role="group"
       aria-label={label}
       className={cn('k-chips', className)}
+      // 方向键跳过禁用的芯片（Radix 的 roving focus 这样走；UI SDK 的开关组让禁用项留在路上）。
+      onKeyDown={(event) =>
+        rovingKeys(event.currentTarget, event, {
+          items: (root) => [...root.querySelectorAll<HTMLElement>('.k-chip')],
+          axis: 'both',
+        })
+      }
       multiple={selection === 'multiple'}
       value={[...value]}
       onValueChange={(next) => onValueChange(selection === 'single' ? next.filter((v) => !value.includes(v)) : next)}
     >
       {items.map((item) => (
-        <Toggle key={item.value} value={item.value} disabled={item.disabled} className="k-chip">
+        <Toggle
+          key={item.value}
+          value={item.value}
+          disabled={item.disabled}
+          render={part('button', { state: legacyState.pressed })}
+          className="k-chip"
+        >
           <span>{item.label}</span>
           {item.count !== undefined && <span className="k-chip-count">{item.count}</span>}
         </Toggle>

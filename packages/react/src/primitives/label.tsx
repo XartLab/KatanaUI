@@ -12,7 +12,7 @@ function Label({ className, 'data-slot': slot = 'label', ...props }: ComponentPr
     <LabelRoot
       render={slotName(slot, 'label')}
       className={cn(
-        'k-text-data flex items-center gap-2 leading-none font-medium text-(color:--k-content-body-foreground) select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-45',
+        'k-text-data flex items-center gap-2 leading-none font-medium text-(color:--k-content-body-foreground) select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-45 peer-data-disabled:cursor-not-allowed peer-data-disabled:opacity-45',
         className,
       )}
       {...props}

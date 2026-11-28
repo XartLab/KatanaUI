@@ -149,8 +149,10 @@ describe('Toggle', () => {
     await userEvent.keyboard('{Enter}')
     expect(toggle.getAttribute('aria-pressed')).toBe('true')
     expect(toggle.hasAttribute('data-pressed')).toBe(true)
+    expect(toggle.getAttribute('data-state')).toBe('on')
     await userEvent.keyboard(' ')
     expect(toggle.getAttribute('aria-pressed')).toBe('false')
+    expect(toggle.getAttribute('data-state')).toBe('off')
   })
 })
 
@@ -419,7 +421,7 @@ describe('Accordion / Collapsible 的动画（迁移前是 keyframes，不是 tr
 })
 
 describe('ChipGroup', () => {
-  test('多选：方向键在芯片间走，Tab 只停一个，空格开关，禁用项仍可到达但按不动', async () => {
+  test('多选：方向键在芯片间走（跳过禁用的），Tab 只停一个，空格开关', async () => {
     function Harness() {
       const [value, setValue] = useState<string[]>([])
       return (
@@ -442,13 +444,18 @@ describe('ChipGroup', () => {
     await userEvent.keyboard(' ')
     expect(active()?.getAttribute('aria-pressed')).toBe('true')
     expect(active()?.hasAttribute('data-pressed')).toBe(true)
+    expect(active()?.getAttribute('data-state')).toBe('on')
+    // 禁用的「美股」被方向键跳过（迁移前 Radix 的 roving focus 这样走）。
     await userEvent.keyboard('{ArrowRight}')
-    await userEvent.keyboard(' ')
-    expect(active()?.textContent).toBe('美股')
-    expect(active()?.getAttribute('aria-pressed')).toBe('false')
-    await userEvent.keyboard('{ArrowRight}{Enter}')
     expect(active()?.textContent).toBe('A 股')
+    await userEvent.keyboard('{Enter}')
     expect(active()?.getAttribute('aria-pressed')).toBe('true')
+    await userEvent.keyboard('{ArrowRight}')
+    expect(active()?.textContent).toBe('港股')
+    await userEvent.keyboard('{ArrowLeft}{Home}')
+    expect(active()?.textContent).toBe('港股')
+    await userEvent.keyboard('{End}')
+    expect(active()?.textContent).toBe('A 股')
   })
 
   test('single：最多选一个，点已选的取消', async () => {
