@@ -509,8 +509,9 @@ describe('ScrollArea', () => {
       </ScrollArea>,
     )
     const viewport = q('[data-slot="scroll-area-viewport"]')
-    // 迁移前的滚动条带 data-state：指针不在、没在滚时是 hidden。
-    expect(q('[data-slot="scroll-area-scrollbar"]').getAttribute('data-state')).toBe('hidden')
+    // 迁移前的滚动条带 data-state：指针不在、没在滚时是 hidden。上一条测试留下的指针可能正好压在这块上（CI 上就是），先显式移开。
+    await userEvent.unhover(q('[data-slot="scroll-area"]'))
+    await expect.poll(() => q('[data-slot="scroll-area-scrollbar"]').getAttribute('data-state')).toBe('hidden')
     await userEvent.tab()
     expect(active()).toBe(viewport)
     await userEvent.keyboard('{PageDown}')
