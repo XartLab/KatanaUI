@@ -19,6 +19,7 @@ import {
   childrenOf,
   HandlersContext,
   partRender,
+  slotOf,
   useCompatRoot,
   useFocusCompat,
   useRegisterHandlers,
@@ -70,10 +71,11 @@ function SheetTrigger({
 }: Omit<ComponentProps<typeof SheetButton>, 'render' | 'children'> & {
   /** Merge the trigger's props onto its only child. */
   asChild?: boolean
+  /** The content. */
   children?: ReactNode
 }) {
   return (
-    <SheetButton render={partRender('sheet-trigger', 'button', asChild, children)} {...props}>
+    <SheetButton render={partRender(slotOf(props, 'sheet-trigger'), 'button', asChild, children)} {...props}>
       {childrenOf(asChild, children)}
     </SheetButton>
   )
@@ -86,10 +88,11 @@ function SheetClose({
 }: Omit<ComponentProps<typeof SheetCloseButton>, 'render' | 'children'> & {
   /** Merge the close button's props onto its only child. */
   asChild?: boolean
+  /** The content. */
   children?: ReactNode
 }) {
   return (
-    <SheetCloseButton render={partRender('sheet-close', 'button', asChild, children)} {...props}>
+    <SheetCloseButton render={partRender(slotOf(props, 'sheet-close'), 'button', asChild, children)} {...props}>
       {childrenOf(asChild, children)}
     </SheetCloseButton>
   )
@@ -103,7 +106,7 @@ function SheetPortal({ children }: { children?: ReactNode }) {
 function SheetOverlay({ className, ...props }: Omit<ComponentProps<typeof DialogBackdrop>, 'render'>) {
   return (
     <DialogBackdrop
-      render={partRender('sheet-overlay', 'div')}
+      render={partRender(slotOf(props, 'sheet-overlay'), 'div')}
       className={cn('k-dlg-backdrop fixed inset-0 z-40 bg-black/45', className)}
       {...props}
     />
@@ -131,6 +134,7 @@ function SheetContent({
 > &
   CompatContent &
   VariantProps<typeof sheetVariants> & {
+    /** The content. */
     children?: ReactNode
     /** When given, draws a close button at the top right and uses this as its accessible name. */
     closeLabel?: string
@@ -153,7 +157,7 @@ function SheetContent({
         finalFocus={finalFocus}
         keepMounted={forceMount}
         inline={inline || undefined}
-        render={partRender('sheet-content', 'dialog', asChild, children)}
+        render={partRender(slotOf(props, 'sheet-content'), 'dialog', asChild, children)}
         className={cn(sheetVariants({ side }), className)}
         {...props}
       >
@@ -209,7 +213,7 @@ function SheetFooter({ className, ...props }: ComponentProps<'div'>) {
 function SheetTitle({ className, ...props }: Omit<ComponentProps<typeof SheetHeading>, 'render'>) {
   return (
     <SheetHeading
-      render={partRender('sheet-title', 'h2')}
+      render={partRender(slotOf(props, 'sheet-title'), 'h2')}
       className={cn('k-text-title m-0 leading-none text-(color:--k-content-primary-foreground)', className)}
       {...props}
     />
@@ -219,7 +223,7 @@ function SheetTitle({ className, ...props }: Omit<ComponentProps<typeof SheetHea
 function SheetDescription({ className, ...props }: Omit<ComponentProps<typeof SheetText>, 'render'>) {
   return (
     <SheetText
-      render={partRender('sheet-description', 'p')}
+      render={partRender(slotOf(props, 'sheet-description'), 'p')}
       className={cn('k-text-data m-0 text-(color:--k-content-secondary-foreground)', className)}
       {...props}
     />

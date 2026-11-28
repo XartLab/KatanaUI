@@ -15,6 +15,12 @@ import {
 } from 'react'
 
 /**
+ * 调用方自己写的 data-slot 优先（UI SDK 会在调用方的 props 之后写自己的默认值，所以要在包装层先取出来，再经 partRender 写回）。
+ */
+export const slotOf = (props: object, fallback: string) =>
+  ((props as Record<string, unknown>)['data-slot'] as string | undefined) ?? fallback
+
+/**
  * 部件的 render：写回我们原来的 data-slot（UI SDK 自带的会盖掉它），asChild 时把子元素当宿主（等于 Radix 的 Slot）。
  * asChild 的子元素自己的 props 与部件的 props 合并（子元素的处理函数先跑，className 拼接），子元素自己的 children 保留。
  */
@@ -34,9 +40,13 @@ export const childrenOf = (asChild: boolean | undefined, children: ReactNode) =>
 export type CompatEvent<E extends Event = Event> = E & { detail?: { originalEvent?: Event } }
 
 export type ContentHandlers = {
+  /** Called when Escape is pressed; call `preventDefault()` to keep it open. */
   onEscapeKeyDown?: (event: KeyboardEvent) => void
+  /** Called on a pointer press outside; call `preventDefault()` to keep it open. */
   onPointerDownOutside?: (event: Event) => void
+  /** Called when focus moves outside; call `preventDefault()` to keep it open. */
   onFocusOutside?: (event: Event) => void
+  /** Called on any interaction outside (pointer or focus); call `preventDefault()` to keep it open. */
   onInteractOutside?: (event: Event) => void
 }
 

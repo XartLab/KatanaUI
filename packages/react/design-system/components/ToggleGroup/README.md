@@ -12,6 +12,8 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
+| `data-slot` | `string` | — | Replaces the default data-slot name, which styles and selectors key on. |
+| `children` | `ReactNode` | — | The content. |
 | `size` | `ToggleGroupSize` | — | Size: md (default) is the bordered settings style, sm is the 26px toolbar style. |
 | `variant` | `'default' \| 'sm'` | — | Old name of size: 'default' is md, 'sm' is sm. |
 | `fullWidth` | `boolean` | — | Stretch the group to the full width and give every item an equal share. |
@@ -27,6 +29,7 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
+| `children` | `ReactNode` | — | The content. |
 | `value` * | `string` | — | The value of this item. |
 | `tone` | `'up' \| 'down'` | — | Fill colour of the selected item in a `split` group: up (--pnl-up) or down (--pnl-down); follows the theme's red-up / green-down setting. |
 

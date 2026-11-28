@@ -17,6 +17,7 @@ import {
   childrenOf,
   HandlersContext,
   partRender,
+  slotOf,
   useCompatRoot,
   useFocusCompat,
   useRegisterHandlers,
@@ -48,10 +49,14 @@ function AlertDialogTrigger({
 }: Omit<ComponentProps<typeof AlertDialogButton>, 'render' | 'children'> & {
   /** Merge the trigger's props onto its only child. */
   asChild?: boolean
+  /** The content. */
   children?: ReactNode
 }) {
   return (
-    <AlertDialogButton render={partRender('alert-dialog-trigger', 'button', asChild, children)} {...props}>
+    <AlertDialogButton
+      render={partRender(slotOf(props, 'alert-dialog-trigger'), 'button', asChild, children)}
+      {...props}
+    >
       {childrenOf(asChild, children)}
     </AlertDialogButton>
   )
@@ -65,7 +70,7 @@ function AlertDialogPortal({ children }: { children?: ReactNode }) {
 function AlertDialogOverlay({ className, ...props }: Omit<ComponentProps<typeof AlertDialogBackdrop>, 'render'>) {
   return (
     <AlertDialogBackdrop
-      render={partRender('alert-dialog-overlay', 'div')}
+      render={partRender(slotOf(props, 'alert-dialog-overlay'), 'div')}
       className={cn('k-dlg-backdrop fixed inset-0 z-40 bg-black/45', className)}
       {...props}
     />
@@ -93,6 +98,7 @@ function AlertDialogContent({
   'render' | 'children' | 'initialFocus' | 'finalFocus' | 'keepMounted' | 'inline'
 > &
   CompatContent & {
+    /** The content. */
     children?: ReactNode
     /** Width: default is 560px like Dialog, sm is 320px for a one-line confirmation. */
     size?: 'default' | 'sm'
@@ -112,7 +118,7 @@ function AlertDialogContent({
         finalFocus={finalFocus}
         keepMounted={forceMount}
         inline={inline || undefined}
-        render={partRender('alert-dialog-content', 'dialog', asChild, children)}
+        render={partRender(slotOf(props, 'alert-dialog-content'), 'dialog', asChild, children)}
         className={cn(
           'k-dlg confirm k-text-body fixed top-1/2 left-1/2 z-41 flex max-h-[calc(100dvh-24px)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden',
           size === 'sm' ? 'w-[min(320px,calc(100vw-24px))]' : 'w-[min(560px,calc(100vw-24px))]',
@@ -167,7 +173,7 @@ function AlertDialogFooter({ className, ...props }: ComponentProps<'div'>) {
 function AlertDialogTitle({ className, ...props }: Omit<ComponentProps<typeof AlertDialogHeading>, 'render'>) {
   return (
     <AlertDialogHeading
-      render={partRender('alert-dialog-title', 'h2')}
+      render={partRender(slotOf(props, 'alert-dialog-title'), 'h2')}
       className={cn(
         'k-text-title m-0 min-w-0 flex-1 truncate leading-none text-(color:--k-content-primary-foreground)',
         className,
@@ -180,7 +186,7 @@ function AlertDialogTitle({ className, ...props }: Omit<ComponentProps<typeof Al
 function AlertDialogDescription({ className, ...props }: Omit<ComponentProps<typeof AlertDialogText>, 'render'>) {
   return (
     <AlertDialogText
-      render={partRender('alert-dialog-description', 'p')}
+      render={partRender(slotOf(props, 'alert-dialog-description'), 'p')}
       className={cn('k-text-body text-(color:--k-content-secondary-foreground)', className)}
       {...props}
     />
@@ -199,7 +205,7 @@ function AlertDialogAction({
   return (
     <AlertDialogClose
       value="action"
-      render={partRender('alert-dialog-action', 'button', true, <Button variant={variant} {...props} />)}
+      render={partRender(slotOf(props, 'alert-dialog-action'), 'button', true, <Button variant={variant} {...props} />)}
     />
   )
 }
@@ -209,7 +215,7 @@ function AlertDialogCancel({ ...props }: ComponentProps<typeof Button>) {
   return (
     <AlertDialogClose
       value="cancel"
-      render={partRender('alert-dialog-cancel', 'button', true, <Button {...props} />)}
+      render={partRender(slotOf(props, 'alert-dialog-cancel'), 'button', true, <Button {...props} />)}
     />
   )
 }

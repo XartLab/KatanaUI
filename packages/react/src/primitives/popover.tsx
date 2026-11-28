@@ -23,6 +23,7 @@ import {
   childrenOf,
   HandlersContext,
   partRender,
+  slotOf,
   useFocusCompat,
   useRegisterHandlers,
   type CompatContent,
@@ -71,6 +72,7 @@ function Popover({
   closeOnScroll?: boolean
   /** Whether the rest of the page is inert while it is open; false by default. */
   modal?: boolean
+  /** The content. */
   children?: ReactNode
 }) {
   const [uncontrolled, setUncontrolled] = useState(defaultOpen)
@@ -110,12 +112,13 @@ function PopoverTrigger({
 }: Omit<ComponentProps<typeof PopoverButton>, 'render' | 'children'> & {
   /** Merge the trigger's props onto its only child instead of rendering a button. */
   asChild?: boolean
+  /** The content. */
   children?: ReactNode
 }) {
   return (
     <PopoverButton
       ref={useAnchorRef(ref)}
-      render={partRender('popover-trigger', 'button', asChild, children)}
+      render={partRender(slotOf(props, 'popover-trigger'), 'button', asChild, children)}
       {...props}
     >
       {childrenOf(asChild, children)}
@@ -130,10 +133,11 @@ function PopoverClose({
 }: Omit<ComponentProps<typeof PopoverCloseButton>, 'render' | 'children'> & {
   /** Merge the close button's props onto its only child. */
   asChild?: boolean
+  /** The content. */
   children?: ReactNode
 }) {
   return (
-    <PopoverCloseButton render={partRender('popover-close', 'button', asChild, children)} {...props}>
+    <PopoverCloseButton render={partRender(slotOf(props, 'popover-close'), 'button', asChild, children)} {...props}>
       {childrenOf(asChild, children)}
     </PopoverCloseButton>
   )
@@ -177,6 +181,7 @@ function PopoverContent({
   PopoverCompat & {
     /** Skin of the popup. */
     variant?: keyof typeof skin
+    /** The content. */
     children?: ReactNode
   }) {
   const handlers = useContext(HandlersContext)
@@ -195,7 +200,7 @@ function PopoverContent({
       finalFocus={finalFocus}
       keepMounted={forceMount}
       inline={inline || undefined}
-      render={partRender('popover-content', 'div', asChild, children)}
+      render={partRender(slotOf(props, 'popover-content'), 'div', asChild, children)}
       className={cn(skin[variant], className)}
       {...props}
     >
@@ -211,7 +216,7 @@ function PopoverAnchor({ asChild, children, ref, ...props }: ComponentProps<'div
     set(node)
     return scroll(node)
   }
-  const render = partRender('popover-anchor', 'div', asChild, children)
+  const render = partRender(slotOf(props, 'popover-anchor'), 'div', asChild, children)
   return render({ ...props, ref: attach, children: childrenOf(asChild, children) })
 }
 

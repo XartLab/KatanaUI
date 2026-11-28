@@ -20,6 +20,7 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
+| `onOpenChange` | `(open: boolean) => void` | — | Called when the dialog opens or closes. |
 | `title` * | `string` | — | Title for screen readers (not shown, required). |
 | `description` * | `string` | — | Description for screen readers (not shown, required). |
 | `className` | `string` | — | Extra class name on the dialog content. |

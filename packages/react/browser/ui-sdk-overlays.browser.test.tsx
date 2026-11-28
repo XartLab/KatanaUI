@@ -40,6 +40,22 @@ const shown = (selector: string) => {
   return !!el && !el.hidden && el.hasAttribute('data-open')
 }
 
+describe('调用方自己的 data-slot', () => {
+  test('触发器与内容上写的 data-slot 不被默认名盖掉', async () => {
+    await mount(
+      <Popover>
+        <PopoverTrigger data-slot="my-trigger">开</PopoverTrigger>
+        <PopoverContent data-slot="my-content">里面</PopoverContent>
+      </Popover>,
+    )
+    expect(q('[data-slot=my-trigger]')).not.toBeNull()
+    expect(q('[data-slot=popover-trigger]')).toBeNull()
+    await userEvent.click(q('[data-slot=my-trigger]')!)
+    await settle()
+    expect(q('[data-slot=my-content]')).not.toBeNull()
+  })
+})
+
 describe('Popover', () => {
   test('asChild 的触发器、Esc 关、焦点回触发器；onEscapeKeyDown 里 preventDefault 就不关', async () => {
     let block = false

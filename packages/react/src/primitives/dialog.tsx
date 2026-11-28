@@ -18,6 +18,7 @@ import {
   childrenOf,
   HandlersContext,
   partRender,
+  slotOf,
   useCompatRoot,
   useFocusCompat,
   useRegisterHandlers,
@@ -50,10 +51,11 @@ function DialogTrigger({
 }: Omit<ComponentProps<typeof DialogButton>, 'render' | 'children'> & {
   /** Merge the trigger's props onto its only child. */
   asChild?: boolean
+  /** The content. */
   children?: ReactNode
 }) {
   return (
-    <DialogButton render={partRender('dialog-trigger', 'button', asChild, children)} {...props}>
+    <DialogButton render={partRender(slotOf(props, 'dialog-trigger'), 'button', asChild, children)} {...props}>
       {childrenOf(asChild, children)}
     </DialogButton>
   )
@@ -71,10 +73,11 @@ function DialogClose({
 }: Omit<ComponentProps<typeof DialogCloseButton>, 'render' | 'children'> & {
   /** Merge the close button's props onto its only child. */
   asChild?: boolean
+  /** The content. */
   children?: ReactNode
 }) {
   return (
-    <DialogCloseButton render={partRender('dialog-close', 'button', asChild, children)} {...props}>
+    <DialogCloseButton render={partRender(slotOf(props, 'dialog-close'), 'button', asChild, children)} {...props}>
       {childrenOf(asChild, children)}
     </DialogCloseButton>
   )
@@ -83,7 +86,7 @@ function DialogClose({
 function DialogOverlay({ className, ...props }: Omit<ComponentProps<typeof DialogBackdrop>, 'render'>) {
   return (
     <DialogBackdrop
-      render={partRender('dialog-overlay', 'div')}
+      render={partRender(slotOf(props, 'dialog-overlay'), 'div')}
       className={cn('k-dlg-backdrop fixed inset-0 z-40 bg-black/45', className)}
       {...props}
     />
@@ -116,6 +119,7 @@ function DialogContent({
   'render' | 'children' | 'initialFocus' | 'finalFocus' | 'keepMounted' | 'inline'
 > &
   CompatContent & {
+    /** The content. */
     children?: ReactNode
     /** When given, draws a close button at the top right of the title bar and uses this as its accessible name. */
     closeLabel?: string
@@ -142,7 +146,7 @@ function DialogContent({
         finalFocus={finalFocus}
         keepMounted={forceMount}
         inline={inline || undefined}
-        render={partRender('dialog-content', 'dialog', asChild, children)}
+        render={partRender(slotOf(props, 'dialog-content'), 'dialog', asChild, children)}
         className={cn(
           bare
             ? 'z-41 outline-0'
@@ -215,7 +219,7 @@ function DialogTitle({
 }) {
   return (
     <DialogHeading
-      render={partRender('dialog-title', 'h2')}
+      render={partRender(slotOf(props, 'dialog-title'), 'h2')}
       className={cn(
         !bare && 'k-text-title m-0 min-w-0 flex-1 truncate leading-none text-(color:--k-content-primary-foreground)',
         className,
@@ -235,7 +239,7 @@ function DialogDescription({
 }) {
   return (
     <DialogText
-      render={partRender('dialog-description', 'p')}
+      render={partRender(slotOf(props, 'dialog-description'), 'p')}
       className={cn(!bare && 'k-text-body text-(color:--k-content-secondary-foreground)', className)}
       {...props}
     />

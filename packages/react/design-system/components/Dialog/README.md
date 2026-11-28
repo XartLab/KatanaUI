@@ -10,12 +10,25 @@
 
 其余属性透传给 Radix Dialog.Root。
 
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `onOpenChange` | `(open: boolean) => void` | — | Called when the dialog opens or closes. |
+
 ### DialogContent
 
 其余属性透传给 Radix Dialog.Content。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
+| `onEscapeKeyDown` | `(event: KeyboardEvent) => void` | — | Called when Escape is pressed; call `preventDefault()` to keep it open. |
+| `onPointerDownOutside` | `(event: Event) => void` | — | Called on a pointer press outside; call `preventDefault()` to keep it open. |
+| `onFocusOutside` | `(event: Event) => void` | — | Called when focus moves outside; call `preventDefault()` to keep it open. |
+| `onInteractOutside` | `(event: Event) => void` | — | Called on any interaction outside (pointer or focus); call `preventDefault()` to keep it open. |
+| `onOpenAutoFocus` | `(event: Event) => void` | — | Called when focus moves into the content; preventDefault keeps focus where it is. |
+| `onCloseAutoFocus` | `(event: Event) => void` | — | Called when focus returns on close; preventDefault keeps focus where it is. |
+| `forceMount` | `true` | — | Keep the content in the page while closed (hidden). |
+| `asChild` | `boolean` | — | Merge the content's props onto its only child. |
+| `children` | `ReactNode` | — | The content. |
 | `closeLabel` | `string` | — | When given, draws a close button at the top right of the title bar and uses this as its accessible name. |
 | `bare` | `boolean` | — | Skip the skin and the position; the caller's class names style the content. |
 | `overlayClassName` | `string` | — | Extra class name on the backdrop. |
@@ -35,6 +48,11 @@
 ### DialogTrigger / DialogClose / DialogDescription / DialogPortal / DialogOverlay
 
 透传 Radix 同名部件。
+
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `asChild` | `boolean` | — | Merge the trigger's props onto its only child. |
+| `children` | `ReactNode` | — | The content. |
 
 ## Usage
 

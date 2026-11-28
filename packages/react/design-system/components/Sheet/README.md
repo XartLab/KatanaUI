@@ -10,13 +10,26 @@
 
 其余属性透传给 Radix Dialog.Root。
 
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `onOpenChange` | `(open: boolean) => void` | — | Called when the sheet opens or closes. |
+
 ### SheetContent
 
 其余属性透传给 Radix Dialog.Content。要有 SheetTitle（读屏靠它报名字），不想显示就加 sr-only。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `side` | `"right" \| "left" \| "top" \| "bottom"` | `'right'` | Which edge the sheet sticks to; it slides in from that edge. |
+| `onEscapeKeyDown` | `(event: KeyboardEvent) => void` | — | Called when Escape is pressed; call `preventDefault()` to keep it open. |
+| `onPointerDownOutside` | `(event: Event) => void` | — | Called on a pointer press outside; call `preventDefault()` to keep it open. |
+| `onFocusOutside` | `(event: Event) => void` | — | Called when focus moves outside; call `preventDefault()` to keep it open. |
+| `onInteractOutside` | `(event: Event) => void` | — | Called on any interaction outside (pointer or focus); call `preventDefault()` to keep it open. |
+| `onOpenAutoFocus` | `(event: Event) => void` | — | Called when focus moves into the content; preventDefault keeps focus where it is. |
+| `onCloseAutoFocus` | `(event: Event) => void` | — | Called when focus returns on close; preventDefault keeps focus where it is. |
+| `forceMount` | `true` | — | Keep the content in the page while closed (hidden). |
+| `asChild` | `boolean` | — | Merge the content's props onto its only child. |
+| `side` | `"top" \| "bottom" \| "left" \| "right"` | `'right'` | Which edge the sheet sticks to; it slides in from that edge. |
+| `children` | `ReactNode` | — | The content. |
 | `closeLabel` | `string` | — | When given, draws a close button at the top right and uses this as its accessible name. |
 
 ### SheetHeader / SheetBody / SheetFooter / SheetTitle / SheetDescription

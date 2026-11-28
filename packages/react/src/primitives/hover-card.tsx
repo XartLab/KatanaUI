@@ -8,7 +8,7 @@ import {
 } from '@ui-sdk/react/hover-card'
 import type { ComponentProps, ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
-import { childrenOf, partRender } from '../lib/radix-compat.tsx'
+import { childrenOf, partRender, slotOf } from '../lib/radix-compat.tsx'
 
 // 悬停卡：指针停在触发器上（或键盘焦点到了它）弹出的一小块补充信息，跟弹层同一块材质；入场跟弹层一样从触发处轻升（theme/motion.css）。
 // 延迟：openDelay 700ms、closeDelay 300ms（Radix HoverCard 的默认值，我们沿用；UI SDK 的 delay 默认 600）：它是补充，不是主要路径，别急着弹。行为底座是 UI SDK 的 HoverCard（#263）。
@@ -33,10 +33,11 @@ function HoverCardTrigger({
 }: Omit<ComponentProps<typeof HoverCardLink>, 'render' | 'children'> & {
   /** Merge the trigger's props onto its only child. */
   asChild?: boolean
+  /** The content. */
   children?: ReactNode
 }) {
   return (
-    <HoverCardLink render={partRender('hover-card-trigger', 'a', asChild, children)} {...props}>
+    <HoverCardLink render={partRender(slotOf(props, 'hover-card-trigger'), 'a', asChild, children)} {...props}>
       {childrenOf(asChild, children)}
     </HoverCardLink>
   )
@@ -52,7 +53,7 @@ function HoverCardContent({
     <HoverCardPanel
       align={align}
       sideOffset={sideOffset}
-      render={partRender('hover-card-content', 'div')}
+      render={partRender(slotOf(props, 'hover-card-content'), 'div')}
       className={cn(
         'k-mat-overlay k-text-body z-50 w-64 p-3 text-(color:--k-content-body-foreground) outline-0',
         className,

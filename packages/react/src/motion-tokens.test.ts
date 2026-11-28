@@ -56,12 +56,6 @@ const LAYOUT_ALLOW: { file: string; property: string; reason: string }[] = [
     reason: 'tabs-pill：底块的宽随页签文字变，圆角 scale 会走样；位置已走 translate，只有宽留着，页签条很短、不高频',
   },
   {
-    file: 'motion.css',
-    property: 'height',
-    reason:
-      'Accordion 的折叠：高度在 0 与内容高度（UI SDK 量好的 --accordion-panel-height）之间过渡，内容是文字，scale 会拉伸；低频，用户点开才变',
-  },
-  {
     file: 'workspace-tabs.css',
     property: 'left',
     reason: '工作台标签的滑块：位置与宽度由量到的页签位置写在行内，随布局变；低频',

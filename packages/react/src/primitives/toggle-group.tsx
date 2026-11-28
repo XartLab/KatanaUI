@@ -8,7 +8,7 @@ import { createContext, useContext, useId, type ComponentProps, type ReactNode }
 import { cn } from '../lib/cn.ts'
 import { focusRing, focusRingInset } from '../lib/focus.ts'
 import { snappy } from '../lib/motion.ts'
-import { slotName } from '../lib/slot-name.ts'
+import { slotName, type SlotOverride } from '../lib/slot-name.ts'
 
 // 分段切换：照 OpenMarket。md（默认，设置页 segmented-control）：4px 内边 · 圆角 control · 5% 白底 10% 白边，按钮 24 高 · 圆角 inner，选中 700；
 // sm（工具条 pill-container）：2px 内边 · 圆角 8 · 4% 白底，选中块圆角 6，跟着选中项滑动（snappy 弹簧）；按下缩到 .96。
@@ -67,6 +67,7 @@ const Context = createContext<{
   fullWidth: boolean
   layoutId: string
   value: string | null
+  /** The content. */
   children?: ReactNode
   pillClassName?: string
   textClassName?: string
@@ -90,39 +91,42 @@ function ToggleGroup({
 }: Omit<
   ComponentProps<typeof ToggleGroupRoot>,
   'children' | 'type' | 'multiple' | 'value' | 'defaultValue' | 'onValueChange'
-> & {
-  /** Size: md (default) is the bordered settings style, sm is the 26px toolbar style. */
-  size?: ToggleGroupSize
-  /**
-   * Old name of size: 'default' is md, 'sm' is sm.
-   * @deprecated Use `size`.
-   */
-  variant?: 'default' | 'sm'
-  /**
-   * Stretch the group to the full width and give every item an equal share.
-   * 撑满整行，各项等分宽度。
-   */
-  fullWidth?: boolean
-  /**
-   * Separate buttons, each with its own border and a small gap, instead of one shared container; the selected one is filled (no sliding pill). Pair with `tone` on the items for a buy / sell switch.
-   * 各项分开成钮：不要共用的容器底与边，每项自带边、留小缝；选中的整格填色（没有滑块）。配合项上的 tone 做买卖开关。
-   */
-  split?: boolean
-  /**
-   * Extra class name on the selected pill.
-   * 选中块、文字外壳上额外挂的类（应用里的样式与测试按这两个类找它们）。
-   */
-  pillClassName?: string
-  /** Extra class name on the text wrapper. */
-  textClassName?: string
-  /**
-   * The selected item; null means none is selected.
-   * null：一个都没选。
-   */
-  value: string | null
-  /** Called with the newly selected value. */
-  onValueChange: (value: string) => void
-}) {
+> &
+  SlotOverride & {
+    /** The content. */
+    children?: ReactNode
+    /** Size: md (default) is the bordered settings style, sm is the 26px toolbar style. */
+    size?: ToggleGroupSize
+    /**
+     * Old name of size: 'default' is md, 'sm' is sm.
+     * @deprecated Use `size`.
+     */
+    variant?: 'default' | 'sm'
+    /**
+     * Stretch the group to the full width and give every item an equal share.
+     * 撑满整行，各项等分宽度。
+     */
+    fullWidth?: boolean
+    /**
+     * Separate buttons, each with its own border and a small gap, instead of one shared container; the selected one is filled (no sliding pill). Pair with `tone` on the items for a buy / sell switch.
+     * 各项分开成钮：不要共用的容器底与边，每项自带边、留小缝；选中的整格填色（没有滑块）。配合项上的 tone 做买卖开关。
+     */
+    split?: boolean
+    /**
+     * Extra class name on the selected pill.
+     * 选中块、文字外壳上额外挂的类（应用里的样式与测试按这两个类找它们）。
+     */
+    pillClassName?: string
+    /** Extra class name on the text wrapper. */
+    textClassName?: string
+    /**
+     * The selected item; null means none is selected.
+     * null：一个都没选。
+     */
+    value: string | null
+    /** Called with the newly selected value. */
+    onValueChange: (value: string) => void
+  }) {
   const size: ToggleGroupSize = sizeProp ?? (variant === 'sm' ? 'sm' : 'md')
   const layoutId = useId()
   return (
@@ -157,6 +161,7 @@ function ToggleGroupItem({
   tone,
   ...props
 }: Omit<ComponentProps<typeof ToggleItem>, 'value' | 'children'> & {
+  /** The content. */
   children?: ReactNode
   /** The value of this item. */
   value: string

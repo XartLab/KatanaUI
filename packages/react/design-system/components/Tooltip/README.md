@@ -10,13 +10,29 @@
 
 悬停时间在这里统一：delayDuration 默认 500，skipDelayDuration 默认 400（导出为 TOOLTIP_DELAY_MS、TOOLTIP_SKIP_MS）；其余属性透传给 Radix Tooltip.Provider。
 
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `delayDuration` | `number` | `TOOLTIP_DELAY_MS` | Milliseconds the pointer rests before a tooltip inside opens. |
+| `skipDelayDuration` | `number` | — | Kept for compatibility; UI SDK decides how long the next tooltip opens at once. |
+| `children` | `ReactNode` | — | The content. |
+
 ### Tooltip
 
 其余属性透传给 Radix Tooltip.Root。
 
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `disableHoverableContent` | `boolean` | — | Kept for compatibility; a UI SDK tooltip never takes the pointer. |
+| `delayDuration` | `number` | — | Milliseconds the pointer rests before it opens; the provider's value by default. |
+
 ### TooltipTrigger
 
 其余属性透传给 Radix Tooltip.Trigger。用 asChild 套在按钮上。
+
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `asChild` | `boolean` | — | Merge the trigger's props onto its only child. |
+| `children` | `ReactNode` | — | The content. |
 
 ### TooltipContent
 

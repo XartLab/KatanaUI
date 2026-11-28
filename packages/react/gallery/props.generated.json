@@ -4131,7 +4131,14 @@
     "AlertDialog": {
       "kind": "component",
       "source": "src/primitives/alert-dialog.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "onOpenChange",
+          "type": "(open: boolean) => void",
+          "required": false,
+          "description": "Called when the dialog opens or closes."
+        }
+      ]
     },
     "AlertDialogAction": {
       "kind": "component",
@@ -4252,6 +4259,60 @@
       "source": "src/primitives/alert-dialog.tsx",
       "props": [
         {
+          "name": "onEscapeKeyDown",
+          "type": "(event: KeyboardEvent) => void",
+          "required": false,
+          "description": "Called when Escape is pressed; call `preventDefault()` to keep it open."
+        },
+        {
+          "name": "onPointerDownOutside",
+          "type": "(event: Event) => void",
+          "required": false,
+          "description": "Called on a pointer press outside; call `preventDefault()` to keep it open."
+        },
+        {
+          "name": "onFocusOutside",
+          "type": "(event: Event) => void",
+          "required": false,
+          "description": "Called when focus moves outside; call `preventDefault()` to keep it open."
+        },
+        {
+          "name": "onInteractOutside",
+          "type": "(event: Event) => void",
+          "required": false,
+          "description": "Called on any interaction outside (pointer or focus); call `preventDefault()` to keep it open."
+        },
+        {
+          "name": "onOpenAutoFocus",
+          "type": "(event: Event) => void",
+          "required": false,
+          "description": "Called when focus moves into the content; preventDefault keeps focus where it is."
+        },
+        {
+          "name": "onCloseAutoFocus",
+          "type": "(event: Event) => void",
+          "required": false,
+          "description": "Called when focus returns on close; preventDefault keeps focus where it is."
+        },
+        {
+          "name": "forceMount",
+          "type": "true",
+          "required": false,
+          "description": "Keep the content in the page while closed (hidden)."
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "description": "Merge the content's props onto its only child."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The content."
+        },
+        {
           "name": "size",
           "type": "'default' | 'sm'",
           "required": false,
@@ -4289,7 +4350,14 @@
     "AlertDialogPortal": {
       "kind": "component",
       "source": "src/primitives/alert-dialog.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": ""
+        }
+      ]
     },
     "AlertDialogTitle": {
       "kind": "component",
@@ -4299,7 +4367,20 @@
     "AlertDialogTrigger": {
       "kind": "component",
       "source": "src/primitives/alert-dialog.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "description": "Merge the trigger's props onto its only child."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The content."
+        }
+      ]
     },
     "AlertTitle": {
       "kind": "component",
@@ -10454,10 +10535,40 @@
       "source": "src/patterns/combobox.tsx",
       "props": [
         {
+          "name": "open",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether the popover is open (controlled)."
+        },
+        {
+          "name": "defaultOpen",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether it starts open (uncontrolled)."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(open: boolean) => void",
+          "required": false,
+          "description": "Called when it opens or closes."
+        },
+        {
           "name": "closeOnScroll",
           "type": "boolean",
           "required": false,
           "description": "Closes the popover when the page or a container holding its trigger scrolls, so it never floats away open."
+        },
+        {
+          "name": "modal",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether the rest of the page is inert while it is open; false by default."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The content."
         }
       ]
     },
@@ -10466,10 +10577,76 @@
       "source": "src/patterns/combobox.tsx",
       "props": [
         {
+          "name": "onEscapeKeyDown",
+          "type": "(event: KeyboardEvent) => void",
+          "required": false,
+          "description": "Called when Escape is pressed; call `preventDefault()` to keep it open."
+        },
+        {
+          "name": "onPointerDownOutside",
+          "type": "(event: Event) => void",
+          "required": false,
+          "description": "Called on a pointer press outside; call `preventDefault()` to keep it open."
+        },
+        {
+          "name": "onFocusOutside",
+          "type": "(event: Event) => void",
+          "required": false,
+          "description": "Called when focus moves outside; call `preventDefault()` to keep it open."
+        },
+        {
+          "name": "onInteractOutside",
+          "type": "(event: Event) => void",
+          "required": false,
+          "description": "Called on any interaction outside (pointer or focus); call `preventDefault()` to keep it open."
+        },
+        {
+          "name": "onOpenAutoFocus",
+          "type": "(event: Event) => void",
+          "required": false,
+          "description": "Called when focus moves into the content; preventDefault keeps focus where it is."
+        },
+        {
+          "name": "onCloseAutoFocus",
+          "type": "(event: Event) => void",
+          "required": false,
+          "description": "Called when focus returns on close; preventDefault keeps focus where it is."
+        },
+        {
+          "name": "forceMount",
+          "type": "true",
+          "required": false,
+          "description": "Keep the content in the page while closed (hidden)."
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "description": "Merge the content's props onto its only child."
+        },
+        {
+          "name": "hideWhenDetached",
+          "type": "boolean",
+          "required": false,
+          "description": "Close when the anchor scrolls out of view; ignored (closeOnScroll on Popover decides)."
+        },
+        {
+          "name": "avoidCollisions",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether the popover flips to stay on screen; always on."
+        },
+        {
           "name": "variant",
           "type": "keyof typeof skin",
           "required": false,
           "description": "Skin of the popup."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The content."
         },
         {
           "name": "label",
@@ -10533,7 +10710,20 @@
     "ComboboxTrigger": {
       "kind": "component",
       "source": "src/patterns/combobox.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "description": "Merge the trigger's props onto its only child instead of rendering a button."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The content."
+        }
+      ]
     },
     "Command": {
       "kind": "component",
@@ -10544,6 +10734,12 @@
       "kind": "component",
       "source": "src/primitives/command.tsx",
       "props": [
+        {
+          "name": "onOpenChange",
+          "type": "(open: boolean) => void",
+          "required": false,
+          "description": "Called when the dialog opens or closes."
+        },
         {
           "name": "title",
           "type": "string",
@@ -16156,7 +16352,14 @@
     "Dialog": {
       "kind": "component",
       "source": "src/primitives/dialog.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "onOpenChange",
+          "type": "(open: boolean) => void",
+          "required": false,
+          "description": "Called when the dialog opens or closes."
+        }
+      ]
     },
     "DialogBody": {
       "kind": "component",
@@ -16166,12 +16369,79 @@
     "DialogClose": {
       "kind": "component",
       "source": "src/primitives/dialog.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "description": "Merge the close button's props onto its only child."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The content."
+        }
+      ]
     },
     "DialogContent": {
       "kind": "component",
       "source": "src/primitives/dialog.tsx",
       "props": [
+        {
+          "name": "onEscapeKeyDown",
+          "type": "(event: KeyboardEvent) => void",
+          "required": false,
+          "description": "Called when Escape is pressed; call `preventDefault()` to keep it open."
+        },
+        {
+          "name": "onPointerDownOutside",
+          "type": "(event: Event) => void",
+          "required": false,
+          "description": "Called on a pointer press outside; call `preventDefault()` to keep it open."
+        },
+        {
+          "name": "onFocusOutside",
+          "type": "(event: Event) => void",
+          "required": false,
+          "description": "Called when focus moves outside; call `preventDefault()` to keep it open."
+        },
+        {
+          "name": "onInteractOutside",
+          "type": "(event: Event) => void",
+          "required": false,
+          "description": "Called on any interaction outside (pointer or focus); call `preventDefault()` to keep it open."
+        },
+        {
+          "name": "onOpenAutoFocus",
+          "type": "(event: Event) => void",
+          "required": false,
+          "description": "Called when focus moves into the content; preventDefault keeps focus where it is."
+        },
+        {
+          "name": "onCloseAutoFocus",
+          "type": "(event: Event) => void",
+          "required": false,
+          "description": "Called when focus returns on close; preventDefault keeps focus where it is."
+        },
+        {
+          "name": "forceMount",
+          "type": "true",
+          "required": false,
+          "description": "Keep the content in the page while closed (hidden)."
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "description": "Merge the content's props onto its only child."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The content."
+        },
         {
           "name": "closeLabel",
           "type": "string",
@@ -16200,7 +16470,7 @@
           "name": "bare",
           "type": "boolean",
           "required": false,
-          "description": ""
+          "description": "Skip the description style."
         }
       ]
     },
@@ -16222,7 +16492,14 @@
     "DialogPortal": {
       "kind": "component",
       "source": "src/primitives/dialog.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": ""
+        }
+      ]
     },
     "DialogTitle": {
       "kind": "component",
@@ -16239,7 +16516,20 @@
     "DialogTrigger": {
       "kind": "component",
       "source": "src/primitives/dialog.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "description": "Merge the trigger's props onto its only child."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The content."
+        }
+      ]
     },
     "DistributionBars": {
       "kind": "component",
@@ -26329,7 +26619,22 @@
     "HoverCard": {
       "kind": "component",
       "source": "src/primitives/hover-card.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "openDelay",
+          "type": "number",
+          "required": false,
+          "default": "700",
+          "description": "Milliseconds the pointer rests before it opens."
+        },
+        {
+          "name": "closeDelay",
+          "type": "number",
+          "required": false,
+          "default": "300",
+          "description": "Milliseconds before it closes once the pointer leaves."
+        }
+      ]
     },
     "HoverCardContent": {
       "kind": "component",
@@ -26339,7 +26644,20 @@
     "HoverCardTrigger": {
       "kind": "component",
       "source": "src/primitives/hover-card.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "description": "Merge the trigger's props onto its only child."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The content."
+        }
+      ]
     },
     "HoverExpand": {
       "kind": "component",
@@ -41635,34 +41953,151 @@
       "source": "src/primitives/popover.tsx",
       "props": [
         {
+          "name": "open",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether the popover is open (controlled)."
+        },
+        {
+          "name": "defaultOpen",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Whether it starts open (uncontrolled)."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(open: boolean) => void",
+          "required": false,
+          "description": "Called when it opens or closes."
+        },
+        {
           "name": "closeOnScroll",
           "type": "boolean",
           "required": false,
           "default": "true",
           "description": "Closes the popover when the page or a container holding its trigger scrolls, so it never floats away open."
+        },
+        {
+          "name": "modal",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether the rest of the page is inert while it is open; false by default."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The content."
         }
       ]
     },
     "PopoverAnchor": {
       "kind": "component",
       "source": "src/primitives/popover.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "description": ""
+        }
+      ]
     },
     "PopoverClose": {
       "kind": "component",
       "source": "src/primitives/popover.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "description": "Merge the close button's props onto its only child."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The content."
+        }
+      ]
     },
     "PopoverContent": {
       "kind": "component",
       "source": "src/primitives/popover.tsx",
       "props": [
         {
+          "name": "onEscapeKeyDown",
+          "type": "(event: KeyboardEvent) => void",
+          "required": false,
+          "description": "Called when Escape is pressed; call `preventDefault()` to keep it open."
+        },
+        {
+          "name": "onPointerDownOutside",
+          "type": "(event: Event) => void",
+          "required": false,
+          "description": "Called on a pointer press outside; call `preventDefault()` to keep it open."
+        },
+        {
+          "name": "onFocusOutside",
+          "type": "(event: Event) => void",
+          "required": false,
+          "description": "Called when focus moves outside; call `preventDefault()` to keep it open."
+        },
+        {
+          "name": "onInteractOutside",
+          "type": "(event: Event) => void",
+          "required": false,
+          "description": "Called on any interaction outside (pointer or focus); call `preventDefault()` to keep it open."
+        },
+        {
+          "name": "onOpenAutoFocus",
+          "type": "(event: Event) => void",
+          "required": false,
+          "description": "Called when focus moves into the content; preventDefault keeps focus where it is."
+        },
+        {
+          "name": "onCloseAutoFocus",
+          "type": "(event: Event) => void",
+          "required": false,
+          "description": "Called when focus returns on close; preventDefault keeps focus where it is."
+        },
+        {
+          "name": "forceMount",
+          "type": "true",
+          "required": false,
+          "description": "Keep the content in the page while closed (hidden)."
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "description": "Merge the content's props onto its only child."
+        },
+        {
+          "name": "hideWhenDetached",
+          "type": "boolean",
+          "required": false,
+          "description": "Close when the anchor scrolls out of view; ignored (closeOnScroll on Popover decides)."
+        },
+        {
+          "name": "avoidCollisions",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether the popover flips to stay on screen; always on."
+        },
+        {
           "name": "variant",
           "type": "keyof typeof skin",
           "required": false,
           "default": "'panel'",
           "description": "Skin of the popup."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The content."
         }
       ]
     },
@@ -41684,7 +42119,20 @@
     "PopoverTrigger": {
       "kind": "component",
       "source": "src/primitives/popover.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "description": "Merge the trigger's props onto its only child instead of rendering a button."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The content."
+        }
+      ]
     },
     "PortfolioRunFormat": {
       "kind": "type",
@@ -51730,7 +52178,14 @@
     "Sheet": {
       "kind": "component",
       "source": "src/primitives/sheet.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "onOpenChange",
+          "type": "(open: boolean) => void",
+          "required": false,
+          "description": "Called when the sheet opens or closes."
+        }
+      ]
     },
     "SheetBody": {
       "kind": "component",
@@ -51740,18 +52195,85 @@
     "SheetClose": {
       "kind": "component",
       "source": "src/primitives/sheet.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "description": "Merge the close button's props onto its only child."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The content."
+        }
+      ]
     },
     "SheetContent": {
       "kind": "component",
       "source": "src/primitives/sheet.tsx",
       "props": [
         {
+          "name": "onEscapeKeyDown",
+          "type": "(event: KeyboardEvent) => void",
+          "required": false,
+          "description": "Called when Escape is pressed; call `preventDefault()` to keep it open."
+        },
+        {
+          "name": "onPointerDownOutside",
+          "type": "(event: Event) => void",
+          "required": false,
+          "description": "Called on a pointer press outside; call `preventDefault()` to keep it open."
+        },
+        {
+          "name": "onFocusOutside",
+          "type": "(event: Event) => void",
+          "required": false,
+          "description": "Called when focus moves outside; call `preventDefault()` to keep it open."
+        },
+        {
+          "name": "onInteractOutside",
+          "type": "(event: Event) => void",
+          "required": false,
+          "description": "Called on any interaction outside (pointer or focus); call `preventDefault()` to keep it open."
+        },
+        {
+          "name": "onOpenAutoFocus",
+          "type": "(event: Event) => void",
+          "required": false,
+          "description": "Called when focus moves into the content; preventDefault keeps focus where it is."
+        },
+        {
+          "name": "onCloseAutoFocus",
+          "type": "(event: Event) => void",
+          "required": false,
+          "description": "Called when focus returns on close; preventDefault keeps focus where it is."
+        },
+        {
+          "name": "forceMount",
+          "type": "true",
+          "required": false,
+          "description": "Keep the content in the page while closed (hidden)."
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "description": "Merge the content's props onto its only child."
+        },
+        {
           "name": "side",
-          "type": "\"right\" | \"left\" | \"top\" | \"bottom\"",
+          "type": "\"top\" | \"bottom\" | \"left\" | \"right\"",
           "required": false,
           "default": "'right'",
           "description": "Which edge the sheet sticks to; it slides in from that edge."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The content."
         },
         {
           "name": "closeLabel",
@@ -51784,7 +52306,14 @@
     "SheetPortal": {
       "kind": "component",
       "source": "src/primitives/sheet.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": ""
+        }
+      ]
     },
     "SheetTitle": {
       "kind": "component",
@@ -51794,7 +52323,20 @@
     "SheetTrigger": {
       "kind": "component",
       "source": "src/primitives/sheet.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "description": "Merge the trigger's props onto its only child."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The content."
+        }
+      ]
     },
     "ShineText": {
       "kind": "component",
@@ -62156,6 +62698,18 @@
       "source": "src/primitives/toggle-group.tsx",
       "props": [
         {
+          "name": "data-slot",
+          "type": "string",
+          "required": false,
+          "description": "Replaces the default data-slot name, which styles and selectors key on."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The content."
+        },
+        {
           "name": "size",
           "type": "ToggleGroupSize",
           "required": false,
@@ -62210,6 +62764,12 @@
       "kind": "component",
       "source": "src/primitives/toggle-group.tsx",
       "props": [
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The content."
+        },
         {
           "name": "value",
           "type": "string",
@@ -62351,7 +62911,20 @@
     "Tooltip": {
       "kind": "component",
       "source": "src/primitives/tooltip.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "disableHoverableContent",
+          "type": "boolean",
+          "required": false,
+          "description": "Kept for compatibility; a UI SDK tooltip never takes the pointer."
+        },
+        {
+          "name": "delayDuration",
+          "type": "number",
+          "required": false,
+          "description": "Milliseconds the pointer rests before it opens; the provider's value by default."
+        }
+      ]
     },
     "TooltipContent": {
       "kind": "component",
@@ -62361,12 +62934,45 @@
     "TooltipProvider": {
       "kind": "component",
       "source": "src/primitives/tooltip.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "delayDuration",
+          "type": "number",
+          "required": false,
+          "default": "TOOLTIP_DELAY_MS",
+          "description": "Milliseconds the pointer rests before a tooltip inside opens."
+        },
+        {
+          "name": "skipDelayDuration",
+          "type": "number",
+          "required": false,
+          "description": "Kept for compatibility; UI SDK decides how long the next tooltip opens at once."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The content."
+        }
+      ]
     },
     "TooltipTrigger": {
       "kind": "component",
       "source": "src/primitives/tooltip.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "description": "Merge the trigger's props onto its only child."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The content."
+        }
+      ]
     },
     "TraceSpan": {
       "kind": "type",

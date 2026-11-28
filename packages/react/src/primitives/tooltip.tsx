@@ -8,7 +8,7 @@ import {
 } from '@ui-sdk/react/tooltip'
 import { createContext, useContext, type ComponentProps, type ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
-import { childrenOf, partRender } from '../lib/radix-compat.tsx'
+import { childrenOf, partRender, slotOf } from '../lib/radix-compat.tsx'
 
 // 提示：照 OpenMarket q-tooltip。6px 8px 内边 · 圆角 6 · 最深底 + 细边 · 0 2 10 阴影；没有小箭头。
 // 内容里有快捷键键帽（.k-kbd）时压成浅色块：照 OpenMarket 提示里的 kbd。
@@ -41,6 +41,7 @@ function TooltipProvider({
   delayDuration?: number
   /** Kept for compatibility; UI SDK decides how long the next tooltip opens at once. */
   skipDelayDuration?: number
+  /** The content. */
   children?: ReactNode
 }) {
   return (
@@ -79,10 +80,11 @@ function TooltipTrigger({
 }: Omit<ComponentProps<typeof TooltipButton>, 'render' | 'children'> & {
   /** Merge the trigger's props onto its only child. */
   asChild?: boolean
+  /** The content. */
   children?: ReactNode
 }) {
   return (
-    <TooltipButton render={partRender('tooltip-trigger', 'button', asChild, children)} {...props}>
+    <TooltipButton render={partRender(slotOf(props, 'tooltip-trigger'), 'button', asChild, children)} {...props}>
       {childrenOf(asChild, children)}
     </TooltipButton>
   )
@@ -97,7 +99,7 @@ function TooltipContent({
   return (
     <TooltipPanel
       sideOffset={sideOffset}
-      render={partRender('tooltip-content', 'div')}
+      render={partRender(slotOf(props, 'tooltip-content'), 'div')}
       className={cn(tooltipContentClass, 'pointer-events-none', className)}
       {...props}
     >
