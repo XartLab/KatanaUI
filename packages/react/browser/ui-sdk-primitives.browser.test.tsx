@@ -190,12 +190,14 @@ describe('Collapsible / Accordion / Tabs', () => {
     await userEvent.keyboard('{Enter}')
     expect(trigger.getAttribute('aria-expanded')).toBe('true')
     expect(trigger.hasAttribute('data-open')).toBe(true)
+    expect(trigger.getAttribute('data-state')).toBe('open')
+    expect(q('[data-slot="collapsible-content"]').getAttribute('data-state')).toBe('open')
     expect(q('[data-slot="collapsible-content"]').textContent).toBe('内容')
     await userEvent.keyboard(' ')
     expect(trigger.getAttribute('aria-expanded')).toBe('false')
   })
 
-  test('Accordion single + collapsible：只开一项，Tab 在标题间移动（方向键不再移动，APG 去掉了），值是字符串', async () => {
+  test('Accordion single + collapsible：只开一项，Tab 与方向键都能在标题间移动，值是字符串', async () => {
     const seen: string[] = []
     await mount(
       <Accordion type="single" collapsible defaultValue="a" onValueChange={(v) => seen.push(v)}>
@@ -211,8 +213,20 @@ describe('Collapsible / Accordion / Tabs', () => {
     )
     const [a, b] = document.querySelectorAll<HTMLElement>('[data-slot="accordion-trigger"]')
     expect(a?.getAttribute('aria-expanded')).toBe('true')
+    expect(a?.getAttribute('data-state')).toBe('open')
+    expect(b?.getAttribute('data-state')).toBe('closed')
+    expect(a?.getAttribute('data-orientation')).toBe('vertical')
     await userEvent.tab()
-    await userEvent.tab()
+    // 迁移前（Radix）：↓ ↑ 在标题间走、两头回绕，Home / End 到头尾；UI SDK 没有。
+    await userEvent.keyboard('{ArrowDown}')
+    expect(active()).toBe(b)
+    await userEvent.keyboard('{ArrowDown}')
+    expect(active()).toBe(a)
+    await userEvent.keyboard('{ArrowUp}')
+    expect(active()).toBe(b)
+    await userEvent.keyboard('{Home}')
+    expect(active()).toBe(a)
+    await userEvent.keyboard('{End}')
     expect(active()).toBe(b)
     await userEvent.keyboard('{Enter}')
     expect(seen).toEqual(['b'])
@@ -314,6 +328,76 @@ describe('Collapsible / Accordion / Tabs', () => {
     expect(active()?.textContent).toBe('甲')
     await userEvent.keyboard('{ArrowLeft}')
     expect(active()?.textContent).toBe('丙')
+  })
+})
+
+describe('Accordion / Collapsible 的动画（迁移前是 keyframes，不是 transition）', () => {
+  test('展开放 kc-accordion-down、收起放 kc-accordion-up，放完才卸载；首次渲染就开着的不放', async () => {
+    await mount(
+      <Accordion type="single" collapsible defaultValue="a">
+        <AccordionItem value="a">
+          <AccordionTrigger>甲</AccordionTrigger>
+          <AccordionContent>甲的内容</AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="b">
+          <AccordionTrigger>乙</AccordionTrigger>
+          <AccordionContent>乙的内容</AccordionContent>
+        </AccordionItem>
+      </Accordion>,
+    )
+    const names = (el: Element | null) => el?.getAnimations().map((a) => (a as CSSAnimation).animationName) ?? []
+    const [a, b] = document.querySelectorAll<HTMLElement>('[data-slot="accordion-trigger"]')
+    await expect.poll(() => names(q('[data-slot="accordion-content"]'))).toEqual([])
+    await userEvent.click(b!)
+    expect(
+      names(document.querySelectorAll('[data-slot="accordion-content"]')[1] ?? null).includes('kc-accordion-down'),
+    ).toBe(true)
+    await userEvent.click(a!)
+    // 甲正在收起：data-ending-style 在、kc-accordion-up 在放；面板还在页上。
+    const closing = document.querySelector('[data-slot="accordion-content"][data-ending-style]')
+    expect(closing).not.toBeNull()
+    expect(names(closing)).toContain('kc-accordion-up')
+    await expect.poll(() => document.querySelectorAll('[data-slot="accordion-content"]').length).toBe(1)
+  })
+
+  test('Collapsible 同样：收起放 kc-collapsible-up', async () => {
+    await mount(
+      <Collapsible defaultOpen>
+        <CollapsibleTrigger>详情</CollapsibleTrigger>
+        <CollapsibleContent>内容</CollapsibleContent>
+      </Collapsible>,
+    )
+    await userEvent.click(q('[data-slot="collapsible-trigger"]'))
+    const closing = document.querySelector('[data-slot="collapsible-content"][data-ending-style]')
+    expect(closing?.getAnimations().map((a) => (a as CSSAnimation).animationName)).toContain('kc-collapsible-up')
+    await expect.poll(() => document.querySelector('[data-slot="collapsible-content"]')).toBeNull()
+  })
+
+  test('禁用的折叠标题是原生 disabled：Tab 跳过它，方向键也跳过', async () => {
+    await mount(
+      <Accordion type="multiple">
+        <AccordionItem value="a">
+          <AccordionTrigger>甲</AccordionTrigger>
+          <AccordionContent>甲的内容</AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="b" disabled>
+          <AccordionTrigger>乙</AccordionTrigger>
+          <AccordionContent>乙的内容</AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="c">
+          <AccordionTrigger>丙</AccordionTrigger>
+          <AccordionContent>丙的内容</AccordionContent>
+        </AccordionItem>
+      </Accordion>,
+    )
+    const [, b] = document.querySelectorAll<HTMLButtonElement>('[data-slot="accordion-trigger"]')
+    expect(b?.disabled).toBe(true)
+    await userEvent.tab()
+    expect(active()?.textContent).toBe('甲')
+    await userEvent.tab()
+    expect(active()?.textContent).toBe('丙')
+    await userEvent.keyboard('{ArrowUp}')
+    expect(active()?.textContent).toBe('甲')
   })
 })
 

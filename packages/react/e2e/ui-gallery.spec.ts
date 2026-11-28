@@ -8981,9 +8981,8 @@ test('SUI-B Collapsible：点标题展开收起，内容高度从 0 长出来', 
   await expect(content).toBeHidden()
   await trigger.click()
   await expect(content).toBeVisible()
-  // 展开收起是 height 过渡（UI SDK 量出 --collapsible-panel-height，data-starting-style / data-ending-style 是起点与收起中；#263 从 keyframes 换来）。
-  await expect(content).toHaveCSS('transition-property', 'height')
-  await expect(content).toHaveCSS('transition-duration', /^(?!0s)/)
+  // 入场用的是 height 动画（kc-collapsible-down，keyframes；UI SDK 量出的 --collapsible-panel-height 当高度）。
+  expect(await content.evaluate((el) => getComputedStyle(el).animationName)).toBe('kc-collapsible-down')
   // 高度在动画里从 0 长出来，CI 忙时刚点完可能才长到一半：等它长够。
   await expect.poll(async () => (await content.boundingBox())?.height ?? 0).toBeGreaterThan(20)
 })

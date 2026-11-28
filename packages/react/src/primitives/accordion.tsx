@@ -11,8 +11,12 @@ import {
 import { ChevronDownIcon } from 'lucide-react'
 import type { ComponentProps, ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
-import { slotName } from '../lib/slot-name.ts'
+import { legacyState, part } from '../lib/legacy-attrs.ts'
+import { rovingKeys } from '../lib/roving-keys.ts'
 import { focusRingInset } from '../lib/focus.ts'
+
+// Radix 的各部件都带 data-orientation（手风琴只做竖排，恒为 vertical）。
+const vertical = () => ({ 'data-orientation': 'vertical' })
 
 // 折叠：每项底下一道细线，标题行 36 高，箭头在展开时翻过来；内容的高度从 0 长到内容高度（过渡写在 theme/motion.css，高度变量来自 UI SDK 的 --accordion-panel-height）。
 // 对外仍是 Radix 的写法：type="single" 的 value 是字符串、type="multiple" 的是字符串数组，single 要能收起自己得写 collapsible；这里换成 UI SDK 的数组值与 multiple。
@@ -52,7 +56,7 @@ function Accordion({ type, value, defaultValue, onValueChange, collapsible, ...p
   const list = (v: string | string[] | undefined) => (v === undefined ? undefined : Array.isArray(v) ? v : v ? [v] : [])
   return (
     <AccordionRoot
-      data-slot="accordion"
+      render={part('div', { slot: 'accordion', extra: vertical })}
       multiple={multiple}
       collapsible={multiple ? undefined : collapsible}
       value={list(value)}
@@ -68,7 +72,7 @@ function Accordion({ type, value, defaultValue, onValueChange, collapsible, ...p
 function AccordionItem({ className, ...props }: ComponentProps<typeof AccordionEntry>) {
   return (
     <AccordionEntry
-      data-slot="accordion-item"
+      render={part('div', { slot: 'accordion-item', state: legacyState.open, extra: vertical })}
       className={cn('border-b border-(color:--k-separable-tertiary-borderColor) last:border-b-0', className)}
       {...props}
     />
@@ -78,19 +82,39 @@ function AccordionItem({ className, ...props }: ComponentProps<typeof AccordionE
 function AccordionTrigger({
   className,
   children,
+  onKeyDown,
   ...props
 }: Omit<ComponentProps<typeof AccordionButton>, 'children'> & {
   /** The heading's content. */
   children?: ReactNode
 }) {
   return (
-    <AccordionHeader className="m-0 flex">
+    <AccordionHeader render={part('h3', { state: legacyState.open, extra: vertical })} className="m-0 flex">
       <AccordionButton
-        data-slot="accordion-trigger"
+        render={part('button', {
+          slot: 'accordion-trigger',
+          state: legacyState.open,
+          nativeDisabled: true,
+          extra: vertical,
+        })}
+        onKeyDown={(event) => {
+          onKeyDown?.(event)
+          if (event.defaultPrevented) return
+          // 手风琴的标题之间：↑↓ 走、Home / End 到头尾、两头回绕、跳过禁用的（Radix 的做法，UI SDK 没有）。
+          const root = event.currentTarget.closest<HTMLElement>('[data-slot="accordion"]')
+          rovingKeys(root, event, {
+            items: (el) =>
+              [...el.querySelectorAll<HTMLElement>('[data-slot="accordion-trigger"]')].filter(
+                (trigger) => trigger.closest('[data-slot="accordion"]') === el,
+              ),
+            axis: 'vertical',
+            onlyWhenDisabled: false,
+          })
+        }}
         className={cn(
           'k-text-body flex min-h-9 flex-1 cursor-pointer items-center justify-between gap-4 rounded-[var(--radius-control)] py-2 text-left text-(color:--k-content-body-foreground)',
           'transition-colors duration-150 enabled:hover:text-(color:--k-content-primary-foreground) disabled:cursor-not-allowed disabled:opacity-45',
-          'data-open:text-(color:--k-content-primary-foreground) data-open:[&>svg]:rotate-180',
+          '[&[data-state=open]]:text-(color:--k-content-primary-foreground) [&[data-state=open]>svg]:rotate-180',
           focusRingInset,
           className,
         )}
@@ -112,7 +136,11 @@ function AccordionContent({
   children?: ReactNode
 }) {
   return (
-    <AccordionPanel render={slotName('accordion-content')} className="k-text-body overflow-hidden" {...props}>
+    <AccordionPanel
+      render={part('div', { slot: 'accordion-content', state: legacyState.open, extra: vertical })}
+      className="k-text-body overflow-hidden"
+      {...props}
+    >
       <div className={cn('pt-0 pb-3', className)}>{children}</div>
     </AccordionPanel>
   )
