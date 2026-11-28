@@ -10,8 +10,8 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `className` | `string` | — | Extra classes for the wrapper. |
 | `children` * | `ReactNode` | — | Content shown after the transition; swapped at the midpoint of the playback. |
+| `className` | `string` | — | Extra classes for the wrapper. |
 | `duration` | `number` | — | Total length in milliseconds; defaults to the preset of the transition. |
 | `onRest` | `() => void` | — | Called once the transition has finished and the new content is in place. |
 | `transitionKey` * | `string \| number` | — | When this value changes, the transition plays and `children` replaces the old content. |

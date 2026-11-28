@@ -59,6 +59,7 @@ import { chance, pick, randomWalk, useLiveTicker, type Rng } from '../live-sim.t
 import { LiveStatusBarDemo } from './live-readouts.tsx'
 import { STOCKS, STOCK_COLUMNS, STOCK_LAYOUT, type Stock } from './screener-data.tsx'
 import { ActionLog, Row, SAMPLE_MARK_SRC, demoSymbolActions } from './parts.tsx'
+import { NewsFeedServerDemo, NewsFeedSidebarDemo, NewsFeedTenThousandDemo } from './news-feed-server.tsx'
 import { WatchlistOrderDemo } from './watchlist-order.tsx'
 
 // 积木层（@katana-ui/react/blocks，#1869）的演示。表里的数据都是写死的示例数据，不是行情。
@@ -1044,6 +1045,9 @@ export const NEWS_LABELS: NewsFeedLabels = {
   views: { trigger: '已保存的新闻过滤', save: '另存为…' },
   collapse: '收起过滤',
   expand: '展开过滤',
+  sourceCount: (n) => `${n} 源`,
+  alsoFrom: (names) => `另见：${names.join('、')}`,
+  end: { loadingMore: '加载中…', endReached: '没有更多了', retry: '重试' },
 }
 
 const NEWS_FACETS: readonly NewsFacet[] = [
@@ -1190,6 +1194,13 @@ const NEWS_MANY: NewsItem[] = Array.from({ length: 1000 }, (_, i) => {
     id: `big-${i}`,
     time: NEWS_NOW - (i + 1) * 20_000,
     title: `${i + 1}. ${base.title}${tail}`,
+    // 一部分条目带标签与来源数：1000 条的行高核对（e2e）把它们也算进去。
+    tags:
+      i % 3 === 0
+        ? [{ label: '公告' }, { label: i % 2 ? '利好' : '待核实', tone: i % 2 ? 'info' : 'warn' }]
+        : undefined,
+    sourcesCount: i % 5 === 0 ? 2 + (i % 3) : undefined,
+    alsoFrom: i % 10 === 0 ? ['演示快讯', '演示财经'] : undefined,
   }
 })
 // 公告类别筛选（#109）：条目带 category，头部多一行类别芯片（多选）。演示数据，公司与公告都是虚构的。
@@ -1295,6 +1306,13 @@ export function NewsFeedDemo() {
       <div style={{ overflow: 'auto' }} data-testid="news-split">
         <NewsFeedSplit />
       </div>
+      <NewsFeedServerDemo labels={NEWS_LABELS} now={NEWS_NOW} />
+      <NewsFeedTenThousandDemo labels={NEWS_LABELS} now={NEWS_NOW} />
+      <p className="gal-note">
+        侧栏：chrome=&quot;bare&quot; 只画列表（没有标题行、频道、搜索、过滤）；groupBy 每 50
+        条出一个小标题，条数由调用方给。
+      </p>
+      <NewsFeedSidebarDemo labels={NEWS_LABELS} now={NEWS_NOW} />
       <div style={{ height: 420 }} data-testid="news-cards">
         <NewsFeed
           items={[...live, ...NEWS_ITEMS]}

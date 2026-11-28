@@ -12,9 +12,9 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `autoFocus` | `boolean \| undefined` | `false` | Focus the field on mount. |
-| `aria-label` * | `string \| undefined` | — | Defines a string value that labels the current element. |
 | `disabled` | `boolean \| undefined` | `false` | Dim the cells and ignore the keyboard. |
+| `aria-label` * | `string \| undefined` | — | Defines a string value that labels the current element. |
+| `autoFocus` | `boolean \| undefined` | `false` | Focus the field on mount. |
 | `name` | `string \| undefined` | — | Form field name of the real input. |
 | `length` | `number` | `6` | Number of cells. |
 | `value` | `string` | — | The code typed so far (controlled). |

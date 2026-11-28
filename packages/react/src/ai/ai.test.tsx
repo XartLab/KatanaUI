@@ -23,8 +23,8 @@ describe('core 状态约定', () => {
     expect(getAiStateMotion(undefined)).toBe(AI_STATE_MOTION.idle)
   })
   it('语义色走 token', () => {
-    expect(getAiStateAccentColor('done', 'x')).toBe('var(--signal-green)')
-    expect(getAiStateAccentColor('error', 'x')).toBe('var(--signal-red)')
+    expect(getAiStateAccentColor('done', 'x')).toBe('var(--k-status-ok-foreground)')
+    expect(getAiStateAccentColor('error', 'x')).toBe('var(--k-status-danger-foreground)')
     expect(getAiStateAccentColor('idle', 'x')).toBe('x')
   })
 })

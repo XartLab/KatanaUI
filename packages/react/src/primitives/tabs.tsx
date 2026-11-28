@@ -5,7 +5,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { Tabs as TabsRoot, TabsList as TabsListRoot, TabsPanel, TabsTab } from '@ui-sdk/react/tabs'
 import { useLayoutEffect, useRef, useState, type ComponentProps, type ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
-import { slotName } from '../lib/slot-name.ts'
+import { slotName, type SlotOverride } from '../lib/slot-name.ts'
 import { focusRingInset } from '../lib/focus.ts'
 
 // 页签：外观照现有的小号分段（OpenMarket pill-container：2px 内边 · 圆角 8 · 4% 白底，选中块圆角 6），
@@ -19,6 +19,7 @@ function Tabs({
   bare,
   activationMode,
   onValueChange,
+  'data-slot': slot = 'tabs',
   ...props
 }: Omit<ComponentProps<typeof TabsRoot>, 'activation' | 'value' | 'defaultValue' | 'onValueChange'> & {
   /** Skip the skin. */
@@ -31,10 +32,10 @@ function Tabs({
   onValueChange?: (value: string) => void
   /** automatic (default): arrow keys select as they move; manual: they only move focus, Enter or Space selects. */
   activationMode?: 'automatic' | 'manual'
-}) {
+} & SlotOverride) {
   return (
     <TabsRoot
-      data-slot="tabs"
+      render={slotName(slot, 'div')}
       activation={activationMode}
       onValueChange={(next) => {
         if (next !== null) onValueChange?.(next)
@@ -65,9 +66,11 @@ function TabsList({
   className,
   variant = 'default',
   children,
+  'data-slot': slot = 'tabs-list',
   ...props
 }: Omit<ComponentProps<typeof TabsListRoot>, 'children'> &
-  VariantProps<typeof tabsListVariants> & {
+  VariantProps<typeof tabsListVariants> &
+  SlotOverride & {
     /** The tab triggers. */
     children?: ReactNode
   }) {
@@ -98,7 +101,7 @@ function TabsList({
   return (
     <TabsListRoot
       ref={list}
-      data-slot="tabs-list"
+      render={slotName(slot, 'div')}
       data-variant={variant}
       className={cn(tabsListVariants({ variant }), className)}
       {...props}
@@ -119,14 +122,16 @@ function TabsList({
 function TabsTrigger({
   className,
   bare,
+  'data-slot': slot = 'tabs-trigger',
   ...props
-}: ComponentProps<typeof TabsTab> & {
-  /** Skip the skin. */
-  bare?: boolean
-}) {
+}: ComponentProps<typeof TabsTab> &
+  SlotOverride & {
+    /** Skip the skin. */
+    bare?: boolean
+  }) {
   return (
     <TabsTab
-      render={slotName('tabs-trigger', 'button')}
+      render={slotName(slot, 'button')}
       className={cn(
         !bare && [
           'k-text-data relative inline-flex h-7 cursor-pointer items-center justify-center gap-1.5 rounded-[var(--radius-control)] px-2 leading-none whitespace-nowrap text-(color:--k-content-body-foreground)',

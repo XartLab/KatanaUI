@@ -1,6 +1,6 @@
 # Calendar
 
-单独摆在页上的月历：选一天、翻月，非交易日用 unavailable 灰掉并加删除线。样子与 DateTimeInput 弹层里的日历同一套（.k-cal*），外面多一圈 container 的边与底；今天字提亮加下划线。行为底座是 react-aria 的 Calendar，日期一律 YYYY-MM-DD 字符串。
+单独摆在页上的月历：选一天、翻月，非交易日用 unavailable 灰掉并加删除线。样子与 DateTimeInput 弹层里的日历同一套（.k-cal*），外面多一圈 container 的边与底；今天字提亮加下划线。行为底座是 UI SDK 的 Calendar，日期一律 YYYY-MM-DD 字符串。
 
 ## Provide
 
@@ -8,7 +8,7 @@
 
 ### Calendar
 
-月份名、星期名按 locale 由 react-aria 写；两个翻页钮的读屏名由 labels 给。value 传空字符串表示没选。
+月份名、星期名按 locale 由 UI SDK 写；两个翻页钮的读屏名由 labels 给。value 传空字符串表示没选。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
@@ -69,7 +69,7 @@ export function CalendarUsage() {
 ## Composition
 
 ```
-Calendar（I18nProvider + react-aria Calendar）
+Calendar（UI SDK Calendar）
   头部：上个月 | 月份标题 | 下个月
   日格表（grid）
 ```

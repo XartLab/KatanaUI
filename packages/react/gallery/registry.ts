@@ -231,7 +231,7 @@ export const PAGES: readonly DocPage[] = [
     summary:
       '14px 凹陷方框；选中后中心一块 6px 方块，框换亮中性底，符号弹进来。半选画 2px 横杠。可选 indicator="check"：一笔写出来的勾（改自 SmoothUI，MIT）。',
     exports: ['Checkbox'],
-    propParts: [{ part: 'Checkbox', note: '其余属性透传给 Radix Checkbox.Root。' }],
+    propParts: [{ part: 'Checkbox', note: '其余属性透传给 UI SDK Checkbox。' }],
     states: [
       '未勾、已勾、半选（indeterminate）、禁用、禁用已勾、错误（aria-invalid）。',
       'indicator="check"：勾的路径从头画到尾，半选画横杠。',
@@ -254,7 +254,7 @@ export const PAGES: readonly DocPage[] = [
     title: 'Switch 开关',
     summary: '34 × 18 的轨道画在 40 × 28 的布局盒里；开时轨道换强调色，圆钮挪过去。',
     exports: ['Switch'],
-    propParts: [{ part: 'Switch', note: '其余属性透传给 Radix Switch.Root。' }],
+    propParts: [{ part: 'Switch', note: '其余属性透传给 UI SDK Switch。' }],
     states: [
       '关：10% 白轨道 + 9% 白内描边，圆钮 ink-300（--k-selectable-track-* / -thumb-background）。',
       '开：轨道换实心亮中性（--k-selectable-bold-background-selected），圆钮换深色并滑 16px（snappy）。',
@@ -320,7 +320,7 @@ export const PAGES: readonly DocPage[] = [
     props: [
       {
         part: 'ChipGroup',
-        note: '每个芯片是 aria-pressed 的开关，整组 role=group；底座是 Radix ToggleGroup。受控：value 与 onValueChange。',
+        note: '每个芯片是 aria-pressed 的开关，整组 role=group；底座是 UI SDK ToggleGroup。受控：value 与 onValueChange。',
         rows: [
           {
             name: 'items',
@@ -355,7 +355,7 @@ export const PAGES: readonly DocPage[] = [
       '选项很多（几十个）时用 MultiSelect 或 Combobox，别摆成一面芯片墙。',
       '命中数由调用方算：件不碰数据。',
     ],
-    composition: 'ChipGroup\n  ToggleGroup（Radix，type=multiple）\n    Item × n（字 + 命中数）\n  button.k-chip-clear',
+    composition: 'ChipGroup\n  ToggleGroup（UI SDK，multiple）\n    Item × n（字 + 命中数）\n  button.k-chip-clear',
     keys: [
       ['← →', '在芯片间移动焦点'],
       ['Space / Enter', '切换焦点所在的芯片'],
@@ -709,10 +709,10 @@ export const PAGES: readonly DocPage[] = [
     summary: '页签的选中块是一块跟着滑的底（弹簧）；default 是药丸底，line 是下划线。',
     exports: ['Tabs', 'TabsContent', 'TabsList', 'TabsTrigger', 'tabsListVariants'],
     propParts: [
-      { part: 'Tabs', note: '其余属性透传给 Radix Tabs.Root。' },
-      { part: 'TabsList', note: '其余属性透传给 Radix Tabs.List。tabsListVariants 是它的类名函数。' },
-      { part: 'TabsTrigger', note: '其余属性透传给 Radix Tabs.Trigger。' },
-      { part: 'TabsContent', note: '其余属性透传给 Radix Tabs.Content。' },
+      { part: 'Tabs', note: '其余属性透传给 UI SDK Tabs。' },
+      { part: 'TabsList', note: '其余属性透传给 UI SDK TabsList。tabsListVariants 是它的类名函数。' },
+      { part: 'TabsTrigger', note: '其余属性透传给 UI SDK TabsTab。' },
+      { part: 'TabsContent', note: '其余属性透传给 UI SDK TabsPanel。' },
     ],
     states: [
       '选中、未选、禁用页签。',
@@ -738,12 +738,12 @@ export const PAGES: readonly DocPage[] = [
     summary: '一组可展开收起的标题与内容；展开时高度从 0 长出来。',
     exports: ['Accordion', 'AccordionContent', 'AccordionItem', 'AccordionTrigger'],
     propParts: [
-      { part: 'Accordion', note: '其余属性透传给 Radix Accordion.Root。' },
-      { part: 'AccordionItem', note: '其余属性透传给 Radix Accordion.Item。' },
+      { part: 'Accordion', note: '其余属性透传给 UI SDK Accordion。' },
+      { part: 'AccordionItem', note: '其余属性透传给 UI SDK AccordionItem。' },
       {
         part: 'AccordionTrigger / AccordionContent',
         symbol: 'AccordionTrigger',
-        note: '标题行（带箭头）与展开的内容，透传 Radix 同名部件。',
+        note: '标题行（带箭头）与展开的内容，透传 UI SDK 同名部件。',
       },
     ],
     states: ['展开、收起。', '键盘 ↑ ↓ 在标题间走，Enter 或 Space 展开。'],
@@ -2262,7 +2262,7 @@ export const PAGES: readonly DocPage[] = [
     title: 'Progress 进度条',
     summary: '4 高的细条，填充走 snappy 弹簧滑到新位置；不知道进度（不给 value）是一块来回滑的不确定条。',
     exports: ['Progress'],
-    propParts: [{ part: 'Progress', note: '其余属性透传给 Radix Progress.Root。读屏要一个名字：传 aria-label。' }],
+    propParts: [{ part: 'Progress', note: '其余属性透传给 UI SDK Progress。读屏要一个名字：传 aria-label。' }],
     states: [
       '确定：按 value 填充，aria-valuenow 跟值。',
       '不确定：value 缺省，来回滑动的条，不带 aria-valuenow。',
@@ -2430,7 +2430,10 @@ export const PAGES: readonly DocPage[] = [
     propParts: [
       { part: 'Combobox', note: '其余属性透传给 Radix Popover.Root。open、onOpenChange 受控。' },
       { part: 'ComboboxContent', note: '其余属性透传给 Radix Popover.Content。宽跟触发器一样（最窄 220）。' },
-      { part: 'ComboboxItem', note: '同 CommandItem。' },
+      {
+        part: 'ComboboxItem',
+        note: '同 CommandItem，另加三个可选属性：selected 画勾；prefix 是文字前的节点（头像、图标，纯装饰，读屏不读）；description 是文字下的第二行说明（带它时行自己长高，不带还是 30 高）。带 prefix 或 description 时 value 默认取主文字（children 是字符串时），说明不进搜索、onSelect 收到的也是主文字；要按说明搜就把它放进 keywords，children 不是字符串时一定要自己传 value。',
+      },
       {
         part: 'ComboboxTrigger / ComboboxInput / ComboboxList / ComboboxEmpty / ComboboxGroup',
         symbol: 'ComboboxTrigger',
@@ -2441,8 +2444,10 @@ export const PAGES: readonly DocPage[] = [
       '打开：焦点在搜索框，列表可过滤。',
       '单选：选中后收起；多选：点一项不收，触发器写已选个数。',
       '已选的行 data-checked 且前面有勾。',
+      '带 prefix / description：前缀在勾与文字之间，说明在文字下一行，行长高到放得下两行。',
     ],
     donts: [
+      '要在输入框里带标签的多选，用 TagCombobox，不要拿触发器写已选个数硬凑。',
       '不要少于十来项就用它，少的用 Select。',
       '不要忘了给搜索框与列表传 label。',
       '行的 aria-selected 是高亮不是已选，已选用 selected。',
@@ -2458,13 +2463,52 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'tag-combobox',
+    group: 'forms',
+    cardHeight: 120,
+    title: 'TagCombobox 带标签的多选',
+    summary:
+      '字段本身是输入框：已选项以小标签排在框里（可换行、可带头像或图标、每个有 ×），光标跟在最后一个标签后面，打字就过滤，命中的字加强。列表每行主文字加可选第二行说明与前缀节点，已选行尾画勾；选或取消后列表不收、输入清空。输入框空着时退格第一次选中最后一个标签、第二次删掉；← → 在标签间移。弹层锚在整个字段上，标签多到换行字段长高时弹层跟着下移。交互参照 Jamie Merrill 的 Multi select combobox，只借交互，样子是我们的。',
+    exports: ['TagCombobox'],
+    propParts: [
+      {
+        part: 'TagCombobox',
+        note: 'options 是 { id, label, description?, prefix?, keywords? }；value 受控（id 数组，标签按这个先后排）或 defaultValue 非受控；label 是输入框的读屏名。labels.remove、labels.empty 必填，toggle（右端箭头按钮的读屏名，不传就不画）、list、added、removed、picked 可选；播报走一个 aria-live=polite 的屏外区。defaultOpen、onOpenChange 管列表开关。',
+      },
+    ],
+    states: [
+      '空：显示占位，列表点字段才开。',
+      '有标签：标签在框里换行排，输入框跟在最后；字段随之长高，弹层贴着字段下沿。',
+      '过滤：只留含输入词（大小写与重音不分，空格分开的词都要命中）的行，命中的字加粗提亮；没有匹配写 labels.empty。',
+      '高亮行：底色一档（--k-selectable-subtle-background-hover），键盘移动时滚进视野；已选行主文字加粗，行尾有勾。',
+      '选中标签：退格或 ← → 选中的标签画一圈焦点色的环，再按退格或 Delete 删掉。',
+      '禁用：整框半透明，标签的 × 与箭头也不能点。',
+    ],
+    donts: [
+      '标签是用户自由打出来的文字（代码清单、关键词）时用 TagInput，不要用它。',
+      '选一个值用 Combobox 或 Select。',
+      '头像、图标放 prefix，不要把名字只放进图片里：prefix 对读屏是隐藏的，label 才是名字。',
+    ],
+    composition:
+      'TagCombobox\n  PopoverAnchor → div.k-tagcb-box\n    span.k-tagcb-tag × n\n      span（prefix）\n      span（字）\n      button（×，不进 Tab 序列）\n    input（role=combobox）\n    button（箭头，不进 Tab 序列，可选）\n  PopoverContent\n    div.k-tagcb-list（role=listbox，aria-multiselectable）\n      div.k-tagcb-option × n（role=option）\n        span（prefix）· span（主文字）· span（说明）· span（勾）\n    div（没有匹配时，role=status）',
+    keys: [
+      ['点字段 / ↓ / 打字', '打开列表；光标在输入框里'],
+      ['↑ ↓', '移动高亮（首尾相接）'],
+      ['Enter', '切换高亮行：选中或取消，输入清空，列表不收'],
+      ['Esc', '收起列表；列表已收时取消标签选中'],
+      ['Backspace', '输入框空着：第一次选中最后一个标签，第二次删掉它'],
+      ['← →', '在标签间移选中；→ 过了最后一个回到输入框'],
+      ['Delete', '删除选中的标签'],
+    ],
+  },
+  {
     id: 'separator',
     group: 'layout',
     cardHeight: 117,
     title: 'Separator 分隔线',
     summary: '1px 的线，取 line 色（跟菜单里的分隔线一条白线）；默认只是装饰，读屏不报。',
     exports: ['Separator'],
-    propParts: [{ part: 'Separator', note: '其余属性透传给 Radix Separator.Root。' }],
+    propParts: [{ part: 'Separator', note: '其余属性透传给 UI SDK Separator。' }],
     states: ['横：1px 高；竖：1px 宽，取 line 色。', 'decorative 默认真，读屏不报；decorative=false 才是 separator。'],
     donts: ['不要用它占位留白，用间距。', '不要在读屏需要知道分组的地方用装饰分隔，改 decorative=false 或用分组标题。'],
     composition: 'Separator',
@@ -2476,12 +2520,12 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 181,
     title: 'ScrollArea 滚动区',
     summary:
-      'Radix 的自绘滚动条，4px 宽，平时不出现，指针到了这一块才出一条淡线（18% 墨色，指到滚动条上 32%）。调用方要给它一个确定的高。',
+      'UI SDK ScrollArea 的自绘滚动条，4px 宽，平时不出现，指针到了这一块才出一条淡线（18% 墨色，指到滚动条上 32%）。调用方要给它一个确定的高。',
     exports: ['ScrollArea', 'ScrollBar'],
     propParts: [
       {
         part: 'ScrollArea',
-        note: '其余属性透传给 Radix ScrollArea.Root。给 Root 一个确定的高（或 max-height），内容比它高才滚。',
+        note: '其余属性透传给 UI SDK ScrollArea。给 Root 一个确定的高（或 max-height），内容比它高才滚。',
       },
       { part: 'ScrollBar', note: '自己拼时用；orientation 默认 vertical。' },
     ],
@@ -2586,7 +2630,7 @@ export const PAGES: readonly DocPage[] = [
         note: '其余属性透传给 div。控件调 useFieldControl() 拿 { id, aria-describedby, aria-invalid, disabled } 展开到自己身上。',
       },
       { part: 'FieldError', note: 'Field 的 invalid 为真才渲染；children 是调用方写的话。' },
-      { part: 'Label', note: '其余属性透传给 Radix Label.Root。不在 Field 里单独用也行。' },
+      { part: 'Label', note: '其余属性透传给 UI SDK Label。不在 Field 里单独用也行。' },
       {
         part: 'FieldLabel / FieldDescription / FieldContent / FieldGroup / FieldSet / FieldLegend / FieldSeparator',
         symbol: 'FieldLabel',
@@ -5095,7 +5139,7 @@ export const PAGES: readonly DocPage[] = [
           {
             name: 'items',
             type: 'NewsItem[]',
-            desc: '{ id, time（毫秒）, channel, source, title, summary?, symbols?: {code, name?}[], important?, href? }。传入顺序不用排，件按时间新的在前；新出现的 id 算「新消息」。',
+            desc: '{ id, time（毫秒）, channel, source, title, summary?, symbols?: {code, name?}[], important?, href?, tags?: { label, tone? }[], sourcesCount?, alsoFrom?: string[] }。传入顺序不用排，件按时间新的在前（给了 groupBy 就保持传入的顺序）；新出现的 id 算「新消息」（分页时比已显示最新一条还旧的是翻页来的，直接接在底部）。',
           },
           {
             name: 'channels',
@@ -5166,6 +5210,43 @@ export const PAGES: readonly DocPage[] = [
             type: 'callback',
             desc: '筛选或暂停变了通知调用方（可选）。',
           },
+          {
+            name: 'filtering',
+            type: "'internal' | 'external'",
+            default: "'internal'",
+            desc: 'internal：件用自己的过滤条筛 items（老行为，一点没变）。external：件不筛，只画传进来的 items，过滤条只把用户的选择报给 onFilterChange，由调用方（服务端分页）按条件取回条目；新条目整批换进来时回到顶部，不算「新消息」。',
+          },
+          {
+            name: 'filter / onFilterChange',
+            type: 'NewsFilter / (filter: NewsFilter) => void',
+            desc: '过滤条的值 { channel, sources, query, categories?, facets? }：给了就是受控（两种 filtering 都一样），不给件自己存。onFilterChange 总是回整份、字段给全；external 时搜索框每敲一个字都回调，防抖由调用方做。',
+          },
+          {
+            name: 'NewsItem.tags',
+            type: '{ label: string; tone?: "neutral" | "info" | "warn" }[]',
+            desc: '画在标题后面的标签，纯文本，默认 neutral。只有三档语气，没有 up / down：涨跌色给新闻标签用，读起来就是价格判断（方向只写字：利好 / 利空 / 中性 / 未标）。虚拟列表的行高把标签的宽算进去。',
+          },
+          {
+            name: 'NewsItem.sourcesCount / NewsItem.alsoFrom / labels.sourceCount / labels.alsoFrom',
+            type: 'number / string[] / (n) => string / (names) => string',
+            desc: 'sourcesCount 大于 1 才在标题后写 labels.sourceCount(n)（默认英文「n sources」）；alsoFrom 给了，这段字可聚焦，悬停或聚焦出提示 labels.alsoFrom(names)（默认「Also from A, B」）。注意 labels.sources 是来源芯片组的读屏名，不是来源数。',
+          },
+          {
+            name: 'onEndReached / endState / labels.end',
+            type: "() => void / 'more' | 'loading' | 'end' | { error: ReactNode; retry: () => void } / { loadingMore?, endReached?, retry? }",
+            desc: '滚到底加载：底部那一行进了视野（离底 400px 内，待定）且 endState 是 more（或没给）就调 onEndReached；调用方取页时把 endState 设成 loading，取到了设回 more 或 end，失败设成 { error, retry }。loading 写转圈与 labels.end.loadingMore，end 写 endReached，error 写原因与重试钮；文字默认英文。都不给就没有这一行。用 IntersectionObserver 盯底部的哨兵，不挂 scroll 监听。',
+          },
+          {
+            name: 'groupBy',
+            type: '(item) => { key: string; label: ReactNode; count?: number }',
+            desc: '连续同组键的一段前面出一个小标题（role=heading，aria-level 3，高 24px），count 写在旁边，由调用方给（件里可能只有这组的一部分）。组序由调用方排好，所以给了 groupBy 件不按时间排序；组键隔开又回来就再出一个小标题。小标题不占 aria-posinset。',
+          },
+          {
+            name: 'chrome',
+            type: "'full' | 'bare'",
+            default: "'full'",
+            desc: 'bare 只画列表（加「n 条新消息」与读屏播报）：没有标题行、频道、搜索、排法、暂停与过滤区，给侧栏用；行本身照旧（来源、标签、品种都在）。',
+          },
         ],
       },
     ],
@@ -5174,11 +5255,14 @@ export const PAGES: readonly DocPage[] = [
       '滚离顶部或已暂停：顶上出「n 条新消息」（只数符合当前筛选的），点了才插入并回到顶部。',
       '时间是相对的（3 分钟前），悬停出绝对时间；重要条目有琥珀小方块，读屏名「重要」。',
       '筛选没有命中：写 labels.empty。',
+      '底部（endState）：more 是看不见的哨兵，loading 转圈，end 写「到底了」（列表空着时不写），error 写原因和重试。',
     ],
     donts: [
       '不要在件里取当前时间：传 now。',
       '不要用橙色标重要：橙色留给数据，重要标记是琥珀。',
-      '不要一次传几万条：不做虚拟滚动，分段加载由调用方管。',
+      '不要拿涨跌色画标签：tone 只有 neutral / info / warn。',
+      '不要在 external 时再自己筛一遍：条件交给服务端，件里不再筛。',
+      '取页期间不要把 endState 留在 more：同一页会被要两次，要设成 loading。',
     ],
     composition:
       'NewsFeed\n  顶行：频道 ToggleGroup、搜索 Input、排法 ToggleGroup、暂停按钮\n  来源 ChipGroup\n  「n 条新消息」按钮\n  ol\n    li × 条目：来源、time、重要标记、标题、摘要（卡片）、品种胶囊（SymbolMark）',
@@ -5394,7 +5478,7 @@ export const PAGES: readonly DocPage[] = [
     composition:
       'StrategyReport\n  Tabs\n    顶行：TabsList（line）· 小标 · ToggleGroup（全部 / 多 / 空）\n    概览：关键读数条 · EquityCurve（权益与回撤，可带买入持有）\n    绩效 / 风险比率：table（三列：全部、多、空）\n    交易分析：直方图 svg × 2 · 连续盈亏条 · dl\n    交易列表：DataGrid（renderSubRow 展开）\n    属性：分组 dl',
     keys: [
-      ['← / →', '在页签间移动（Radix Tabs）'],
+      ['← / →', '在页签间移动（UI SDK Tabs）'],
       ['Tab', '页签行、多空切换、各页里的图与表之间移动'],
       ['→ / ←', '交易列表里：焦点所在行展开 / 收起'],
     ],
@@ -6418,7 +6502,7 @@ export const PAGES: readonly DocPage[] = [
     propParts: [
       {
         part: 'SymbolOverview',
-        note: 'items 是 { id, symbol, name?, last, changePct, values, times }：values 与 times 一一对应，横轴按时刻摆，几只品种的时刻可以不同。页签是 Radix Tabs，区间是 ToggleGroup。',
+        note: 'items 是 { id, symbol, name?, last, changePct, values, times }：values 与 times 一一对应，横轴按时刻摆，几只品种的时刻可以不同。页签是 UI SDK Tabs，区间是 ToggleGroup。',
       },
     ],
     states: [
@@ -6436,7 +6520,7 @@ export const PAGES: readonly DocPage[] = [
     composition:
       'SymbolOverview（Tabs）\n  TabsList（TabsTrigger × n：色块 · 代码 · 名称 · 价 · ChangeText）\n  TabsContent\n    div[role=slider]（svg：网格 · 零线 · 面积 · 线 × n；纵轴刻度 · 末点 · 十字线 · LcdTooltip）\n    div（横轴刻度）\n  ToggleGroup（区间）',
     keys: [
-      ['← / →（页签上）', '换到前一只 / 后一只品种（Radix Tabs）'],
+      ['← / →（页签上）', '换到前一只 / 后一只品种（UI SDK Tabs）'],
       ['← / →（图上）', '走到前一个 / 后一个点，出读数'],
       ['Shift + ← / →', '一次走三个点'],
       ['Home / End', '走到第一个 / 最后一个点'],
@@ -6803,7 +6887,7 @@ export const PAGES: readonly DocPage[] = [
     composition:
       'QuoteTable\n  Tabs\n    TabsList > TabsTrigger（一组一个）\n    TabsContent\n      table（表头 · 行：代码芯片 + 名称 · Sparkline · 价 · 涨跌幅 · 成交量（可选））',
     keys: [
-      ['← →', '在页签间移动（Radix Tabs）'],
+      ['← →', '在页签间移动（UI SDK Tabs）'],
       ['Tab / Enter', '到可点的行、触发'],
     ],
   },
@@ -7939,8 +8023,8 @@ export const PAGES: readonly DocPage[] = [
       '一组互斥的单选钮：14px 凹陷圆框，选中后框换亮中性，中心一颗深色点从小弹到位。方向键在选项间移动并选中。改自 SmoothUI（MIT）。',
     exports: ['RadioGroup', 'RadioGroupItem'],
     propParts: [
-      { part: 'RadioGroup', note: '其余属性透传给 Radix RadioGroup.Root。' },
-      { part: 'RadioGroupItem', note: '其余属性透传给 Radix RadioGroup.Item；文字用 Label 包在外面。' },
+      { part: 'RadioGroup', note: '其余属性透传给 UI SDK RadioGroup。' },
+      { part: 'RadioGroupItem', note: '其余属性透传给 UI SDK Radio；文字用 Label 包在外面。' },
     ],
     states: [
       '未选、已选、禁用、禁用已选。',
@@ -7963,7 +8047,7 @@ export const PAGES: readonly DocPage[] = [
     summary:
       '单个按下即开的按钮（aria-pressed）：外形是 Button，开时换分段选中的底与字；按下缩到 0.97。改自 SmoothUI（MIT）。',
     exports: ['Toggle'],
-    propParts: [{ part: 'Toggle', note: '其余属性透传给 Radix Toggle.Root。' }],
+    propParts: [{ part: 'Toggle', note: '其余属性透传给 UI SDK Toggle。' }],
     states: [
       '关、开、禁用关、禁用开。',
       'md（默认）30 高，sm 是 26 高，icon 是 28 见方；旧名 size="default" 等于 md。',
@@ -8045,9 +8129,9 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 150,
     title: 'MorphToggle 变形开关',
     summary:
-      '带仪式感的单个开关：圆钮滑动时形状跟着变（方块变圆），或钮里两个图标转着换。底座是 Radix Switch，尺寸与颜色同 Switch。改自 SmoothUI（MIT）。',
+      '带仪式感的单个开关：圆钮滑动时形状跟着变（方块变圆），或钮里两个图标转着换。底座是 UI SDK Switch，尺寸与颜色同 Switch。改自 SmoothUI（MIT）。',
     exports: ['MorphToggle'],
-    propParts: [{ part: 'MorphToggle', note: '其余属性透传给 Radix Switch.Root。' }],
+    propParts: [{ part: 'MorphToggle', note: '其余属性透传给 UI SDK Switch。' }],
     states: [
       'plain、morph、icon 三种变体 × 关、开。',
       'md（默认，与 Switch 同大）；lg 尺寸给带图标的圆钮；旧名 size="default" 等于 md。',
@@ -9432,7 +9516,7 @@ export const PAGES: readonly DocPage[] = [
       '圆形头像：图片没到或失败时显示缩写，右下角可挂在线状态点，AvatarGroup 叠放并把多出的折成 +N；三档尺寸 24 / 32 / 40。',
     exports: ['Avatar', 'AvatarGroup', 'useAvatarSize'],
     propParts: [
-      { part: 'Avatar', note: '其余属性透传给 Radix Avatar.Root。' },
+      { part: 'Avatar', note: '其余属性透传给 UI SDK Avatar。' },
       { part: 'AvatarGroup' },
       { part: 'useAvatarSize', note: '返回最近一个头像的尺寸，给放在头像里的自定义部件用。' },
     ],
@@ -9447,7 +9531,7 @@ export const PAGES: readonly DocPage[] = [
       '要显示一个人的完整信息用 RichPopover 或 HoverCard，不要塞进头像。',
     ],
     composition:
-      'AvatarGroup\n  Avatar\n    Radix Avatar.Image（有 src）\n    Radix Avatar.Fallback\n    span（status 点）\n  span（+N）',
+      'AvatarGroup\n  Avatar\n    AvatarImage（有 src）\n    AvatarFallback\n    span（status 点）\n  span（+N）',
     keys: [],
   },
   {
@@ -9500,11 +9584,11 @@ export const PAGES: readonly DocPage[] = [
     summary: '一个标题行加一块可收起的内容；内容高度从 0 长出来，箭头翻过来。成组、同时只开一项的用 Accordion。',
     exports: ['Collapsible', 'CollapsibleContent', 'CollapsibleTrigger'],
     propParts: [
-      { part: 'Collapsible', note: '其余属性透传给 Radix Collapsible.Root。' },
+      { part: 'Collapsible', note: '其余属性透传给 UI SDK Collapsible。' },
       {
         part: 'CollapsibleTrigger / CollapsibleContent',
         symbol: 'CollapsibleTrigger',
-        note: '标题行（带箭头）与展开的内容，透传 Radix 同名部件。',
+        note: '标题行（带箭头）与展开的内容，透传 UI SDK 同名部件。',
       },
     ],
     states: ['收起、展开。', '禁用：标题行降到 45% 不透明度，不响应。'],

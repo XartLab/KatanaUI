@@ -1,6 +1,6 @@
 # ScrollArea
 
-Radix 的自绘滚动条，4px 宽，平时不出现，指针到了这一块才出一条淡线（18% 墨色，指到滚动条上 32%）。调用方要给它一个确定的高。
+UI SDK ScrollArea 的自绘滚动条，4px 宽，平时不出现，指针到了这一块才出一条淡线（18% 墨色，指到滚动条上 32%）。调用方要给它一个确定的高。
 
 ## Provide
 
@@ -8,7 +8,7 @@ Radix 的自绘滚动条，4px 宽，平时不出现，指针到了这一块才�
 
 ### ScrollArea
 
-其余属性透传给 Radix ScrollArea.Root。给 Root 一个确定的高（或 max-height），内容比它高才滚。
+其余属性透传给 UI SDK ScrollArea。给 Root 一个确定的高（或 max-height），内容比它高才滚。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |

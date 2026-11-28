@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: MIT
 // 改自 SmoothUI morph-toggle（https://github.com/educlopez/smoothui ，MIT，© 2024 Eduardo Calvo）：圆钮滑过去时形状跟着变（方 ↔ 圆），或钮里换图标；
-// 行为底座换成 Radix Switch（role=switch、表单的 name / value、键盘），弹簧用我们的 snappy。
+// 行为底座换成 UI SDK 的 Switch（role=switch、表单的 name / value、键盘），弹簧用我们的 snappy。
 import { Switch as SwitchRoot } from '@ui-sdk/react/switch'
 import { AnimatePresence, motion } from 'motion/react'
 import { useState, type ComponentProps, type ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
 import { focusRing } from '../lib/focus.ts'
 import { snappy } from '../lib/motion.ts'
+import { slotName } from '../lib/slot-name.ts'
 import { unit } from '../lib/spring.ts'
 
 // 尺寸：md（旧名 default）与 Switch 一样（轨道 34 × 18 · 圆钮 14），lg 给带图标的圆钮（轨道 44 × 24 · 圆钮 20）。外层盒子的高、焦点环也照 Switch：--target-min。
@@ -51,7 +52,7 @@ function MorphToggle({
   const spring = unit(snappy)
   return (
     <SwitchRoot
-      data-slot="morph-toggle"
+      render={slotName('morph-toggle', 'button')}
       data-variant={variant}
       checked={checked}
       onCheckedChange={(next) => {

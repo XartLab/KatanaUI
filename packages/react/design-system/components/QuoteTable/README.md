@@ -86,5 +86,5 @@ QuoteTable
 
 ## Keyboard
 
-- `← →`：在页签间移动（Radix Tabs）
+- `← →`：在页签间移动（UI SDK Tabs）
 - `Tab / Enter`：到可点的行、触发

@@ -75,6 +75,12 @@ const LAYOUT_ALLOW: { file: string; property: string; reason: string }[] = [
   },
   { file: 'sui-motion.css', property: 'height', reason: '同上；滚动条悬停加宽 / 加高一档（6px），1 帧级别的小变化' },
   {
+    file: 'motion.css',
+    property: 'height',
+    reason:
+      'Accordion 折叠：高度在 0 与内容高度（UI SDK 量出来写进 --accordion-panel-height）之间过渡，内容是文字与任意子件，scale 会拉伸；用户点标题才发生，低频，写法同 Collapsible（sui-motion.css）',
+  },
+  {
     file: 'form-motion.css',
     property: 'width',
     reason: 'Button dot-morph：悬停时圆点拉成竖条，高度读 Radix 量的内容高；只在悬停的按钮上、一个点',

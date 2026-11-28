@@ -11,6 +11,7 @@
   --ink-200: #cdcdcd;
   --ink-300: #a0a0a0;
   --ink-400: #6e6e6e;
+  --status-neutral: var(--ink-300);
   --signal-orange: #d97757;
   --signal-orange-dim: #533429;
   --accent: var(--signal-orange);
@@ -259,7 +260,7 @@
   --k-status-info-foreground: var(--signal-blue);
   --k-status-info-background: color-mix(in srgb, var(--signal-blue) 10%, transparent);
   --k-status-info-borderColor: color-mix(in srgb, var(--signal-blue) 30%, transparent);
-  --k-status-neutral-foreground: var(--ink-300);
+  --k-status-neutral-foreground: var(--status-neutral);
   --k-status-neutral-background: var(--alpha-white-4);
   --k-status-neutral-borderColor: var(--alpha-white-7);
   --k-tone-up-foreground: var(--pnl-up);
@@ -367,6 +368,7 @@
   --ink-200: #b8b0a0;
   --ink-300: #8f887a;
   --ink-400: #4a453c;
+  --status-neutral: #9f9889;
   --signal-orange: #ff6a1f;
   --signal-orange-dim: #5c2e12;
   --signal-amber: #ffc03a;
@@ -411,6 +413,7 @@
   --ink-200: #3f3b33;
   --ink-300: #6a655a;
   --ink-400: #a9a497;
+  --status-neutral: #59544a;
   --signal-orange: #d14e0a;
   --signal-orange-dim: #f1c9b2;
   --signal-amber: #9a6e00;
@@ -521,6 +524,7 @@
   --ink-200: #b9c3ce;
   --ink-300: #98a3b0;
   --ink-400: #6c7684;
+  --status-neutral: #aab5c1;
   --signal-orange: #d4804f;
   --signal-amber: #c99a3e;
   --signal-green: #62b375;

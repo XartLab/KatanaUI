@@ -1,6 +1,6 @@
 # ListBox
 
-常驻页面的选项列表（listbox 角色）：单选或多选、可分组、每项可带图标、第二行说明与右端数值，选中的项右端出对勾。项高 28、圆角 --radius-inner，bordered 时外面一圈 container 的边与底；maxHeight 之后自己滚。行为底座是 react-aria 的 ListBox。
+常驻页面的选项列表（listbox 角色）：单选或多选、可分组、每项可带图标、第二行说明与右端数值，选中的项右端出对勾。项高 28、圆角 --radius-inner，bordered 时外面一圈 container 的边与底；maxHeight 之后自己滚。行为底座是 UI SDK 的 Listbox。
 
 ## Provide
 

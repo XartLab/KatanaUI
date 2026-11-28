@@ -236,7 +236,7 @@ import { EquityCurve } from '@katana-ui/react/quant'`}
           [
             code('Toggle / ChipGroup'),
             'UI SDK 的 Toggle、ToggleGroup',
-            '按下 data-pressed；禁用项在组里用 aria-disabled，仍可方向键到达',
+            '按下 data-pressed；禁用项在组里用 aria-disabled，仍可方向键到达；ChipGroup 多选的值按芯片的排列顺序给，不按点击先后',
           ],
           [
             code('Progress / Separator / Label / Avatar'),
@@ -248,7 +248,11 @@ import { EquityCurve } from '@katana-ui/react/quant'`}
             'UI SDK 的 Collapsible、Accordion',
             '展开 data-open；高度过渡读 --collapsible-panel-height / --accordion-panel-height，收起过程是 data-ending-style；Accordion 的方向键不再在标题间移动，用 Tab',
           ],
-          [code('Tabs'), 'UI SDK 的 Tabs', '选中 data-selected；对外仍是 activationMode、forceMount'],
+          [
+            code('Tabs'),
+            'UI SDK 的 Tabs',
+            '选中 data-selected；对外仍是 activationMode、forceMount；面板的淡入只在换页签时播，首次渲染不播；Tabs / TabsList / TabsTrigger / Label 仍可用 data-slot 改 slot 名',
+          ],
           [code('ScrollArea'), 'UI SDK 的 ScrollArea', '滚动条显示读 data-visible，不卸载，用 opacity 过渡'],
           [
             code('ToggleGroup（分段）'),
@@ -321,6 +325,22 @@ import { EquityCurve } from '@katana-ui/react/quant'`}
             <>
               {code('pnpm fast')}：一分钟内跑完（超过就算 bug）。只截改动的件和引用它的件（Graphite，最多 30
               个，波及更多截代表件）； 改动全有组件截图时不跑整页
+            </>,
+          ],
+          [
+            '改了截图测试',
+            <>
+              {code('pnpm fast')} 只截改动落到的那几个测试（改动在 test 之外就截该文件的全部，最多 30
+              个）；改了共用底座（{code('browser/render.tsx')}、{code('browser/open-frame.tsx')}、
+              {code('vitest.browser.config.ts')}、{code('vite.config.ts')}、字体与 {code('ui.css')}、{code('shot/')}
+              、tokens 包、pixelgate-cli 与 playwright 的版本）才退回代表件，不跑整套（整套约 6 分钟）
+            </>,
+          ],
+          [
+            '认不出时',
+            <>
+              漏截比多截危险：{code('test.each')}、多行声明、模板名这类认不出的写法，diff
+              取不到或解析不出行号，都整个文件跑（Graphite）；跳过的测试不算，只改了它们就不截；一张都没跑到算失败
             </>,
           ],
           [

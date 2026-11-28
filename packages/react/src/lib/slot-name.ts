@@ -9,3 +9,9 @@ export const slotName =
   (name: string, tag: ElementType = 'div') =>
   (props: Record<string, unknown>) =>
     createElement(tag, { ...props, 'data-slot': name })
+
+/** 调用方能改 slot 名（Radix 时代 `{...props}` 在后，写 data-slot 就能盖掉默认名；UI SDK 的件把自己的名字写在最后，所以换成 render 写回）。 */
+export type SlotOverride = {
+  /** Replaces the default data-slot name, which styles and selectors key on. */
+  'data-slot'?: string
+}

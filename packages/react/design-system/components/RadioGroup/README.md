@@ -8,11 +8,18 @@
 
 ### RadioGroup
 
-其余属性透传给 Radix RadioGroup.Root。
+其余属性透传给 UI SDK RadioGroup。
+
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | — | Selected value (controlled). |
+| `defaultValue` | `string` | — | Selected value at first (uncontrolled). |
+| `onValueChange` | `(value: string) => void` | — | Called with the chosen value. |
+| `orientation` | `'horizontal' \| 'vertical'` | `'vertical'` | Layout direction: vertical (default) or horizontal; also written to aria-orientation. |
 
 ### RadioGroupItem
 
-其余属性透传给 Radix RadioGroup.Item；文字用 Label 包在外面。
+其余属性透传给 UI SDK Radio；文字用 Label 包在外面。
 
 ## Usage
 
