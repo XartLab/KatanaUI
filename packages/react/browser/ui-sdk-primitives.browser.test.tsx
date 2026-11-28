@@ -508,12 +508,19 @@ describe('ScrollArea', () => {
       </ScrollArea>,
     )
     const viewport = q('[data-slot="scroll-area-viewport"]')
+    // 迁移前的滚动条带 data-state：指针不在、没在滚时是 hidden。
+    expect(q('[data-slot="scroll-area-scrollbar"]').getAttribute('data-state')).toBe('hidden')
     await userEvent.tab()
     expect(active()).toBe(viewport)
     await userEvent.keyboard('{PageDown}')
     await expect.poll(() => viewport.scrollTop).toBeGreaterThan(0)
     expect(q('[data-slot="scroll-area"]').hasAttribute('data-overflow-y')).toBe(true)
     expect(q('[data-slot="scroll-area-scrollbar"]').getAttribute('aria-hidden')).toBe('true')
+    // UI SDK 的 data-visible 是直接写在 DOM 上的：指到滚动区时 data-state 要跟着变 visible，移开回 hidden。
+    await userEvent.hover(q('[data-slot="scroll-area"]'))
+    await expect.poll(() => q('[data-slot="scroll-area-scrollbar"]').getAttribute('data-state')).toBe('visible')
+    await userEvent.unhover(q('[data-slot="scroll-area"]'))
+    await expect.poll(() => q('[data-slot="scroll-area-scrollbar"]').getAttribute('data-state')).toBe('hidden')
   })
 })
 

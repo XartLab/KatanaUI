@@ -3869,11 +3869,11 @@ for (const theme of THEMES) {
       const box = area.getByTestId('scroll-area')
       const viewport = box.locator('[data-slot=scroll-area-viewport]')
       const bar = box.locator('[data-slot=scroll-area-scrollbar][data-orientation=vertical]')
-      // UI SDK 的滚动条不卸载：不可见时在页上、opacity 0、没有 data-visible；指到才 data-visible 并淡入到 1。
-      await expect(bar).not.toHaveAttribute('data-visible')
+      // UI SDK 的滚动条不卸载（迁移前 Radix 的是指到才挂上）：不可见时在页上、opacity 0、data-state=hidden；指到才 visible 并淡入到 1。
+      await expect(bar).toHaveAttribute('data-state', 'hidden')
       await expect(bar).toHaveCSS('opacity', '0')
       await box.hover()
-      await expect(bar).toHaveAttribute('data-visible', '')
+      await expect(bar).toHaveAttribute('data-state', 'visible')
       await expect(bar).toHaveCSS('opacity', '1')
       expect(Math.round((await bar.boundingBox())!.width)).toBe(4)
       await page.mouse.wheel(0, 200)
