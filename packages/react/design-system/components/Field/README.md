@@ -12,7 +12,7 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `orientation` | `"vertical" \| "horizontal"` | — | Label above the control, or label and description on the left with the control on the right. |
+| `orientation` | `"horizontal" \| "vertical"` | — | Label above the control, or label and description on the left with the control on the right. |
 | `invalid` | `boolean` | `false` | Turns the label to the danger color, marks the control aria-invalid and shows FieldError. |
 | `disabled` | `boolean` | `false` | Dims the label to 45% and disables the control. |
 | `shakeOnInvalid` | `boolean` | `false` | Shake the whole field once (3px) when it turns invalid. |
@@ -23,9 +23,17 @@ Field 的 invalid 为真才渲染；children 是调用方写的话。
 
 ### Label
 
-其余属性透传给 Radix Label.Root。不在 Field 里单独用也行。
+其余属性透传给 UI SDK Label。不在 Field 里单独用也行。
+
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `data-slot` | `string` | — | Replaces the default data-slot name, which styles and selectors key on. |
 
 ### FieldLabel / FieldDescription / FieldContent / FieldGroup / FieldSet / FieldLegend / FieldSeparator
+
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `data-slot` | `string` | — | Replaces the default data-slot name, which styles and selectors key on. |
 
 ## Usage
 

@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 // 改自 SmoothUI avatar（https://github.com/educlopez/smoothui ，MIT，© 2024 Eduardo Calvo）
-import { Avatar as AvatarPrimitive } from 'radix-ui'
+import { Avatar as AvatarRoot, AvatarFallback, AvatarImage } from '@ui-sdk/react/avatar'
 import { Children, createContext, useContext, type ComponentProps, type ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
 
 // 头像：图片加载失败或还没到就显示 fallback（缩写）；右下角可挂在线状态点；AvatarGroup 叠放并把多出的折成 +N。
-// 状态点与 +N 的读屏名由调用方传（labels / statusLabel），包里不带文字。底座是 Radix Avatar。
+// 状态点与 +N 的读屏名由调用方传（labels / statusLabel），包里不带文字。底座是 UI SDK 的 Avatar。
 // 缩写与 +N 的字用 ink-200（--k-content-body-foreground）：ink-300 压在 7% 白的底上 Console 下只有 4.42:1（G1 axe 查出，2026-11-18）。
 
 export type AvatarSize = 'sm' | 'md' | 'lg'
@@ -28,7 +28,7 @@ const STATUS: Record<AvatarStatusValue, string> = {
 const GroupContext = createContext<AvatarSize | undefined>(undefined)
 const SizeContext = createContext<AvatarSize>('md')
 
-export type AvatarProps = Omit<ComponentProps<typeof AvatarPrimitive.Root>, 'children'> & {
+export type AvatarProps = Omit<ComponentProps<typeof AvatarRoot>, 'children'> & {
   /** Image URL; leave it out to show only the fallback. */
   src?: string
   /** Alt text of the image and the accessible name (required). */
@@ -48,7 +48,7 @@ export function Avatar({ src, alt, fallback, size, status, statusLabel, classNam
   const resolved = size ?? inGroup ?? 'md'
   return (
     <SizeContext value={resolved}>
-      <AvatarPrimitive.Root
+      <AvatarRoot
         data-slot="avatar"
         data-size={resolved}
         className={cn(
@@ -58,16 +58,14 @@ export function Avatar({ src, alt, fallback, size, status, statusLabel, classNam
         )}
         {...props}
       >
-        {src ? (
-          <AvatarPrimitive.Image src={src} alt={alt} className="aspect-square size-full rounded-full object-cover" />
-        ) : null}
-        <AvatarPrimitive.Fallback
+        {src ? <AvatarImage src={src} alt={alt} className="aspect-square size-full rounded-full object-cover" /> : null}
+        <AvatarFallback
           aria-label={alt}
           role="img"
           className="flex size-full items-center justify-center rounded-full bg-(--k-container-subtle-background) font-medium text-(color:--k-content-body-foreground) uppercase ring-1 ring-(color:--k-container-bold-borderColor) ring-inset"
         >
           {fallback}
-        </AvatarPrimitive.Fallback>
+        </AvatarFallback>
         {status ? (
           <span
             role="img"
@@ -81,7 +79,7 @@ export function Avatar({ src, alt, fallback, size, status, statusLabel, classNam
             )}
           />
         ) : null}
-      </AvatarPrimitive.Root>
+      </AvatarRoot>
     </SizeContext>
   )
 }

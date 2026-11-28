@@ -32,8 +32,8 @@ pending 为真时 children 不挂载；骨架出过的内容用 2px 模糊揭示
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `fill` | `boolean` | — | Fill the parent; the line count is measured from the container height. |
-| `label` | `string` | — | Accessible name of the skeleton; defaults to labels.skeleton. |
 | `children` | `ReactNode` | — | The content shown once loading is done. |
+| `label` | `string` | — | Accessible name of the skeleton; defaults to labels.skeleton. |
 | `labels` | `LoadingLabels` | — | All the text (the package ships none); required unless the deprecated texts is given. |
 | `texts` | `LoadingLabels` | — | Old name kept for one release. |
 | `what` | `string` | — | What is loading, shown in the caption "loading <what> · <source>". |

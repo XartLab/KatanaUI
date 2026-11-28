@@ -29,12 +29,50 @@
     "Accordion": {
       "kind": "component",
       "source": "src/primitives/accordion.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "type",
+          "type": "'single'",
+          "required": true,
+          "description": "One item open at a time."
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "The open item's value (controlled)."
+        },
+        {
+          "name": "defaultValue",
+          "type": "string",
+          "required": false,
+          "description": "The open item's value at first (uncontrolled)."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(value: string) => void",
+          "required": false,
+          "description": "Called with the open item's value; an empty string once it closes."
+        },
+        {
+          "name": "collapsible",
+          "type": "boolean",
+          "required": false,
+          "description": "Lets the open item close itself."
+        }
+      ]
     },
     "AccordionContent": {
       "kind": "component",
       "source": "src/primitives/accordion.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The panel's content."
+        }
+      ]
     },
     "AccordionItem": {
       "kind": "component",
@@ -44,7 +82,14 @@
     "AccordionTrigger": {
       "kind": "component",
       "source": "src/primitives/accordion.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The heading's content."
+        }
+      ]
     },
     "AccountEquity": {
       "kind": "component",
@@ -4093,16 +4138,16 @@
       "source": "src/primitives/alert-dialog.tsx",
       "props": [
         {
-          "name": "asChild",
-          "type": "boolean",
-          "required": false,
-          "description": "Render the child element itself (a link, a menu trigger) instead of wrapping it in a button."
-        },
-        {
           "name": "size",
           "type": "ButtonSize | 'default' | null",
           "required": false,
           "description": "Height: sm is 26px, md (default) is 30px, icon is a 28px square."
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "description": "Render the child element itself (a link, a menu trigger) instead of wrapping it in a button."
         },
         {
           "name": "effect",
@@ -4154,7 +4199,7 @@
       "props": [
         {
           "name": "variant",
-          "type": "\"link\" | \"danger\" | \"default\" | \"primary\" | \"ghost\" | \"icon\"",
+          "type": "\"link\" | \"default\" | \"danger\" | \"primary\" | \"ghost\" | \"icon\"",
           "required": false,
           "description": "Visual style: primary is the solid light button, danger uses the danger text color, icon is a borderless 28px icon button."
         },
@@ -4953,16 +4998,16 @@
       "source": "src/motion/transition/aperture-blur-transition.tsx",
       "props": [
         {
-          "name": "className",
-          "type": "string",
-          "required": false,
-          "description": "Extra classes for the wrapper."
-        },
-        {
           "name": "children",
           "type": "ReactNode",
           "required": true,
           "description": "Content shown after the transition; swapped at the midpoint of the playback."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra classes for the wrapper."
         },
         {
           "name": "duration",
@@ -4995,16 +5040,16 @@
       "source": "src/motion/transition/aperture-blur-transition.tsx",
       "props": [
         {
-          "name": "className",
-          "type": "string",
-          "required": false,
-          "description": "Extra classes for the wrapper."
-        },
-        {
           "name": "children",
           "type": "ReactNode",
           "required": true,
           "description": "Content shown after the transition; swapped at the midpoint of the playback."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra classes for the wrapper."
         },
         {
           "name": "duration",
@@ -7933,7 +7978,7 @@
       "props": [
         {
           "name": "variant",
-          "type": "\"link\" | \"danger\" | \"default\" | \"primary\" | \"ghost\" | \"icon\"",
+          "type": "\"link\" | \"default\" | \"danger\" | \"primary\" | \"ghost\" | \"icon\"",
           "required": false,
           "default": "'default'",
           "description": "Visual style: primary is the solid light button, danger uses the danger text color, icon is a borderless 28px icon button."
@@ -9492,16 +9537,16 @@
       "source": "src/motion/transition/chroma-blur-transition.tsx",
       "props": [
         {
-          "name": "className",
-          "type": "string",
-          "required": false,
-          "description": "Extra classes for the wrapper."
-        },
-        {
           "name": "children",
           "type": "ReactNode",
           "required": true,
           "description": "Content shown after the transition; swapped at the midpoint of the playback."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra classes for the wrapper."
         },
         {
           "name": "duration",
@@ -9534,16 +9579,16 @@
       "source": "src/motion/transition/chroma-blur-transition.tsx",
       "props": [
         {
-          "name": "className",
-          "type": "string",
-          "required": false,
-          "description": "Extra classes for the wrapper."
-        },
-        {
           "name": "children",
           "type": "ReactNode",
           "required": true,
           "description": "Content shown after the transition; swapped at the midpoint of the playback."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra classes for the wrapper."
         },
         {
           "name": "duration",
@@ -10017,12 +10062,26 @@
     "CollapsibleContent": {
       "kind": "component",
       "source": "src/primitives/collapsible.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The panel's content."
+        }
+      ]
     },
     "CollapsibleTrigger": {
       "kind": "component",
       "source": "src/primitives/collapsible.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The heading's content."
+        }
+      ]
     },
     "ColumnFormat": {
       "kind": "type",
@@ -20519,7 +20578,7 @@
       "props": [
         {
           "name": "orientation",
-          "type": "\"vertical\" | \"horizontal\"",
+          "type": "\"horizontal\" | \"vertical\"",
           "required": false,
           "description": "Label above the control, or label and description on the left with the control on the right."
         },
@@ -20569,7 +20628,14 @@
     "FieldLabel": {
       "kind": "component",
       "source": "src/primitives/field.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "data-slot",
+          "type": "string",
+          "required": false,
+          "description": "Replaces the default data-slot name, which styles and selectors key on."
+        }
+      ]
     },
     "FieldLegend": {
       "kind": "component",
@@ -28081,7 +28147,14 @@
     "Label": {
       "kind": "component",
       "source": "src/primitives/label.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "data-slot",
+          "type": "string",
+          "required": false,
+          "description": "Replaces the default data-slot name, which styles and selectors key on."
+        }
+      ]
     },
     "LadderItem": {
       "kind": "type",
@@ -28654,6 +28727,12 @@
           "description": "Display name; the symbol is shown when omitted."
         },
         {
+          "name": "change",
+          "type": "number",
+          "required": true,
+          "description": "Change amount, signed."
+        },
+        {
           "name": "flagged",
           "type": "boolean",
           "required": false,
@@ -28664,12 +28743,6 @@
           "type": "number",
           "required": true,
           "description": "Last price."
-        },
-        {
-          "name": "change",
-          "type": "number",
-          "required": true,
-          "description": "Change amount, signed."
         },
         {
           "name": "changePct",
@@ -29684,16 +29757,16 @@
           "description": "Fill the parent; the line count is measured from the container height."
         },
         {
-          "name": "label",
-          "type": "string",
-          "required": false,
-          "description": "Accessible name of the skeleton; defaults to labels.skeleton."
-        },
-        {
           "name": "children",
           "type": "ReactNode",
           "required": false,
           "description": "The content shown once loading is done."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": false,
+          "description": "Accessible name of the skeleton; defaults to labels.skeleton."
         },
         {
           "name": "labels",
@@ -33596,6 +33669,12 @@
           "type": "string | undefined",
           "required": true,
           "description": "Defines a string value that labels the current element."
+        },
+        {
+          "name": "onCheckedChange",
+          "type": "(checked: boolean) => void",
+          "required": false,
+          "description": "Called with the new state when the user flips it."
         },
         {
           "name": "variant",
@@ -37602,11 +37681,11 @@
       "source": "src/primitives/otp-field.tsx",
       "props": [
         {
-          "name": "autoFocus",
+          "name": "disabled",
           "type": "boolean | undefined",
           "required": false,
           "default": "false",
-          "description": "Focus the field on mount."
+          "description": "Dim the cells and ignore the keyboard."
         },
         {
           "name": "aria-label",
@@ -37615,11 +37694,11 @@
           "description": "Defines a string value that labels the current element."
         },
         {
-          "name": "disabled",
+          "name": "autoFocus",
           "type": "boolean | undefined",
           "required": false,
           "default": "false",
-          "description": "Dim the cells and ignore the keyboard."
+          "description": "Focus the field on mount."
         },
         {
           "name": "name",
@@ -44094,16 +44173,16 @@
           "description": "Display name; the symbol is shown when omitted."
         },
         {
-          "name": "last",
-          "type": "number",
-          "required": true,
-          "description": "Last price."
-        },
-        {
           "name": "change",
           "type": "number",
           "required": true,
           "description": "Change amount, signed."
+        },
+        {
+          "name": "last",
+          "type": "number",
+          "required": true,
+          "description": "Last price."
         },
         {
           "name": "changePct",
@@ -44150,7 +44229,33 @@
     "RadioGroup": {
       "kind": "component",
       "source": "src/primitives/radio-group.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "Selected value (controlled)."
+        },
+        {
+          "name": "defaultValue",
+          "type": "string",
+          "required": false,
+          "description": "Selected value at first (uncontrolled)."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(value: string) => void",
+          "required": false,
+          "description": "Called with the chosen value."
+        },
+        {
+          "name": "orientation",
+          "type": "'horizontal' | 'vertical'",
+          "required": false,
+          "default": "'vertical'",
+          "description": "Layout direction: vertical (default) or horizontal; also written to aria-orientation."
+        }
+      ]
     },
     "RadioGroupItem": {
       "kind": "component",
@@ -50170,16 +50275,16 @@
       "source": "src/motion/transition/sdf-blob-transition.tsx",
       "props": [
         {
-          "name": "className",
-          "type": "string",
-          "required": false,
-          "description": "Extra classes for the wrapper."
-        },
-        {
           "name": "children",
           "type": "ReactNode",
           "required": true,
           "description": "Content shown after the transition; swapped at the midpoint of the playback."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra classes for the wrapper."
         },
         {
           "name": "duration",
@@ -50219,16 +50324,16 @@
       "source": "src/motion/transition/sdf-blob-transition.tsx",
       "props": [
         {
-          "name": "className",
-          "type": "string",
-          "required": false,
-          "description": "Extra classes for the wrapper."
-        },
-        {
           "name": "children",
           "type": "ReactNode",
           "required": true,
           "description": "Content shown after the transition; swapped at the midpoint of the playback."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra classes for the wrapper."
         },
         {
           "name": "duration",
@@ -51525,16 +51630,16 @@
       "source": "src/motion/transition/shader-reveal/shader-reveal.tsx",
       "props": [
         {
-          "name": "className",
-          "type": "string",
-          "required": false,
-          "description": "Extra classes for the wrapper."
-        },
-        {
           "name": "children",
           "type": "ReactNode",
           "required": true,
           "description": "Content shown after the transition; swapped at the midpoint of the playback."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra classes for the wrapper."
         },
         {
           "name": "duration",
@@ -51574,16 +51679,16 @@
       "source": "src/motion/transition/shader-reveal/shader-reveal.tsx",
       "props": [
         {
-          "name": "className",
-          "type": "string",
-          "required": false,
-          "description": "Extra classes for the wrapper."
-        },
-        {
           "name": "children",
           "type": "ReactNode",
           "required": true,
           "description": "Content shown after the transition; swapped at the midpoint of the playback."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra classes for the wrapper."
         },
         {
           "name": "duration",
@@ -58438,12 +58543,6 @@
       "source": "src/blocks/system-monitor/system-monitor.tsx",
       "props": [
         {
-          "name": "label",
-          "type": "string",
-          "required": true,
-          "description": "Small dot-matrix label (NET ASSET)."
-        },
-        {
           "name": "note",
           "type": "ReactNode",
           "required": false,
@@ -58454,6 +58553,18 @@
           "type": "string | null",
           "required": true,
           "description": "Formatted value; null when there is no data."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Small dot-matrix label (NET ASSET)."
+        },
+        {
+          "name": "state",
+          "type": "SparkTileState",
+          "required": false,
+          "description": "normal, near or over the threshold; also write it in note."
         },
         {
           "name": "threshold",
@@ -58478,12 +58589,6 @@
           "type": "string",
           "required": true,
           "description": "Accessible name of the mini line (a whole sentence, including how to say no data)."
-        },
-        {
-          "name": "state",
-          "type": "SparkTileState",
-          "required": false,
-          "description": "normal, near or over the threshold; also write it in note."
         },
         {
           "name": "trendTone",
@@ -58707,13 +58812,50 @@
           "type": "boolean",
           "required": false,
           "description": "Skip the skin."
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "The selected tab's value (controlled)."
+        },
+        {
+          "name": "defaultValue",
+          "type": "string",
+          "required": false,
+          "description": "The selected tab's value at first (uncontrolled)."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(value: string) => void",
+          "required": false,
+          "description": "Called with the chosen tab's value."
+        },
+        {
+          "name": "activationMode",
+          "type": "'automatic' | 'manual'",
+          "required": false,
+          "description": "automatic (default): arrow keys select as they move; manual: they only move focus, Enter or Space selects."
+        },
+        {
+          "name": "data-slot",
+          "type": "string",
+          "required": false,
+          "description": "Replaces the default data-slot name, which styles and selectors key on."
         }
       ]
     },
     "TabsContent": {
       "kind": "component",
       "source": "src/primitives/tabs.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "forceMount",
+          "type": "true",
+          "required": false,
+          "description": "Keep the panel in the page while it isn't selected (hidden then)."
+        }
+      ]
     },
     "TabsList": {
       "kind": "component",
@@ -58725,6 +58867,18 @@
           "required": false,
           "default": "'default'",
           "description": "Skin: line, default, or bare (no skin, the caller's class names style it)."
+        },
+        {
+          "name": "data-slot",
+          "type": "string",
+          "required": false,
+          "description": "Replaces the default data-slot name, which styles and selectors key on."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The tab triggers."
         }
       ]
     },
@@ -58732,6 +58886,12 @@
       "kind": "component",
       "source": "src/primitives/tabs.tsx",
       "props": [
+        {
+          "name": "data-slot",
+          "type": "string",
+          "required": false,
+          "description": "Replaces the default data-slot name, which styles and selectors key on."
+        },
         {
           "name": "bare",
           "type": "boolean",
@@ -61806,7 +61966,7 @@
       "props": [
         {
           "name": "variant",
-          "type": "\"link\" | \"danger\" | \"default\" | \"primary\" | \"ghost\" | \"icon\"",
+          "type": "\"link\" | \"default\" | \"danger\" | \"primary\" | \"ghost\" | \"icon\"",
           "required": false,
           "description": "Visual style: primary is the solid light button, danger uses the danger text color, icon is a borderless 28px icon button."
         },
@@ -61864,22 +62024,22 @@
       "source": "src/katana/toast.tsx",
       "props": [
         {
-          "name": "asChild",
-          "type": "boolean",
-          "required": false,
-          "description": "Render the child element itself (a link, a menu trigger) instead of wrapping it in a button."
-        },
-        {
-          "name": "variant",
-          "type": "\"link\" | \"danger\" | \"default\" | \"primary\" | \"ghost\" | \"icon\"",
-          "required": false,
-          "description": "Visual style: primary is the solid light button, danger uses the danger text color, icon is a borderless 28px icon button."
-        },
-        {
           "name": "size",
           "type": "ButtonSize | 'default' | null",
           "required": false,
           "description": "Height: sm is 26px, md (default) is 30px, icon is a 28px square."
+        },
+        {
+          "name": "variant",
+          "type": "\"link\" | \"default\" | \"danger\" | \"primary\" | \"ghost\" | \"icon\"",
+          "required": false,
+          "description": "Visual style: primary is the solid light button, danger uses the danger text color, icon is a borderless 28px icon button."
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "description": "Render the child element itself (a link, a menu trigger) instead of wrapping it in a button."
         },
         {
           "name": "effect",
@@ -67252,16 +67412,16 @@
       "source": "src/quant/parallel-attempts-model.ts",
       "props": [
         {
-          "name": "progress",
-          "type": "number",
-          "required": false,
-          "description": "Progress 0..1 while running (or where a failed attempt stopped)."
-        },
-        {
           "name": "status",
           "type": "AttemptStatus",
           "required": false,
           "description": "Queued, running, done or failed; defaults to queued."
+        },
+        {
+          "name": "progress",
+          "type": "number",
+          "required": false,
+          "description": "Progress 0..1 while running (or where a failed attempt stopped)."
         }
       ]
     },
@@ -69343,13 +69503,13 @@
       "source": "src/quant/flow-sankey-model.ts",
       "props": [
         {
-          "name": "source",
+          "name": "id",
           "type": "string",
           "required": true,
           "description": ""
         },
         {
-          "name": "id",
+          "name": "source",
           "type": "string",
           "required": true,
           "description": ""

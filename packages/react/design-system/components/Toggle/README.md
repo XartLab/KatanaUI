@@ -8,7 +8,7 @@
 
 ### Toggle
 
-其余属性透传给 Radix Toggle.Root。
+其余属性透传给 UI SDK Toggle。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |

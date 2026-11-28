@@ -2,27 +2,19 @@
 /* 改自 SmoothUI（https://github.com/educlopez/smoothui ，MIT，© 2024 Eduardo Calvo）的几件的动效：折叠单项、菜单栏、导航菜单。
    曲线与时长用 token（--ease-snappy / --dur-snappy）；产品不跟系统的「减少动态效果」，所以不写 prefers-reduced-motion（见 motion.css 头部）。 */
 
-@keyframes kc-collapsible-down {
-  from {
-    height: 0;
-  }
-  to {
-    height: var(--radix-collapsible-content-height);
-  }
+/* 折叠单项：高度在 0 与内容高度（UI SDK 量出来的 --collapsible-panel-height）之间过渡；进场 snappy，退场 exit。
+   data-starting-style 是打开前一帧、data-ending-style 是收起过程，UI SDK 等过渡放完才卸载面板；一开始就开着的不播。 */
+[data-slot='collapsible-content'] {
+  height: var(--collapsible-panel-height);
+  transition: height var(--dur-snappy) var(--ease-snappy);
 }
-@keyframes kc-collapsible-up {
-  from {
-    height: var(--radix-collapsible-content-height);
-  }
-  to {
-    height: 0;
-  }
+[data-slot='collapsible-content'][data-starting-style],
+[data-slot='collapsible-content'][data-ending-style] {
+  height: 0;
 }
-[data-slot='collapsible-content'][data-state='open'] {
-  animation: kc-collapsible-down var(--dur-snappy) var(--ease-snappy);
-}
-[data-slot='collapsible-content'][data-state='closed'] {
-  animation: kc-collapsible-up var(--dur-exit) var(--ease-exit);
+[data-slot='collapsible-content'][data-ending-style] {
+  transition-duration: var(--dur-exit);
+  transition-timing-function: var(--ease-exit);
 }
 
 /* 菜单栏的面板：与下拉菜单同一条入场（kc-pop-in / kc-pop-out 在 motion.css）。 */
@@ -159,9 +151,13 @@
 }
 
 /* ── 并入已有件的动效（对齐 SmoothUI，不改任何 API）──
-   页签内容：切换时淡入（SmoothUI tabs 的 animated 面板：opacity 0 到 1）。 */
-[data-slot='tabs-content'][data-state='active'] {
-  animation: kc-fade-in 150ms var(--ease-hover) both;
+   页签内容：切换时淡入（SmoothUI tabs 的 animated 面板：opacity 0 到 1）。
+   首次渲染不播（UI SDK 的 data-activation-direction 初始是 none；原来的 Radix 首屏写 0s 时长）；放完不留填充：
+   带 both 填充的动画放完仍占着 opacity，面板文字成了灰度抗锯齿，而 CI 的组件截图基线是 LCD 抗锯齿。
+   CI 实测：首屏 150ms 加 both、首屏 0s 加 both 两种写法，组件截图都有 tabs、策略报告、行情表等变化；去掉填充后组件截图只剩 main 原有的 tag-combobox，
+   整页回归的变化页从 100 降到 11（run 46059053158 对 run 46053212771）。 */
+[data-slot='tabs-content'][data-selected]:not([data-activation-direction='none']) {
+  animation: kc-fade-in 150ms var(--ease-hover);
 }
 
 /* 对话框：头、身、脚依次从下面轻升进来（SmoothUI dialog 的 stagger：4px / 8px、错开一拍）。
@@ -186,20 +182,33 @@
 }
 
 /* 滚动条：出现 160ms 淡入、消失前等 160ms 再 120ms 淡出（SmoothUI scroll-area 的 delay-160 与 duration），悬停时变宽一档。 */
-[data-slot='scroll-area-scrollbar'][data-state='visible'] {
-  animation: kc-fade-in 160ms var(--ease-hover) both;
+[data-slot='scroll-area-scrollbar'] {
+  opacity: 0;
+  transition: opacity var(--dur-exit) var(--ease-exit) 160ms;
 }
-[data-slot='scroll-area-scrollbar'][data-state='hidden'] {
-  animation: kc-fade-out var(--dur-exit) var(--ease-exit) 160ms both;
+/* UI SDK 不卸载滚动条，显示与否是 data-visible；不可见时它不接指针。 */
+[data-slot='scroll-area-scrollbar'][data-visible] {
+  opacity: 1;
+  transition: opacity 160ms var(--ease-hover);
 }
 [data-slot='scroll-area-scrollbar'][data-orientation='vertical'] {
-  transition: width 160ms ease-in-out;
+  transition:
+    opacity var(--dur-exit) var(--ease-exit) 160ms,
+    width 160ms ease-in-out;
 }
 [data-slot='scroll-area-scrollbar'][data-orientation='vertical']:hover {
   width: 6px;
 }
 [data-slot='scroll-area-scrollbar'][data-orientation='horizontal'] {
-  transition: height 160ms ease-in-out;
+  transition:
+    opacity var(--dur-exit) var(--ease-exit) 160ms,
+    height 160ms ease-in-out;
+}
+[data-slot='scroll-area-scrollbar'][data-visible][data-orientation] {
+  transition:
+    opacity 160ms var(--ease-hover),
+    width 160ms ease-in-out,
+    height 160ms ease-in-out;
 }
 [data-slot='scroll-area-scrollbar'][data-orientation='horizontal']:hover {
   height: 6px;

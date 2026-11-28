@@ -231,7 +231,7 @@ export const PAGES: readonly DocPage[] = [
     summary:
       '14px 凹陷方框；选中后中心一块 6px 方块，框换亮中性底，符号弹进来。半选画 2px 横杠。可选 indicator="check"：一笔写出来的勾（改自 SmoothUI，MIT）。',
     exports: ['Checkbox'],
-    propParts: [{ part: 'Checkbox', note: '其余属性透传给 Radix Checkbox.Root。' }],
+    propParts: [{ part: 'Checkbox', note: '其余属性透传给 UI SDK Checkbox。' }],
     states: [
       '未勾、已勾、半选（indeterminate）、禁用、禁用已勾、错误（aria-invalid）。',
       'indicator="check"：勾的路径从头画到尾，半选画横杠。',
@@ -254,7 +254,7 @@ export const PAGES: readonly DocPage[] = [
     title: 'Switch 开关',
     summary: '34 × 18 的轨道画在 40 × 28 的布局盒里；开时轨道换强调色，圆钮挪过去。',
     exports: ['Switch'],
-    propParts: [{ part: 'Switch', note: '其余属性透传给 Radix Switch.Root。' }],
+    propParts: [{ part: 'Switch', note: '其余属性透传给 UI SDK Switch。' }],
     states: [
       '关：10% 白轨道 + 9% 白内描边，圆钮 ink-300（--k-selectable-track-* / -thumb-background）。',
       '开：轨道换实心亮中性（--k-selectable-bold-background-selected），圆钮换深色并滑 16px（snappy）。',
@@ -320,7 +320,7 @@ export const PAGES: readonly DocPage[] = [
     props: [
       {
         part: 'ChipGroup',
-        note: '每个芯片是 aria-pressed 的开关，整组 role=group；底座是 Radix ToggleGroup。受控：value 与 onValueChange。',
+        note: '每个芯片是 aria-pressed 的开关，整组 role=group；底座是 UI SDK ToggleGroup。受控：value 与 onValueChange。',
         rows: [
           {
             name: 'items',
@@ -355,7 +355,7 @@ export const PAGES: readonly DocPage[] = [
       '选项很多（几十个）时用 MultiSelect 或 Combobox，别摆成一面芯片墙。',
       '命中数由调用方算：件不碰数据。',
     ],
-    composition: 'ChipGroup\n  ToggleGroup（Radix，type=multiple）\n    Item × n（字 + 命中数）\n  button.k-chip-clear',
+    composition: 'ChipGroup\n  ToggleGroup（UI SDK，multiple）\n    Item × n（字 + 命中数）\n  button.k-chip-clear',
     keys: [
       ['← →', '在芯片间移动焦点'],
       ['Space / Enter', '切换焦点所在的芯片'],
@@ -709,10 +709,10 @@ export const PAGES: readonly DocPage[] = [
     summary: '页签的选中块是一块跟着滑的底（弹簧）；default 是药丸底，line 是下划线。',
     exports: ['Tabs', 'TabsContent', 'TabsList', 'TabsTrigger', 'tabsListVariants'],
     propParts: [
-      { part: 'Tabs', note: '其余属性透传给 Radix Tabs.Root。' },
-      { part: 'TabsList', note: '其余属性透传给 Radix Tabs.List。tabsListVariants 是它的类名函数。' },
-      { part: 'TabsTrigger', note: '其余属性透传给 Radix Tabs.Trigger。' },
-      { part: 'TabsContent', note: '其余属性透传给 Radix Tabs.Content。' },
+      { part: 'Tabs', note: '其余属性透传给 UI SDK Tabs。' },
+      { part: 'TabsList', note: '其余属性透传给 UI SDK TabsList。tabsListVariants 是它的类名函数。' },
+      { part: 'TabsTrigger', note: '其余属性透传给 UI SDK TabsTab。' },
+      { part: 'TabsContent', note: '其余属性透传给 UI SDK TabsPanel。' },
     ],
     states: [
       '选中、未选、禁用页签。',
@@ -738,12 +738,12 @@ export const PAGES: readonly DocPage[] = [
     summary: '一组可展开收起的标题与内容；展开时高度从 0 长出来。',
     exports: ['Accordion', 'AccordionContent', 'AccordionItem', 'AccordionTrigger'],
     propParts: [
-      { part: 'Accordion', note: '其余属性透传给 Radix Accordion.Root。' },
-      { part: 'AccordionItem', note: '其余属性透传给 Radix Accordion.Item。' },
+      { part: 'Accordion', note: '其余属性透传给 UI SDK Accordion。' },
+      { part: 'AccordionItem', note: '其余属性透传给 UI SDK AccordionItem。' },
       {
         part: 'AccordionTrigger / AccordionContent',
         symbol: 'AccordionTrigger',
-        note: '标题行（带箭头）与展开的内容，透传 Radix 同名部件。',
+        note: '标题行（带箭头）与展开的内容，透传 UI SDK 同名部件。',
       },
     ],
     states: ['展开、收起。', '键盘 ↑ ↓ 在标题间走，Enter 或 Space 展开。'],
@@ -2262,7 +2262,7 @@ export const PAGES: readonly DocPage[] = [
     title: 'Progress 进度条',
     summary: '4 高的细条，填充走 snappy 弹簧滑到新位置；不知道进度（不给 value）是一块来回滑的不确定条。',
     exports: ['Progress'],
-    propParts: [{ part: 'Progress', note: '其余属性透传给 Radix Progress.Root。读屏要一个名字：传 aria-label。' }],
+    propParts: [{ part: 'Progress', note: '其余属性透传给 UI SDK Progress。读屏要一个名字：传 aria-label。' }],
     states: [
       '确定：按 value 填充，aria-valuenow 跟值。',
       '不确定：value 缺省，来回滑动的条，不带 aria-valuenow。',
@@ -2508,7 +2508,7 @@ export const PAGES: readonly DocPage[] = [
     title: 'Separator 分隔线',
     summary: '1px 的线，取 line 色（跟菜单里的分隔线一条白线）；默认只是装饰，读屏不报。',
     exports: ['Separator'],
-    propParts: [{ part: 'Separator', note: '其余属性透传给 Radix Separator.Root。' }],
+    propParts: [{ part: 'Separator', note: '其余属性透传给 UI SDK Separator。' }],
     states: ['横：1px 高；竖：1px 宽，取 line 色。', 'decorative 默认真，读屏不报；decorative=false 才是 separator。'],
     donts: ['不要用它占位留白，用间距。', '不要在读屏需要知道分组的地方用装饰分隔，改 decorative=false 或用分组标题。'],
     composition: 'Separator',
@@ -2520,12 +2520,12 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 181,
     title: 'ScrollArea 滚动区',
     summary:
-      'Radix 的自绘滚动条，4px 宽，平时不出现，指针到了这一块才出一条淡线（18% 墨色，指到滚动条上 32%）。调用方要给它一个确定的高。',
+      'UI SDK ScrollArea 的自绘滚动条，4px 宽，平时不出现，指针到了这一块才出一条淡线（18% 墨色，指到滚动条上 32%）。调用方要给它一个确定的高。',
     exports: ['ScrollArea', 'ScrollBar'],
     propParts: [
       {
         part: 'ScrollArea',
-        note: '其余属性透传给 Radix ScrollArea.Root。给 Root 一个确定的高（或 max-height），内容比它高才滚。',
+        note: '其余属性透传给 UI SDK ScrollArea。给 Root 一个确定的高（或 max-height），内容比它高才滚。',
       },
       { part: 'ScrollBar', note: '自己拼时用；orientation 默认 vertical。' },
     ],
@@ -2630,7 +2630,7 @@ export const PAGES: readonly DocPage[] = [
         note: '其余属性透传给 div。控件调 useFieldControl() 拿 { id, aria-describedby, aria-invalid, disabled } 展开到自己身上。',
       },
       { part: 'FieldError', note: 'Field 的 invalid 为真才渲染；children 是调用方写的话。' },
-      { part: 'Label', note: '其余属性透传给 Radix Label.Root。不在 Field 里单独用也行。' },
+      { part: 'Label', note: '其余属性透传给 UI SDK Label。不在 Field 里单独用也行。' },
       {
         part: 'FieldLabel / FieldDescription / FieldContent / FieldGroup / FieldSet / FieldLegend / FieldSeparator',
         symbol: 'FieldLabel',
@@ -5478,7 +5478,7 @@ export const PAGES: readonly DocPage[] = [
     composition:
       'StrategyReport\n  Tabs\n    顶行：TabsList（line）· 小标 · ToggleGroup（全部 / 多 / 空）\n    概览：关键读数条 · EquityCurve（权益与回撤，可带买入持有）\n    绩效 / 风险比率：table（三列：全部、多、空）\n    交易分析：直方图 svg × 2 · 连续盈亏条 · dl\n    交易列表：DataGrid（renderSubRow 展开）\n    属性：分组 dl',
     keys: [
-      ['← / →', '在页签间移动（Radix Tabs）'],
+      ['← / →', '在页签间移动（UI SDK Tabs）'],
       ['Tab', '页签行、多空切换、各页里的图与表之间移动'],
       ['→ / ←', '交易列表里：焦点所在行展开 / 收起'],
     ],
@@ -6502,7 +6502,7 @@ export const PAGES: readonly DocPage[] = [
     propParts: [
       {
         part: 'SymbolOverview',
-        note: 'items 是 { id, symbol, name?, last, changePct, values, times }：values 与 times 一一对应，横轴按时刻摆，几只品种的时刻可以不同。页签是 Radix Tabs，区间是 ToggleGroup。',
+        note: 'items 是 { id, symbol, name?, last, changePct, values, times }：values 与 times 一一对应，横轴按时刻摆，几只品种的时刻可以不同。页签是 UI SDK Tabs，区间是 ToggleGroup。',
       },
     ],
     states: [
@@ -6520,7 +6520,7 @@ export const PAGES: readonly DocPage[] = [
     composition:
       'SymbolOverview（Tabs）\n  TabsList（TabsTrigger × n：色块 · 代码 · 名称 · 价 · ChangeText）\n  TabsContent\n    div[role=slider]（svg：网格 · 零线 · 面积 · 线 × n；纵轴刻度 · 末点 · 十字线 · LcdTooltip）\n    div（横轴刻度）\n  ToggleGroup（区间）',
     keys: [
-      ['← / →（页签上）', '换到前一只 / 后一只品种（Radix Tabs）'],
+      ['← / →（页签上）', '换到前一只 / 后一只品种（UI SDK Tabs）'],
       ['← / →（图上）', '走到前一个 / 后一个点，出读数'],
       ['Shift + ← / →', '一次走三个点'],
       ['Home / End', '走到第一个 / 最后一个点'],
@@ -6887,7 +6887,7 @@ export const PAGES: readonly DocPage[] = [
     composition:
       'QuoteTable\n  Tabs\n    TabsList > TabsTrigger（一组一个）\n    TabsContent\n      table（表头 · 行：代码芯片 + 名称 · Sparkline · 价 · 涨跌幅 · 成交量（可选））',
     keys: [
-      ['← →', '在页签间移动（Radix Tabs）'],
+      ['← →', '在页签间移动（UI SDK Tabs）'],
       ['Tab / Enter', '到可点的行、触发'],
     ],
   },
@@ -8023,8 +8023,8 @@ export const PAGES: readonly DocPage[] = [
       '一组互斥的单选钮：14px 凹陷圆框，选中后框换亮中性，中心一颗深色点从小弹到位。方向键在选项间移动并选中。改自 SmoothUI（MIT）。',
     exports: ['RadioGroup', 'RadioGroupItem'],
     propParts: [
-      { part: 'RadioGroup', note: '其余属性透传给 Radix RadioGroup.Root。' },
-      { part: 'RadioGroupItem', note: '其余属性透传给 Radix RadioGroup.Item；文字用 Label 包在外面。' },
+      { part: 'RadioGroup', note: '其余属性透传给 UI SDK RadioGroup。' },
+      { part: 'RadioGroupItem', note: '其余属性透传给 UI SDK Radio；文字用 Label 包在外面。' },
     ],
     states: [
       '未选、已选、禁用、禁用已选。',
@@ -8047,7 +8047,7 @@ export const PAGES: readonly DocPage[] = [
     summary:
       '单个按下即开的按钮（aria-pressed）：外形是 Button，开时换分段选中的底与字；按下缩到 0.97。改自 SmoothUI（MIT）。',
     exports: ['Toggle'],
-    propParts: [{ part: 'Toggle', note: '其余属性透传给 Radix Toggle.Root。' }],
+    propParts: [{ part: 'Toggle', note: '其余属性透传给 UI SDK Toggle。' }],
     states: [
       '关、开、禁用关、禁用开。',
       'md（默认）30 高，sm 是 26 高，icon 是 28 见方；旧名 size="default" 等于 md。',
@@ -8129,9 +8129,9 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 150,
     title: 'MorphToggle 变形开关',
     summary:
-      '带仪式感的单个开关：圆钮滑动时形状跟着变（方块变圆），或钮里两个图标转着换。底座是 Radix Switch，尺寸与颜色同 Switch。改自 SmoothUI（MIT）。',
+      '带仪式感的单个开关：圆钮滑动时形状跟着变（方块变圆），或钮里两个图标转着换。底座是 UI SDK Switch，尺寸与颜色同 Switch。改自 SmoothUI（MIT）。',
     exports: ['MorphToggle'],
-    propParts: [{ part: 'MorphToggle', note: '其余属性透传给 Radix Switch.Root。' }],
+    propParts: [{ part: 'MorphToggle', note: '其余属性透传给 UI SDK Switch。' }],
     states: [
       'plain、morph、icon 三种变体 × 关、开。',
       'md（默认，与 Switch 同大）；lg 尺寸给带图标的圆钮；旧名 size="default" 等于 md。',
@@ -9516,7 +9516,7 @@ export const PAGES: readonly DocPage[] = [
       '圆形头像：图片没到或失败时显示缩写，右下角可挂在线状态点，AvatarGroup 叠放并把多出的折成 +N；三档尺寸 24 / 32 / 40。',
     exports: ['Avatar', 'AvatarGroup', 'useAvatarSize'],
     propParts: [
-      { part: 'Avatar', note: '其余属性透传给 Radix Avatar.Root。' },
+      { part: 'Avatar', note: '其余属性透传给 UI SDK Avatar。' },
       { part: 'AvatarGroup' },
       { part: 'useAvatarSize', note: '返回最近一个头像的尺寸，给放在头像里的自定义部件用。' },
     ],
@@ -9531,7 +9531,7 @@ export const PAGES: readonly DocPage[] = [
       '要显示一个人的完整信息用 RichPopover 或 HoverCard，不要塞进头像。',
     ],
     composition:
-      'AvatarGroup\n  Avatar\n    Radix Avatar.Image（有 src）\n    Radix Avatar.Fallback\n    span（status 点）\n  span（+N）',
+      'AvatarGroup\n  Avatar\n    AvatarImage（有 src）\n    AvatarFallback\n    span（status 点）\n  span（+N）',
     keys: [],
   },
   {
@@ -9584,11 +9584,11 @@ export const PAGES: readonly DocPage[] = [
     summary: '一个标题行加一块可收起的内容；内容高度从 0 长出来，箭头翻过来。成组、同时只开一项的用 Accordion。',
     exports: ['Collapsible', 'CollapsibleContent', 'CollapsibleTrigger'],
     propParts: [
-      { part: 'Collapsible', note: '其余属性透传给 Radix Collapsible.Root。' },
+      { part: 'Collapsible', note: '其余属性透传给 UI SDK Collapsible。' },
       {
         part: 'CollapsibleTrigger / CollapsibleContent',
         symbol: 'CollapsibleTrigger',
-        note: '标题行（带箭头）与展开的内容，透传 Radix 同名部件。',
+        note: '标题行（带箭头）与展开的内容，透传 UI SDK 同名部件。',
       },
     ],
     states: ['收起、展开。', '禁用：标题行降到 45% 不透明度，不响应。'],

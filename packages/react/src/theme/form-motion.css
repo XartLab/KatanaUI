@@ -18,8 +18,8 @@
     stroke-dashoffset: 0;
   }
 }
-[data-slot='checkbox-indicator'][data-state='checked'],
-[data-slot='checkbox-indicator'][data-state='indeterminate'],
+[data-slot='checkbox-indicator'][data-checked],
+[data-slot='checkbox-indicator'][data-indeterminate],
 [data-slot='radio-group-indicator'] {
   animation: kc-mark-pop var(--dur-snappy) var(--ease-snappy) both;
 }
@@ -31,8 +31,8 @@
   animation: kc-mark-draw var(--dur-snappy) var(--ease-snappy) 40ms both;
 }
 /* 勾选框的两种符号：已选画勾，半选画横杠，两条路径都在 DOM 里，按状态显示一条。 */
-[data-slot='checkbox-indicator'][data-state='checked'] [data-mark='dash'],
-[data-slot='checkbox-indicator'][data-state='indeterminate'] [data-mark='tick'] {
+[data-slot='checkbox-indicator'][data-checked] [data-mark='dash'],
+[data-slot='checkbox-indicator'][data-indeterminate] [data-mark='tick'] {
   display: none;
 }
 

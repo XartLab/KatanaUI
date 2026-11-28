@@ -8,7 +8,7 @@
 
 ### Progress
 
-其余属性透传给 Radix Progress.Root。读屏要一个名字：传 aria-label。
+其余属性透传给 UI SDK Progress。读屏要一个名字：传 aria-label。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |

@@ -32,7 +32,7 @@ const smoothuiB: GuidanceMap = {
     aliases: ['Disclosure', 'Expander', 'Show more'],
     use: ['单独一段次要内容默认收起（高级参数、说明）。'],
     avoid: ['几段并列、同时只看一两段，用 accordion。'],
-    a11y: ['基于 Radix Collapsible：触发器是 button，带 aria-expanded 与 aria-controls；读屏名取自标题文字。'],
+    a11y: ['基于 UI SDK Collapsible：触发器是 button，带 aria-expanded 与 aria-controls；读屏名取自标题文字。'],
   },
   menubar: {
     aliases: ['Menu bar', 'Application menu', 'File menu'],

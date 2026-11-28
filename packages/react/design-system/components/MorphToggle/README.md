@@ -1,6 +1,6 @@
 # MorphToggle
 
-带仪式感的单个开关：圆钮滑动时形状跟着变（方块变圆），或钮里两个图标转着换。底座是 Radix Switch，尺寸与颜色同 Switch。改自 SmoothUI（MIT）。
+带仪式感的单个开关：圆钮滑动时形状跟着变（方块变圆），或钮里两个图标转着换。底座是 UI SDK Switch，尺寸与颜色同 Switch。改自 SmoothUI（MIT）。
 
 ## Provide
 
@@ -8,11 +8,12 @@
 
 ### MorphToggle
 
-其余属性透传给 Radix Switch.Root。
+其余属性透传给 UI SDK Switch。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `aria-label` * | `string \| undefined` | — | Defines a string value that labels the current element. |
+| `onCheckedChange` | `(checked: boolean) => void` | — | Called with the new state when the user flips it. |
 | `variant` | `'plain' \| 'morph' \| 'icon'` | `'morph'` | Thumb motion: morph changes the thumb shape while it slides, icon swaps the icons inside it, plain only slides. |
 | `size` | `keyof typeof SIZES \| 'default'` | `'md'` | md (default) matches Switch; lg is bigger so an icon fits in the thumb. |
 | `icons` | `{ on: ReactNode; off: ReactNode }` | — | Icons shown in the thumb for the on and off states (icon variant). |

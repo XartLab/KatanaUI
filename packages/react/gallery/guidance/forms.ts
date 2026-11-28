@@ -67,7 +67,7 @@ const forms: GuidanceMap = {
     use: ['设置页里独立的开关式选项，如「启用声音提醒」。', '多条记录里批量勾选。', '同意条款这类需要显式确认的项。'],
     avoid: ['立即生效的开关用 Switch。', '互斥的几项用 ToggleGroup。'],
     a11y: [
-      'Radix Checkbox：role=checkbox，状态在 aria-checked，读屏读「已选中 / 未选中」。',
+      'UI SDK Checkbox：role=checkbox，状态在 aria-checked，读屏读「已选中 / 未选中」。',
       '读屏名来自旁边关联的 Label，没有文字时必须传 aria-label。',
       '选中画的是一块方块（或描边的勾），状态同时由 aria-checked 传达，不只靠颜色；半选是 aria-checked=mixed。',
       'aria-invalid 时边框变危险色。',
@@ -87,7 +87,7 @@ const forms: GuidanceMap = {
     use: ['委托类型、买卖方向这类三五个互斥选项，要一眼看全。', '选项带说明文字时，逐行排开。'],
     avoid: ['选项超过五个换 Select。', '工具条里两三个切换用 ToggleGroup。', '独立的开与关用 Switch 或 Checkbox。'],
     a11y: [
-      'Radix RadioGroup：组 role=radiogroup，每项 role=radio，状态在 aria-checked。',
+      'UI SDK Radio：组 role=radiogroup，每项 role=radio，状态在 aria-checked。',
       '组的读屏名用 aria-label；每项的名字来自旁边的 Label，没有文字时传 aria-label。',
       '方向键移动并选中，Tab 只停在选中项上；选中同时有点的形状变化，不只靠颜色。',
     ],
@@ -136,7 +136,7 @@ const forms: GuidanceMap = {
     use: ['实盘 / 模拟、主题、静音这类有仪式感的单个开关。', '开关状态要靠图标一眼认出（icon 变体）。'],
     avoid: ['设置页成排的开关用 Switch。', '一次性动作不要用开关。'],
     a11y: [
-      'Radix Switch：role=switch，状态在 aria-checked，读屏名取 aria-label（必传）。',
+      'UI SDK Switch：role=switch，状态在 aria-checked，读屏名取 aria-label（必传）。',
       '状态同时由圆钮的位置与形状传达，不只靠颜色。',
     ],
   },
@@ -155,7 +155,7 @@ const forms: GuidanceMap = {
     ],
     avoid: ['要点提交才生效的选项用 Checkbox。', '一次性动作用 Button 或 HoldToConfirm。'],
     a11y: [
-      'Radix Switch：role=switch，状态在 aria-checked，读屏读「开 / 关」。',
+      'UI SDK Switch：role=switch，状态在 aria-checked，读屏读「开 / 关」；只认空格拨动，回车不再拨动（WAI-ARIA 的 switch 只要求空格）。',
       '读屏名来自关联的 Label 或 aria-label。',
       '开关状态靠圆钮位置与轨道颜色两个通道一起传达。',
     ],

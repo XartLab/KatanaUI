@@ -89,6 +89,6 @@ describe('Tabs line', () => {
     expect(html).toContain('data-variant="line"')
     expect(html).toContain('border-b')
     expect(html).not.toContain('tabs-pill')
-    expect(html).toContain('group-data-[variant=line]/tabs-list:data-[state=active]:after:opacity-100')
+    expect(html).toContain('group-data-[variant=line]/tabs-list:data-selected:after:opacity-100')
   })
 })

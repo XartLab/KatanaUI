@@ -20,7 +20,8 @@ test('ChipGroup：点芯片开关、单选再点取消、清除钮清空', async
   await expect(out).toHaveText('cn,crypto')
   await multi.getByRole('button', { name: /港股/ }).click()
   await expect(multi.getByRole('button', { name: /港股/ })).toHaveAttribute('aria-pressed', 'true')
-  await expect(out).toHaveText('cn,crypto,hk')
+  // 值按芯片的排列顺序给（UI SDK 的 ToggleGroup）；原来的 Radix 按点击先后追加，是 cn,crypto,hk。
+  await expect(out).toHaveText('cn,hk,crypto')
   await expect(multi.getByRole('button', { name: /期货/ })).toBeDisabled()
   await multi.getByRole('button', { name: '清除筛选' }).click()
   await expect(out).toHaveText('无')

@@ -300,6 +300,6 @@ StrategyReport
 
 ## Keyboard
 
-- `← / →`：在页签间移动（Radix Tabs）
+- `← / →`：在页签间移动（UI SDK Tabs）
 - `Tab`：页签行、多空切换、各页里的图与表之间移动
 - `→ / ←`：交易列表里：焦点所在行展开 / 收起

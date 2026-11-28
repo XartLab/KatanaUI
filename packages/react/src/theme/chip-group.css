@@ -29,20 +29,21 @@
     border-color var(--dur-hover) var(--ease-hover),
     scale var(--dur-hover) var(--ease-hover);
 }
-.k-chip:hover:not(:disabled) {
+.k-chip:hover:not(:disabled):not([data-disabled]) {
   background: var(--k-actionable-background-hover);
   color: var(--k-content-primary-foreground);
 }
-.k-chip:active:not(:disabled) {
+.k-chip:active:not(:disabled):not([data-disabled]) {
   scale: 0.96;
 }
-.k-chip[data-state='on'] {
+.k-chip[data-pressed] {
   background: var(--seg-on-bg);
   border-color: transparent;
   color: var(--seg-on-ink);
   font-weight: 700;
 }
-.k-chip:disabled {
+.k-chip:disabled,
+.k-chip[data-disabled] {
   opacity: 0.35;
   cursor: not-allowed;
 }
