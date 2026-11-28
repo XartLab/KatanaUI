@@ -11,7 +11,7 @@
 - `dialog-open` 点「对话框」：模态框「恢复默认布局」出现，焦点落在第一个钮「取消」上。
 - `dialog-esc` 按 Esc：模态框关上，焦点回到「对话框」钮。
 - `dialog-cancel` 点「取消」：同样关上。
-- `tooltip-timing` 工具条上悬停停 500ms 才出提示；出了以后移到邻居立即换字（预热时长由 UI SDK 自己定，不再是 400ms，`skipDelayDuration` 保留名字但不起作用，#263）；离开够久再进又要等 500ms（#251）。
+- `tooltip-timing` 工具条上悬停停 500ms 才出提示；出了以后移到邻居立即换字（预热窗口由 UI SDK 定：写死 400ms、全页共用（不再按 Provider 分），`skipDelayDuration` 保留名字但不起作用，#263）；离开够久再进又要等 500ms（#251）。
 
 ## How to get to it (user POV)
 
@@ -38,7 +38,7 @@
 - **确认对话框（#238）。** 换到 `#/alert-dialog`，点「平仓」（`exact: true`）。`getByRole('alertdialog', { name: '平掉 BTCUSDT 多单' })` 可见，焦点在「取消」上；点页面左上角（背板）对话框还在；按 Escape 关掉，页上「最后一次：还没选」不变，焦点回「平仓」钮。再开、点框里的「平仓」：关掉，页上写「最后一次：平仓」，确认钮字色是 `--k-actionable-negative-foreground`。「删除自选列表」开的是 sm，宽 320。
 - **证据。** `$KUI drive overlays`：十一步十一张截图，`popover-open.aria.yml`、`dialog-open.aria.yml` 是打开时浮层与模态框的 ARIA 快照。
 
-- **提示时间（手走，还没有流程）。** 换到 `#/toolbar`，视口里的 `getByRole('toolbar', { name: 'Example toolbar' })`。鼠标移到「Alerts」钮上：0.4 秒内页上没有 `[data-slot="tooltip-content"]`，停到 0.5 秒出现「Alerts」。紧接着移到「Draw」：立即换成「Draw」，不再等。把鼠标移出去等预热过去（几秒量一次，记下实际多久）再回到「Alerts」：又要等满 0.5 秒。按下按钮提示就收。判据是出现的时刻，要么用 Playwright 的 `page.clock`（`install` 后 `pauseAt`、`runFor`，e2e 里就是这样），要么用 `performance.now()` 量从移入到提示出现的毫秒数（应在 500 到 600 之间，换字应小于 100）。留截图与提示出现时刻的数值。
+- **提示时间（手走，还没有流程）。** 换到 `#/toolbar`，视口里的 `getByRole('toolbar', { name: 'Example toolbar' })`。鼠标移到「Alerts」钮上：0.4 秒内页上没有 `[data-slot="tooltip-content"]`，停到 0.5 秒出现「Alerts」。紧接着移到「Draw」：立即换成「Draw」，不再等。把鼠标移出去等 400ms 预热过去再回到「Alerts」：又要等满 0.5 秒。按下按钮提示就收。判据是出现的时刻，要么用 Playwright 的 `page.clock`（`install` 后 `pauseAt`、`runFor`，e2e 里就是这样），要么用 `performance.now()` 量从移入到提示出现的毫秒数（应在 500 到 600 之间，换字应小于 100）。留截图与提示出现时刻的数值。
 
 ## Gotchas
 
