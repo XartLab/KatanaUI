@@ -3,6 +3,7 @@
 import { Toggle as ToggleRoot } from '@ui-sdk/react/toggle'
 import type { ComponentProps } from 'react'
 import { cn } from '../lib/cn.ts'
+import { legacyState, part } from '../lib/legacy-attrs.ts'
 import { buttonSizeOf, buttonVariants, type ButtonSize } from './button.tsx'
 
 /**
@@ -20,12 +21,12 @@ function Toggle({
   const size = buttonSizeOf(sizeProp)
   return (
     <ToggleRoot
-      data-slot="toggle"
+      render={part('button', { slot: 'toggle', state: legacyState.pressed })}
       data-size={size}
       className={cn(
         buttonVariants({ variant: 'default', size }),
-        'data-pressed:border-transparent data-pressed:bg-(--seg-on-bg) data-pressed:font-bold data-pressed:text-(color:--seg-on-ink)',
-        'not-disabled:data-pressed:hover:bg-(--seg-on-bg) not-disabled:data-pressed:hover:text-(color:--seg-on-ink)',
+        'data-[state=on]:border-transparent data-[state=on]:bg-(--seg-on-bg) data-[state=on]:font-bold data-[state=on]:text-(color:--seg-on-ink)',
+        'not-disabled:data-[state=on]:hover:bg-(--seg-on-bg) not-disabled:data-[state=on]:hover:text-(color:--seg-on-ink)',
         className,
       )}
       {...props}

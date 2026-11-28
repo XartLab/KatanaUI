@@ -55,6 +55,22 @@
     opacity: 0;
   }
 }
+@keyframes kc-accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--accordion-panel-height);
+  }
+}
+@keyframes kc-accordion-up {
+  from {
+    height: var(--accordion-panel-height);
+  }
+  to {
+    height: 0;
+  }
+}
 
 /* 菜单、右键菜单、弹层、提示：从触发它的那一边长出来（Radix Popper 给了 --radix-popper-transform-origin）。入场走 snappy 弹簧，退场 --dur-exit 的 --ease-exit 淡出。 */
 [data-slot='dropdown-menu-content'],
@@ -112,18 +128,16 @@
 [data-slot='alert-dialog-overlay'][data-state='closed'] {
   animation: kc-fade-out var(--dur-exit) var(--ease-exit) both;
 }
-/* 折叠：高度在 0 与内容高度（--accordion-panel-height）之间过渡，写法同折叠单项（sui-motion.css）。 */
-[data-slot='accordion-content'] {
-  height: var(--accordion-panel-height);
-  transition: height var(--dur-snappy) var(--ease-snappy);
-}
-[data-slot='accordion-content'][data-starting-style],
-[data-slot='accordion-content'][data-ending-style] {
-  height: 0;
+/* 折叠：高度从 0 长到内容高度，收起时反过来（迁移前就是这样写的：keyframes，不是 transition；高度变量换成 UI SDK 的 --accordion-panel-height）。
+   首次渲染就开着的不播：UI SDK 在挂载那一帧把动画直接跳到终点。
+   选择器读 UI SDK 自己写在 DOM 上的 data-open / data-ending-style，不读 data-state：data-state 是 React 渲染后才改的，晚于 UI SDK 开始等动画的那一刻，
+   收起动画挂在 data-state="closed" 上它就看不到、面板当场卸载（实测）。 */
+[data-slot='accordion-content'][data-open] {
+  animation: kc-accordion-down var(--dur-snappy) var(--ease-snappy);
 }
 [data-slot='accordion-content'][data-ending-style] {
-  transition-duration: var(--dur-exit);
-  transition-timing-function: var(--ease-exit);
+  /* forwards：放完停在 0 高，不回弹一帧再卸载（Radix 的 Presence 卸载前也这么钉住）。 */
+  animation: kc-accordion-up var(--dur-exit) var(--ease-exit) forwards;
 }
 /* 开关：圆钮滑过去走 snappy 弹簧（自带一点过冲）；按住时被压扁一点，像真的在推它。 */
 [data-slot='switch-thumb'] {
@@ -254,10 +268,9 @@
   }
 }
 [data-slot='progress-indicator'] {
-  /* 宽度由 UI SDK 按百分比写在行内，过渡跟着宽度走（原来是整宽加 translate）。 */
-  transition: width var(--dur-snappy) var(--ease-snappy);
+  transition: translate var(--dur-snappy) var(--ease-snappy);
 }
-[data-slot='progress-indicator'][data-indeterminate] {
+[data-slot='progress-indicator'][data-state='indeterminate'] {
   width: 40%;
   animation: kc-progress-slide var(--dur-settle) linear infinite;
 }

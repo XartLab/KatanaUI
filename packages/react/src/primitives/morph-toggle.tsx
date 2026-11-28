@@ -7,7 +7,7 @@ import { useState, type ComponentProps, type ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
 import { focusRing } from '../lib/focus.ts'
 import { snappy } from '../lib/motion.ts'
-import { slotName } from '../lib/slot-name.ts'
+import { legacyState, part, pressOnEnter } from '../lib/legacy-attrs.ts'
 import { unit } from '../lib/spring.ts'
 
 // 尺寸：md（旧名 default）与 Switch 一样（轨道 34 × 18 · 圆钮 14），lg 给带图标的圆钮（轨道 44 × 24 · 圆钮 20）。外层盒子的高、焦点环也照 Switch：--target-min。
@@ -32,6 +32,7 @@ function MorphToggle({
   checked: checkedProp,
   defaultChecked = false,
   onCheckedChange,
+  onKeyDown,
   ...props
 }: Omit<ComponentProps<typeof SwitchRoot>, 'children' | 'onCheckedChange'> & {
   /** Called with the new state when the user flips it. */
@@ -52,7 +53,11 @@ function MorphToggle({
   const spring = unit(snappy)
   return (
     <SwitchRoot
-      render={slotName('morph-toggle', 'button')}
+      render={part('button', { slot: 'morph-toggle', state: legacyState.checked })}
+      onKeyDown={(event) => {
+        onKeyDown?.(event)
+        pressOnEnter(event)
+      }}
       data-variant={variant}
       checked={checked}
       onCheckedChange={(next) => {
@@ -74,7 +79,7 @@ function MorphToggle({
         className={cn(
           'pointer-events-none relative rounded-full bg-(--k-selectable-track-background) shadow-[inset_0_0_0_1px_var(--k-selectable-track-borderColor)]',
           'transition-[background-color,box-shadow] duration-150 group-enabled:group-hover:bg-(--k-selectable-track-background-hover)',
-          'group-data-checked:bg-(--k-selectable-bold-background-selected) group-data-checked:shadow-none group-data-checked:group-enabled:group-hover:bg-(--k-selectable-bold-background-selectedHover)',
+          'group-data-[state=checked]:bg-(--k-selectable-bold-background-selected) group-data-[state=checked]:shadow-none group-data-[state=checked]:group-enabled:group-hover:bg-(--k-selectable-bold-background-selectedHover)',
           dims.track,
         )}
       >

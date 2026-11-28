@@ -54,7 +54,7 @@ const layout: GuidanceMap = {
     use: ['内容分成几段、多数时候只看其中一两段。', '说明、高级选项这类次要内容，默认收起省空间。'],
     avoid: ['并列视图要来回切换，用 tabs。', '只有一段内容要收起，直接用 Collapsible 式的单项折叠，不必成组。'],
     a11y: [
-      '基于 UI SDK Accordion：标题是 button，带 aria-expanded 与 aria-controls；方向键不再在标题间移动，用 Tab（UI SDK 照 APG）。',
+      '基于 UI SDK Accordion：标题是 button，带 aria-expanded 与 aria-controls；↑↓ 在标题间走、Home / End 到头尾、两头回绕，禁用的标题被跳过（迁移前 Radix 的做法，UI SDK 没有，这里补上）；Tab 也能到各个标题。',
       '读屏名取自标题文字，标题要写清内容是什么。',
     ],
   },

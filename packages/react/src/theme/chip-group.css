@@ -36,7 +36,7 @@
 .k-chip:active:not(:disabled):not([data-disabled]) {
   scale: 0.96;
 }
-.k-chip[data-pressed] {
+.k-chip[data-state='on'] {
   background: var(--seg-on-bg);
   border-color: transparent;
   color: var(--seg-on-ink);

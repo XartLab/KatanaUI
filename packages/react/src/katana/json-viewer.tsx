@@ -56,7 +56,22 @@ function renderNode(node: JsonNode, query: string, labels: JsonViewerLabels, hit
   const container = node.kind === 'object' || node.kind === 'array'
   const branch = container && node.children.length > 0
   return (
-    <TreeItem key={node.id} value={node.id} label={node.key ?? summary(node)} className="k-json-item" branch={branch}>
+    <TreeItem
+      key={node.id}
+      value={node.id}
+      label={node.key ?? summary(node)}
+      className="k-json-item"
+      branch={branch}
+      // → 在已展开的行上不动（迁移前的写法；UI SDK 照 APG 会走进第一个子项）。写在项上：UI SDK 的方向键在项上处理，根上的拦不住。
+      onKeyDown={(event) => {
+        if (
+          event.key === 'ArrowRight' &&
+          event.target === event.currentTarget &&
+          event.currentTarget.getAttribute('aria-expanded') === 'true'
+        )
+          event.preventDefault()
+      }}
+    >
       <TreeItemLabel className="k-json-row" data-kind={node.kind} data-hit={hits.has(node.id) || undefined}>
         {branch ? (
           <TreeItemIndicator className="k-json-chevron">

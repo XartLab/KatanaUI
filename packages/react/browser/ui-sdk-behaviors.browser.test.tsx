@@ -18,6 +18,23 @@ const active = () => document.activeElement as HTMLElement | null
 const frameQuery = (selector: string) => document.querySelector<HTMLElement>(selector)!
 const settle = () => new Promise((resolve) => setTimeout(resolve, 150))
 
+/**
+ * 树的 WAI-ARIA 模式检查：只许有一处与 APG 不同——已展开的分支上按右方向键不进第一个子项（迁移前 react-aria 的手感，用户定「键盘手感跟迁移前」）。
+ * 多一处不同或这一处不再不同（UI SDK 改了默认）都算失败。
+ */
+async function checkTree(root: Element) {
+  try {
+    await checkPattern(root, 'tree')
+  } catch (error) {
+    const problems = String((error as Error).message)
+      .split('\n')
+      .filter((line) => line.startsWith('- '))
+    if (problems.length === 1 && problems[0]!.includes('ArrowRight on an open branch')) return
+    throw error
+  }
+  throw new Error('树不再与 APG 有出入：去掉 TreeItem 上拦右方向键的那段，并删掉这个包装')
+}
+
 describe('Calendar', () => {
   test('方向键移日、回车选；休市的日子能聚焦但选不中；翻页钮到头停住', async () => {
     const picked: string[] = []
@@ -45,6 +62,17 @@ describe('Calendar', () => {
     await userEvent.keyboard('{PageDown}')
     expect(active()?.dataset.value).toBe('2024-04-17')
     expect(frameQuery('[aria-label="Previous month"]').hasAttribute('data-disabled')).toBe(false)
+  })
+
+  test('Home / End 到当月第一天 / 最后一天（迁移前 react-aria 的手感，不是周首周尾）', async () => {
+    await mount(
+      <Calendar label="Go" locale="en-US" labels={nav} defaultValue="2024-03-14" min="2024-03-02" max="2024-03-28" />,
+    )
+    frameQuery('[data-value="2024-03-14"]').focus()
+    await userEvent.keyboard('{End}')
+    expect(active()?.dataset.value).toBe('2024-03-28')
+    await userEvent.keyboard('{Home}')
+    expect(active()?.dataset.value).toBe('2024-03-02')
   })
 
   test('受控的空值：value 为空串时没有选中的日', async () => {
@@ -86,16 +114,16 @@ describe('DateTimeInput', () => {
 
   test('逐段打字：半截日期不上报，打满才上报；时刻同理', async () => {
     await mount(<Harness />)
-    await userEvent.click(frameQuery('[aria-label="year"]'))
+    await userEvent.click(frameQuery('[aria-label^="year"]'))
     await userEvent.keyboard('2026')
     expect(out()).toBe('|')
     await userEvent.keyboard('0105')
     expect(out()).toBe('2026-01-05|')
-    await userEvent.click(frameQuery('[aria-label="hour"]'))
+    await userEvent.click(frameQuery('[aria-label^="hour"]'))
     await userEvent.keyboard('0930')
     expect(out()).toBe('2026-01-05|09:30')
     // 方向键加减，Backspace 清空后回到半截（上报空串）。
-    await userEvent.click(frameQuery('[aria-label="minute"]'))
+    await userEvent.click(frameQuery('[aria-label^="minute"]'))
     await userEvent.keyboard('{ArrowUp}')
     expect(out()).toBe('2026-01-05|09:31')
   })
@@ -144,12 +172,42 @@ describe('DateRangePicker', () => {
 
   test('两个框分别打字，凑成起点不晚于终点才上报', async () => {
     await mount(<Harness />)
-    await userEvent.click(document.querySelectorAll<HTMLElement>('[aria-label="year"]')[0]!)
+    await userEvent.click(document.querySelectorAll<HTMLElement>('[aria-label^="year"]')[0]!)
     await userEvent.keyboard('20261101')
     expect(out()).toBe('')
-    await userEvent.click(document.querySelectorAll<HTMLElement>('[aria-label="year"]')[1]!)
+    await userEvent.click(document.querySelectorAll<HTMLElement>('[aria-label^="year"]')[1]!)
     await userEvent.keyboard('20261110')
     expect(out()).toBe('2026-11-01~2026-11-10')
+  })
+
+  test('读屏名「年, Start」带所在输入的名字；日格同时带迁移前的属性名', async () => {
+    await mount(<Harness />)
+    const names = [...document.querySelectorAll('[role="spinbutton"]')].map((e) => e.getAttribute('aria-label'))
+    expect(names).toContain('year, Start')
+    expect(names).toContain('year, End')
+    await userEvent.click(frameQuery('[aria-label="Pick range"]'))
+    await settle()
+    await userEvent.click(frameQuery('[data-value="2026-11-03"]'))
+    await userEvent.click(frameQuery('[data-value="2026-11-05"]'))
+    await settle()
+    await userEvent.click(frameQuery('[aria-label="Pick range"]'))
+    await settle()
+    expect(frameQuery('[data-value="2026-11-03"]').hasAttribute('data-selection-start')).toBe(true)
+    expect(frameQuery('[data-value="2026-11-05"]').hasAttribute('data-selection-end')).toBe(true)
+    await userEvent.keyboard('{Escape}')
+    await settle()
+  })
+
+  test('键盘选区间：回车定下起点后焦点自动前进一天，再回车定终点', async () => {
+    await mount(<Harness />)
+    await userEvent.click(frameQuery('[aria-label="Pick range"]'))
+    await settle()
+    frameQuery('[data-value="2026-11-10"]').focus()
+    await userEvent.keyboard('{Enter}')
+    expect(active()?.dataset.value).toBe('2026-11-11')
+    await userEvent.keyboard('{ArrowRight}{Enter}')
+    await settle()
+    expect(out()).toBe('2026-11-10~2026-11-12')
   })
 
   test('双月日历：点两个日子选出区间并关掉；预设一键选', async () => {
@@ -228,6 +286,16 @@ describe('ListBox', () => {
     expect(seen.at(-1)).toEqual(['a', 'b'])
   })
 
+  test('方向键到头停住，不绕回另一头（迁移前的手感；UI SDK 默认绕回）', async () => {
+    await mount(<ListBox label="Account" items={items} defaultValue={['a']} />)
+    const options = [...document.querySelectorAll<HTMLElement>('[role="option"]')]
+    options[0]!.focus()
+    await userEvent.keyboard('{ArrowUp}')
+    expect(active()).toBe(options[0])
+    await userEvent.keyboard('{End}{ArrowDown}')
+    expect(active()).toBe(options[3])
+  })
+
   test('单选不许选空：点已选的那一项不取消；双击与回车走 onAction', async () => {
     const seen: string[][] = []
     const acted: string[] = []
@@ -267,7 +335,7 @@ describe('TreeView', () => {
   ]
   test('WAI-ARIA tree 模式（单选）', async () => {
     await mount(<TreeView label="品种分类" items={nodes} defaultExpandedKeys={['cn']} />)
-    await checkPattern(frameQuery('[role="tree"]'), 'tree')
+    await checkTree(frameQuery('[role="tree"]'))
   })
 
   test('点行选中这一行、不展开；点箭头展开；方向键右展开、左收起', async () => {
@@ -295,6 +363,36 @@ describe('TreeView', () => {
     expect(document.body.textContent).not.toContain('沪市')
   })
 
+  test('方向键右在已展开的分支上不动（迁移前不进第一个子项）；禁用的行聚焦不到', async () => {
+    await mount(<TreeView label="品种分类" items={nodes} defaultExpandedKeys={['cn']} />)
+    const rows = () => [...document.querySelectorAll<HTMLElement>('[role="treeitem"]')]
+    rows()[0]!.focus()
+    await userEvent.keyboard('{ArrowRight}')
+    expect(active()).toBe(rows()[0])
+    await userEvent.keyboard('{ArrowDown}{ArrowDown}')
+    // 沪市之后跳过禁用的深市，落在港股。
+    expect(active()?.textContent).toContain('港股')
+  })
+
+  test('回车只走 onAction，不顺带改选中', async () => {
+    const seen: string[][] = []
+    const acted: string[] = []
+    await mount(
+      <TreeView
+        label="品种分类"
+        items={nodes}
+        defaultValue={['misc']}
+        onValueChange={(v) => seen.push(v)}
+        onAction={(id) => acted.push(id)}
+      />,
+    )
+    const rows = [...document.querySelectorAll<HTMLElement>('[role="treeitem"]')]
+    rows[0]!.focus()
+    await userEvent.keyboard('{Enter}')
+    expect(acted).toEqual(['cn'])
+    expect(seen).toEqual([])
+  })
+
   test('双击与回车走 onAction（给了它，点行只选这一行）', async () => {
     const acted: string[] = []
     await mount(<TreeView label="品种分类" items={nodes} onAction={(id) => acted.push(id)} />)
@@ -319,7 +417,7 @@ describe('JsonViewer', () => {
   const sample = { type: 'order.update', orders: [{ id: 'FILL-0231', price: 201.3 }], error: null }
   test('WAI-ARIA tree 模式；查找时命中的祖先自动展开，清空后回到自己展开的样子', async () => {
     await mount(<JsonViewer label="Message" value={sample} labels={labels} defaultExpandDepth={1} />)
-    await checkPattern(frameQuery('[role="tree"]'), 'tree')
+    await checkTree(frameQuery('[role="tree"]'))
     expect(document.body.textContent).not.toContain('FILL-0231')
     await userEvent.click(frameQuery('input[type="search"]'))
     await userEvent.keyboard('FILL')
@@ -327,5 +425,13 @@ describe('JsonViewer', () => {
     expect(frameQuery('[role="status"]').textContent).toBe('1 matches')
     await userEvent.clear(frameQuery('input[type="search"]'))
     expect(document.body.textContent).not.toContain('FILL-0231')
+  })
+
+  test('方向键右在已展开的节点上不动（不进第一个子项）', async () => {
+    await mount(<JsonViewer label="Message" value={sample} labels={labels} defaultExpandDepth={1} />)
+    const rows = () => [...document.querySelectorAll<HTMLElement>('[role="treeitem"]')]
+    rows()[0]!.focus()
+    await userEvent.keyboard('{ArrowRight}')
+    expect(active()).toBe(rows()[0])
   })
 })

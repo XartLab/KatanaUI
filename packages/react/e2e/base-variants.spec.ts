@@ -92,7 +92,7 @@ test('Tabs line：文字页签没有药丸底块，当前项下划线随点击�
   expect(await underline('日线')).toBe('1')
   expect(await underline('周线')).toBe('0')
   await tabs.getByRole('tab', { name: '周线' }).click()
-  await expect(tabs.getByRole('tab', { name: '周线' })).toHaveAttribute('data-selected', '')
+  await expect(tabs.getByRole('tab', { name: '周线' })).toHaveAttribute('data-state', 'active')
   await expect.poll(() => underline('周线')).toBe('1')
   expect(await underline('日线')).toBe('0')
   await expect(tabs.getByText('周线的内容')).toBeVisible()
@@ -119,7 +119,7 @@ test('下单面板改用基础件之后：开平切换整宽、买卖切换填�
   const type = ticket.locator('[data-slot="ticket-type"]')
   await expect(type).toHaveAttribute('data-variant', 'line')
   await type.getByRole('tab', { name: 'Market' }).click()
-  await expect(type.getByRole('tab', { name: 'Market' })).toHaveAttribute('aria-selected', 'true')
+  await expect(type.getByRole('tab', { name: 'Market' })).toHaveAttribute('data-state', 'active')
   // 数字框：标签、值、单位同在一个外框里。
   const field = ticket.locator('[data-slot="input-box"]').first()
   await expect(field.locator('input')).toHaveCSS('text-align', 'right')

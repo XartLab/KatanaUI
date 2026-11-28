@@ -123,6 +123,8 @@ const INTERNAL = {
   'date-parts':
     'Calendar、DateTimeInput、DateRangePicker、TradingDatePicker 共用的月历头与格、分段输入的段（UI SDK 上的薄封装）。',
   'slot-name': '把 UI SDK 部件自带的 data-slot 写回我们原来的名字（样式与调用方的选择器认它）。',
+  'legacy-attrs': '把迁移前（Radix 时代）的 data-slot、data-state 与几个属性写回 UI SDK 部件（样式、测试与调用方的选择器认它们）。',
+  'roving-keys': '方向键、Home / End 在一组部件里走：跳过禁用项、两头回绕（UI SDK 的部件默认不跳过禁用项）。',
   'matrix-orb-model': 'MatrixOrb 的纯数学：某状态下圆盘上一点在某一时刻的亮度。',
   'step-player-model': 'StepPlayer 的纯逻辑：一步放完后是前进、循环还是结束。',
   overlay: '浮层内容的 Portal 包装：平时挂到 body，包在 InlineOverlays 里时原地渲染（静态预览用）。',

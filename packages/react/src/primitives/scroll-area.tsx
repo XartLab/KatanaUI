@@ -8,7 +8,7 @@ import {
   ScrollAreaThumb,
   ScrollAreaViewport,
 } from '@ui-sdk/react/scroll-area'
-import type { ComponentProps } from 'react'
+import { useLayoutEffect, useRef, type ComponentProps, type Ref } from 'react'
 import { cn } from '../lib/cn.ts'
 import { focusRingInset } from '../lib/focus.ts'
 
@@ -46,10 +46,38 @@ function ScrollArea({
   )
 }
 
+/**
+ * 迁移前的滚动条带 data-state（visible / hidden），样式与选择器读它。UI SDK 的 data-visible 是它直接写在 DOM 上的（不经过 React 渲染），
+ * 所以不能在渲染里推，用 MutationObserver 盯着 data-visible 把 data-state 同步过来。
+ */
+function LegacyScrollbar({ ref, ...props }: ComponentProps<'div'> & { ref?: Ref<HTMLDivElement> }) {
+  const own = useRef<HTMLDivElement | null>(null)
+  useLayoutEffect(() => {
+    const element = own.current
+    if (!element) return
+    const sync = () => element.setAttribute('data-state', element.hasAttribute('data-visible') ? 'visible' : 'hidden')
+    sync()
+    const observer = new MutationObserver(sync)
+    observer.observe(element, { attributes: true, attributeFilter: ['data-visible'] })
+    return () => observer.disconnect()
+  }, [])
+  return (
+    <div
+      {...props}
+      data-slot="scroll-area-scrollbar"
+      ref={(node) => {
+        own.current = node
+        if (typeof ref === 'function') ref(node)
+        else if (ref) ref.current = node
+      }}
+    />
+  )
+}
+
 function ScrollBar({ className, orientation = 'vertical', ...props }: ComponentProps<typeof ScrollAreaScrollbar>) {
   return (
     <ScrollAreaScrollbar
-      data-slot="scroll-area-scrollbar"
+      render={(props) => <LegacyScrollbar {...(props as ComponentProps<'div'>)} />}
       orientation={orientation}
       className={cn(
         'flex touch-none select-none',
