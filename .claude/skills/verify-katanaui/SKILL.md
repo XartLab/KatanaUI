@@ -62,7 +62,9 @@ $KUI doctor           # 全 OK 退出码 0，有一条 FAIL 退出码 1
 ```bash
 $KUI drive data-grid       # features/data-grid.md
 $KUI drive order-ticket    # features/order-ticket.md
-$KUI drive overlays        # features/overlays.md
+$KUI drive overlays        # features/overlays.md（含「滚动即关」）
+$KUI drive orderbook       # features/orderbook.md
+$KUI drive markdown        # features/markdown.md
 $KUI drive tabs            # features/tabs.md
 $KUI drive tabs --theme console   # 换主题走同一条
 $KUI drive tabs --headed          # 开着窗口看它走

@@ -2,12 +2,13 @@
 // 改自 SmoothUI ai-context-meter（https://github.com/educlopez/smoothui ，MIT，© 2024 Eduardo Calvo）
 // 上下文窗口用掉了多少：一个小环加「已用/总量」；越过警告线环变琥珀、越过危险线变红，几何不变，靠色相说话。
 // 悬停、聚焦或点按弹出分项（什么在占窗口）。
-// 相对原件：读屏名由调用方传（原件拼英文）；颜色走 --signal-amber / --signal-red；弹簧取 snappy；去掉 reduced-motion 分支；弹层放在上方，贴着触发器。
+// 相对原件：读屏名由调用方传（原件拼英文）；颜色走 lib/severity.ts 的 warn / danger 状态色；弹簧取 snappy；去掉 reduced-motion 分支；弹层放在上方，贴着触发器。
 import { AnimatePresence, motion } from 'motion/react'
 import { useId, useState } from 'react'
 import { cn } from '../lib/cn.ts'
 import { focusRing } from '../lib/focus.ts'
 import { snappy } from '../lib/motion.ts'
+import { statusColor } from '../lib/severity.ts'
 import { unit } from '../lib/spring.ts'
 import {
   contextFraction,
@@ -25,8 +26,8 @@ const STROKE_WIDTH = 3
 
 const LEVEL_COLOR: Readonly<Record<ContextLevel, string>> = {
   ok: 'currentColor',
-  warning: 'var(--signal-amber)',
-  danger: 'var(--signal-red)',
+  warning: statusColor('warn'),
+  danger: statusColor('danger'),
 }
 
 export type AiContextBreakdownItem = {

@@ -2,13 +2,14 @@
 // 改自 SmoothUI ai-tool-call（https://github.com/educlopez/smoothui ，MIT，© 2024 Eduardo Calvo）
 // 一次工具调用，默认折成一行（名字、右侧小注、状态环）；参数与结果想看再展开。
 // 状态徽标是「一个会变脸的环」而不是四个图标换来换去：排队时环呼吸，运行时环缺一口并转，成功保留环并在里面画对勾，失败画叉。环始终不卸载，眼睛追的是同一个东西。
-// 相对原件：状态读屏词与「参数 / 结果」小标题改成 labels；颜色走 token（成功 --signal-green、失败 --signal-red）；转与呼吸用 CSS 循环；弹簧取 snappy token；去掉 reduced-motion 分支。
+// 相对原件：状态读屏词与「参数 / 结果」小标题改成 labels；颜色走 lib/severity.ts 的状态色（成功 ok、失败 danger）；转与呼吸用 CSS 循环；弹簧取 snappy token；去掉 reduced-motion 分支。
 import { ChevronRight } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useId, useState, type ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
 import { focusRing } from '../lib/focus.ts'
 import { snappy } from '../lib/motion.ts'
+import { statusColor } from '../lib/severity.ts'
 import { unit } from '../lib/spring.ts'
 
 export type AiToolCallStatus = 'pending' | 'running' | 'success' | 'error'
@@ -29,8 +30,8 @@ const CROSS_PATHS = ['M 9 9 L 15 15', 'M 15 9 L 9 15'] as const
 const RING_COLOR: Readonly<Record<AiToolCallStatus, string>> = {
   pending: 'currentColor',
   running: 'currentColor',
-  success: 'var(--signal-green)',
-  error: 'var(--signal-red)',
+  success: statusColor('ok'),
+  error: statusColor('danger'),
 }
 
 function StatusRing({ status }: { status: AiToolCallStatus }) {

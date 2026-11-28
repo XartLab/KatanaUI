@@ -109,7 +109,7 @@ export function AiApproval({ question, options, facts, children, onDecide, resol
               className={cn(
                 'k-text-data flex items-center gap-2 rounded-[var(--radius-control)] px-3 py-2',
                 chosen.destructive
-                  ? 'bg-[color-mix(in_srgb,var(--signal-red)_12%,transparent)] text-(color:--signal-red)'
+                  ? 'bg-[color-mix(in_srgb,var(--k-status-danger-foreground)_12%,transparent)] text-(color:--k-status-danger-foreground)'
                   : 'bg-surface-4 text-ink',
               )}
             >
