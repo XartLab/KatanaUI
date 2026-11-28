@@ -128,6 +128,12 @@ describe('RadioGroup', () => {
     await userEvent.keyboard('{ArrowRight}')
     expect(active()?.getAttribute('aria-label')).toBe('5 分钟')
     expect(active()?.hasAttribute('data-checked')).toBe(true)
+    expect(active()?.getAttribute('data-state')).toBe('checked')
+    // 迁移前（Radix）的写法：单选钮带 value 与 data-orientation，组带 data-orientation 与 aria-required=false。
+    expect(active()?.getAttribute('value')).toBe('5m')
+    expect(active()?.getAttribute('data-orientation')).toBe('horizontal')
+    expect(q('[role="radiogroup"]').getAttribute('data-orientation')).toBe('horizontal')
+    expect(q('[role="radiogroup"]').getAttribute('aria-required')).toBe('false')
     await userEvent.keyboard('{ArrowLeft}{ArrowLeft}')
     expect(active()?.getAttribute('aria-label')).toBe('1 小时')
     expect(seen).toEqual(['5m', '1m', '1h'])
