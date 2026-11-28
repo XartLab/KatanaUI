@@ -91,12 +91,16 @@ describe('Button', () => {
 })
 
 describe('Switch / Checkbox', () => {
-  it('开关：role=switch，状态在 aria-checked 上，开关与圆钮都带 data-checked', () => {
+  it('开关：role=switch，状态在 aria-checked 上，开关与圆钮都带 data-state=checked（UI SDK 的 data-checked 也在）', () => {
     const on = renderToStaticMarkup(<Switch checked aria-label="成交量" />)
     expect(on).toContain('role="switch"')
     expect(on).toContain('aria-checked="true"')
     expect(on).toContain('data-slot="switch-thumb"')
     expect(on.match(/data-checked=""/g)?.length).toBe(2)
+    expect(on.match(/data-state="checked"/g)?.length).toBe(2)
+    expect(
+      renderToStaticMarkup(<Switch checked={false} aria-label="x" />).match(/data-state="unchecked"/g)?.length,
+    ).toBe(2)
     expect(renderToStaticMarkup(<Switch checked={false} aria-label="x" />)).toContain('aria-checked="false"')
   })
 

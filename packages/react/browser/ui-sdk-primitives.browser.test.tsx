@@ -89,17 +89,25 @@ describe('Switch / MorphToggle', () => {
     expect(sw.getAttribute('aria-checked')).toBe('true')
     expect(sw.hasAttribute('data-checked')).toBe(true)
     expect(q('[data-slot="switch-thumb"]').hasAttribute('data-checked')).toBe(true)
+    expect(sw.getAttribute('data-state')).toBe('checked')
+    expect(q('[data-slot="switch-thumb"]').getAttribute('data-state')).toBe('checked')
     await userEvent.click(q('[data-slot="label"]'))
     expect(sw.getAttribute('aria-checked')).toBe('false')
+    expect(sw.getAttribute('data-state')).toBe('unchecked')
+    // 回车也拨动：迁移前的 Radix 开关是原生按钮，回车就是点击（UI SDK 只认空格）。
+    await userEvent.keyboard('{Enter}')
+    expect(sw.getAttribute('aria-checked')).toBe('true')
   })
 
-  test('MorphToggle：空格拨动，onCheckedChange 只收布尔（回车不再拨动，APG 的 switch 只要求空格）', async () => {
+  test('MorphToggle：空格与回车都拨动，onCheckedChange 只收布尔', async () => {
     const seen: unknown[] = []
     await mount(<MorphToggle aria-label="主题" onCheckedChange={(next) => seen.push(next)} />)
     await userEvent.tab()
     await userEvent.keyboard(' ')
     await userEvent.keyboard(' ')
-    expect(seen).toEqual([true, false])
+    await userEvent.keyboard('{Enter}')
+    expect(seen).toEqual([true, false, true])
+    expect(q('[data-slot="morph-toggle"]').getAttribute('data-state')).toBe('checked')
   })
 })
 
