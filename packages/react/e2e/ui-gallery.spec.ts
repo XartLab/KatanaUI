@@ -1887,10 +1887,10 @@ for (const theme of THEMES) {
       await open(page, theme, 'badge')
       const area = section(page, 'badge')
       const star = area.getByRole('img', { name: '科创板：涨跌幅 20%' })
-      // .k-badge（ui.css 591-602）：micro 档 · 次要文字色 · 行高 1 · 指针 help；.k-badges 间距 space-1。
+      // .k-badge 是 Tag 的 sm 档：micro 档 · 中性状态字色（--k-status-neutral-foreground，#215 起 Console 是 #9f9889，不再是 --ink-300）· 行高 1 · 指针 help；.k-badges 间距 space-1。
       await expect(star).toHaveText('科')
       await expect(star).toHaveAttribute('title', '科创板：涨跌幅 20%')
-      await expect(star).toHaveCSS('color', await token(page, '--ink-300'))
+      await expect(star).toHaveCSS('color', await token(page, '--k-status-neutral-foreground'))
       await expect(star).toHaveCSS('font-size', await resolved(page, 'font-size', 'var(--text-micro-size)'))
       await expect(star).toHaveCSS('cursor', 'help')
       await expect(area.locator('.k-badges').nth(1)).toHaveCSS(
