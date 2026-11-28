@@ -100,11 +100,12 @@ describe('Switch / Checkbox', () => {
     expect(renderToStaticMarkup(<Switch checked={false} aria-label="x" />)).toContain('aria-checked="false"')
   })
 
-  it('勾选：role=checkbox，勾上的带 data-checked', () => {
+  it('勾选：role=checkbox，勾上的带 data-state=checked', () => {
     const html = renderToStaticMarkup(<Checkbox checked aria-label="只看主板" />)
     expect(html).toContain('role="checkbox"')
     expect(html).toContain('aria-checked="true"')
     expect(html).toContain('data-checked=""')
+    expect(html).toContain('data-state="checked"')
   })
 })
 

@@ -3698,7 +3698,7 @@ for (const theme of THEMES) {
       )
       const indeterminate = area.getByTestId('progress-indeterminate')
       await expect(indeterminate).not.toHaveAttribute('aria-valuenow', /.*/)
-      await expect(indeterminate).toHaveAttribute('data-indeterminate', '')
+      await expect(indeterminate).toHaveAttribute('data-state', 'indeterminate')
       await expect(indeterminate.locator('[data-slot=progress-indicator]')).toHaveCSS(
         'animation-name',
         'kc-progress-slide',

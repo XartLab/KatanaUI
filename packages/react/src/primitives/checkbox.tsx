@@ -5,6 +5,7 @@ import { Checkbox as CheckboxRoot, CheckboxIndicator } from '@ui-sdk/react/check
 import type { ComponentProps } from 'react'
 import { cn } from '../lib/cn.ts'
 import { focusRing } from '../lib/focus.ts'
+import { legacyState, part } from '../lib/legacy-attrs.ts'
 
 // 勾选方块：照组件卡（design/katana-console/project/components/Controls/README.md「Checkbox」）：14 × 14 凹陷方框（圆角 2 · 1px 线 · recess），
 // 选中后中心一块 6 × 6 的方块（不发光，发光只给状态灯）；选中的框是亮中性（ink-100）底，中心一块深色方块。数值照旧皮肤（#1777 之前的 .k-ck-box）。
@@ -22,11 +23,11 @@ function Checkbox({
 }) {
   return (
     <CheckboxRoot
-      data-slot="checkbox"
+      render={part('button', { slot: 'checkbox', state: legacyState.checked })}
       className={cn(
         'peer inline-flex size-[14px] shrink-0 cursor-pointer items-center justify-center rounded-[var(--radius-sm)] border border-(color:--k-separable-bold-borderColor) bg-(--k-surface-sunken-background) p-0',
         'shadow-[var(--recess)] transition-colors duration-150',
-        'data-checked:border-(color:--k-selectable-bold-background-selected) data-checked:bg-(--k-selectable-bold-background-selected)',
+        'data-[state=checked]:border-(color:--k-selectable-bold-background-selected) data-[state=checked]:bg-(--k-selectable-bold-background-selected)',
         'disabled:cursor-not-allowed disabled:opacity-40',
         'aria-invalid:border-(color:--k-status-danger-foreground)',
         focusRing,
@@ -37,8 +38,8 @@ function Checkbox({
       {/* 已选与半选的符号都弹进来（theme/form-motion.css）；半选的方块压成 2px 的横杠，不再和已选长得一样。 */}
       {indicator === 'check' ? (
         <CheckboxIndicator
-          data-slot="checkbox-indicator"
-          className="block size-[10px] text-(color:--k-selectable-bold-foreground-selected)"
+          render={part('span', { slot: 'checkbox-indicator', state: legacyState.checked })}
+          className="pointer-events-none block size-[10px] text-(color:--k-selectable-bold-foreground-selected)"
         >
           <svg
             data-slot="checkbox-mark"
@@ -57,8 +58,8 @@ function Checkbox({
         </CheckboxIndicator>
       ) : (
         <CheckboxIndicator
-          data-slot="checkbox-indicator"
-          className="block size-[6px] bg-(--k-selectable-bold-foreground-selected) data-indeterminate:h-[2px]"
+          render={part('span', { slot: 'checkbox-indicator', state: legacyState.checked })}
+          className="pointer-events-none block size-[6px] bg-(--k-selectable-bold-foreground-selected) data-[state=indeterminate]:h-[2px]"
         />
       )}
     </CheckboxRoot>
