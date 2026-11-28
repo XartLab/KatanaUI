@@ -17,6 +17,7 @@ KatanaUI 是设计系统的**源头仓库**（2026-11-14 用户定，#2）：tok
 
 - 默认主题是 Graphite（用户 2026-11-14 定，KATANAview #1775；已落地：`tokens.css` 的 `:root` 就是 Graphite，Console 是 `data-theme="console"` 的覆盖块，文档站默认也是 Graphite）。Graphite 是中性色纯灰，信号色是油画颜料色（土黄 `#d6a548`、铬绿 `#5fae8c`、玫瑰茜红 `#f2607c`）；Console 留作可切主题。不用 TradingView 蓝，不用暖白配高亮黄。
 - 组件的样子以 KATANAview 工作台现在的样式为准；Salt 学 token 结构（原值 → 调色 → 语义特征）、密度、文档组织，Salt 是 Apache-2.0，能照搬的实现可以照搬，写出处。
+- **行为层换成 UI SDK 只换交互行为（2026-11-27 用户定，#263；2026-11-28 用户定：不将就 UI SDK 默认）**：外观、`data-*` 属性（`data-slot`、`data-state` 等的名字与取值）、动画（时长、首屏是否播、fill-mode）、焦点环与键盘手感，以迁移前的 KatanaUI 为准；UI SDK 默认与之不同的，改成我们的，做不到的停下报告。
 - 包名 `@katana-ui/*`，不带 `katanaview`：要能用在别的量化项目里。
 - **设计决定要写进文档站**（用户 2026-11-17：「为什么滑条还有这些的设计没写到我们设计需要里面」「那些 MD 文档很多废话」）：用户在对话里定了样子，落代码的同一个 PR 里写进文档站对应的页——基础 / Token 与主题（`gallery/foundations*.tsx`）、组件页的「怎么用 / 无障碍」（`gallery/guidance/<组>.ts`）、模式（`gallery/patterns/<id>.tsx`）。一条一句，写数值和做法，不写套话；照搬别处的写出处。跟旧规则冲突的写明，待用户定的列出来。只写在代码注释或 markdown 里不算。
 
