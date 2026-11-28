@@ -155,7 +155,7 @@ const forms: GuidanceMap = {
     ],
     avoid: ['要点提交才生效的选项用 Checkbox。', '一次性动作用 Button 或 HoldToConfirm。'],
     a11y: [
-      'UI SDK Switch：role=switch，状态在 aria-checked，读屏读「开 / 关」；只认空格拨动，回车不再拨动（WAI-ARIA 的 switch 只要求空格）。',
+      'UI SDK Switch：role=switch，状态在 aria-checked，读屏读「开 / 关」；空格与回车都能拨动（迁移前的 Radix 开关是原生按钮，回车就是点击，保持不变）。',
       '读屏名来自关联的 Label 或 aria-label。',
       '开关状态靠圆钮位置与轨道颜色两个通道一起传达。',
     ],

@@ -203,7 +203,9 @@ import { EquityCurve } from '@katana-ui/react/quant'`}
         键盘、焦点、选中、读屏这层行为用 UI SDK（vercel-labs/ui，Apache-2.0），写在 dependencies，版本写死{' '}
         {code('0.1.0-beta.17')}
         ，出 1.0 再放开（#263，用户 2026-11-27 定：直接用它当行为层，先做能用，只做 React）。外观、token、对外 props
-        与类名都不变。
+        与类名都不变；{code('data-slot')}、{code('data-state')}（取值同 Radix 时代）、键盘手感也不变（2026-11-28
+        用户定：UI SDK 只换交互行为，外观、data-* 属性名与取值、动画、焦点环、键盘手感以迁移前为准），UI SDK
+        自己的状态属性（data-checked 等）仍在旁边，新样式可以读。
       </p>
       <Table
         head={['件', '底座', '状态怎么写在 DOM 上']}
@@ -211,49 +213,53 @@ import { EquityCurve } from '@katana-ui/react/quant'`}
           [
             code('Calendar / DateTimeInput / DateRangePicker / TradingDatePicker'),
             'UI SDK 的 Calendar、DateInput、TimeInput',
-            '日格 data-selected、data-today、data-outside、data-unavailable、data-disabled，区间 data-range-start / data-range-end / data-preview；分段输入根与各段 data-invalid、data-empty',
+            '日格 data-selected、data-today、data-outside-month（另有 data-outside）、data-unavailable、data-disabled，区间 data-selection-start / data-selection-end（另有 data-range-start / data-range-end）、data-preview；分段输入根与各段 data-invalid、data-empty；分段读屏名「年, 起点」（段名加输入名）；Home / End 到当月第一天 / 最后一天，区间用回车定起点后焦点前进一天（UI SDK 默认是周首周尾、焦点不动，这里接管）',
           ],
           [
             code('ListBox'),
             'UI SDK 的 Listbox',
-            '项 data-selected、data-disabled；悬停与键盘焦点用 :hover、:focus-visible',
+            '项 data-selected、data-disabled；悬停与键盘焦点用 :hover、:focus-visible；方向键到头停住，不绕回另一头（UI SDK 默认绕回，loop=false）',
           ],
           [
             code('TreeView / JsonViewer'),
             'UI SDK 的 Tree',
-            '行 data-selected、data-expanded、data-level，层级变量 --tree-level（从 1 起）；不再是 treegrid，是嵌套的 tree / treeitem',
+            '行 data-selected、data-expanded、data-level，层级变量 --tree-level（从 1 起）；不再是 treegrid，是嵌套的 tree / treeitem；禁用的行聚焦不到；回车只走 onAction、不顺带改选中；已展开的分支上按右方向键不动（迁移前的手感；UI SDK 与 APG 是进第一个子项，是仅有的与 APG 不同处，待用户看）',
           ],
           [
             code('Checkbox / Switch / MorphToggle'),
             'UI SDK 的 Checkbox、Switch',
-            '开关与指示 data-checked、data-indeterminate；回车不再拨动开关，只认空格',
+            'data-state：checked / unchecked / indeterminate，开关、圆钮、指示都带（UI SDK 的 data-checked、data-indeterminate 也在）；空格与回车都拨动开关；指示 pointer-events: none',
           ],
           [
             code('RadioGroup'),
             'UI SDK 的 Radio',
-            '选中 data-checked；对外仍是 value / onValueChange(string) / orientation',
+            'data-state：checked / unchecked，钮带 value 与 data-orientation，组带 data-orientation 与 aria-required=false；对外仍是 value / onValueChange(string) / orientation；禁用的钮 30% 不透明、方向键跳过',
           ],
           [
             code('Toggle / ChipGroup'),
             'UI SDK 的 Toggle、ToggleGroup',
-            '按下 data-pressed；禁用项在组里用 aria-disabled，仍可方向键到达；ChipGroup 多选的值按芯片的排列顺序给，不按点击先后',
+            'data-state：on / off（UI SDK 的 data-pressed 也在）；ChipGroup 的方向键跳过禁用的芯片（UI SDK 让它们留在路上，这里在 onKeyDown 里接管）；多选的值按芯片的排列顺序给，不按点击先后（有意的改进，待用户看）',
           ],
           [
             code('Progress / Separator / Label / Avatar'),
             'UI SDK 同名件',
-            '进度条宽由它按百分比写；不确定态 data-indeterminate',
+            'data-state：loading / complete / indeterminate，root 与填充都带 data-value、data-max；填充整宽、translate 推出去，过渡走 translate（UI SDK 默认写行内百分比宽度，这里写回）',
           ],
           [
             code('Collapsible / Accordion'),
             'UI SDK 的 Collapsible、Accordion',
-            '展开 data-open；高度过渡读 --collapsible-panel-height / --accordion-panel-height，收起过程是 data-ending-style；Accordion 的方向键不再在标题间移动，用 Tab',
+            'data-state：open / closed（Accordion 各部件另带 data-orientation=vertical）；展开收起是 keyframes（kc-accordion-down / up，高度读 --accordion-panel-height，--collapsible-panel-height 同），收起那段读 UI SDK 写在 DOM 上的 data-ending-style，放完才卸载；Accordion 的 ↑↓、Home / End 在标题间走并回绕，禁用的标题是原生 disabled、Tab 与方向键都跳过',
           ],
           [
             code('Tabs'),
             'UI SDK 的 Tabs',
-            '选中 data-selected；对外仍是 activationMode、forceMount；面板的淡入只在换页签时播，首次渲染不播；Tabs / TabsList / TabsTrigger / Label 仍可用 data-slot 改 slot 名',
+            'data-state：active / inactive（页签与面板）；TabsList 带 aria-orientation；对外仍是 activationMode、forceMount；方向键跳过禁用的页签、两头回绕，禁用的页签 30% 不透明；面板的淡入只在换页签时播，首次渲染不播，放完不留填充（迁移前是 both 填充，会让面板文字变灰度抗锯齿；有意的改进，待用户看）；Tabs / TabsList / TabsTrigger / Label 仍可用 data-slot 改 slot 名',
           ],
-          [code('ScrollArea'), 'UI SDK 的 ScrollArea', '滚动条显示读 data-visible，不卸载，用 opacity 过渡'],
+          [
+            code('ScrollArea'),
+            'UI SDK 的 ScrollArea',
+            '滚动条 data-state：visible / hidden；UI SDK 不卸载滚动条，用 opacity 过渡（迁移前是指到才挂上，视觉相同）',
+          ],
           [
             code(
               'Dialog / AlertDialog / Sheet / Popover / HoverCard / Tooltip / 各类菜单 / Select / NavigationMenu / Command / OtpField / Slider / ToggleGroup',

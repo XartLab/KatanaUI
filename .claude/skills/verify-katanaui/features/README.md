@@ -46,7 +46,7 @@
 | [Toast 弹出提示](toast.md) | 还没有流程（手走） | 视口 polite、warn / danger 单条 alert、弹出与叠放、带倒计时环与「撤销」的动作 toast |
 | [加载状态：Loading 最短停留与 Button 进行中](loading.md) | 还没有流程（手走） | 骨架出了至少留 500ms、500ms 内到的不出骨架；按钮 300ms 后出转圈、至少留 500ms、宽度不变、进行中再按无效、刷新钮转整圈 |
 | [Tabs 页签](tabs.md) | `drive tabs` | 点页签换内容、底块跟随、方向键切换、禁用页签 |
-| [基础件的键盘（UI SDK）](primitives-keyboard.md) | 还没有流程（手走） | Switch / MorphToggle 空格拨动回车不拨、Accordion 方向键不再移动标题、Collapsible 回车、Radio 与 ChipGroup 方向键 |
+| [基础件的键盘（UI SDK）](primitives-keyboard.md) | 还没有流程（手走） | Switch / MorphToggle 空格与回车都拨动、Accordion ↑↓ Home End 走标题并跳过禁用的、Collapsible 回车、Radio 与 ChipGroup 方向键、data-state 在 |
 | [TagCombobox 带标签的多选](tag-combobox.md) | `drive tag-combobox` | 点字段开、点两项成标签、打字过滤并加强命中字、空输入退格两次删标签、标签换行时弹层下移 |
 | [MarketBrowser 市场浏览器](market-browser.md) | `drive market-browser` | 点列头排序（升 / 降 / 取消）、搜索与无结果提示、星标进自选且不选品种、点行与 Enter 选品种 |
 | [StrategyLauncher 策略入口](strategy-launcher.md) | `drive strategy-launcher` | 点卡、Enter / 空格打开、键盘逐张走、关风险提示 |

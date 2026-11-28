@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// 换成 UI SDK 的 primitives（#263 PR 2）的键盘、焦点、无障碍检查，不截图：用真键盘、真点击在 Chromium 里走，状态读 UI SDK 的数据属性。
+// 换成 UI SDK 的 primitives（#263 PR 2）的键盘、焦点、无障碍检查，不截图：用真键盘、真点击在 Chromium 里走。
+// 状态读迁移前（Radix）的 data-state 与 UI SDK 自己的数据属性两种都认；键盘手感以迁移前为准（2026-11-28 审计，#263）。
 import { useState } from 'react'
 import { afterEach, describe, expect, test } from 'vite-plus/test'
 import { userEvent } from 'vite-plus/test/browser'
