@@ -122,6 +122,8 @@ export function ListBox({
     style,
     // 给了 onAction：点一项只选这一项（Ctrl / Shift 才扩选），方向键跟着选（selection follows focus）；不给：点一项切换，方向键只移焦点。
     activation: onAction ? ('automatic' as const) : ('manual' as const),
+    // 方向键到头就停（迁移前的 react-aria 不回绕；UI SDK 默认回绕）。
+    loop: false,
     children: items.map((item) =>
       isGroup(item) ? (
         <ListboxGroup key={item.id} className="k-lb-group">

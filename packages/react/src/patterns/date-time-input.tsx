@@ -106,7 +106,7 @@ export function DateTimeInput({
         max={max || undefined}
         onValueChange={(value) => onDate(value ?? '')}
       >
-        {({ segments }) => renderSegments(segments, DateInputSegment)}
+        {({ segments }) => renderSegments(segments, DateInputSegment, labels.date(label))}
       </DateInput>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger className="k-dt-pick" aria-label={labels.pickDate(label)}>
@@ -145,7 +145,7 @@ export function DateTimeInput({
           granularity={seconds ? 'second' : 'minute'}
           onValueChange={(value) => onTime(value ?? '')}
         >
-          {({ segments }) => renderSegments(segments, TimeInputSegment)}
+          {({ segments }) => renderSegments(segments, TimeInputSegment, labels.time(label))}
         </TimeInput>
       )}
     </span>

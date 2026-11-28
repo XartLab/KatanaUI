@@ -100,7 +100,7 @@ export function DateRangePicker({
         max={end || max || undefined}
         onValueChange={(day) => edit({ start: day ?? '', end })}
       >
-        {({ segments }) => renderSegments(segments, DateInputSegment)}
+        {({ segments }) => renderSegments(segments, DateInputSegment, labels.start)}
       </DateInput>
       <span className="k-dr-dash" aria-hidden="true">
         –
@@ -114,7 +114,7 @@ export function DateRangePicker({
         max={max || undefined}
         onValueChange={(day) => edit({ start, end: day ?? '' })}
       >
-        {({ segments }) => renderSegments(segments, DateInputSegment)}
+        {({ segments }) => renderSegments(segments, DateInputSegment, labels.end)}
       </DateInput>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger className="k-dt-pick" aria-label={labels.pickRange}>

@@ -62,13 +62,17 @@ function renderNode(node: TreeNode, onAction?: (id: string) => void) {
       disabled={node.disabled}
       className="k-tree-item"
       // 双击或 Enter「激活」这一行（UI SDK 自己的 onAction 单击就触发，不合我们的约定）；子项的事件会冒上来，只认本行。
-      onKeyDown={
-        onAction
-          ? (event) => {
-              if (event.key === 'Enter' && only(event) && !node.disabled) onAction(node.id)
-            }
-          : undefined
-      }
+      onKeyDown={(event) => {
+        if (!only(event)) return
+        // Enter 只激活，不选中（给了 onAction 时；迁移前的 react-aria 是这样，UI SDK 的 Enter 还会选中，所以拦下它自己的那份）。
+        if (event.key === 'Enter' && onAction && !node.disabled) {
+          event.preventDefault()
+          onAction(node.id)
+        }
+        // → 在已展开的分支上不动（迁移前的写法；UI SDK 照 APG 会走进第一个子项）。写在项上：UI SDK 的方向键在项上处理，根上的拦不住。
+        if (event.key === 'ArrowRight' && hasChildren && event.currentTarget.getAttribute('aria-expanded') === 'true')
+          event.preventDefault()
+      }}
     >
       <TreeItemLabel
         className="k-tree-row"
@@ -114,6 +118,8 @@ export function TreeView({
     className: cn('k-tree', className),
     // 点行是选中这一行；展开收起交给箭头与方向键（原来就是这样，UI SDK 默认点分支也展开）。
     expandOnPress: false,
+    // 禁用的行不接焦点（迁移前的 react-aria 方向键跳过它；UI SDK 默认让它们留在路上）。
+    focusableWhenDisabled: false,
     activation: onAction ? ('automatic' as const) : ('manual' as const),
     expanded: expandedKeys ? [...expandedKeys] : undefined,
     defaultExpanded: defaultExpandedKeys ? [...defaultExpandedKeys] : undefined,
