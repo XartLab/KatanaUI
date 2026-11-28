@@ -266,7 +266,7 @@ for (const theme of THEMES) {
       expect(count).toBeGreaterThan(25)
       // 提示默认开着：里面有字、有底色。
       await show(page, 'tooltip')
-      const tip = page.locator('[data-slot="tooltip-content"]')
+      const tip = page.locator('[data-slot="tooltip-content"][data-open]')
       await expect(tip).toBeVisible()
       expect(await bg(tip)).not.toBe('rgba(0, 0, 0, 0)')
       expect(errors).toEqual([])
@@ -2729,10 +2729,13 @@ for (const theme of THEMES) {
       await dialog.getByRole('checkbox', { name: /丙国/ }).click()
       await dialog.getByRole('button', { name: '取消' }).first().click()
       expect(await rowIds()).toHaveLength(5)
+      // UI SDK 的对话框退场动画期间（约 200ms）点触发器不会再开：等它卸掉再开。
+      await expect(dialog).toHaveCount(0)
       await cal.getByRole('button', { name: '全部国家' }).click()
       await dialog.getByRole('checkbox', { name: /丙国/ }).click()
       await dialog.getByRole('button', { name: '应用' }).click()
       expect(await rowIds()).toEqual(['b2'])
+      await expect(dialog).toHaveCount(0)
       await cal.getByRole('button', { name: '1 个国家' }).click()
       await dialog.getByRole('button', { name: '全球' }).click()
       await dialog.getByRole('button', { name: '应用' }).click()

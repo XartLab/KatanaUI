@@ -53,6 +53,7 @@ function ComboboxContent({
   return (
     <PopoverContent
       data-slot="combobox-content"
+      aria-label={label}
       align="start"
       sideOffset={2}
       className={cn(
